@@ -27,9 +27,9 @@ While my background is deeply rooted in **QA automation**, I am expanding my exp
 🔹 Understanding **Solana runtime, accounts model, and transactions**.  
 🔹 Combining my **debugging and system analysis skills** with Rust-based blockchain development.  
 
-[![Rust Solana](https://img.shields.io/badge/On_Chain_Solana-green?style=for-the-badge)](https://github.com/maltsev-dev/counter_on_native_solana)  
-[![Rust OpenAI](https://img.shields.io/badge/Rust_Backend_AI_builder-orange?style=for-the-badge)](https://github.com/maltsev-dev/rest_on)  
-[![Rust TUI](https://img.shields.io/badge/Rust_TUI-blue?style=for-the-badge)](https://github.com/maltsev-dev/inventory_system_app)  
+[![Rust Solana](https://img.shields.io/badge/On_Chain_Solana-green?style=for-the-badge)](https://github.com/maltsev-dev/counter_on_native_solana)
+[![Rust OpenAI](https://img.shields.io/badge/Rust_Backend_AI_builder-orange?style=for-the-badge)](https://github.com/maltsev-dev/rest_on)
+[![Rust TUI](https://img.shields.io/badge/Rust_TUI-blue?style=for-the-badge)](https://github.com/maltsev-dev/inventory_system_app)
 
 ---
 
