@@ -11,9 +11,9 @@
 ---
 
 ## 🚀 About Me
-🟣 ISTQB® **Senior AQA Engineer** with more than 5 years of hands-on experience with financial software test automation. 
-🟣 I am now actively transitioning into the **Rust and Solana On-chain development** space.  
-🟣 Self-driven, research oriented, and the ability to learn independently
+ISTQB® **Senior AQA Engineer** with more than 5 years of hands-on experience with financial software test automation.  
+I am now actively transitioning into the **Rust and Solana On-chain development** space.  
+Self-driven, research oriented, and the ability to learn independently  
 
 🔹 ISTQB® Certified **Senior SDET**, specializing in backend, UI, and performance automation.  
 🔹 Passionate about **Rust programming**, smart contract development, and blockchain technologies.  
@@ -68,7 +68,8 @@ _(Moscow, 06/2019 – 07/2020)_
 ## 📜 Certifications  
 - **Rise In: Build On Solana Course** _(Mar 2025)_
 - **HackQuest: Lvl 2. Certified Solana Builder** _(Mar 2025)_
-- **LFEL1002: Rust Essentials** _(Jan 2025)_
+- **HackQuest: Lvl 1. Certified Solana Learner** _(Feb 2025)_
+- **Linux Foundation: Rust Essentials (LFEL1002)** _(Jan 2025)_
 - **Udemy: Substrate Bootcamp** _(Jan 2025)_
 - **Udemy: Rust Web Servers** _(Dec 2024)_
 - **UE5: C++ Developer** _(Aug 2024)_
