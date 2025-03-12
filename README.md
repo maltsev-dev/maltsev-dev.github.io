@@ -27,6 +27,10 @@ While my background is deeply rooted in **QA automation**, I am expanding my exp
 🔹 Understanding **Solana runtime, accounts model, and transactions**.  
 🔹 Combining my **debugging and system analysis skills** with Rust-based blockchain development.  
 
+[![Rust Solana](https://img.shields.io/badge/Rust-On_Chain_Solana-green?style=for-the-badge)](https://github.com/maltsev-dev/counter_on_native_solana)  
+[![Rust OpenAI](https://img.shields.io/badge/Rust-AI_backend_builder-orange?style=for-the-badge)](https://github.com/maltsev-dev/rest_on)  
+[![Rust TUI](https://img.shields.io/badge/Rust-Text_User_Interface-blue?style=for-the-badge)](https://github.com/maltsev-dev/inventory_system_app)  
+
 ---
 
 ## 🛠️ Skills 
@@ -83,7 +87,7 @@ _(Moscow, 06/2019 – 07/2020)_
 ---
 
 ## 📚 Education  
-🎓 **National University of Science and Technology "MISiS"**  Moscow.Russia
+🎓 **National University of Science and Technology "MISiS"** Moscow.Russia  
 _Bachelor’s Degree in Business Administration and Management (2011 – 2015)_  
 
 ---
