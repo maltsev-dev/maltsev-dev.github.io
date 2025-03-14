@@ -1,31 +1,15 @@
-# Anatolii Maltsev  
 
-![Profile Image](https://avatars.githubusercontent.com/u/57837500?v=4)  
+## 👨‍🔬 Senior AQA Engineer(Java) | 🦀 On-chain Developer(Rust)
 
-**👨‍🔬 Senior AQA Engineer(Java) | 🦀 On-chain Developer(Rust)**
-
----
-📍 Remote / Relocate
-📧 [mr.a.maltsev@gmail.com](mailto:mr.a.maltsev@gmail.com)  
-
----
-
-## 🚀 About Me
 ISTQB® **Senior AQA Engineer** with more than 5 years of hands-on experience with financial software test automation.  
-I am now actively transitioning into the **Rust and Solana On-chain development** space.  
-Self-driven, research oriented, and the ability to learn independently  
-
-🔹 ISTQB® Certified **Senior SDET**, specializing in backend, UI, and performance automation.  
-🔹 Passionate about **Rust programming**, smart contract development, and blockchain technologies.  
-🔹 Exploring **Solana On-chain Programs**, Cross-Program Invocations (CPI), and Anchor framework.  
-🔹 Applying my deep understanding of **CI/CD, test automation, and system architecture** to blockchain development.  
+Self-driven, research oriented, and the ability to learn independently.  
 
 ## 🎯 Transition to Solana & Rust  
 While my background is deeply rooted in **QA automation**, I am expanding my expertise into the **Solana ecosystem**:  
-🔹 Experimenting with **writing and deploying Solana smart contracts** using Rust.  
-🔹 Learning **Anchor Framework** and best practices for smart contract security.  
-🔹 Understanding **Solana runtime, accounts model, and transactions**.  
-🔹 Combining my **debugging and system analysis skills** with Rust-based blockchain development.  
+🔹 Exploring **Solana On-chain Programs** and Cross-Program Invocations (**CPI**).  
+🔹 Use both **Anchor** and Rust Native.  
+🔹 Fuzzing by **Trident**.  
+🔹 Metaplex and SPL Tokens.  
 
 [![Rust Solana](https://img.shields.io/badge/On_Chain_Solana-green?style=for-the-badge)](https://github.com/maltsev-dev/counter_on_native_solana)
 [![Rust OpenAI](https://img.shields.io/badge/Rust_Backend_AI_builder-orange?style=for-the-badge)](https://github.com/maltsev-dev/rest_on)
@@ -34,6 +18,7 @@ While my background is deeply rooted in **QA automation**, I am expanding my exp
 ---
 
 ## 🛠️ Skills 
+🔹 **Solana Ecosystem:** Solana CLI, SVM, CPI, Anchor, Trident, Metaplex, NTF and SPL Token  
 🔹 **Testing methodologies:** TLC, SDLC, Shift-left testing, Agile (Scrum, Kanban, LeSS)  
 🔹 **Testing areas:** API, UI, Mobile, Performance, Security, Manual & Exploratory Testing  
 🔹 **Technologies:** Java, Rust, Scala, Selenium, Appium, Selenide, TestNG, JUnit5, Cucumber  
@@ -43,7 +28,8 @@ While my background is deeply rooted in **QA automation**, I am expanding my exp
 
 ## 💼 Work Experience  
 
-### **M10 by PashPay JSC** 
+### **M10 by PashPay JSC**  
+_Number one Azerbaijan digital wallet_  
 _(Baku, Azerbaijan, 12/2023 – Present)_ 
 **Senior Mobile QA Automation Engineer (Contract, Full-time)**  
 - Design and implement new integration, e2e and load autotests.
@@ -51,19 +37,22 @@ _(Baku, Azerbaijan, 12/2023 – Present)_
 - Write detailed documentation to foster consistent standards and knowledge sharing across the projects.
 
 ### **ALFA-BANK JSC**
+_Russia's largest private bank_  
  _(Moscow, 12/2021 – 09/2023)_ 
 **Senior Mobile QA Automation Engineer (Full-time)**  
 - Design, implement, and optimize the autotests for backend services to enhance the throughput and stability.
 - Collaborate with cross-functional teams, including core engineers, security experts, and infrastructure teams, to ensure the seamless integration and functioning of the project components.
 
 ### **SPORTMASTER LLC** 
-_(Moscow, 07/2020 – 12/2021)_
+_Russia's largest retailer of sporting goods_  
+_(Moscow, 07/2020 – 12/2021)_  
 **Senior QA Engineer (Full-time)**  
 - Identify and mitigate potential performance vulnerabilities within the services integration, ensuring robust protection against high load.
 - Maintain thorough documentation of the quality processes artifacts and conduct peer code reviews to uphold high standards of code quality and consistency.
 
 ### **SBERBANK PJSC** 
-_(Moscow, 06/2019 – 07/2020)_ 
+_The largest PJSC bank in Russia_  
+_(Moscow, 06/2019 – 07/2020)_  
 **QA Engineer (Full-time)**  
 - Analyze complex systems, identify potential problems, and develop efficient and flexible automated tests to ensure overall high product quality.
 
@@ -90,6 +79,9 @@ _(Moscow, 06/2019 – 07/2020)_
 🎓 **National University of Science and Technology "MISiS"** Moscow.Russia  
 _Bachelor’s Degree in Business Administration and Management (2011 – 2015)_  
 
+---
+📍 Remote / Relocate  
+💼 Open to B2B Contracting
 ---
 
 ## 🌍 Contact  
