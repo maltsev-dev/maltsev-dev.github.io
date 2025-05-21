@@ -1,3 +1,8 @@
++++
+title = "About Me" 
+path = "about"
++++
+
 ## Anatoly Maltsev
 
 https://github.com/maltsev-dev/maltsev-dev.github.io/blob/main/favicon.png
