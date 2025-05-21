@@ -1,0 +1,13 @@
+{% set image_thumb = resize_image(path=path, width=360, height=360, op="fit", format="webp") %}
+
+{% if path is ending_with(".jpg") or path is ending_with(".jpeg") %}
+
+{% set image_full = resize_image(path=path, width=1920, height=1920, op="fit") %}
+
+{% else %}
+
+{% set image_full = resize_image(path=path, width=1920, height=1920, op="fit", format="webp") %}
+
+{% endif %}
+
+<a href="{{ image_full.url }}"><img src="{{ image_thumb.url }}" style="display: inline;" /></a>

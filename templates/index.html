@@ -1,0 +1,25 @@
+{% extends "terminimal/templates/index.html" %}
+
+{% block extra_head %}
+
+<meta property="og:site_name" content="{{ config.title | safe }}">
+
+{%- if page.title -%}
+<meta property="og:type" content="article">
+<meta property="og:title" content="{{ page.title | safe }}">
+
+{%- else -%}
+<meta property="og:type" content="website">
+<meta property="og:title" content="{{ config.title | safe }}">
+
+{%- endif -%}
+
+{%- if page.permalink -%}
+<meta property="og:url" content="{{ page.permalink | safe }}">
+{%- else -%}
+<meta property="og:url" content="{{ config.base_url | safe }}/">
+{%- endif -%}
+
+<meta property="og:image" content="https://github.com/maltsev-dev/favicon.png">
+
+{% endblock %}
