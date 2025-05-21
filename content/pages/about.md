@@ -5,8 +5,6 @@ path = "about"
 
 ## Anatoly Maltsev
 
-https://github.com/maltsev-dev/maltsev-dev.github.io/blob/main/favicon.png
-
 ### 👨‍🔬 QA Automation Engineer (Java) | 🦀 Embedded Firmware Developer (Rust)
 ISTQB® **Senior QA Automation Engineer** with more than 6 years of hands-on experience with fintech software test automation.
 
