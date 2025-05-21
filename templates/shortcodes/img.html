@@ -1,32 +1,22 @@
-{# Генерируем уменьшенную вебp‑картинку #}
 {% set image_thumb = resize_image(path=src, width=360, height=360, op="fit", format="webp") %}
 
-{# Генерируем большую картинку: для JPG/JPEG без конвертации в webp, иначе — в webp #}
-{% if src | ends_with(".jpg") or src | ends_with(".jpeg") %}
-  {% set image_full = resize_image(path=src, width=1920, height=1920, op="fit") %}
+{% if src is ending_with(".jpg") or src is ending_with(".jpeg") %}
+{% set image_full = resize_image(path=src, width=1920, height=1920, op="fit") %}
 {% else %}
-  {% set image_full = resize_image(path=src, width=1920, height=1920, op="fit", format="webp") %}
+{% set image_full = resize_image(path=src, width=1920, height=1920, op="fit", format="webp") %}
 {% endif %}
 
-{# Если указан src, рисуем фигуру #}
 {% if src %}
-<figure class="{{ position | default(value="center") }}">
-  <a href="{{ image_full.url | safe }}">
-    <img
-      src="{{ image_thumb.url | safe }}"
-      {% if alt %} alt="{{ alt }}" {% endif %}
-      {% if style %} style="{{ style }}" {% endif %}
-    />
-  </a>
-
-  {# Опциональный caption #}
-  {% if caption %}
-    <figcaption
-      class="{{ caption_position | default(value="center") }}"
-      {% if caption_style %} style="{{ caption_style | safe }}" {% endif %}
-    >
-      {{ caption }}
+<figure class="{% if position %}{{ position }}{% else -%} center {%- endif %}">
+    <a href="{{ image_full.url  | safe }}">
+        <img src="{{ image_thumb.url | safe }}" {% if alt %} alt="{{ alt }}" {% endif %} {% if style %}
+            style="{{ style }}" {% endif %} />
+    </a>
+    {% if caption %}
+    <figcaption class="{% if caption_position %}{{ caption_position }}{% else -%} center {%- endif %}" {% if
+        caption_style %} style="{ caption_style | safe }}}" {% endif %}> {{
+        caption }}
     </figcaption>
-  {% endif %}
+    {% endif %}
 </figure>
 {% endif %}
