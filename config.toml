@@ -1,6 +1,6 @@
 # Be sure to change these!
 base_url = "https://maltsev-dev.github.io/"
-title = "My Story"
+title = "dev_stories"
 theme = "terminimal"
 
 # Sass compilation is required
@@ -26,7 +26,7 @@ accent_color = "orange"
 # Enabling dark background will also modify primary font color
 # to be darker.
 # Defaults to accent color (or, if not accent color specified, to blue).
-background_color = "dark"
+background_color = "light"
 
 # The logo text - defaults to "Terminimal theme"
 logo_text = "busy hands - happy heart"
@@ -45,6 +45,7 @@ copyright_html = "maltsev-dev | 2019"
 
 # menu is enabled by adding menu_items (optional)
 menu_items = [
+    { name = "about", url = "$BASE_URL/about" },
     # each of these is optional, name and url are required
     # $BASE_URL is going to be substituted by base_url from configuration
     { name = "blog", url = "$BASE_URL" },
@@ -53,7 +54,6 @@ menu_items = [
     # see documentation below for more details
     { name = "tags", url = "$BASE_URL/tags" },
     { name = "archive", url = "$BASE_URL/archive" },
-    { name = "about me", url = "$BASE_URL/about" },
     { name = "github", url = "https://github.com/maltsev-dev", newtab = true},
     { name = "linkedin", url = "https://www.linkedin.com/in/a-maltsev/", newtab = true},
 ]

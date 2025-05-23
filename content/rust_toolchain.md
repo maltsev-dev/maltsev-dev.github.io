@@ -6,14 +6,14 @@ date = "2025-01-15"
 tags = ["rust_mastering"]
 +++
 
-A Series of Rust concepts every developer should master 🥋
-E01 - `Rust Toolchain`
+A Series of Rust concepts every developer should master 🥋  E01 - `Rust Toolchain`
 <!-- more -->
 ---
 
 - If you want to use [Rust](https://www.rust-lang.org/) for your projects, you need to start by installing `rustc` (the powerful Ahead-Of-Time (AOT) Rust compiler).
 Also, for each Rust target, you need to install the corresponding `rust-std` (the standard Rust library). 
 - To support the compilation process, you need to install a few more dependencies - (`rustfmt`, `clippy`, `rls`/`rust-analyzer`, etc.)
+
 
 ### rustup
 If at this point you haven't given up on the idea of trying Rust, I have good news for you - the entire initial installation is managed by the `rustup` utility.
@@ -52,12 +52,11 @@ wasm32-unknown-unknown
 x86_64-pc-windows-msvc
 ```
 
-- To find the path to the toolchain
+- To find where the toolchain
 ```bash
 > rustup which rustc
 C:\Users\A\.rustup\toolchains\stable-x86_64-pc-windows-msvc\bin\rustc.exe
 ```
-
 
 ### Channels
 - Rust is developed in 3 parallel branches
@@ -72,6 +71,15 @@ C:\Users\A\.rustup\toolchains\stable-x86_64-pc-windows-msvc\bin\rustc.exe
     rustup toolchain install beta
     rustup toolchain install nightly
 ```
+
+```
+ File  .text Size  Crate      Function
+ 50.2%  45.3KB std::io::_print
+ 12.3%  11.2KB core::fmt::Formatter::write_str
+ ...
+```
+
+
 
 - To update the corresponding toolchains
 ```bash

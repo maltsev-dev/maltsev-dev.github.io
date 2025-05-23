@@ -11,21 +11,20 @@ I want to leave here some results of my interest in C++ programming within the U
 <!-- more -->
 ---
 
-    I get excited when I make the computer do some magic that I can touch and interact with. 
-    This realization has in some ways changed the vector of my interests and pushed me to try and master new directions.
+-  get excited when I make the computer do some magic that I can touch and interact with. 
+This realization has in some ways changed the vector of my interests and pushed me to try and master new directions.
 
-    For lack of sufficient imagination and understanding of where to start if I want to make the pixels on my screen move at my command, I decided to find a couple of courses on popular platforms for myself, fortunately I know how to learn and for me this format of mastering the material seems optimal.
+- For lack of sufficient imagination and understanding of where to start if I want to make the pixels on my screen move at my command, I decided to find a couple of courses on popular platforms for myself, fortunately I know how to learn and for me this format of mastering the material seems optimal.
 Within several courses, I created 3 full-fledged games, each with its own special mechanics, level design.
 
-    Almost every such project begins with some idea, for which you carefully select materials, textures, download and check tons of different assets to find exactly what suits you.
+- Almost every such project begins with some idea, for which you carefully select materials, textures, download and check tons of different assets to find exactly what suits you.
 Scene creation, control of light, sound and post-processing, landscape and level design, all this really helped me realize my creative desire and aspiration, which actually pushed me to experiment.
 
-    After several weeks spent in reading documentation, AI's, Youtube and materials from courses, now I generally understand how the interaction of cpp code, game engine and game space objects is arranged.
+- After several weeks spent in reading documentation, AI's, Youtube and materials from courses, now I generally understand how the interaction of cpp code, game engine and game space objects is arranged.
 
-    It was great to step out a little from the dry guides, when by slightly changing a couple of parameters it became possible to create new combinations of enemies, obstacles and incredible playgrounds.
+- It was great to step out a little from the dry guides, when by slightly changing a couple of parameters it became possible to create new combinations of enemies, obstacles and incredible playgrounds.
 
-    Behavioural trees are the cornerstone of any game that has some living objects and the gaming experience depends on their interaction with the player, creating branched trees, transitions and animations between states allows you to fill the scene with conscious life, this qualitative leap was especially pleasant for my projects.
-I managed to get to know many and try some game mechanics, through the prism of this knowledge I look at the games I play, and I am pleased to understand how it actually works.
+- Behavioural trees are the cornerstone of any game that has some living objects and the gaming experience depends on their interaction with the player, creating branched trees, transitions and animations between states allows you to fill the scene with conscious life, this qualitative leap was especially pleasant for my projects.
 
 ---
 

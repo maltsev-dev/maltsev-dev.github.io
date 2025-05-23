@@ -3,7 +3,12 @@ title = "Anatoly Maltsev"
 path = "about"
 +++
 
-{{ img(src = "/images/me.png", caption = "portrait") }}
+{{ img(src = "/images/me.png") }}
+
+## Welcome
+- On this resource I publish my articles on topics that I find interesting (tags).
+- I share impressions about tools and create guides that can also be useful to others and, of course, this is my platform where I talk about my projects and experiments.
+
 🟢 Life-long learner, research-oriented engineer  
 🟢 Creative Technologist  
 🟣 Commitment to a sustainable programming philosophy
