@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Rust Toolchain | dev_stories</title>
+    
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+    <meta name="robots" content="noodp"/>
+
+    <link rel="stylesheet" href="https://maltsev-dev.github.io/style.css">
+    <link rel="stylesheet" href="https://maltsev-dev.github.io/color/orange.css">
+
+        <link rel="stylesheet" href="https://maltsev-dev.github.io/color/background_auto.css">
+    
+    <link rel="stylesheet" href="https://maltsev-dev.github.io/font-hack.css">
+
+    <meta name="description" content="">
+
+    <meta property="og:description" content="">
+    <meta property="og:title" content="Rust Toolchain | dev_stories">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://maltsev-dev.github.io/rust-toolchain/">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:description" content="">
+    <meta name="twitter:title" content="Rust Toolchain | dev_stories">
+    <meta property="twitter:domain" content="maltsev-dev.github.io">
+    <meta property="twitter:url" content="https://maltsev-dev.github.io/rust-toolchain/">
+
+        <link rel="shortcut icon" type="image/png" href="/favicon.png">
+    
+
+<meta property="og:site_name" content="dev_stories"><meta property="og:type" content="article">
+<meta property="og:title" content="Rust Toolchain"><meta property="og:url" content="https://maltsev-dev.github.io/rust-toolchain/"><meta property="og:image" content="https://github.com/maltsev-dev/favicon.png">
+
+</head>
+
+<body class="">
+<div class="container">
+    
+    <header class="header">
+        <div class="header__inner">
+            <div class="header__logo">
+                    
+                <a href="https://maltsev-dev.github.io" style="text-decoration: none;">
+                    <div class="logo">
+                      
+                            busy hands - happy heart
+                        
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        
+        
+                <nav class="menu">
+            <ul class="menu__inner">
+                <li class="active"><a href="https://maltsev-dev.github.io">blog</a></li>
+            
+                <li><a href="https://maltsev-dev.github.io/tags">tags</a></li>
+            
+                <li><a href="https://maltsev-dev.github.io/archive">archive</a></li>
+            
+                <li><a href="https://maltsev-dev.github.io/about">about</a></li>
+            
+                <li><a href="https://github.com/maltsev-dev" target="_blank" rel="noopener noreferrer">github</a></li>
+            
+                <li><a href="https://www.linkedin.com/in/a-maltsev/" target="_blank" rel="noopener noreferrer">linkedin</a></li>
+            </ul>
+        </nav>
+    
+    
+        
+    </header>
+    
+
+    <div class="content">
+        
+    <div class="post">
+        
+    <h1 class="post-title"><a href="https://maltsev-dev.github.io/rust-toolchain/">Rust Toolchain</a></h1>
+    <div class="post-meta-inline">
+        
+    <span class="post-date">
+            2025-01-15
+        </span>
+
+    </div>
+
+    
+        <span class="post-tags-inline">
+                :: tags:&nbsp;
+                <a class="post-tag" href="https://maltsev-dev.github.io/tags/rust-mastering/">#rust_mastering</a></span>
+    
+
+        <div class="post-content">
+            <p>A Series of Rust concepts every developer should master 🥋  E01 - <code>Rust Toolchain</code></p>
+<span id="continue-reading"></span>
+<hr />
+<ul>
+<li>If you want to use <a href="https://www.rust-lang.org/">Rust</a> for your projects, you need to start by installing <code>rustc</code> (the powerful Ahead-Of-Time (AOT) Rust compiler).
+Also, for each Rust target, you need to install the corresponding <code>rust-std</code> (the standard Rust library).</li>
+<li>To support the compilation process, you need to install a few more dependencies - (<code>rustfmt</code>, <code>clippy</code>, <code>rls</code>/<code>rust-analyzer</code>, etc.)</li>
+</ul>
+<h3 id="rustup">rustup</h3>
+<p>If at this point you haven't given up on the idea of trying Rust, I have good news for you - the entire initial installation is managed by the <code>rustup</code> utility.</p>
+<pre data-lang="bash" style="background-color:#151515;color:#e8e8d3;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#ffb964;">curl --proto </span><span style="color:#556633;">&#39;</span><span style="color:#99ad6a;">=https</span><span style="color:#556633;">&#39;</span><span style="color:#ffb964;"> --tlsv1</span><span>.2</span><span style="color:#ffb964;"> -sSf</span><span> https://sh.rustup.rs | </span><span style="color:#ffb964;">sh
+</span></code></pre>
+<p>This will install <code>rustup</code>, <code>rustc</code>, <code>cargo</code> and configure <code>$PATH</code>.
+By default, the host platform targets are installed (e.g. <code>x86_64-pc-windows-msvc</code>)</p>
+<ul>
+<li>To get a list of installed toolchains and check the active one</li>
+</ul>
+<pre data-lang="bash" style="background-color:#151515;color:#e8e8d3;" class="language-bash "><code class="language-bash" data-lang="bash"><span>&gt;  rustup </span><span style="color:#ffb964;">toolchain</span><span> list
+</span><span style="color:#ffb964;">stable-x86_64-pc-windows-msvc</span><span> (active, default)
+</span><span style="color:#ffb964;">1.74.0-x86_64-pc-windows-msvc
+</span></code></pre>
+<ul>
+<li>Or a command that will display additional information about installed tagrets.</li>
+</ul>
+<pre data-lang="bash" style="background-color:#151515;color:#e8e8d3;" class="language-bash "><code class="language-bash" data-lang="bash"><span>&gt; rustup </span><span style="color:#ffb964;">show
+</span><span style="color:#ffb964;">Default</span><span> host: x86_64-pc-windows-msvc
+</span><span style="color:#ffb964;">rustup</span><span> home:  C:\Users\A\.rustup
+</span><span>
+</span><span style="color:#ffb964;">installed</span><span> toolchains
+</span><span style="color:#ffb964;">--------------------
+</span><span style="color:#ffb964;">stable-x86_64-pc-windows-msvc</span><span> (active, default)
+</span><span style="color:#ffb964;">1.74.0-x86_64-pc-windows-msvc
+</span><span>
+</span><span style="color:#ffb964;">active</span><span> toolchain
+</span><span style="color:#ffb964;">----------------
+</span><span style="color:#ffb964;">name:</span><span> stable-x86_64-pc-windows-msvc
+</span><span style="color:#ffb964;">active</span><span> because: it</span><span style="color:#556633;">&#39;</span><span style="color:#99ad6a;">s the default toolchain
+</span><span style="color:#99ad6a;">installed targets:
+</span><span style="color:#99ad6a;">thumbv6m-none-eabi
+</span><span style="color:#99ad6a;">wasm32-unknown-unknown
+</span><span style="color:#99ad6a;">x86_64-pc-windows-msvc
+</span></code></pre>
+<ul>
+<li>To find where the toolchain</li>
+</ul>
+<pre data-lang="bash" style="background-color:#151515;color:#e8e8d3;" class="language-bash "><code class="language-bash" data-lang="bash"><span>&gt; rustup </span><span style="color:#ffb964;">which</span><span> rustc
+</span><span style="color:#ffb964;">C:\Users\A\.rustup\toolchains\stable-x86_64-pc-windows-msvc\bin\rustc.exe
+</span></code></pre>
+<h3 id="channels">Channels</h3>
+<ul>
+<li>
+<p>Rust is developed in 3 parallel branches</p>
+<ul>
+<li><strong>stable</strong> — the most reliable, updated every <code>6 weeks</code></li>
+<li><strong>beta</strong> — a “preview” of the next stable, updated every 6 weeks</li>
+<li><strong>nightly</strong> — daily builds, including the latest (but unstable) features</li>
+<li><strong>custom</strong> — custom versions of Rust</li>
+</ul>
+</li>
+<li>
+<p>To install any of the channels</p>
+</li>
+</ul>
+<pre data-lang="bash" style="background-color:#151515;color:#e8e8d3;" class="language-bash "><code class="language-bash" data-lang="bash"><span>    </span><span style="color:#ffb964;">rustup</span><span> toolchain install stable
+</span><span>    </span><span style="color:#ffb964;">rustup</span><span> toolchain install beta
+</span><span>    </span><span style="color:#ffb964;">rustup</span><span> toolchain install nightly
+</span></code></pre>
+<pre style="background-color:#151515;color:#e8e8d3;"><code><span> File  .text Size  Crate      Function
+</span><span> 50.2%  45.3KB std::io::_print
+</span><span> 12.3%  11.2KB core::fmt::Formatter::write_str
+</span><span> ...
+</span></code></pre>
+<ul>
+<li>To update the corresponding toolchains</li>
+</ul>
+<pre data-lang="bash" style="background-color:#151515;color:#e8e8d3;" class="language-bash "><code class="language-bash" data-lang="bash"><span>    </span><span style="color:#ffb964;">rustup</span><span> update stable
+</span><span>    </span><span style="color:#ffb964;">rustup</span><span> update beta
+</span><span>    </span><span style="color:#ffb964;">rustup</span><span> update nightly
+</span></code></pre>
+<ul>
+<li>To install the exact version</li>
+</ul>
+<pre data-lang="bash" style="background-color:#151515;color:#e8e8d3;" class="language-bash "><code class="language-bash" data-lang="bash"><span>    </span><span style="color:#ffb964;">rustup</span><span> install 1.74.0-x86_64-pc-windows-msvc 
+</span></code></pre>
+<h3 id="override-profiling">Override &amp; Profiling</h3>
+<ul>
+<li>To switch the toolchain in the whole system</li>
+</ul>
+<pre data-lang="bash" style="background-color:#151515;color:#e8e8d3;" class="language-bash "><code class="language-bash" data-lang="bash"><span>    </span><span style="color:#ffb964;">rustup</span><span> default nightly
+</span></code></pre>
+<ul>
+<li>To switch the toolchain for a specific project</li>
+</ul>
+<pre data-lang="bash" style="background-color:#151515;color:#e8e8d3;" class="language-bash "><code class="language-bash" data-lang="bash"><span>    cd project-dir
+</span><span>    </span><span style="color:#ffb964;">rustup</span><span> override set beta
+</span></code></pre>
+<ul>
+<li>
+<p><strong>Custom profiles</strong><br />
+In <code>~/.cargo/config.toml</code> you can set profiles:</p>
+<pre data-lang="toml" style="background-color:#151515;color:#e8e8d3;" class="language-toml "><code class="language-toml" data-lang="toml"><span>[</span><span style="color:#ffb964;">profile</span><span>.</span><span style="color:#ffb964;">dev</span><span>]
+</span><span style="color:#ffb964;">debug </span><span>= true
+</span><span style="color:#ffb964;">incremental </span><span>= true
+</span><span>
+</span><span>[</span><span style="color:#ffb964;">profile</span><span>.</span><span style="color:#ffb964;">release</span><span>]
+</span><span style="color:#ffb964;">opt-level </span><span>= </span><span style="color:#cf6a4c;">3
+</span><span style="color:#ffb964;">debug </span><span>= false
+</span><span style="color:#ffb964;">lto </span><span>= </span><span style="color:#556633;">&quot;</span><span style="color:#99ad6a;">fat</span><span style="color:#556633;">&quot;
+</span><span style="color:#ffb964;">panic </span><span>= </span><span style="color:#556633;">&quot;</span><span style="color:#99ad6a;">abort</span><span style="color:#556633;">&quot;
+</span></code></pre>
+</li>
+</ul>
+<h3 id="components">Components</h3>
+<ul>
+<li>Each installed toolchain can be supplemented with the necessary components</li>
+</ul>
+<pre data-lang="bash" style="background-color:#151515;color:#e8e8d3;" class="language-bash "><code class="language-bash" data-lang="bash"><span>    </span><span style="color:#ffb964;">rustup</span><span> component add clippy fmt rust-src rust-analyzer
+</span><span>    </span><span style="color:#ffb964;">rustup</span><span> component add llvm-tools-preview
+</span><span>    </span><span style="color:#ffb964;">rustup</span><span> component add miri
+</span></code></pre>
+<ul>
+<li>To install a component in another toolchain, even if it is not active</li>
+</ul>
+<pre data-lang="bash" style="background-color:#151515;color:#e8e8d3;" class="language-bash "><code class="language-bash" data-lang="bash"><span>    </span><span style="color:#ffb964;">rustup</span><span> +nightly component add rustfmt 
+</span></code></pre>
+<ul>
+<li>Check all installed components on the active toolchain</li>
+</ul>
+<pre data-lang="bash" style="background-color:#151515;color:#e8e8d3;" class="language-bash "><code class="language-bash" data-lang="bash"><span>    </span><span style="color:#ffb964;">rustup</span><span> component list 
+</span></code></pre>
+<ul>
+<li>Remove component from active toolchain</li>
+</ul>
+<pre data-lang="bash" style="background-color:#151515;color:#e8e8d3;" class="language-bash "><code class="language-bash" data-lang="bash"><span>   </span><span style="color:#ffb964;">rustup</span><span> component remove clippy
+</span></code></pre>
+<h3 id="best-practice">Best Practice</h3>
+<ul>
+<li>To ensure that the program runs identically on different machines for all participants who have cloned the repository, you can add a file to the project that will be processed by the <code>cargo build</code> command.
+<code>rust-toolchain.toml</code></li>
+</ul>
+<pre data-lang="toml" style="background-color:#151515;color:#e8e8d3;" class="language-toml "><code class="language-toml" data-lang="toml"><span>[</span><span style="color:#ffb964;">toolchain</span><span>]
+</span><span style="color:#ffb964;">channel </span><span>= </span><span style="color:#556633;">&quot;</span><span style="color:#99ad6a;">1.70.0</span><span style="color:#556633;">&quot;          </span><span style="color:#888888;"># 1.70.0 v on stable channel
+</span><span style="color:#ffb964;">components </span><span>= [</span><span style="color:#556633;">&quot;</span><span style="color:#99ad6a;">rust-src</span><span style="color:#556633;">&quot;</span><span>, </span><span style="color:#556633;">&quot;</span><span style="color:#99ad6a;">clippy</span><span style="color:#556633;">&quot;</span><span>, </span><span style="color:#556633;">&quot;</span><span style="color:#99ad6a;">rustfmt</span><span style="color:#556633;">&quot;</span><span>]
+</span><span style="color:#ffb964;">targets </span><span>= [</span><span style="color:#556633;">&quot;</span><span style="color:#99ad6a;">thumbv6m-none-eabi</span><span style="color:#556633;">&quot;</span><span>]
+</span><span>
+</span><span>[</span><span style="color:#ffb964;">profile</span><span>.</span><span style="color:#ffb964;">release</span><span>]
+</span><span style="color:#ffb964;">opt-level </span><span>= </span><span style="color:#556633;">&quot;</span><span style="color:#99ad6a;">z</span><span style="color:#556633;">&quot;             </span><span style="color:#888888;"># size optimization
+</span><span style="color:#ffb964;">lto </span><span>= true                  </span><span style="color:#888888;"># link-time optimization
+</span></code></pre>
+<p>This will automatically install the required toolchain, components and targets.</p>
+<h3 id="afterwords">afterwords</h3>
+<p>Using <code>rustup</code> you can install Rust anywhere and configure it in the most appropriate way.</p>
+
+        </div>
+
+        
+            <div class="pagination">
+                <div class="pagination__title">
+                    <span class="pagination__title-h">Thanks for reading! Read other posts?</span>
+                    <hr />
+                </div>
+                <div class="pagination__buttons">
+                        <span class="button previous">
+                            <a href="https://maltsev-dev.github.io/gamedev-projects/">
+                                <span class="button__icon">←</span>&nbsp;
+                                <span class="button__text">Unreal Engine</span>
+                            </a>
+                        </span>
+                    
+                    </div>
+            </div>
+        
+    </div>
+
+    </div>
+
+    
+    <footer class="footer">
+        <div class="footer__inner">
+                <div class="copyright copyright--user">© 2019-2025 | maltsev-dev</div>
+            </div>
+    </footer>
+    
+
+</div>
+</body>
+
+</html>

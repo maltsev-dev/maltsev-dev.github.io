@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <url>
+        <loc>https://maltsev-dev.github.io/</loc>
+    </url>
+    <url>
+        <loc>https://maltsev-dev.github.io/about/</loc>
+    </url>
+    <url>
+        <loc>https://maltsev-dev.github.io/archive/</loc>
+    </url>
+    <url>
+        <loc>https://maltsev-dev.github.io/gamedev-projects/</loc>
+        <lastmod>2024-09-15</lastmod>
+    </url>
+    <url>
+        <loc>https://maltsev-dev.github.io/page/1/</loc>
+    </url>
+    <url>
+        <loc>https://maltsev-dev.github.io/rust-toolchain/</loc>
+        <lastmod>2025-01-15</lastmod>
+    </url>
+    <url>
+        <loc>https://maltsev-dev.github.io/tags/</loc>
+    </url>
+    <url>
+        <loc>https://maltsev-dev.github.io/tags/cpp/</loc>
+    </url>
+    <url>
+        <loc>https://maltsev-dev.github.io/tags/gamedev/</loc>
+    </url>
+    <url>
+        <loc>https://maltsev-dev.github.io/tags/rust-mastering/</loc>
+    </url>
+</urlset>
