@@ -1,5 +1,5 @@
 # Be sure to change these!
-base_url = "https://maltsev-dev.github.io/"
+base_url = "https://maltsev-dev.github.io"
 title = "dev_stories"
 theme = "terminimal"
 
@@ -33,7 +33,7 @@ logo_text = "busy hands - happy heart"
 #logo_home_link = "/take/me/away!"
 
 author = "maltsev-dev"
-copyright_html = "maltsev-dev | 2019"
+copyright_html = "© 2019-2025 | maltsev-dev"
 
 menu_items = [
     { name = "blog", url = "$BASE_URL" },
