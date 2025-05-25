@@ -3,7 +3,7 @@ title = "Unreal Engine"
 date = "2024-09-15"
 
 [taxonomies]
-tags = ["cpp", "gamedev"]
+tags = ["cpp", "gamedev", "project"]
 +++
 
 I want to leave here some results of my interest in C++ programming within the Unreal Engine 5 game engine.

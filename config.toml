@@ -1,9 +1,6 @@
-# Be sure to change these!
 base_url = "https://maltsev-dev.github.io"
 title = "dev_stories"
 theme = "terminimal"
-
-# Sass compilation is required
 compile_sass = true
 
 # Optional: enable tags
