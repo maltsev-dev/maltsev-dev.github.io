@@ -4,8 +4,8 @@ path = "about"
 +++
 
 ## Welcome
-- Here my articles by topics. See [tags (https://maltsev-dev.github.io/tags/)].
-- Analysis of my projects and experiments. See [projects (https://maltsev-dev.github.io/tags/project/)]
+- Here my articles by topics. See [tags](https://maltsev-dev.github.io/tags/).
+- Analysis of my projects and experiments. See [projects](https://maltsev-dev.github.io/tags/project/)
 - Self-reflection on my engineering journey. 
 
 ## Who am I
