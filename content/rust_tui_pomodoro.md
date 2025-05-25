@@ -1,6 +1,6 @@
 +++
 title = "TUI Pomodoro App"
-date = "2025-01-26"
+date = "2024-10-07"
 
 [taxonomies]
 tags = ["rust", "tui", "project"]

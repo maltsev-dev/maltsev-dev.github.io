@@ -1,6 +1,6 @@
 +++
 title = "TUI Inventory App"
-date = "2025-01-26"
+date = "2024-10-11"
 
 [taxonomies]
 tags = ["rust", "tui", "project"]

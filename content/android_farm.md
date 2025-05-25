@@ -1,6 +1,6 @@
 +++
 title = "Android Emulator Launcher"
-date = "2025-01-26"
+date = "2023-07-05"
 
 [taxonomies]
 tags = ["java", "android"]
