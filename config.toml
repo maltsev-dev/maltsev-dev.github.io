@@ -24,7 +24,7 @@ accent_color = "orange"
 # Defaults to accent color (or, if not accent color specified, to blue).
 background_color = "auto"
 
-logo_text = "busy hands - happy heart"
+logo_text = "busy hands == happy heart"
 
 # The logo link - defaults to base_url.
 #logo_home_link = "/take/me/away!"
@@ -36,13 +36,15 @@ menu_items = [
     { name = "blog", url = "$BASE_URL" },
     { name = "tags", url = "$BASE_URL/tags" },
     { name = "archive", url = "$BASE_URL/archive" },
+    { name = "rust", url = "$BASE_URL/tags/rust/" },
+    { name = "embedded", url = "$BASE_URL/tags/embedded/" },
     { name = "about", url = "$BASE_URL/about" },
-    { name = "github", url = "https://github.com/maltsev-dev", newtab = true},
-    { name = "linkedin", url = "https://www.linkedin.com/in/a-maltsev/", newtab = true},
+    { name = "🍊github", url = "https://github.com/maltsev-dev", newtab = true},
+    { name = "🥕linkedin", url = "https://www.linkedin.com/in/a-maltsev/", newtab = true},
 ]
 
 enable_post_view_navigation = true
-post_view_navigation_prompt = "Thanks for reading! Read other posts?"
+post_view_navigation_prompt = "Read other posts?"
 
 # Use full Hack character set, not just a subset.
 # Switch this to true if you need full unicode support.
