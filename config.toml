@@ -22,7 +22,7 @@ accent_color = "orange"
 # Enabling dark background will also modify primary font color
 # to be darker.
 # Defaults to accent color (or, if not accent color specified, to blue).
-background_color = "auto"
+# background_color = "auto"
 
 logo_text = "busy hands == happy heart"
 
@@ -39,8 +39,8 @@ menu_items = [
     { name = "rust", url = "$BASE_URL/tags/rust/" },
     { name = "embedded", url = "$BASE_URL/tags/embedded/" },
     { name = "about", url = "$BASE_URL/about" },
-    { name = "🍊github", url = "https://github.com/maltsev-dev", newtab = true},
-    { name = "🥕linkedin", url = "https://www.linkedin.com/in/a-maltsev/", newtab = true},
+    { name = "Github", url = "https://github.com/maltsev-dev", newtab = true},
+    { name = "Linkedin", url = "https://www.linkedin.com/in/a-maltsev/", newtab = true},
 ]
 
 enable_post_view_navigation = true
@@ -51,10 +51,6 @@ post_view_navigation_prompt = "Read other posts?"
 # Defaults to false.
 use_full_hack_font = true
 
-# Optional: Global favicon URL and mimetype.
-#           Mimetype defaults to "image/x-icon".
-#           The URL should point at a file located
-#           in your site's "static" directory.
 favicon = "/favicon.png"
 favicon_mimetype = "image/png"
 
