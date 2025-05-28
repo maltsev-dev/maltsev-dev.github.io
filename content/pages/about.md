@@ -4,14 +4,14 @@ path = "about"
 +++
 
 ## Welcome
-- Here my articles by topics. See [tags](https://maltsev-dev.github.io/tags/).
-- Analysis of my projects and experiments. See [projects](https://maltsev-dev.github.io/tags/project/)
+- All sorts of technical writing. See [tags](https://maltsev-dev.github.io/tags/).
+- Disassembling my projects and experiments. See [projects](https://maltsev-dev.github.io/tags/project/)
 - Self-reflection on my engineering journey. 
 
 ## Who am I
-🟠 Lifelong learner, research-oriented engineer  
+🟠 Advocate of the Sustainable Programming Philosophy
+🟠 Lifelong learner, research-oriented engineer 
 🟠 Creative technologist  
-🟠 Commitment to a sustainable programming philosophy
 
 ---
 #### 🌐 Find me there
