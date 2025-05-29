@@ -72,6 +72,16 @@ At the end of the scope, when the stack frame of the function is unwound, the de
 Also, you may to call drop explicitly `drop(s1);` - the variable s1 will become uninitialized, the memory associated with its value will be cleared.
 
 ## Ownership transfer
+### For Copy types
+* Move == Copy
+* Objects that do not own resources after move **remain accessible** after move
+* All Primitive
+* If a composite type consists of Copy types - it itself becomes Copy
+
+### For non-Copy types
+* When move is performed, the internal structure (ptr, len, cap) of the Stack is transferred to the new owner. The data pointed to by ptr on the Heap is not moved.
+* The old owner is no longer accessible.
+
 The string "hello" is in the heap.
 
 {{ img(src = "/images/rust_mastering/rust_ownership.png") }}
