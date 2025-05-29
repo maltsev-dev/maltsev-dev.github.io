@@ -9,8 +9,8 @@ path = "about"
 - Self-reflection on my engineering journey. 
 
 ## Who am I
-🟠 Advocate of the Sustainable Programming Philosophy
-🟠 Lifelong learner, research-oriented engineer 
+🟠 Advocate of the Sustainable Programming Philosophy  
+🟠 Lifelong learner, research-oriented engineer  
 🟠 Creative technologist  
 
 ---

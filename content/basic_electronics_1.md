@@ -3,11 +3,11 @@ title = "The beauty of Semiconductors"
 date = "2025-05-28"
 
 [taxonomies]
-tags = ["electronics", "semiconductor"]
+tags = ["basic_electronics"]
 +++
 
 To understand how diodes, transistors, or any integrated circuit work, you must first study the semiconductor – a material that is neither a conductor nor an insulator.  
-Part 1/7
+📚 Part 1/7
 <!-- more -->
 ---
 
