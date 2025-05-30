@@ -1,22 +1,28 @@
-{% set image_thumb = resize_image(path=src, width=360, height=360, op="fit", format="webp") %}
+{{ $src := .Get "src" }}
+{{ $img := .Page.Resources.GetMatch $src }}
+{{ $alt := .Get "alt" }}
+{{ $width := .Get "width" }}
+{{ $height := .Get "height" }}
 
-{% if src is ending_with(".jpg") or src is ending_with(".jpeg") or src is ending_with(".gif") %}
-{% set image_full = resize_image(path=src, width=1920, height=1920, op="fit") %}
-{% else %}
-{% set image_full = resize_image(path=src, width=1920, height=1920, op="fit", format="webp") %}
-{% endif %}
-
-{% if src %}
-<figure class="{% if position %}{{ position }}{% else -%} center {%- endif %}">
-    <a href="{{ image_full.url  | safe }}">
-        <img src="{{ image_thumb.url | safe }}" {% if alt %} alt="{{ alt }}" {% endif %} {% if style %}
-            style="{{ style }}" {% endif %} />
-    </a>
-    {% if caption %}
-    <figcaption class="{% if caption_position %}{{ caption_position }}{% else -%} center {%- endif %}" {% if
-        caption_style %} style="{ caption_style | safe }}}" {% endif %}> {{
-        caption }}
-    </figcaption>
-    {% endif %}
-</figure>
-{% endif %}
+{{ if $img }}
+  {{ if eq $img.MediaType.SubType "gif" }}
+<!--     {{/* Для GIF используем оригинальный файл без обработки */}} -->
+    <img src="{{ $img.RelPermalink }}" 
+         alt="{{ $alt }}" 
+         {{ with $width }}width="{{ . }}"{{ end }} 
+         {{ with $height }}height="{{ . }}"{{ end }} />
+  {{ else }}
+<!--     {{/* Для остальных изображений делаем ресайз */}} -->
+    {{ $resized := $img.Resize "1000x" }}
+    <img src="{{ $resized.RelPermalink }}" 
+         alt="{{ $alt }}" 
+         {{ with $width }}width="{{ . }}"{{ end }} 
+         {{ with $height }}height="{{ . }}"{{ end }} />
+  {{ end }}
+{{ else }}
+<!--   {{/* Если изображение не найдено в ресурсах */}} -->
+  <img src="{{ $src }}" 
+       alt="{{ $alt }}" 
+       {{ with $width }}width="{{ . }}"{{ end }} 
+       {{ with $height }}height="{{ . }}"{{ end }} />
+{{ end }}
