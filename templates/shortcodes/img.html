@@ -1,5 +1,10 @@
 {% set is_gif = src is ending_with(".gif") %}
 
+{#
+  Обработка миниатюр:
+  Если это GIF, используем оригинальный путь к файлу.
+  Для других изображений, изменяем размер и конвертируем в WebP.
+#}
 {% if is_gif %}
     {% set image_thumb_url = src %}
 {% else %}
@@ -7,6 +12,12 @@
     {% set image_thumb_url = image_thumb.url %}
 {% endif %}
 
+{#
+  Обработка полных изображений:
+  Если это GIF, используем оригинальный путь к файлу.
+  Если это JPG/JPEG, изменяем размер, но сохраняем оригинальный формат.
+  Для всех остальных (например, PNG), изменяем размер и конвертируем в WebP.
+#}
 {% if is_gif %}
     {% set image_full_url = src %}
 {% elif src is ending_with(".jpg") or src is ending_with(".jpeg") %}
@@ -26,8 +37,9 @@
     </a>
     {% if caption %}
     <figcaption class="{% if caption_position %}{{ caption_position }}{% else -%} center {%- endif %}" {% if
-        caption_style %} style="{{ caption_style | safe }}" {% endif %}> {{
-        caption }}
+        caption_style %} style="{{ caption_style | safe }}" {% endif %}
+>
+        {{ caption }}
     </figcaption>
     {% endif %}
 </figure>
