@@ -13,14 +13,14 @@
 {% endif %}
 
 {% if src %}
-<figure class="{{ position if position else 'center' }}">
+<figure class="{{ position or "center" }}">
     <a href="{{ image_full.url | safe }}">
         <img src="{{ image_thumb.url | safe }}"
              {% if alt %} alt="{{ alt }}" {% endif %}
              {% if style %} style="{{ style }}" {% endif %} />
     </a>
     {% if caption %}
-    <figcaption class="{{ caption_position if caption_position else 'center' }}"
+    <figcaption class="{{ caption_position or "center" }}"
                 {% if caption_style %} style="{{ caption_style | safe }}" {% endif %}>
         {{ caption }}
     </figcaption>
