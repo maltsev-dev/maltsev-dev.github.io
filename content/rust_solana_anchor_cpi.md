@@ -9,22 +9,19 @@ tags = ["rust", "solana", "anchor", "project"]
 Cross Program Invocations (CPIs) allow one program to invoke instructions on another program.  
 <!-- more -->
 ---
+[📚 Anchor CPI Example](https://github.com/maltsev-dev/anchor_cpi)
 
 The process of implementing a CPI is the same as that of creating a instruction where you must specify:
-
-1. The program ID of the program being called
-2. The accounts required by the instruction
-3. Any instruction data required as arguments
+    1. The program ID of the program being called
+    2. The accounts required by the instruction
+    3. Any instruction data required as arguments
 
 This pattern ensures the CPI has all the information needed to invoke the target program's instruction.
 
 The System Program's transfer instruction requires two accounts:
 
-- `from`: The account sending SOL.
-- `to`: The account receiving SOL.
-
-
-[📚 Anchor CPI Example](https://github.com/maltsev-dev/anchor_cpi)
+    `from`: The account sending SOL.
+    `to`: The account receiving SOL.
 
 ### Anchor CPI
 _invoke_signed()_
@@ -32,15 +29,10 @@ _invoke_signed()_
 #### Setup
 ```bash
 1. anchor init program-a  cd program-b
-
 2. anchor new program-b
-
-3. Cargo.toml (program-a) add dependencies to program-b
--> program-b = {path = "../program-b", features= ["cpi"]}
-
+3. Cargo.toml (program-a) add dependencies to program-b -> program-b = {path = "../program-b", features= ["cpi"]}
 4. Anchor.toml - set resolution to false
 ```
-
 #### Run tests
 ```bash
 anchor build && anchor test
@@ -53,10 +45,9 @@ solana-test-validator
 ```
 
 #### Explorer
-open explorer.solana  
-switch to localhost  
-find test output transaction signature
-
+1. open explorer.solana  
+2. switch to localhost  
+3. find test output transaction signature
 
 #### Expected Output
 ```bash

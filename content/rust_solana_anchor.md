@@ -1,5 +1,5 @@
 +++
-title = "Guess the number on Solana chain"
+title = "Game on Solana"
 date = "2025-03-07"
 
 [taxonomies]
@@ -12,6 +12,11 @@ Developed with Anchor.
 ---
 
 [📚 Guess the number](https://github.com/maltsev-dev/guess_the_number_on_solana)
+
+#### Project 
+A simple chain game.  
+The program generates a number.  
+The user tries to guess by sending a transaction and getting an answer.
 
 ### How to start
 1. Start local validator  

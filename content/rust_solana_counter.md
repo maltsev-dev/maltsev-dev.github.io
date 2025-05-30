@@ -11,7 +11,11 @@ Developed with native Rust.
 <!-- more -->
 ---
 
-[📚 Guess the number](https://github.com/maltsev-dev/counter_on_native_solana)
+[📚 Counter Program](https://github.com/maltsev-dev/counter_on_native_solana)
+
+#### Project 
+Counter Program.  
+Send a transaction by incrementing or decrementing an integer in the program.
 
 ### How to start
 1. Start local validator  

@@ -1,21 +1,28 @@
-{% set image_thumb = resize_image(path=src, width=360, height=360, op="fit", format="webp") %}
+{% set is_jpeg = src is ending_with(".jpg") or src is ending_with(".jpeg") %}
+{% set is_gif = src is ending_with(".gif") %}
 
-{% if src is ending_with(".jpg") or src is ending_with(".jpeg") %}
-{% set image_full = resize_image(path=src, width=1920, height=1920, op="fit") %}
+{% if is_gif %}
+    {% set image_thumb = resize_image(path=src, width=360, height=360, op="fit") %}
+    {% set image_full = resize_image(path=src, width=1920, height=1920, op="fit") %}
+{% elif is_jpeg %}
+    {% set image_thumb = resize_image(path=src, width=360, height=360, op="fit", format="webp") %}
+    {% set image_full = resize_image(path=src, width=1920, height=1920, op="fit") %}
 {% else %}
-{% set image_full = resize_image(path=src, width=1920, height=1920, op="fit", format="webp") %}
+    {% set image_thumb = resize_image(path=src, width=360, height=360, op="fit", format="webp") %}
+    {% set image_full = resize_image(path=src, width=1920, height=1920, op="fit", format="webp") %}
 {% endif %}
 
 {% if src %}
-<figure class="{% if position %}{{ position }}{% else -%} center {%- endif %}">
-    <a href="{{ image_full.url  | safe }}">
-        <img src="{{ image_thumb.url | safe }}" {% if alt %} alt="{{ alt }}" {% endif %} {% if style %}
-            style="{{ style }}" {% endif %} />
+<figure class="{{ position if position else 'center' }}">
+    <a href="{{ image_full.url | safe }}">
+        <img src="{{ image_thumb.url | safe }}"
+             {% if alt %} alt="{{ alt }}" {% endif %}
+             {% if style %} style="{{ style }}" {% endif %} />
     </a>
     {% if caption %}
-    <figcaption class="{% if caption_position %}{{ caption_position }}{% else -%} center {%- endif %}" {% if
-        caption_style %} style="{ caption_style | safe }}}" {% endif %}> {{
-        caption }}
+    <figcaption class="{{ caption_position if caption_position else 'center' }}"
+                {% if caption_style %} style="{{ caption_style | safe }}" {% endif %}>
+        {{ caption }}
     </figcaption>
     {% endif %}
 </figure>

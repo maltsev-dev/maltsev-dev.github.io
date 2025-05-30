@@ -15,12 +15,12 @@ The result of an experiment with a [Cursive](https://crates.io/crates/cursive) t
 
 [📚 Pomodoro Timer](https://github.com/maltsev-dev/tui_pomodoro)
 
-![Rust Version](https://img.shields.io/badge/rust-1.82.0%20-green)
-![cursive Version](https://img.shields.io/badge/cursive-0.21.1%20-orange)
-![Build Status](https://github.com/maltsev-dev/tui_pomodoro/actions/workflows/rust.yml/badge.svg)
-
-{{ img(src = "/media/tui_pomodoro_app.gif") }}
+![Rust Version](https://img.shields.io/badge/rust-1.82.0%20-green)  
+![cursive Version](https://img.shields.io/badge/cursive-0.21.1%20-orange)  
+![Build Status](https://github.com/maltsev-dev/tui_pomodoro/actions/workflows/rust.yml/badge.svg)  
 
 ### Features
  1. Set Timer
  2. Start/Stop
+
+{{ img(src = "/media/tui_pomodoro_app.gif") }}

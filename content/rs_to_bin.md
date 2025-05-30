@@ -1,9 +1,9 @@
 +++
-title = "The Journey from Rust Source to Executable"
+title = "From Rust Source to Executable"
 date = "2025-05-27"
 
 [taxonomies]
-tags = ["rust", "compilers", "AOT"]
+tags = ["rust", "compilers", "aot"]
 +++
 
 The `rustc` compiler manages a complex, multi-stage process that transforms human-readable Rust source code into highly optimized, machine-executable binaries.  

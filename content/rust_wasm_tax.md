@@ -10,12 +10,13 @@ The result of an experiment with a [wasm-bindgen](https://crates.io/crates/wasm-
 ![wasm-bindgen Version](https://img.shields.io/badge/wasm_bingen-0.2.95%20-orange)
 <!-- more -->
 ---
+### Wasm-based app. Tax Calculator
 
 [📚 Tax WebAssembly](https://github.com/maltsev-dev/tax_app_webassembly)
 
-![Rust Version](https://img.shields.io/badge/rust-1.82.0%20-green)
-![serde Version](https://img.shields.io/badge/wasm_test-0.3%20-orange)
-![Build Status](https://github.com/chemyl/tax_app_webassembly/actions/workflows/rust.yml/badge.svg)
+![Rust Version](https://img.shields.io/badge/rust-1.82.0%20-green)  
+![serde Version](https://img.shields.io/badge/wasm_test-0.3%20-orange)  
+![Build Status](https://github.com/chemyl/tax_app_webassembly/actions/workflows/rust.yml/badge.svg)  
 
 - create library crate -> `cargo new project --lib`
 - add library annotation for compiler ->` [lib] crate-type = ["cdylib"]`
