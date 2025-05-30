@@ -55,7 +55,6 @@ x86_64-pc-windows-msvc
 C:\Users\A\.rustup\toolchains\stable-x86_64-pc-windows-msvc\bin\rustc.exe
 ```
 
-
 ### 2. Channels
 - Rust is developed in 3 parallel branches
   - **stable** — the most reliable, updated every `6 weeks`

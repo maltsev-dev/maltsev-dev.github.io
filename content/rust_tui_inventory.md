@@ -6,7 +6,7 @@ date = "2024-10-11"
 tags = ["rust", "tui", "project"]
 +++
 
-The result of an experiment with a [Cursive](https://crates.io/crates/cursive) to create a text user interface(TUI) program in the style of old terminal programs.  
+The result of an experiment with a [Cursive](https://crates.io/crates/cursive) to create a Text User Interface(TUI) program in the style of old terminal programs.  
 ![cursive Version](https://img.shields.io/badge/cursive-0.21.1%20-orange)
 <!-- more -->
 ---
