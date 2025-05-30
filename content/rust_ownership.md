@@ -16,7 +16,7 @@ A Series of Rust concepts every developer should master 🥋
 ## Memory management landscape
 Each value that the program works with must be written somewhere and stored at this address until it is needed.  
 When creating a **variable** (a, name, index), we initialize it with some **value** (12,4, "mike", 18) of a certain **type** (f32, &str, HashSet<>).
-`let a = 12.4f32`/  
+`let a = 12.4f32`  
 According to the variable type, Rust allocates it to the corresponding memory fragment (Stack, Heap, data).  
 
 To ensure that the size of the memory occupied by the running program does not get out of control, and your target platform does not turn off the program at the most inopportune moment, it is necessary to strive for the most deterministic use of memory and its correct allocation and deallocation.

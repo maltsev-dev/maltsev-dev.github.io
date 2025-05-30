@@ -11,7 +11,6 @@ A Series of Rust concepts every developer should master 🥋
 <!-- more -->
 ---
 
-
 ### Ownership - Rules - Borrow Immutable
 1. There is no limit on the number of borrowers. 
 2. Immutable borrowers prevents any mutable borrows.

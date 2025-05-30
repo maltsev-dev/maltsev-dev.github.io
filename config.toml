@@ -36,7 +36,6 @@ menu_items = [
     { name = "blog", url = "$BASE_URL" },
     { name = "tags", url = "$BASE_URL/tags" },
     { name = "archive", url = "$BASE_URL/archive" },
-    { name = "rust", url = "$BASE_URL/tags/rust/" },
     { name = "embedded", url = "$BASE_URL/tags/embedded/" },
     { name = "about", url = "$BASE_URL/about" },
     { name = "Github", url = "https://github.com/maltsev-dev", newtab = true},
