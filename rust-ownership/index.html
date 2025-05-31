@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Rust Ownership Model | dev_stories</title>
+    
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+    <meta name="robots" content="noodp"/>
+
+    <link rel="stylesheet" href="https://maltsev-dev.github.io/style.css">
+    <link rel="stylesheet" href="https://maltsev-dev.github.io/color/orange.css">
+
+        <link rel="stylesheet" href="https://maltsev-dev.github.io/color/background_blue.css">
+    
+    <link rel="stylesheet" href="https://maltsev-dev.github.io/font-hack.css">
+
+    <meta name="description" content="">
+
+    <meta property="og:description" content="">
+    <meta property="og:title" content="Rust Ownership Model | dev_stories">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://maltsev-dev.github.io/rust-ownership/">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:description" content="">
+    <meta name="twitter:title" content="Rust Ownership Model | dev_stories">
+    <meta property="twitter:domain" content="maltsev-dev.github.io">
+    <meta property="twitter:url" content="https://maltsev-dev.github.io/rust-ownership/">
+
+        <link rel="shortcut icon" type="image/png" href="/favicon.png">
+    
+<meta property="og:site_name" content="dev_stories"><meta property="og:type" content="article">
+<meta property="og:title" content="Rust Ownership Model"><meta property="og:url" content="https://maltsev-dev.github.io/rust-ownership/"><meta property="og:image" content="https://github.com/maltsev-dev/favicon.png">
+</head>
+
+<body class="">
+<div class="container">
+    
+    <header class="header">
+        <div class="header__inner">
+            <div class="header__logo">
+                    
+                <a href="https://maltsev-dev.github.io" style="text-decoration: none;">
+                    <div class="logo">
+                      
+                            busy hands == happy heart
+                        
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        
+        
+                <nav class="menu">
+            <ul class="menu__inner">
+                <li class="active"><a href="https://maltsev-dev.github.io">blog</a></li>
+            
+                <li><a href="https://maltsev-dev.github.io/tags">tags</a></li>
+            
+                <li><a href="https://maltsev-dev.github.io/archive">archive</a></li>
+            
+                <li><a href="https://maltsev-dev.github.io/tags/embedded/">embedded</a></li>
+            
+                <li><a href="https://maltsev-dev.github.io/about">about</a></li>
+            
+                <li><a href="https://github.com/maltsev-dev" target="_blank" rel="noopener noreferrer">Github</a></li>
+            
+                <li><a href="https://www.linkedin.com/in/a-maltsev/" target="_blank" rel="noopener noreferrer">Linkedin</a></li>
+            </ul>
+        </nav>
+    
+    
+        
+    </header>
+    
+
+    <div class="content">
+        
+    <div class="post">
+        
+    <h1 class="post-title"><a href="https://maltsev-dev.github.io/rust-ownership/">Rust Ownership Model</a></h1>
+    <div class="post-meta-inline">
+        
+    <span class="post-date">
+            2025-05-29
+        </span>
+
+    </div>
+
+    
+        <span class="post-tags-inline">
+                :: tags:&nbsp;
+                <a class="post-tag" href="https://maltsev-dev.github.io/tags/rust-mastering/">#rust_mastering</a></span>
+    
+
+        <div class="post-content">
+            <p>A Series of Rust concepts every developer should master 🥋<br />
+📚 E02 - <code>Rust Ownership Model</code></p>
+<span id="continue-reading"></span>
+<hr />
+
+
+
+    
+    
+
+
+
+    
+    
+
+
+
+
+<figure class="center">
+    <a href="https://maltsev-dev.github.io/processed_images/sb_caveman_owner.79c5e07e32834407.webp">
+        <img src="https://maltsev-dev.github.io/processed_images/sb_caveman_owner.f7ef5eb6682e7f71.webp"   />
+    </a>
+    
+</figure>
+
+<h2 id="memory-management-landscape">Memory management landscape</h2>
+<p>Each value that the program works with must be written somewhere and stored at this address until it is needed.<br />
+When creating a <strong>variable</strong> (a, name, index), we initialize it with some <strong>value</strong> (12,4, "mike", 18) of a certain <strong>type</strong> (f32, &amp;str, HashSet&lt;&gt;).
+<code>let a = 12.4f32</code><br />
+According to the variable type, Rust allocates it to the corresponding memory fragment (Stack, Heap, data).</p>
+<p>To ensure that the size of the memory occupied by the running program does not get out of control, and your target platform does not turn off the program at the most inopportune moment, it is necessary to strive for the most deterministic use of memory and its correct allocation and deallocation.</p>
+<h3 id="garbage-collector">Garbage Collector</h3>
+<p>In languages ​​with GC, which include Java, C#, GO, and most scripting languages, the garbage collector attempts to free memory that was allocated by the program but is no longer used, this happens without the active participation of the developer and without building additional abstractions over the code that could track the counter of pointers to variables and signal the CG to remove it.<br />
+But, as we know, there is no such thing as a free lunch - using CG leads to unpredictable pauses in work, the <a href="https://stackoverflow.com/questions/16695874/why-does-the-jvm-full-gc-need-to-stop-the-world">Stop-the-world</a> problem, as well as frequent CPU overload.
+
+
+
+    
+    
+
+
+
+    
+    
+
+
+
+
+<figure class="center">
+    <a href="https://maltsev-dev.github.io/processed_images/gc_spikes.8a01e0dff97d8c4d.webp">
+        <img src="https://maltsev-dev.github.io/processed_images/gc_spikes.f58f29751ea90f9f.webp"   />
+    </a>
+    
+</figure>
+
+</p>
+<h3 id="manual-management">Manual Management</h3>
+<p>Maybe we should stop using GC, and what alternatives do we have?<br />
+Of course, the good old manual way of allocating and deleting variable values ​​from memory.<br />
+This old method appeared at the dawn of computer technology. Manual memory control is a great power, and great power is always a great responsibility.<br />
+As the project grows, the code base becomes more complex and making new changes requires more and more thorough regression testing.<br />
+IT corporations such as Microsoft Google Mazilla show in their reports that more than 70% of all application errors and security issues are primarily related to memory management issues.<br />
+The <strong>American Cybersecurity Agency</strong> calls for changes in the development cycles of their applications, a review of cybersecurity measures, and the creation of an open “memory safety roadmap”.<a href="https://www.cisa.gov/news-events/news/urgent-need-memory-safety-software-products">The Urgent Need for Memory Safety in Software Products</a></p>
+<p>Rust, as a logical step in the evolution of system programming languages, has incorporated the best practices and approaches that eliminate a whole cluster of typical memory errors at the compilation stage.
+* Null pointer dereferences
+* Buffer overflows
+* Race Condition
+* Dandling references
+* Use After Free
+* Double Free
+* Memory Leak etc.</p>
+<p>I nstead of relying on runtime garbage collection (with its associated performance overhead and non-determinism) or manual memory management (prone to human errors), Rust shifts the burden of memory correctness to compile-time static analysis.</p>
+<h2 id="ownership">Ownership</h2>
+<p>The concept is used to manage data in the <strong>Heap</strong>, provides memory safety guarantees, and, in a sense, defines the philosophy of the language.<br />
+The rustc AOT compiler checks certain ownership and borrowing rules at certain <a href="https://maltsev-dev.github.io/rs-to-bin/">stages of compilation</a> to provide guarantees of program execution safety.</p>
+<h3 id="ownership-rules">Ownership - Rules</h3>
+<ol>
+<li>Resources have one and only one owner.</li>
+<li>When the owner goes out of scope, the resource is freed.</li>
+<li>Ownership is movable (transferable).</li>
+</ol>
+<ul>
+<li>
+<p>Passing a variable to a function by value is a destructive move, now the function argument is the owner of the value and the fate of the value is determined within the scope of the function.</p>
+</li>
+<li>
+<p>If you need to create and allocate a new string in the heap, you need to explicitly clone <code>let s2 = s1.clone();</code></p>
+</li>
+</ul>
+<h3 id="scope">Scope</h3>
+<p>Each value has its own scope, within which the value can be used.<br />
+Cycles, conditions, function constructs, and anonymous code blocks form a separate scope.<br />
+Objects can be used in <strong>nested scopes</strong>, but not vice versa.<br />
+Global scope (outside the main function) - only <strong>constants</strong> can be defined in it.<br />
+At the end of the Scope, if ownership is not transferred - the variable value is deleted.</p>
+<h2 id="drop-the-value">Drop the value</h2>
+<p>When a variable that holds data on the heap goes out of scope, the value will be cleared.<br />
+At the end of the scope, when the stack frame of the function is unwound, the destructor <a href="https://doc.rust-lang.org/std/mem/fn.drop.html">drop()</a> is called for each value unless the ownership of the data has been moved to another variable.</p>
+<p>Also, you may to call drop explicitly <code>drop(s1);</code> - the variable s1 will become uninitialized, the memory associated with its value will be cleared.</p>
+<h2 id="ownership-transfer">Ownership transfer</h2>
+<h3 id="for-copy-types">For Copy types</h3>
+<ul>
+<li>Move == Copy</li>
+<li>Objects that do not own resources after move <strong>remain accessible</strong> after move</li>
+<li>All Primitive</li>
+<li>If a composite type consists of Copy types - it itself becomes Copy</li>
+</ul>
+<h3 id="for-non-copy-types">For non-Copy types</h3>
+<ul>
+<li>When move is performed, the internal structure (ptr, len, cap) of the Stack is transferred to the new owner. The data pointed to by ptr on the Heap is not moved.</li>
+<li>The old owner is no longer accessible.</li>
+</ul>
+<p>The string "hello" is in the heap.</p>
+
+
+
+    
+    
+
+
+
+    
+    
+
+
+
+
+<figure class="center">
+    <a href="https://maltsev-dev.github.io/processed_images/rust_ownership.99392bd922c04c8a.webp">
+        <img src="https://maltsev-dev.github.io/processed_images/rust_ownership.dd0357c89f06efff.webp"   />
+    </a>
+    
+</figure>
+
+<p>Variable <code>s1</code> owns the value.<br />
+When <code>s1</code> transfers ownership to <code>s2</code>, <code>s2</code> copies the information from <code>s1</code>, creating a new stack entry with the string pointer, length, and capacity information.<br />
+This operation is known as a "shallow copy", meaning that only the references are copied, not the data.<br />
+According to Rust's second ownership principle: a value can only have one owner at a time, at which point <code>s1</code> is invalidated and s2 now owns the string.</p>
+
+        </div>
+
+        
+            <div class="pagination">
+                <div class="pagination__title">
+                    <span class="pagination__title-h">Read other posts?</span>
+                    <hr />
+                </div>
+                <div class="pagination__buttons">
+                        <span class="button previous">
+                            <a href="https://maltsev-dev.github.io/basic-electronics-1/">
+                                <span class="button__icon">←</span>&nbsp;
+                                <span class="button__text">The beauty of Semiconductors</span>
+                            </a>
+                        </span>
+                    
+                    
+                        <span class="button next">
+                            <a href="https://maltsev-dev.github.io/rust-firmware-size/">
+                                <span class="button__text">Optimizing Rust Firmware Size</span>&nbsp;
+                                <span class="button__icon">→</span>
+                            </a>
+                        </span>
+                    </div>
+            </div>
+        
+    </div>
+
+    </div>
+
+    
+    <footer class="footer">
+        <div class="footer__inner">
+                <div class="copyright copyright--user"><div class="copyright">
+    <span>© 2025 A.Maltsev | Intellectual property</span>
+    <span class="copyright-theme-sep">| </span>
+    <span><img src="https://visitor-badge.laobi.icu/badge?page_id=maltsev-dev.github.io&right_color=orange" alt="Visitors"></span>
+</div>
+</div>
+            </div>
+    </footer>
+    
+
+</div>
+</body>
+
+</html>

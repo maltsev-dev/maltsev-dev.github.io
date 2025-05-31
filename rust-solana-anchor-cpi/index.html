@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Anchor CPI | dev_stories</title>
+    
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+    <meta name="robots" content="noodp"/>
+
+    <link rel="stylesheet" href="https://maltsev-dev.github.io/style.css">
+    <link rel="stylesheet" href="https://maltsev-dev.github.io/color/orange.css">
+
+        <link rel="stylesheet" href="https://maltsev-dev.github.io/color/background_blue.css">
+    
+    <link rel="stylesheet" href="https://maltsev-dev.github.io/font-hack.css">
+
+    <meta name="description" content="">
+
+    <meta property="og:description" content="">
+    <meta property="og:title" content="Anchor CPI | dev_stories">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://maltsev-dev.github.io/rust-solana-anchor-cpi/">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:description" content="">
+    <meta name="twitter:title" content="Anchor CPI | dev_stories">
+    <meta property="twitter:domain" content="maltsev-dev.github.io">
+    <meta property="twitter:url" content="https://maltsev-dev.github.io/rust-solana-anchor-cpi/">
+
+        <link rel="shortcut icon" type="image/png" href="/favicon.png">
+    
+<meta property="og:site_name" content="dev_stories"><meta property="og:type" content="article">
+<meta property="og:title" content="Anchor CPI"><meta property="og:url" content="https://maltsev-dev.github.io/rust-solana-anchor-cpi/"><meta property="og:image" content="https://github.com/maltsev-dev/favicon.png">
+</head>
+
+<body class="">
+<div class="container">
+    
+    <header class="header">
+        <div class="header__inner">
+            <div class="header__logo">
+                    
+                <a href="https://maltsev-dev.github.io" style="text-decoration: none;">
+                    <div class="logo">
+                      
+                            busy hands == happy heart
+                        
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        
+        
+                <nav class="menu">
+            <ul class="menu__inner">
+                <li class="active"><a href="https://maltsev-dev.github.io">blog</a></li>
+            
+                <li><a href="https://maltsev-dev.github.io/tags">tags</a></li>
+            
+                <li><a href="https://maltsev-dev.github.io/archive">archive</a></li>
+            
+                <li><a href="https://maltsev-dev.github.io/tags/embedded/">embedded</a></li>
+            
+                <li><a href="https://maltsev-dev.github.io/about">about</a></li>
+            
+                <li><a href="https://github.com/maltsev-dev" target="_blank" rel="noopener noreferrer">Github</a></li>
+            
+                <li><a href="https://www.linkedin.com/in/a-maltsev/" target="_blank" rel="noopener noreferrer">Linkedin</a></li>
+            </ul>
+        </nav>
+    
+    
+        
+    </header>
+    
+
+    <div class="content">
+        
+    <div class="post">
+        
+    <h1 class="post-title"><a href="https://maltsev-dev.github.io/rust-solana-anchor-cpi/">Anchor CPI</a></h1>
+    <div class="post-meta-inline">
+        
+    <span class="post-date">
+            2025-03-19
+        </span>
+
+    </div>
+
+    
+        <span class="post-tags-inline">
+                :: tags:&nbsp;
+                <a class="post-tag" href="https://maltsev-dev.github.io/tags/anchor/">#anchor</a>&nbsp;
+                <a class="post-tag" href="https://maltsev-dev.github.io/tags/project/">#project</a>&nbsp;
+                <a class="post-tag" href="https://maltsev-dev.github.io/tags/rust/">#rust</a>&nbsp;
+                <a class="post-tag" href="https://maltsev-dev.github.io/tags/solana/">#solana</a></span>
+    
+
+        <div class="post-content">
+            <p>Cross Program Invocations (CPIs) allow one program to invoke instructions on another program.</p>
+<span id="continue-reading"></span>
+<hr />
+<p><a href="https://github.com/maltsev-dev/anchor_cpi">📚 Anchor CPI Example</a></p>
+<p>The process of implementing a CPI is the same as that of creating a instruction where you must specify:
+1. The program ID of the program being called
+2. The accounts required by the instruction
+3. Any instruction data required as arguments</p>
+<p>This pattern ensures the CPI has all the information needed to invoke the target program's instruction.</p>
+<p>The System Program's transfer instruction requires two accounts:</p>
+<pre style="background-color:#151515;color:#e8e8d3;"><code><span>`from`: The account sending SOL.
+</span><span>`to`: The account receiving SOL.
+</span></code></pre>
+<h3 id="anchor-cpi">Anchor CPI</h3>
+<p><em>invoke_signed()</em></p>
+<h4 id="setup">Setup</h4>
+<pre data-lang="bash" style="background-color:#151515;color:#e8e8d3;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#ffb964;">1.</span><span> anchor init program-a  cd program-b
+</span><span style="color:#ffb964;">2.</span><span> anchor new program-b
+</span><span style="color:#ffb964;">3.</span><span> Cargo.toml (program-a) </span><span style="color:#ffb964;">add</span><span> dependencies to program-b -&gt; program-b = {path = </span><span style="color:#556633;">&quot;</span><span style="color:#99ad6a;">../program-b</span><span style="color:#556633;">&quot;</span><span>, features= </span><span style="color:#8fbfdc;">[</span><span style="color:#556633;">&quot;</span><span style="color:#99ad6a;">cpi</span><span style="color:#556633;">&quot;</span><span style="color:#8fbfdc;">]</span><span>}
+</span><span style="color:#ffb964;">4.</span><span> Anchor.toml - set resolution to false
+</span></code></pre>
+<h4 id="run-tests">Run tests</h4>
+<pre data-lang="bash" style="background-color:#151515;color:#e8e8d3;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#ffb964;">anchor</span><span> build &amp;&amp; </span><span style="color:#ffb964;">anchor</span><span> test
+</span></code></pre>
+<h4 id="start-local-validator">Start Local Validator</h4>
+<pre data-lang="rust" style="background-color:#151515;color:#e8e8d3;" class="language-rust "><code class="language-rust" data-lang="rust"><span>cd .anchor/
+</span><span>solana-test-validator
+</span></code></pre>
+<h4 id="explorer">Explorer</h4>
+<ol>
+<li>open explorer.solana</li>
+<li>switch to localhost</li>
+<li>find test output transaction signature</li>
+</ol>
+<h4 id="expected-output">Expected Output</h4>
+<pre data-lang="bash" style="background-color:#151515;color:#e8e8d3;" class="language-bash "><code class="language-bash" data-lang="bash"><span>&gt; Program </span><span style="color:#ffb964;">logged: </span><span style="color:#556633;">&quot;</span><span style="color:#99ad6a;">Instruction: Initialize</span><span style="color:#556633;">&quot;
+</span><span>&gt; Program </span><span style="color:#ffb964;">logged: </span><span style="color:#556633;">&quot;</span><span style="color:#99ad6a;">Greetings from: Program A</span><span style="color:#556633;">&quot;
+</span><span>&gt; Program </span><span style="color:#ffb964;">invoked:</span><span> System Program
+</span><span>&gt; Program </span><span style="color:#ffb964;">returned</span><span> success
+</span><span>&gt; Program </span><span style="color:#ffb964;">invoked:</span><span> Unknown Program (6grzSV1SpnQjt9Jf7cMtqQDUqaC7SZDXvKE5GCGrVHxZ)
+</span><span>&gt; Program </span><span style="color:#ffb964;">logged: </span><span style="color:#556633;">&quot;</span><span style="color:#99ad6a;">Instruction: Initialize</span><span style="color:#556633;">&quot;
+</span><span>&gt; Program </span><span style="color:#ffb964;">logged: </span><span style="color:#556633;">&quot;</span><span style="color:#99ad6a;">Greetings from: Progrma B</span><span style="color:#556633;">&quot;
+</span><span>&gt; Program </span><span style="color:#ffb964;">consumed:</span><span> 676 of 190087 compute units
+</span><span>&gt; Program </span><span style="color:#ffb964;">returned</span><span> success
+</span><span>&gt; Program </span><span style="color:#ffb964;">consumed:</span><span> 10862 of 200000 compute units
+</span><span>&gt; Program </span><span style="color:#ffb964;">returned</span><span> success
+</span></code></pre>
+
+        </div>
+
+        
+            <div class="pagination">
+                <div class="pagination__title">
+                    <span class="pagination__title-h">Read other posts?</span>
+                    <hr />
+                </div>
+                <div class="pagination__buttons">
+                        <span class="button previous">
+                            <a href="https://maltsev-dev.github.io/rust-solana-anchor/">
+                                <span class="button__icon">←</span>&nbsp;
+                                <span class="button__text">Game on Solana</span>
+                            </a>
+                        </span>
+                    
+                    
+                        <span class="button next">
+                            <a href="https://maltsev-dev.github.io/rust-solana-anchor-favorites/">
+                                <span class="button__text">Solana Favorites</span>&nbsp;
+                                <span class="button__icon">→</span>
+                            </a>
+                        </span>
+                    </div>
+            </div>
+        
+    </div>
+
+    </div>
+
+    
+    <footer class="footer">
+        <div class="footer__inner">
+                <div class="copyright copyright--user"><div class="copyright">
+    <span>© 2025 A.Maltsev | Intellectual property</span>
+    <span class="copyright-theme-sep">| </span>
+    <span><img src="https://visitor-badge.laobi.icu/badge?page_id=maltsev-dev.github.io&right_color=orange" alt="Visitors"></span>
+</div>
+</div>
+            </div>
+    </footer>
+    
+
+</div>
+</body>
+
+</html>

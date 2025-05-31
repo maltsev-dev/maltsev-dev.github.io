@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Don&#x27;t fight the Borrow Checker | dev_stories</title>
+    
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+    <meta name="robots" content="noodp"/>
+
+    <link rel="stylesheet" href="https://maltsev-dev.github.io/style.css">
+    <link rel="stylesheet" href="https://maltsev-dev.github.io/color/orange.css">
+
+        <link rel="stylesheet" href="https://maltsev-dev.github.io/color/background_blue.css">
+    
+    <link rel="stylesheet" href="https://maltsev-dev.github.io/font-hack.css">
+
+    <meta name="description" content="">
+
+    <meta property="og:description" content="">
+    <meta property="og:title" content="Don't fight the Borrow Checker | dev_stories">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://maltsev-dev.github.io/rust-borrowing/">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:description" content="">
+    <meta name="twitter:title" content="Don't fight the Borrow Checker | dev_stories">
+    <meta property="twitter:domain" content="maltsev-dev.github.io">
+    <meta property="twitter:url" content="https://maltsev-dev.github.io/rust-borrowing/">
+
+        <link rel="shortcut icon" type="image/png" href="/favicon.png">
+    
+<meta property="og:site_name" content="dev_stories"><meta property="og:type" content="article">
+<meta property="og:title" content="Don't fight the Borrow Checker"><meta property="og:url" content="https://maltsev-dev.github.io/rust-borrowing/"><meta property="og:image" content="https://github.com/maltsev-dev/favicon.png">
+</head>
+
+<body class="">
+<div class="container">
+    
+    <header class="header">
+        <div class="header__inner">
+            <div class="header__logo">
+                    
+                <a href="https://maltsev-dev.github.io" style="text-decoration: none;">
+                    <div class="logo">
+                      
+                            busy hands == happy heart
+                        
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        
+        
+                <nav class="menu">
+            <ul class="menu__inner">
+                <li class="active"><a href="https://maltsev-dev.github.io">blog</a></li>
+            
+                <li><a href="https://maltsev-dev.github.io/tags">tags</a></li>
+            
+                <li><a href="https://maltsev-dev.github.io/archive">archive</a></li>
+            
+                <li><a href="https://maltsev-dev.github.io/tags/embedded/">embedded</a></li>
+            
+                <li><a href="https://maltsev-dev.github.io/about">about</a></li>
+            
+                <li><a href="https://github.com/maltsev-dev" target="_blank" rel="noopener noreferrer">Github</a></li>
+            
+                <li><a href="https://www.linkedin.com/in/a-maltsev/" target="_blank" rel="noopener noreferrer">Linkedin</a></li>
+            </ul>
+        </nav>
+    
+    
+        
+    </header>
+    
+
+    <div class="content">
+        
+    <div class="post">
+        
+    <h1 class="post-title"><a href="https://maltsev-dev.github.io/rust-borrowing/">Don&#x27;t fight the Borrow Checker</a></h1>
+    <div class="post-meta-inline">
+        
+    <span class="post-date">
+            2025-05-29
+        </span>
+
+    </div>
+
+    
+        <span class="post-tags-inline">
+                :: tags:&nbsp;
+                <a class="post-tag" href="https://maltsev-dev.github.io/tags/rust-mastering/">#rust_mastering</a></span>
+    
+
+        <div class="post-content">
+            <p>A Series of Rust concepts every developer should master 🥋<br />
+📚 E03 - <code>Rust Borrowing Model</code></p>
+<span id="continue-reading"></span>
+<hr />
+<h3 id="borrow-immutable-s">Borrow Immutable (&amp;s)</h3>
+<ol>
+<li>There is no limit on the number of borrowers.</li>
+<li>Immutable borrowers prevents any mutable borrows.</li>
+</ol>
+<h3 id="borrow-mutable-mut-s">Borrow Mutable (&amp;mut s)</h3>
+<ol>
+<li>One and only one mutable borrower at a time.</li>
+<li>Mutable borrow is not allowed while there are immutable borrowers.</li>
+</ol>
+<h3 id="borrowing">Borrowing</h3>
+
+
+
+    
+    
+
+
+
+    
+    
+
+
+
+
+<figure class="center">
+    <a href="https://maltsev-dev.github.io/processed_images/true_borrowing.cfd6e5a6f2211ac8.webp">
+        <img src="https://maltsev-dev.github.io/processed_images/true_borrowing.32de8b57a295d871.webp"   />
+    </a>
+    
+</figure>
+
+<p>To save ownership of variable <code>s1</code>, but also assign its value to another variable <code>s2</code>, you need to use <strong>borrowing</strong>, which is based on the use of <strong>references</strong>.</p>
+<h3 id="references-rules">References rules</h3>
+<ul>
+<li>Reference are <strong>always valid</strong>.</li>
+<li>You must create it explicitly using <code>&amp;s1</code>.</li>
+<li>Dereference also explicitly using <code>*</code> - to gain access to the object to which the link points.</li>
+<li>A reference is simply a physical pointer to an object.</li>
+<li>You can reference to reference.</li>
+<li>you can mutate a reference to a regular reference.</li>
+</ul>
+<p>Borrowing allows multiple parts of a program to access data without moving ownership.</p>
+<p>The Borrow Checker enforces borrowing rules, ensuring that references are used correctly and safely without causing data races and memory errors.</p>
+<p>Using references not only ensures memory safety, but also improves performance by reducing the redundancy of copying data, especially with complex structures.</p>
+<pre data-lang="rust" style="background-color:#151515;color:#e8e8d3;" class="language-rust "><code class="language-rust" data-lang="rust"><span>	</span><span style="color:#8fbfdc;">let</span><span> s1 = </span><span style="color:#556633;">&quot;</span><span style="color:#99ad6a;">hello</span><span style="color:#556633;">&quot;</span><span>.to_string();
+</span><span>	</span><span style="color:#8fbfdc;">let</span><span> s2 = &amp;s1;
+</span><span style="color:#888888;">// s2 - gets a reference to the value of variable s1
+</span><span style="color:#888888;">// s2 gets not the value of the variable itself, but a reference to it.
+</span><span style="color:#888888;">// since it is not the String object itself that is assigned, but a reference to it, then the type of s2 will be &amp;String
+</span><span style="color:#888888;">// s1 is still the owner and the deletion of the Hello value will depend on it
+</span></code></pre>
+<p>When the scope of a reference variable ends, nothing happens to the original data it points to.</p>
+<p>References must point to valid data. That is, a reference cannot live longer than the data it points to.<br />
+When a provider variable is destroyed, its value is deleted accordingly and all references to this value become invalid.<br />
+Returning a reference from a function is not correct, because when the scope of the function ends, everything that can be referenced from within the function will become invalid.</p>
+<p>Functions can accept <strong>references as parameters</strong></p>
+<pre data-lang="rust" style="background-color:#151515;color:#e8e8d3;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="color:#8fbfdc;">fn </span><span style="color:#fad07a;">display</span><span>(</span><span style="color:#ffb964;">a</span><span>: &amp;String) -&gt; {}
+</span></code></pre>
+<p>Working with the original value and the reference to it are not equivalent, for example when comparing the reference to the value and the value itself.<br />
+To get the original data that the reference points to, <strong>it must be dereferenced</strong></p>
+<pre data-lang="rust" style="background-color:#151515;color:#e8e8d3;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="color:#8fbfdc;">let</span><span> result = p* &gt; </span><span style="color:#cf6a4c;">10</span><span>;
+</span></code></pre>
+<p>A reference representation is a memory address of a cell. (reference size is the same as <strong>usize/isize</strong>).<br />
+References ensure that the object is alive and that it is under this reference.</p>
+
+        </div>
+
+        
+            <div class="pagination">
+                <div class="pagination__title">
+                    <span class="pagination__title-h">Read other posts?</span>
+                    <hr />
+                </div>
+                <div class="pagination__buttons">
+                        <span class="button previous">
+                            <a href="https://maltsev-dev.github.io/rust-firmware-size/">
+                                <span class="button__icon">←</span>&nbsp;
+                                <span class="button__text">Optimizing Rust Firmware Size</span>
+                            </a>
+                        </span>
+                    
+                    </div>
+            </div>
+        
+    </div>
+
+    </div>
+
+    
+    <footer class="footer">
+        <div class="footer__inner">
+                <div class="copyright copyright--user"><div class="copyright">
+    <span>© 2025 A.Maltsev | Intellectual property</span>
+    <span class="copyright-theme-sep">| </span>
+    <span><img src="https://visitor-badge.laobi.icu/badge?page_id=maltsev-dev.github.io&right_color=orange" alt="Visitors"></span>
+</div>
+</div>
+            </div>
+    </footer>
+    
+
+</div>
+</body>
+
+</html>
