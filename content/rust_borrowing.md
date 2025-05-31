@@ -20,7 +20,7 @@ A Series of Rust concepts every developer should master 🥋
 
 ### Borrowing
 
-{{ img(src = "/images/rust_mastering/true_borrow.png") }}
+{{ img(src = "/images/rust_mastering/true_borrowing.png") }}
 
 To save ownership of variable `s1`, but also assign its value to another variable `s2`, you need to use **borrowing**, which is based on the use of **references**.
 
