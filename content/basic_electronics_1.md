@@ -1,5 +1,5 @@
 +++
-title = "The beauty of Semiconductors"
+title = "The Mysterious Beauty of Semiconductors"
 date = "2025-05-28"
 
 [taxonomies]
@@ -93,7 +93,7 @@ The process of merging a free electron and a hole is called **Recombination.**
 ## Flow of free electrons and holes
 If you connect a battery across a clean silicon crystal, the thermal energy will produce a free electron and a hole.
 
-{{ img(src = "/images/basic electronics/Flow-of-Free-Electrons-and-Holes.gif") }}
+{{ img(src = "/images/basic electronics/flow_of_free_electrons_and_holes.gif") }}
 
 The applied voltage causes the free **electrons to move to the left** and the **holes to the right.**  
 When the free electrons reach the **left end of the crystal**, they enter the outer wire and **flow toward the positive terminal of the battery.**
