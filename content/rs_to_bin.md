@@ -7,7 +7,17 @@ tags = ["rust", "compilers", "aot"]
 +++
 
 The `rustc` compiler manages a complex, multi-stage process that transforms human-readable Rust source code into highly optimized, machine-executable binaries.  
-This multi-layered pipeline is fundamental to Rust's core promises: memory safety without GC, high performance, and robust concurrency.
+This multi-layered pipeline is fundamental to Rust's core promises: memory safety without GC, high performance, and robust concurrency.  
+* `Tokenization` of Source Code
+* Building an Abstract Syntax Tree (`AST`)
+* `Macro` Expansion and Name Resolution
+* Transformation to `HIR`: Desugaring of syntactic constructions
+* Providing a `Type System`
+* Converting to `MIR`: Generating a Control Flow Graph
+* `Borrow Checker`
+* Monomorphization and generation of `LLVM IR`
+* Generation of machine code and `object files`
+* `Linking`: Building the final executable file
 
 <!-- more -->
 ---

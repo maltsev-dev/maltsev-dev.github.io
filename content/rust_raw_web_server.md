@@ -6,8 +6,8 @@ date = "2024-12-10"
 tags = ["rust", "sync", "project"]
 +++
 
-Get the most out of the Rust standard library to create a full-fledged web server.
-
+Get the most out of the Rust standard library to create a full-fledged web server.  
+Utilize `fs`, `net`, `sync`, `thread`, `time`..
 <!-- more -->
 ---
 

@@ -1,6 +1,6 @@
 +++
 title = "The Aesthetics of Semiconductor Destruction"
-date = "2025-05-28"
+date = "2025-06-01"
 
 [taxonomies]
 tags = ["basic_electronics"]

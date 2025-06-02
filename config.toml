@@ -21,7 +21,7 @@ logo_text = "busy hands == happy heart"
 copyright_html = """
 <div class="copyright">
     <span>© 2025 A.Maltsev | Intellectual property</span>
-    <span class="copyright-theme-sep">| </span>
+    <span class="copyright-theme-sep"> | </span>
     <span><img src="https://visitor-badge.laobi.icu/badge?page_id=maltsev-dev.github.io&right_color=orange" alt="Visitors"></span>
 </div>
 """

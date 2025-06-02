@@ -5,9 +5,11 @@ date = "2025-01-15"
 [taxonomies]
 tags = ["rust_mastering"]
 +++
-
-A Series of Rust concepts every developer should master 🥋  
-E01 - `Rust Toolchain`
+Everything you need to know about`Rust Toolchain`  
+* rustup
+* Channels
+* Override & Profiling
+* Toolchain components
 <!-- more -->
 ---
 
@@ -31,8 +33,6 @@ stable-x86_64-pc-windows-msvc (active, default)
 - Or a command that will display additional information about installed tagrets.
 ```bash
 > rustup show
-Default host: x86_64-pc-windows-msvc
-rustup home:  C:\Users\A\.rustup
 
 installed toolchains
 --------------------
@@ -52,7 +52,7 @@ x86_64-pc-windows-msvc
 - To find the path to the toolchain
 ```bash
 > rustup which rustc
-C:\Users\A\.rustup\toolchains\stable-x86_64-pc-windows-msvc\bin\rustc.exe
+C:\..\stable-x86_64-pc-windows-msvc\bin\rustc.exe
 ```
 
 ### 2. Channels

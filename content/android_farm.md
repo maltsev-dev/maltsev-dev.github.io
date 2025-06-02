@@ -6,7 +6,7 @@ date = "2023-07-05"
 tags = ["java", "android"]
 +++
 
-Invent a wheel that launches and configures Android emulators for you.
+Invent a wheel that launches and configures Android emulators for you.  
 
 <!-- more -->
 ---
