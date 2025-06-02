@@ -10,8 +10,9 @@
     align-items: center;
     justify-content: space-between;
     margin: 0;
-    width: 760px;
+    width: 1024px;
     max-width: 100%;
+    justify-content: center;
 
     @media (max-width: $tablet-max-width) {
       flex-direction: column;

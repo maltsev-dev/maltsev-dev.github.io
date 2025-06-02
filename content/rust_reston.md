@@ -44,7 +44,7 @@ Whether you need a simple `CRUD app` or a sophisticated `SAAS platform`, Auto GP
 - **Reqwest**: An HTTP client for interacting with external APIs.
 - **GPT API**: Used for generating code and executing tasks based on text-based queries.
   
-[![Documentation](https://img.shields.io/badge/Documentation-Click_here-blue)](https://chemyl.github.io/rest_on/)
+[![Documentation](https://img.shields.io/badge/Documentation-Click_here-blue)](https://maltsev-dev.github.io/rest_on/)
 
 ## **Installation**
 
