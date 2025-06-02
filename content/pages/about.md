@@ -15,7 +15,7 @@ path = "about"
 
 ---
 #### 🌐 Find me there
-[🥋 Codewars](https://www.codewars.com/users/chemyl) | [📷 Shutterstock](https://www.shutterstock.com/ru/g/chemylinc) | [🚴 Strava](https://www.strava.com/athletes/132803223) | [🎨 ArtStation](https://www.artstation.com/chemylinc) | [🕶️ Instagram](https://www.instagram.com/chemylinc/)  
+[🥋 Codewars](https://www.codewars.com/users/chemyl) | [📷 Shutterstock](https://www.shutterstock.com/ru/g/chemylinc) | [🎨 ArtStation](https://www.artstation.com/chemylinc) | [🕶️ Instagram](https://www.instagram.com/chemylinc/)  
 
 ---
 #### 🌐 Reach me out
