@@ -1,5 +1,5 @@
 +++
-title = "🌐bookmarks" 
+title = "" 
 path = "bookmarks"
 +++
 

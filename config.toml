@@ -20,7 +20,7 @@ logo_text = "busy hands == happy heart"
 
 copyright_html = """
 <div class="copyright">
-    <span>© 2025 A.Maltsev | Intellectual property</span>
+    <span>© 2025 A.Maltsev</span>
     <span class="copyright-theme-sep"> | </span>
     <span><img src="https://visitor-badge.laobi.icu/badge?page_id=maltsev-dev.github.io&right_color=orange" alt="Visitors"></span>
 </div>
@@ -32,7 +32,7 @@ menu_items = [
     { name = "archive", url = "$BASE_URL/archive" },
     { name = "embedded", url = "$BASE_URL/tags/embedded/" },
     { name = "about", url = "$BASE_URL/about" },
-    { name = "bookmarks", url = "$BASE_URL/bookmarks" },
+    { name = "🌐bookmarks", url = "$BASE_URL/bookmarks" },
     { name = "Github", url = "https://github.com/maltsev-dev", newtab = true},
     { name = "Linkedin", url = "https://www.linkedin.com/in/a-maltsev/", newtab = true},
 ]
