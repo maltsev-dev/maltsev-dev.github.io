@@ -9,6 +9,7 @@ path = "bookmarks"
 [📚 The Cargo Book](https://doc.rust-lang.org/cargo/index.html) 
 
 [Comprehensive Rust](https://google.github.io/comprehensive-rust/comprehensive-rust.pdf)
+YouTube🔴 [Build Embedded with Rust](https://www.youtube.com/watch?v=x7LQevYn7d0&list=PL-XnyG-f47AQ5PNw74s7MafDSZ9wCN_Wj&index=4)
 
 ---
 #### 🌐 Electronics
