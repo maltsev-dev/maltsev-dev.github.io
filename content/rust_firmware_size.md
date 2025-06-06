@@ -8,33 +8,31 @@ tags = ["rust", "embedded"]
 
 In this article I want to look at `cargo size` input.  
 Touch on linker scripts.  
-Identify working strategies for optimizing binary file size in embedded Rust projects.  
+And identify working strategies for optimizing binary file size in embedded Rust projects.  
 
 <!-- more -->
 ---
 
-# Analysis and Optimization of Rust Binary File Size for Embedded Systems
+##      I. Introduction to  `cargo size` and ELF binaries
+###     A. The role of `cargo size`
 
-## I. Introduction to `cargo size` and ELF binaries
-### A. The role of `cargo size`
+* `cargo size` is a utility from the [cargo-binutils](https://crates.io/crates/cargo-binutils) designed to check the memory occupied by an [ELF](https://en.wikipedia.org/wiki/Executable_and_Linkable_Format) executable file.  
+* It allows one to quickly estimate how much memory their compiled application will consume, and identify potential areas of bloat or inefficiency.
 
-`cargo size` is a utility from the [cargo-binutils](https://crates.io/crates/cargo-binutils) designed to check the memory occupied by an [ELF](https://en.wikipedia.org/wiki/Executable_and_Linkable_Format) executable file.  
-It allows one to quickly estimate how much memory their compiled application will consume, and identify potential areas of bloat or inefficiency.
+###     B. ELF Binaries
 
-### B. ELF Binaries
+* The ELF file is the final result of the compilation and linking process, containing the compiled program ready to be flashed into the microcontroller's non-volatile memory (Flash).
+* The ELF file is logically divided into different `sections`, each of which serves a specific purpose (e.g. executable instructions, initialized data, read-only data, debug information.
+* The linker is responsible for arranging these sections according to a `predefined memory map`, which is usually specified in the linker script.
 
-The ELF file is the final result of the compilation and linking process, containing the compiled program ready to be flashed into the microcontroller's non-volatile memory (Flash).
+###     C. Target Architecture Context
 
-The ELF file is logically divided into different `sections`, each of which serves a specific purpose (e.g. executable instructions, initialized data, read-only data, debug information). The linker is responsible for arranging these sections according to a `predefined memory map`, which is usually specified in the linker script.
+* The project targets the `thumbv6m-none-eabi` target, which is the Rust compilation target for the **ARM** `Cortex-M0` and `Cortex-M0+` microcontrollers.
+* These are low-power entry-level microprocessors with very limited Flash and RAM memory.
 
-### C. Target Architecture Context
+##      II. Detailed Analysis of `cargo size` Output
 
-The project targets the `thumbv6m-none-eabi` target, which is the Rust compilation target for the **ARM** `Cortex-M0` and `Cortex-M0+` microcontrollers.
-These are low-power entry-level microprocessors with very limited Flash and RAM memory.
-
-## II. Detailed Analysis of `cargo size` Output
-
-### A. Output Overview
+###     A. Output Overview
 
 The `cargo size` output is a list of sections, their sizes in bytes, and their corresponding memory addresses. 
 
@@ -72,9 +70,6 @@ Total              2326975
 The total size is `2326975 bytes`, which is approximately `2.33 MB.`  
 As the output shows, the dev profile was used to create the file, which includes debug information, which is the reason for the large total size of the binary.  
 
-When creating a release version, the size is `7962 bytes` just `7.9КБ` or `0.007962 MB.`  
-Which is approximately **293** times smaller than the debug version.  
-
 ```
 cargo size --bin blink_external_led --release -- -A
     Finished `release` profile [optimized] target(s) in 0.15s
@@ -96,8 +91,10 @@ section             size        addr
 Total               7962
 
 ```
+When creating a release version, the size is `7962 bytes` just `7.9КБ` or `0.007962 MB.`  
+Which is approximately **293** times smaller than the debug version.  
 
-### B. Main memory sections (loaded into Flash/RAM)
+###     B. Main memory sections (loaded into Flash/RAM)
 Next we will look at an example of a release-optimized `cargo size` output.  
 These sections represent the actual code and data that will be loaded into the microcontroller's memory for execution.
 
@@ -132,14 +129,29 @@ These sections represent the actual code and data that will be loaded into the m
     - Resides in `RAM`.
 
 Calculating the sizes of the main loaded sections: 
-* `.vector_table` (192 bytes) + 
-* `.text` (6396 bytes) + 
-* `.rodata` (888 bytes) = `0x510` bytes (7962 bytes).
+* **`.vector_table`** (192 bytes) + 
+* **`.text`** (6396 bytes) + 
+* **`.rodata`** (888 bytes) = `0x510` bytes (7962 bytes).
 
 The `.data`, `.bss`, `.uninit`, and `.gnu.sgstubs` sections are 4 bytes in total.  
 This means that the actual executable code and read-only data for the `blink_external_led` application take up just about `8KB` of Flash memory, and no static variable data is used in `RAM`.
 
-### C. Debug information section (not loaded into Flash devices for execution)
+###     C. Debug information section (not loaded into Flash devices for execution)
+
+```
+.debug_abbrev        29892         0x0
+.debug_info         737273         0x0
+.debug_aranges       29600         0x0
+.debug_ranges       123360         0x0
+.debug_str          960891         0x0
+.comment               153         0x0
+.ARM.attributes         50         0x0
+.debug_frame         86396         0x0
+.debug_line         315121         0x0
+.debug_loc            5256         0x0
+.debug_pubnames        489         0x0
+.debug_pubtypes         71         0x0
+```
 
 The `.debug_` sections (e.g. `.debug_info`, `.debug_line`) in an ELF file contain metadata formatted according to the [DWARF](https://en.wikipedia.org/wiki/DWARF) standard.
 This information is needed by debuggers such as GDB to effectively interact with and analyze the compiled program.  
@@ -187,9 +199,9 @@ In addition to the DWARF sections, `.comment` and `.ARM.attributes` are metadata
 - **`.ARM.attributes`:** `50` bytes.
     - Contains ARM-specific attributes related to the ABI (Application Binary Interface), architecture, and other platform-specific details.
 
-## III. Basic Memory Sections in Embedded Systems
+##      III. Memory Sections in Embedded
 
-### A. FLASH and RAM
+###     A. FLASH and RAM
 
 **ARM Cortex-M** microcontrollers feature [Harvard architecture](https://en.wikipedia.org/wiki/Harvard_architecture) or similar memory partitioning, having separate memory areas for storing programs and volatile data.
 
@@ -204,28 +216,28 @@ They correspond directly to the **physical memory map** of the target microcontr
 Any attempt by the linker to place code or data outside these defined physical memory ranges will result in a **linker error** or, more critically, undefined behavior and system crashes at runtime if the program is flashed to the device.
 The `cortex-m-rt` crate provides default values, but customization for specific hardware variations or extended memory management units (MPUs) is often required.
 
-### B. Stack and Heap (Runtime Memory)
+###     B. Stack and Heap (Runtime Memory)
 
 While `cargo size` provides a static view of sections of a binary, it is critical to understand the dynamic memory components that consume RAM at runtime.
 
-- **Stack:** This memory area is used for local variables, function call frames, and return addresses.  
+- **`Stack`:** This memory area is used for local variables, function call frames, and return addresses.  
 On ARM Cortex-M, the stack typically grows **downwards** from a high memory address to lower addresses.  
 Its initial position is typically set at the very end of the `RAM` region by the linker script.  
 
-- **Heap:** This memory area is used for dynamic memory allocation (e.g. using `Box`, `Vec`, or the `alloc` crate functions in the `std` or `alloc` environment).  
+- **`Heap`:** This memory area is used for dynamic memory allocation (e.g. using `Box`, `Vec`, or the `alloc` crate functions in the `std` or `alloc` environment).  
 The heap typically grows **upwards** after the `.data` and `.bss` sections in `RAM`.
 
 
-## IV. Managing Memory Layout and Section Placement (Linker Scripts)
+##      IV. Managing Memory Layout and Section Placement (Linker Scripts)
 
-### A. Linker Scripts Role
+###     A. Linker Scripts Role
 
 Linker scripts are text files that serve as configuration input to the `linker`.  
 They provide precise instructions on how to map input sections from **object files** to output sections in the final **ELF executable**.  
 Crucially, they also dictate where these output sections should be placed in specific memory areas (such as Flash and RAM) of the **target embedded device**.  
 While the `cortex-m-rt` crate provides a default linker script, for production embedded applications developers often need to customize it.  
 
-### B. Basic directives in Linker Scripts
+###     B. Basic directives in Linker Scripts
 
 Linker scripts use several key directives to define and control memory layout, which can be described in the `memory.x` file:
 
@@ -270,39 +282,38 @@ SECTIONS {
 
 ```
 
-#### 1. Block `MEMORY`
+####    1. Block `MEMORY`
 
 - **`MEMORY`:** section defines the physical memory map of the microcontroller or chip: where the **bootloader** is, where the **flash** is, where the **RAM** is, and also two "additional" small **SRAM** regions.
     - Each region is given a name, starting address (`ORIGIN`) and size (`LENGTH`) or region.
 
 - **`BOOT2`:** This is usually a small area of ​​memory where the **minimal bootloader** needed to start the processor is placed.
-    - `ORIGIN = 0x10000000` is the physical address where the `BOOT2` area begins.
-    - `LENGTH = 0x100` (256 bytes) is the size of this area.
+    - **ORIGIN** = 0x10000000 is the physical address where the `BOOT2` area begins.
+    - **LENGTH** = 0x100 (256 bytes) is the size of this area.
 
 - **`FLASH`:**
-    - `ORIGIN = 0x10000100` — the next 256 bytes after the `BOOT2` area (i.e. the bootloader is already located at 0x10000000–0x100000FF, and then comes the flash space).
-    - `LENGTH = 2048K - 0x100` — the total flash capacity (2 MB) minus 0x100 (256 bytes), i.e. actually 2 MB minus the areas under `BOOT2`. This is the main space where the firmware code and data will be placed.
+    - **ORIGIN** = 0x10000100 — the next 256 bytes after the `BOOT2` area (i.e. the bootloader is already located at 0x10000000–0x100000FF, and then comes the flash space).
+    - **LENGTH** = 2048K - 0x100 — the total flash capacity (2 MB) minus 0x100 (256 bytes), i.e. actually 2 MB minus the areas under `BOOT2`. This is the main space where the firmware code and data will be placed.
 
 - **`RAM`:** 
-    - `ORIGIN = 0x20000000` 
-    - `LENGTH = 256K` — RAM available for executing code (or for storing buffers, stacks, global variables, etc.).
+    - **ORIGIN** = 0x20000000 
+    - **LENGTH** = 256K — RAM available for executing code (or for storing buffers, stacks, global variables, etc.).
 
 - **`SRAM4`, `SRAM5`:** - These are additional "SRAM banks" (small (4 KB) autonomous memory segments are allocated).
-    - `ORIGIN = 0x20040000`, `LENGTH = 4k`
-    - `ORIGIN = 0x20041000`, `LENGTH = 4k`  
+    - **ORIGIN** = 0x20040000, LENGTH = 4k
+    - **ORIGIN** = 0x20041000, LENGTH = 4k 
     
 
-#### 2. `EXTERN` directive
-Declares an external (outside this linker script) label/symbol `BOOT2_FIRMWARE`.  
+####    2. `EXTERN` directive
+* Declares an external (outside this linker script) label/symbol `BOOT2_FIRMWARE`.  
+* Usually this means that **somewhere in the source codes** the symbol `BOOT2_FIRMWARE` is defined, and the linker should understand that it exists and can be referenced when forming the symbol table, even if we do not specify here which object file it is located in.  
 
-Usually this means that **somewhere in the source codes** the symbol `BOOT2_FIRMWARE` is defined, and the linker should understand that it exists and can be referenced when forming the symbol table, even if we do not specify here which object file it is located in.  
+####    3. `ENTRY` directive
+* This directive specifies the program **entry point symbol** (e.g. `Reset` for Cortex-M devices).  
+* This is critical because linkers are lazy and aggressively discard any sections of code or data that are not reachable (recursively called or referenced) from this entry point.  
 
-#### 3. `ENTRY` directive
-This directive specifies the program **entry point symbol** (e.g. `Reset` for Cortex-M devices).  
-This is critical because linkers are lazy and aggressively discard any sections of code or data that are not reachable (recursively called or referenced) from this entry point.  
-
-#### 4. `SECTIONS` block
-The block defines how to distribute logical sections (e.g. `.text`, `.data`, `.boot2`, etc.) across physical regions (e.g. `BOOT2`, `FLASH`, `RAM`).
+####    4. `SECTIONS` block
+* The block defines how to distribute logical sections (e.g. `.text`, `.data`, `.boot2`, etc.) across physical regions (e.g. `BOOT2`, `FLASH`, `RAM`).
 
 First `SECTIONS` block for `.boot2`
 ```ld
@@ -380,7 +391,7 @@ SECTIONS {
     - then `.text` (main code)
     - after `.text` — `.bi_entries`
 
-#### SECTION Mods and Macros
+####    SECTION Mods and Macros
 
 - **`KEEP(...)`**  
     Instructs the linker not to "clean up" (collect, delete) a section. This is important for areas where, at startup, reading occurs not via regular function calls, but, say, the loader reads a "raw" byte array from a specific address.
@@ -398,11 +409,12 @@ SECTIONS {
         Thus, the expression `ADDR(.boot_info) + SIZEOF(.boot_info)` gives the address of the **first empty byte** immediately after the end of `.boot_info`.
     
 - **`INSERT BEFORE .text` / `INSERT AFTER .vector_table` / `INSERT AFTER .text`**  
-    These directives control the order of "insertion" of **additional** sections (`.boot2`, `.boot_info`, `.bi_entries`) relative to **standard** sections (`.vector_table`, `.text`).   Without these inserts, the linker would arrange everything by default (usually: `.vector_table`, `.text`, `.rodata`, etc.)
+    - These directives control the order of "insertion" of **additional** sections (`.boot2`, `.boot_info`, `.bi_entries`) relative to **standard** sections (`.vector_table`, `.text`).
+    - Without these inserts, the linker would arrange everything by default (usually: `.vector_table`, `.text`, `.rodata`, etc.)
     
-## V. Strategies for Optimizing Binary File Size in Rust Embedded Projects
+##      V. Strategies for Optimizing Binary File Size in Rust Embedded Projects
 
-### A. Compiler and Linker Configuration (The Easiest and Most Effective)
+###     A. Compiler and Linker Configuration (The Easiest and Most Effective)
 
 These optimizations in the `Cargo.toml` file.
 
@@ -436,7 +448,7 @@ These optimizations in the `Cargo.toml` file.
 - **Disabling features:** Many Rust crates offer optional features that can be enabled or disabled. Exploring and **disabling unnecessary features** in dependencies can help reduce the size of compiled code.
 
     
-### C. Micro-optimizations and code structure
+###     C. Micro-optimizations and code structure
 
 - **Reduce or eliminate of using generics:** in Rust can lead to monomorphism, this can increase code size.  
 
@@ -451,7 +463,8 @@ This can allow the compiler to remove` panic checks related to out-of-bounds`, r
     
 - **Returning `1` or `-1` from a logical comparison:** Sometimes more readable `if/else` code can generate similar assembly code as more "tricky" arithmetic conversions, indicating that readability does not always sacrifice optimization in Rust.
 
-## AfterWords
+
+##      AfterWords
 
 1. **Switch to a release build:** Always compile your project with `cargo build --release`.
 2. **Configure the `release` profile in `Cargo.toml`:**
@@ -463,4 +476,3 @@ This can allow the compiler to remove` panic checks related to out-of-bounds`, r
 3. **Dependency Analysis:** Use `cargo-bloat` to identify dependencies that contribute the most to the binary size.
 4. **Understand and Manage Linker Scripts:** Familiarize yourself with the linker script file (`memory.x` or `device.x`) used by your project. Optionally, customize it with `MEMORY`, `ENTRY`, `SECTIONS` directives, and Rust attributes like `#[link_section]` to fine-tune the placement of code and data in the microcontroller's memory.
 5. **Analyze Dynamic Memory Usage:** In addition to the static binary size, use tools like `cargo-call-stack` to analyze stack usage at runtime to prevent stack overflows that could lead to system crashes. 6. **Micro-optimizations:** Although less significant than compiler tweaks, small changes to the code such as buffer handling optimizations, idiomatic method chaining, and efficient type conversions can further contribute to code size reduction.
-
