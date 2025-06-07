@@ -28,17 +28,28 @@ Whether you need a simple `CRUD app` or a sophisticated `SAAS platform`, Auto GP
 <!-- ## &emsp;&emsp;&emsp; **Technologies Used** -->
 <h3 style="text-align:center; margin-bottom:8px;">Technologies Used</h3>
 <p align="center" style="margin:0; padding:0;">
-  <img src="https://img.shields.io/badge/rust-1.83.0%20-green" alt="Rust Version"/>
-  <img src="https://img.shields.io/badge/actix_web-4.9.0%20-yellow" alt="Actix-web Version"/>
-  <img src="https://img.shields.io/badge/tokio-1.28.0%20-blue" alt="Tokio Version"/>
-  <img src="https://img.shields.io/badge/reqwest-0.12.10%20-red" alt="reqwest Version"/>
-  <img src="https://img.shields.io/badge/serde-1.0.160%20-gray" alt="Serde Version"/>
-  <img src="https://img.shields.io/badge/actix_cors-0.7.0%20-cyan" alt="Actix-cors Version"/>
-  <img src="https://img.shields.io/badge/dotenv-0.15.0%20-purple" alt="dotenv Version"/>
-  <img src="https://img.shields.io/badge/crossterm-0.28.1%20-green" alt="Crossterm Version"/>
-  <img src="https://img.shields.io/badge/async--trait-0.1.83%20-blue" alt="async-trait Version"/>
-  <img src="https://img.shields.io/badge/webbrowser-1.0.3%20-yellow" alt="Webbrowser Version"/>
-  <img src="https://img.shields.io/badge/ai_functions-0.1.1%20-green" alt="AI_functions Version"/>
+  <img style="display:inline-block; vertical-align:middle;"
+       src="https://img.shields.io/badge/rust-1.83.0%20-green" alt="Rust Version"/>
+  <img style="display:inline-block; vertical-align:middle;"
+       src="https://img.shields.io/badge/actix_web-4.9.0%20-yellow" alt="Actix-web Version"/>
+  <img style="display:inline-block; vertical-align:middle;"
+       src="https://img.shields.io/badge/tokio-1.28.0%20-blue" alt="Tokio Version"/>
+  <img style="display:inline-block; vertical-align:middle;"
+       src="https://img.shields.io/badge/reqwest-0.12.10%20-red" alt="reqwest Version"/>
+  <img style="display:inline-block; vertical-align:middle;"
+       src="https://img.shields.io/badge/serde-1.0.160%20-gray" alt="Serde Version"/>
+  <img style="display:inline-block; vertical-align:middle;"
+       src="https://img.shields.io/badge/actix_cors-0.7.0%20-cyan" alt="Actix-cors Version"/>
+  <img style="display:inline-block; vertical-align:middle;"
+       src="https://img.shields.io/badge/dotenv-0.15.0%20-purple" alt="dotenv Version"/>
+  <img style="display:inline-block; vertical-align:middle;"
+       src="https://img.shields.io/badge/crossterm-0.28.1%20-green" alt="Crossterm Version"/>
+  <img style="display:inline-block; vertical-align:middle;"
+       src="https://img.shields.io/badge/async--trait-0.1.83%20-blue" alt="async-trait Version"/>
+  <img style="display:inline-block; vertical-align:middle;"
+       src="https://img.shields.io/badge/webbrowser-1.0.3%20-yellow" alt="Webbrowser Version"/>
+  <img style="display:inline-block; vertical-align:middle;"
+       src="https://img.shields.io/badge/ai_functions-0.1.1%20-green" alt="AI_functions Version"/>
 </p>
 
 - **Rust**: The primary programming language for building fast, secure, and concurrent services.
