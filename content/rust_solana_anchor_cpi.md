@@ -23,33 +23,33 @@ The System Program's transfer instruction requires two accounts:
     `from`: The account sending SOL.
     `to`: The account receiving SOL.
 
-### Anchor CPI
+### &emsp;&emsp;&emsp; Anchor CPI
 _invoke_signed()_
 
-#### Setup
+#### &emsp;&emsp;&emsp; Setup
 ```bash
 1. anchor init program-a  cd program-b
 2. anchor new program-b
 3. Cargo.toml (program-a) add dependencies to program-b -> program-b = {path = "../program-b", features= ["cpi"]}
 4. Anchor.toml - set resolution to false
 ```
-#### Run tests
+#### &emsp;&emsp;&emsp; Run tests
 ```bash
 anchor build && anchor test
 ```
 
-#### Start Local Validator
+#### &emsp;&emsp;&emsp; Start Local Validator
 ```rust
 cd .anchor/
 solana-test-validator
 ```
 
-#### Explorer
+#### &emsp;&emsp;&emsp; Explorer
 1. open explorer.solana  
 2. switch to localhost  
 3. find test output transaction signature
 
-#### Expected Output
+#### &emsp;&emsp;&emsp; Expected Output
 ```bash
 > Program logged: "Instruction: Initialize"
 > Program logged: "Greetings from: Program A"

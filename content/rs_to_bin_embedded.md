@@ -12,7 +12,7 @@ Embedded systems often operate with limited resources (memory, CPU power) and wi
 <!-- more -->
 ---
 
-### I. Initial code processing and abstract representation
+### &emsp;&emsp;&emsp; I. Initial code processing and abstract representation
 The initial stages of Rust compilation, including lexical analysis, parsing, and building an abstract syntax tree (AST), remain largely unchanged for embedded systems.
 
 A. `Lexing`: Tokenizing the source code
@@ -29,7 +29,7 @@ The resolution phase then traverses the AST, establishing links from each name t
 * For embedded systems, these phases work the same as for regular applications. However, since embedded systems often have strict code size constraints, the use of macros (especially those that generate a lot of code) must be carefully considered to avoid "code bloat" in later phases.
 
 
-### II. HIR and semantic analysis
+### &emsp;&emsp;&emsp; II. HIR and semantic analysis
 This stage focuses on desugaring syntactic constructs and performing basic semantic analyses, including **type checking**, **type inference**, and **trait resolution**.
 
 A. `Transformation to HIR`: desugaring Syntactic Constructs
@@ -49,7 +49,7 @@ Therefore, alternatives such as `core::fmt` for formatting or specialized crates
 * Dependencies: If the core crate uses `no_std`, then all its transitive dependencies must also be `no_std` or explicitly support no_std environments.
 * Benefits: Using `no_std` is critical for embedded systems because it allows for minimal binaries to be created without OS overhead, allowing direct control over the hardware and meeting stringent real-time requirements. [embedded-rust tools](https://github.com/rust-embedded/awesome-embedded-rust?tab=readme-ov-file#tools)
 
-### III. MIR and Basic Security Checks
+### &emsp;&emsp;&emsp; III. MIR and Basic Security Checks
 A. `MIR Conversion`: Control Flow Graph Generation
 * MIR is a radically simplified and explicit form of Rust code, specifically designed to perform flow-sensitive safety checks (in particular, borrow checking), as well as various compiler optimizations and constant computation.
 
@@ -61,7 +61,7 @@ C. `MIR Optimizations`
 * After MIR borrow checking, a series of optimization passes are performed.  
 * For embedded systems, these optimizations are critical to minimizing code size and improving performance. Smaller code size means the program fits into the limited Flash/ROM memory of the microcontroller, and higher performance allows real-time tasks.
 
-### IV. Code generation and machine-specific optimizations
+### &emsp;&emsp;&emsp; IV. Code generation and machine-specific optimizations
 This final major stage of the rustc compiler involves translating the highly optimized MIR into executable machine code, using LLVM for architecture-specific transformations and extensive optimizations.
 
 A. Monomorphization and `LLVM IR Generation`
@@ -88,7 +88,7 @@ Developers can use `profile-overrides` in Cargo.toml to optimize dependencies fo
 C. Generating `Machine Code and Object Files`
 The output of this stage is platform-specific assembly code, which is then assembled into object files (.o or .obj). The object files contain machine code, data, relocation information, and symbol tables.
 
-### V. Linking: Building the final executable file
+### &emsp;&emsp;&emsp; V. Linking: Building the final executable file
 The final step of the compilation process involves **combining all the compiled object** files and required libraries into a single executable binary or shared library. This is done by the linker.
 
 A. Static vs. Dynamic Linking
@@ -158,12 +158,10 @@ Output format: By default, rustc generates an ELF file, which contains a lot of 
 However, most microcontrollers require a very minimal binary (`.bin`) or hexadecimal (`.hex`) file consisting only of the program instructions.
 Tools such as [cargo-binutils](https://crates.io/crates/cargo-binutils) (which provides objcopy) are used to **convert the ELF file** to these formats.
 
-### Conclusion
-Compiling a Rust program for embedded systems follows the same fundamental multi-step process as for regular applications, but with critical adaptations.  
+### &emsp;&emsp;&emsp; Sticker
+    Compiling a Rust program for embedded systems follows the same fundamental multi-step process as for regular applications, but with critical adaptations.  
     1. removal of the standard library (no_std)
     2. target-specific triplets,
     3. careful optimization of code size,
     4. custom linker scripts
     5. custom entry points. 
-
-This complex yet flexible pipeline makes Rust a powerful and robust choice for embedded software development, providing system control and performance without sacrificing security.

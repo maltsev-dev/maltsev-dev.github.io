@@ -11,13 +11,18 @@ The result of an experiment with a [Cursive](https://crates.io/crates/cursive) t
 <!-- more -->
 ---
 
-### Text-based User Interface app. Pomodoro Timer
+### &emsp;&emsp;&emsp; Text-based User Interface app. Pomodoro Timer
 
 [📚 Pomodoro Timer](https://github.com/maltsev-dev/tui_pomodoro)
 
-![Rust Version](https://img.shields.io/badge/rust-1.82.0%20-green) ![cursive Version](https://img.shields.io/badge/cursive-0.21.1%20-orange) ![Build Status](https://github.com/maltsev-dev/tui_pomodoro/actions/workflows/rust.yml/badge.svg)  
+<h3 style="text-align:center; margin-bottom:8px;">Technologies Used</h3>
+<p align="center" style="margin:0; padding:0;">
+  <img src="https://img.shields.io/badge/rust-1.82.0%20-green" alt="Rust Version"/>
+  <img src="https://img.shields.io/badge/cursive-0.21.1%20-orange" alt="cursive Version"/>
+  <img src="https://github.com/maltsev-dev/tui_pomodoro/actions/workflows/rust.yml/badge.svg" alt="Build Status"/>
+</p>
 
-### Features
+### &emsp;&emsp;&emsp; Features
  1. Set Timer
  2. Start/Stop
 

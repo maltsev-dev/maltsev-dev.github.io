@@ -12,10 +12,10 @@ Solana Program with chain interaction.
 
 [📚 Send Data Project](https://github.com/maltsev-dev/send_data)
 
-#### Project 
+#### &emsp;&emsp;&emsp; Project 
 Send data to chain, change with key.  
 
-#### How to start
+#### &emsp;&emsp;&emsp; How to start
 1. Start local validator  
 `solana-test-validator`
 

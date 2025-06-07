@@ -12,7 +12,7 @@ This is a basic representation of a backend web-server, designed for use in web 
 <!-- more -->
 ---
 
-# backend server
+# &emsp;&emsp;&emsp; backend server
 
 [📚 raw_web_server](https://github.com/maltsev-dev/raw_web_server)
 
@@ -20,12 +20,12 @@ This is a basic representation of a backend web-server, designed for use in web 
 
 ![Rust Version](https://img.shields.io/badge/rust-1.83.0%20-green) ![actix-web Version](https://img.shields.io/badge/actix_web-4.0%20-orange) ![tokio Version](https://img.shields.io/badge/tokio-1.0%20-orange) ![sqlx Version](https://img.shields.io/badge/sqlx-0.8.2%20-blue) ![serde Version](https://img.shields.io/badge/serde-1.0%20-blue) ![Build Status](https://github.com/chemyl/note_service/actions/workflows/rust.yml/badge.svg)
 
-## 🚀 Features
+## &emsp;&emsp;&emsp; 🚀 Features
 - 🧮 Async CRUD operations.
 - 🌐 Actix-Web core.
 - ♻️ sqlx support.
 
-## 📦 Installation
+## &emsp;&emsp;&emsp; 📦 Installation
 1. Make sure you have [Rust](https://www.rust-lang.org/tools/install)
 2. Install `sqlx` tools:
 ```bash

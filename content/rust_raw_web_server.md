@@ -7,7 +7,7 @@ tags = ["rust", "sync", "project"]
 +++
 
 Get the most out of the Rust standard library to create a full-fledged web server.  
-Utilize `fs`, `net`, `sync`, `thread`, `time`..
+Utilize `fs`, `net`, `sync`, `thread`, `time`
 <!-- more -->
 ---
 

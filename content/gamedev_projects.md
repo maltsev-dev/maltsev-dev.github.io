@@ -6,7 +6,7 @@ date = "2024-09-15"
 tags = ["cpp", "gamedev", "project"]
 +++
 
-I want to leave here some results of my interest in C++ programming within the Unreal Engine 5 game engine.
+I want to leave here some results of my interest in C++ programming within the Unreal Engine 5.
 
 <!-- more -->
 ---
@@ -28,7 +28,7 @@ Scene creation, control of light, sound and post-processing, landscape and level
 
 ---
 
-### Dungeon Raider
+### &emsp;&emsp;&emsp; Dungeon Raider
 It was a wonderful journey that gave me a pleasant baggage of interesting and useful knowledge.
 The game has several levels, which can be accessed using certain items.
 * Genre: puzzle-grabber;
@@ -47,7 +47,7 @@ The game has several levels, which can be accessed using certain items.
 
 ---
 
-### Toon Tanks
+### &emsp;&emsp;&emsp; Toon Tanks
 In the process of creating this small project, I gained a lot of important and interesting knowledge
 just some of them:
 * Enhanced Input
@@ -66,7 +66,7 @@ just some of them:
 
 ---
 
-### ISSRiot
+### &emsp;&emsp;&emsp; ISSRiot
 A shooter that never gets boring is the one you make yourself.
 What does it means?
 It means that the result exceeded my expectations and I am totally enjoying this sci-fi story.

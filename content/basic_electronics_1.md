@@ -11,7 +11,7 @@ To understand how diodes, transistors, or any integrated circuit work, you must 
 <!-- more -->
 ---
 
-## Conductor
+## &emsp;&emsp;&emsp; Conductor
 
 {{ img(src = "/images/basic electronics/copper_atom.png") }}
 
@@ -20,11 +20,11 @@ To understand how diodes, transistors, or any integrated circuit work, you must 
 
 In electronics, only the last orbit is important - the **valence orbit** - it determines the conductivity of the atom.
 
-### Net Charge
+### &emsp;&emsp;&emsp; Net Charge
 To determine the total charge of an atom, it is necessary to subtract all electrons (except the last/valence orbit) from the charge of the nucleus.  
 Example for copper = +1 (+29 protons - 28 electrons)
 
-### Free Electrons
+### &emsp;&emsp;&emsp; Free Electrons
 Since the total charge of the nucleus is +1 (after subtraction), the attraction between the nucleus and the valence electron (in the last orbit) **is very weak**.  
 Even nominal voltage can easily knock this electron out of the copper atom and make it flow through the material.  
 That is why the valence electron is called a **free electron.**  
@@ -33,7 +33,7 @@ And the flow of these free electrons is called **Current**
     * 1 valence electron - **best conductor**  
     * 8 valence electrons - **best insulator**
 
-## Insulators
+## &emsp;&emsp;&emsp; Insulators
 
 {{ img(src = "/images/basic electronics/neon_atom.png") }}
 
@@ -48,7 +48,7 @@ In air, you will see this as an arc or flash.
 In solid materials, the heat generated will char the material.
 `
 
-## Semiconductors
+## &emsp;&emsp;&emsp; Semiconductors
 
 {{ img(src = "/images/basic electronics/silicon_atom.png") }}
 
@@ -60,7 +60,7 @@ There are 4 electrons in the valence orbit, so the net charge of the silicon nuc
 
 Since the number of valence electrons of silicon is 4, this makes it in the middle of a conductor and an insulator - **semiconductor**
 
-## Silicon crystals
+## &emsp;&emsp;&emsp; Silicon crystals
 
 {{ img(src = "/images/basic electronics/silicon_crystals.png") }}
 
@@ -68,7 +68,7 @@ When silicon atoms combine to form a crystal, they arrange themselves into a **s
 In this case, each silicon atom **begins to share its valence electrons with the 4** valence orbits of the neighboring 4 atoms.  
 **Each atom now has 8 electrons** in its orbit (4 of its own + 4 (1 from each neighbor))
 
-## Covalent Bonds
+## &emsp;&emsp;&emsp; Covalent Bonds
 
 Because of the sharing, the **valence electrons are now not owned by any one atom**  
 These shared valence electrons are **attracted by neighboring atoms** with equal and opposite forces, causing them to form a connection.  
@@ -78,7 +78,7 @@ The following figure illustrates the concept of covalent bonds, with each straig
 
 This opposite attraction holds the silicon atoms together and gives them strength.
 
-## Holes
+## &emsp;&emsp;&emsp; Holes
 At room temperature, the thermal energy in the air causes the atoms in a silicon crystal to **vibrate**.  
 These vibrations **remove an electron from its valence orbit**, causing it to float freely throughout the crystal.  
 The loss of an electron creates a vacancy in the valence orbit called a **Hole**  
@@ -90,7 +90,7 @@ When a free electron comes close to a hole, **it is attracted to it and falls in
 The process of merging a free electron and a hole is called **Recombination.**
 
 
-## Flow of free electrons and holes
+## &emsp;&emsp;&emsp; Flow of free electrons and holes
 If you connect a battery across a clean silicon crystal, the thermal energy will produce a free electron and a hole.
 
 {{ img(src = "/images/basic electronics/flow_of_free_electrons_and_holes.gif") }}
@@ -103,7 +103,7 @@ When the free electrons reach the **left end of the crystal**, they enter the ou
 * Thus, a constant flow of free electrons and holes is established inside the semiconductor.  
 * Free electrons and holes are often called **carriers** because they carry charge from one place to another.
 
-## Doping a Semiconductor
+## &emsp;&emsp;&emsp; Doping a Semiconductor
 In a pure silicon crystal, each atom uses **4 valence electrons** to connect with the valence orbits of neighboring atoms.  
 This reduces the number of electrons available for conduction, so the crystal acts as an insulator.  
 To increase the number of holes and, therefore, free electrons, thereby **increasing the conductivity of the crystal**, it must be doped.  
@@ -118,7 +118,7 @@ To increase the number of free electrons, pentavalent atoms are added to the mol
 And to increase the number of holes, tritant atoms are added. After it cools, it turns into a solid crystalline structure.
 `
 
-## n-type semiconductor
+## &emsp;&emsp;&emsp; n-type semiconductor
 Silicon doped to increase the number of free electrons is called an **n-type semiconductor** (n- means negative)  
 **pentavalent impurities** (phosphorus, antimony, arsenic) are added to silicon. To increase the number of free electrons.
 
@@ -135,7 +135,7 @@ Each 5-valence atom in a silicon crystal releases 1 free electron, such impuriti
 In an n-semiconductor, there are more free electrons than holes, so free electrons are called **major carriers**, and holes **minor**.
 
 
-## p-type semiconductor 
+## &emsp;&emsp;&emsp; p-type semiconductor 
 Silicon doped to increase the number of holes is called a **p-type conductor** (p- means positive)  
 For this, **3-valent impurities** (aluminum, boron, gallium) are added  
 

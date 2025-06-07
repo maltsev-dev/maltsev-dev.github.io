@@ -13,12 +13,12 @@ Developed with Anchor.
 
 [📚 Guess the number](https://github.com/maltsev-dev/guess_the_number_on_solana)
 
-#### Project 
+#### &emsp;&emsp;&emsp; Project 
 A simple chain game.  
 The program generates a number.  
 The user tries to guess by sending a transaction and getting an answer.
 
-### How to start
+### &emsp;&emsp;&emsp; How to start
 1. Start local validator  
 `solana-test-validator`
 

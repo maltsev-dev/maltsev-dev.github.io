@@ -13,11 +13,11 @@ Developed with native Rust.
 
 [📚 Counter Program](https://github.com/maltsev-dev/counter_on_native_solana)
 
-#### Project 
+#### &emsp;&emsp;&emsp; Project 
 Counter Program.  
 Send a transaction by incrementing or decrementing an integer in the program.
 
-### How to start
+### &emsp;&emsp;&emsp; How to start
 1. Start local validator  
 `solana-test-validator`
 
