@@ -63,3 +63,6 @@ solana-test-validator
 > Program consumed: 10862 of 200000 compute units
 > Program returned success
 ```
+
+#### &emsp;&emsp;&emsp; **License**
+This project is licensed under the MIT License 

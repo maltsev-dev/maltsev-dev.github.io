@@ -18,7 +18,21 @@ This is a basic representation of a backend web-server, designed for use in web 
 
 **Note service** is a binary crate written in Rust.
 
-![Rust Version](https://img.shields.io/badge/rust-1.83.0%20-green) ![actix-web Version](https://img.shields.io/badge/actix_web-4.0%20-orange) ![tokio Version](https://img.shields.io/badge/tokio-1.0%20-orange) ![sqlx Version](https://img.shields.io/badge/sqlx-0.8.2%20-blue) ![serde Version](https://img.shields.io/badge/serde-1.0%20-blue) ![Build Status](https://github.com/chemyl/note_service/actions/workflows/rust.yml/badge.svg)
+<h3 style="text-align:center; margin-bottom:8px;">Tools</h3>
+<p align="center" style="margin:0; padding:0;">
+  <img style="display:inline-block; vertical-align:middle;"
+       src="https://img.shields.io/badge/rust-1.83.0%20-green" alt="Rust Version"/>
+  <img style="display:inline-block; vertical-align:middle;"
+       src="https://img.shields.io/badge/actix_web-4.0%20-orange" alt="actix_web Version"/>
+  <img style="display:inline-block; vertical-align:middle;"
+       src="https://img.shields.io/badge/tokio-1.0%20-orange" alt="tokio version"/>
+  <img style="display:inline-block; vertical-align:middle;"
+       src="https://img.shields.io/badge/sqlx-0.8.2%20-blue" alt="sqlx version"/>
+  <img style="display:inline-block; vertical-align:middle;"
+       src="https://img.shields.io/badge/serde-1.0%20-blue" alt="serde version"/>
+  <img style="display:inline-block; vertical-align:middle;"
+       src="https://github.com/chemyl/note_service/actions/workflows/rust.yml/badge.svg" alt="Build status"/>
+</p>
 
 ## &emsp;&emsp;&emsp; 🚀 Features
 - 🧮 Async CRUD operations.

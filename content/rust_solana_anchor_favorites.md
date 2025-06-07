@@ -30,3 +30,5 @@ Send data to chain, change with key.
 
 5. Find transactions at http://localhost:8899
 
+#### &emsp;&emsp;&emsp; **License**
+This project is licensed under the MIT License 

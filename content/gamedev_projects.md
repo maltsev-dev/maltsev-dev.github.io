@@ -26,6 +26,9 @@ Scene creation, control of light, sound and post-processing, landscape and level
 
 - Behavioural trees are the cornerstone of any game that has some living objects and the gaming experience depends on their interaction with the player, creating branched trees, transitions and animations between states allows you to fill the scene with conscious life, this qualitative leap was especially pleasant for my projects.
 
+#### &emsp;&emsp;&emsp; **License**
+This projects is licensed under the MIT License 
+
 ---
 
 ### &emsp;&emsp;&emsp; Dungeon Raider

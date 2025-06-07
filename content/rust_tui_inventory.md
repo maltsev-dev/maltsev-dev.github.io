@@ -15,12 +15,14 @@ The result of an experiment with a [Cursive](https://crates.io/crates/cursive) t
 
 [📚 Inventory System](https://github.com/maltsev-dev/inventory_system_app)
 
-<h3 style="text-align:center; margin-bottom:8px;">Technologies Used</h3>
+<h3 style="text-align:center; margin-bottom:8px;">Tools</h3>
 <p align="center" style="margin:0; padding:0;">
-  <img src="https://img.shields.io/badge/rust-1.82.0%20-green" alt="Rust Version"/>
-  <img src="https://img.shields.io/badge/cursive-0.21.1%20-orange" alt="cursive Version"/>
-  <img src="https://img.shields.io/badge/serde-1.0.0%20-orange" alt="Serde Version"/>
-  <img src="https://github.com/chemyl/inventory_system_app/actions/workflows/rust.yml/badge.svg" alt="Build Status"/>
+  <img style="display:inline-block; vertical-align:middle;"
+       src="https://img.shields.io/badge/rust-1.83.0%20-green" alt="Rust Version"/>
+  <img style="display:inline-block; vertical-align:middle;"
+       src="https://img.shields.io/badge/cursive-0.21.1%20-orange" alt="cursive Version"/>
+  <img style="display:inline-block; vertical-align:middle;"
+       src="https://github.com/chemyl/inventory_system_app/actions/workflows/rust.yml/badge.svg" alt="Build Status"/>
 </p>
 
 ### &emsp;&emsp;&emsp; Features
@@ -35,3 +37,7 @@ The result of an experiment with a [Cursive](https://crates.io/crates/cursive) t
  4. DB located at `const FILE_PATH: &str = "products.json";`
 
 {{ img(src = "/media/tui_inventory_app.gif") }}
+
+
+#### &emsp;&emsp;&emsp; **License**
+This project is licensed under the MIT License 

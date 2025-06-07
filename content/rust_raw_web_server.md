@@ -22,3 +22,7 @@ Utilize `fs`, `net`, `sync`, `thread`, `time`
     * sync::{mpsc, Arc, Mutex},
     * thread,
     * time::Duration,
+
+
+#### &emsp;&emsp;&emsp; **License**
+This project is licensed under the MIT License 

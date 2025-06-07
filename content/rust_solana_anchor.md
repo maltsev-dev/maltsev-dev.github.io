@@ -26,3 +26,6 @@ The user tries to guess by sending a transaction and getting an answer.
 `anchor build && anchor deploy`  
 
 4. Play the game by sending numbers to validator terminal
+
+#### &emsp;&emsp;&emsp; **License**
+This project is licensed under the MIT License 

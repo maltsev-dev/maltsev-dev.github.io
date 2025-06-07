@@ -28,3 +28,7 @@ Send a transaction by incrementing or decrementing an integer in the program.
 `export ANCHOR_WALLET=~/.config/solana/id.json`
 
 4. Interact with transactions 
+
+
+#### &emsp;&emsp;&emsp; **License**
+This project is licensed under the MIT License 

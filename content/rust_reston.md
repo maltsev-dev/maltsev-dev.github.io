@@ -7,7 +7,8 @@ tags = ["rust", "actix_web", "open_ai", "project"]
 +++
 
 Actix-web AI Agent. Built with 🤎 in Rust  
-[Effortless Backend Prototyping with Rust](https://www.linkedin.com/pulse/effortless-backend-prototyping-rust-anatolii-maltsev-hvvce/?trackingId=lGXFeD6ET%2ByFSocPHYS9qg%3D%3D) 
+[Effortless Backend Prototyping with Rust](https://www.linkedin.com/pulse/effortless-backend-prototyping-rust-anatolii-maltsev-hvvce/?trackingId=lGXFeD6ET%2ByFSocPHYS9qg%3D%3D)  
+[![Documentation](https://img.shields.io/badge/Documentation-Click_here-blue)](https://maltsev-dev.github.io/rest_on/)
 
 <!-- more -->
 ---
@@ -25,20 +26,30 @@ Whether you need a simple `CRUD app` or a sophisticated `SAAS platform`, Auto GP
 - **🛠️ Template Flexibility**: Easily adapt web server templates to different requirements.
 - **🌍 Ease of Use**: Simple interface to interact with the project.
 
-<!-- ## &emsp;&emsp;&emsp; **Technologies Used** -->
-<h3 style="text-align:center; margin-bottom:8px;">Technologies Used</h3>
+## &emsp;&emsp;&emsp; **Tools**
 <p align="center" style="margin:0; padding:0;">
-  <img src="https://img.shields.io/badge/rust-1.83.0%20-green" alt="Rust Version"/>
-  <img src="https://img.shields.io/badge/actix_web-4.9.0%20-yellow" alt="Actix-web Version"/>
-  <img src="https://img.shields.io/badge/tokio-1.28.0%20-blue" alt="Tokio Version"/>
-  <img src="https://img.shields.io/badge/reqwest-0.12.10%20-red" alt="reqwest Version"/>
-  <img src="https://img.shields.io/badge/serde-1.0.160%20-gray" alt="Serde Version"/>
-  <img src="https://img.shields.io/badge/actix_cors-0.7.0%20-cyan" alt="Actix-cors Version"/>
-  <img src="https://img.shields.io/badge/dotenv-0.15.0%20-purple" alt="dotenv Version"/>
-  <img src="https://img.shields.io/badge/crossterm-0.28.1%20-green" alt="Crossterm Version"/>
-  <img src="https://img.shields.io/badge/async--trait-0.1.83%20-blue" alt="async-trait Version"/>
-  <img src="https://img.shields.io/badge/webbrowser-1.0.3%20-yellow" alt="Webbrowser Version"/>
-  <img src="https://img.shields.io/badge/ai_functions-0.1.1%20-green" alt="AI_functions Version"/>
+  <img style="display:inline-block; vertical-align:middle;"
+       src="https://img.shields.io/badge/rust-1.83.0%20-green" alt="Rust Version"/>
+  <img style="display:inline-block; vertical-align:middle;"
+       src="https://img.shields.io/badge/actix_web-4.9.0%20-yellow" alt="Actix-web Version"/>
+  <img style="display:inline-block; vertical-align:middle;"
+       src="https://img.shields.io/badge/tokio-1.28.0%20-blue" alt="Tokio Version"/>
+  <img style="display:inline-block; vertical-align:middle;"
+       src="https://img.shields.io/badge/reqwest-0.12.10%20-red" alt="reqwest Version"/>
+  <img style="display:inline-block; vertical-align:middle;"
+       src="https://img.shields.io/badge/serde-1.0.160%20-gray" alt="Serde Version"/>
+  <img style="display:inline-block; vertical-align:middle;"
+       src="https://img.shields.io/badge/actix_cors-0.7.0%20-cyan" alt="Actix-cors Version"/>
+  <img style="display:inline-block; vertical-align:middle;"
+       src="https://img.shields.io/badge/dotenv-0.15.0%20-purple" alt="dotenv Version"/>
+  <img style="display:inline-block; vertical-align:middle;"
+       src="https://img.shields.io/badge/crossterm-0.28.1%20-green" alt="Crossterm Version"/>
+  <img style="display:inline-block; vertical-align:middle;"
+       src="https://img.shields.io/badge/async--trait-0.1.83%20-blue" alt="async-trait Version"/>
+  <img style="display:inline-block; vertical-align:middle;"
+       src="https://img.shields.io/badge/webbrowser-1.0.3%20-yellow" alt="Webbrowser Version"/>
+  <img style="display:inline-block; vertical-align:middle;"
+       src="https://img.shields.io/badge/ai_functions-0.1.1%20-green" alt="AI_functions Version"/>
 </p>
 
 - **Rust**: The primary programming language for building fast, secure, and concurrent services.
@@ -47,8 +58,6 @@ Whether you need a simple `CRUD app` or a sophisticated `SAAS platform`, Auto GP
 - **Reqwest**: An HTTP client for interacting with external APIs.
 - **GPT API**: Used for generating code and executing tasks based on text-based queries.
   
-[![Documentation](https://img.shields.io/badge/Documentation-Click_here-blue)](https://maltsev-dev.github.io/rest_on/)
-
 ## &emsp;&emsp;&emsp; **Installation**
 
 ### &emsp;&emsp;&emsp; 1. Clone the Repository
