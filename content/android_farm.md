@@ -3,7 +3,7 @@ title = "Android Emulator Launcher"
 date = "2023-07-05"
 
 [taxonomies]
-tags = ["java", "android"]
+tags = ["java", "android", "project"]
 +++
 
 A desktop application based on `Java Swing` that allows you to easily configure and create Android emulators.  
