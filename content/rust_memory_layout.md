@@ -16,7 +16,7 @@ And what does `libc` have to do with it?
 <!-- more -->
 ---
 
-## &emsp;&emsp;&emsp;  Some Definitions
+## &emsp;&emsp;&emsp; Some Definitions
 
 **ZST** (Zero Sized Types) - the entire size of the type is collapsed to zero at compile time. (always `impl Sized`)
 
@@ -29,7 +29,7 @@ The size of the reference (`usize`) is equal to a machine word. (`ptr`, `cap`, `
 
 ---
 
-## &emsp;&emsp;&emsp;  Basic concepts of memory management 
+## &emsp;&emsp;&emsp; Basic concepts of memory management 
 
 After [compiling](https://maltsev-dev.github.io/rs-to-bin/) the executable file.  
 This file stores `data`, `metadata`, and `machine instructions` for the *CPU* in specific platform-dependent formats. (**ELF** on Linux, **PE** on Windows,**Mach-O** on macOS).  
@@ -109,7 +109,7 @@ Random placement of code, libraries, *heap* and *stack* within their zones. The 
 
 ---
 
-## &emsp;&emsp;&emsp;  Rust on Stack
+## &emsp;&emsp;&emsp; Rust on Stack
 
 The main purpose of the *stack* memory is to store the data of the **currently executing function** (all parameter of the function, its local variables and the return address).  
 Only variables with a `fixed size` and whose `size is known at compile` time can be placed on the *stack*.  
@@ -129,7 +129,12 @@ At this point, the `stack pointer` will be up, but the `stack frame` allocated m
 
 ---
 
-## &emsp;&emsp;&emsp;  Rust on Heap
+## &emsp;&emsp;&emsp; Rust on Heap
+In Rust, **Heap Allocator** is described through the `GlobalAlloc` trait - it defines the functions that the **Heap Allocator** must provide.  
+Rust uses `malloc` from the standard `C` library, `libc`, to work with memory. Under the hood, Rust assumes that the running platform has `libc` compiled in and plans to use it.  
+Allocating and working with memory on the *heap* is **slow** primarily because of **system calls** to `libc` and the allocator searching for a suitable place for the data.  
+To reduce the number of system calls, `memory allocator` requests memory in blocks.  
+
 {{ img(src = "/images/rust_memory/rust_memory_heap.png") }}
 
 1. The main `stack frame` is created for the main() function
@@ -139,16 +144,11 @@ At this point, the `stack pointer` will be up, but the `stack frame` allocated m
 5. Through the return address from heap(), the pointer to `Box` is written to the `result` variable in the main() function.
 6. Now, even if the *stack* frame of the heap() function is deallocated, the `result` variable contains the address of the data in the *heap*.
 
-In Rust, **Heap Allocator** is described through the `GlobalAlloc` trait - it defines the functions that the **Heap Allocator** must provide.  
-Rust uses `malloc` from the standard `C` library, `libc`, to work with memory. Under the hood, Rust assumes that the running platform has `libc` compiled in and plans to use it.  
-Allocating and working with memory on the *heap* is **slow** primarily because of **system calls** to `libc` and the allocator searching for a suitable place for the data.  
-To reduce the number of system calls, `memory allocator` requests memory in blocks.  
-
 ---
 
-## &emsp;&emsp;&emsp;  Rust Data Types
+## &emsp;&emsp;&emsp; Rust Data Types
 
-### Integer 
+### &emsp;&emsp; Integer 
 Stored entirely on *stack*.
 
 {{ img(src = "/images/rust_memory/rust_memory_integers.png") }}
@@ -158,13 +158,13 @@ Signed and unsigned numbers indicate how many `bit` they can store.
 |:--------|:----------|:----------|:----------|:---------|:-------------|:-------------------|
 | 1 byte  | 2 bytes   | 4 bytes   | 8 bytes   | 16 bytes    | 4 / 8 bytes   | 4 / 8 bytes    |
 
-### Char
+### &emsp;&emsp; Char
 Stored entirely on *stack*.  
 Stores `Unicode` characters.  
 Always `4 bytes`.  
 Stored entirely on *stack*.  
 
-### Tuple
+### &emsp;&emsp; Tuple
 
 A type consists of a **fixed set** of values ​​of **diffrent types**.  
 If all composite types are stored on a *stack*, then the entire tuple is stored on a *stack*.  
@@ -183,14 +183,14 @@ size_of::<(char, u8, i32)>();   // 12
 align_of::<(char, u8, i32)>();  // 4
 ```
 
-### Reference
+### &emsp;&emsp; Reference
 * `&T` **shared** references are stored in the *stack* and contain the **address of the original variable** it points to.  
 * `&&T` **shared** reference to reference and also takes 1 machine word.  
 * `&mut T` **unique** references have the same layout in memory.  
 
 {{ img(src = "/images/rust_memory/rust_memory_references.png") }}
 
-### Array
+### &emsp;&emsp; Array
 
 ``` rust
 let a: [i32; 3] = [55, 66, 77];
@@ -198,7 +198,7 @@ let a: [i32; 3] = [55, 66, 77];
 An array has a **fixed size** (unchangeable after creation), and this size **is part of the type**.  
 Values ​​of an array type are strictly of the **same type** and are placed one after another on the *stack*.  
 
-### Vector\
+### &emsp;&emsp; Vector
 
 ``` rust
 let v: Vec<i32> = vec![55, 66, 77];
@@ -210,8 +210,7 @@ Vector will store 3 pointers `(ptr, len, cap)` in *stack*.
 * when `cap` and `len` become the same, if more elements need to be added - reallocation occurs (allocating new memory in a larger *heap*, copying elements from the current location to the new array and updating the pointer).
 
 
-### Slice
-{{ img(src = "/images/rust_memory/rust_memory_slices.png") }}
+### &emsp;&emsp; Slice
 
 `[T]` - similar to a fixed size array, except that we don't have to specify the size and data type.
 ``` rust
@@ -222,6 +221,8 @@ let s2: [i32] = v[0..2];
 Usually a slice reference is used - which can be placed on the *stack*.  
 `&[T]` - **fat pointer** 2 pointers - `ptr` + `len`
 
+{{ img(src = "/images/rust_memory/rust_memory_slices.png") }}
+
 ``` rust
 let a: [i32; 3] = [55, 66, 77];
 let v: Vec<i32> = vec![55, 66, 77];
@@ -230,17 +231,17 @@ let s1: &[i32] = &a[0..2];
 let s2: &[i32] = &v[0..2];
 ```
 
-Here `s1` and `s2` are a slices that contains a pointer to the first element and a length of 2.
+Here `s1` and `s2` are a slices that contains `ptr` и `len`.
 This information is stored in a **fat pointer**, which consists of:
 - A pointer to the data (`*const T`)
 - A length (`usize`)
 Thus, although the `[T]` type itself does not contain length information, this information is available through the `&` pointers to the slice.
 
 
-### String, str, &str
+### &emsp;&emsp; String, str, &str
 
 String is a `Vec<u8>` where each value is a separate **Unicode** character in `UTF-8` encoding.
-Like a vector, String stores 3 pointers to *stack* (ptr, cap, len)
+Like a vector, String stores 3 pointers to *stack* (`ptr`, `cap`, `len`)
 
 {{ img(src = "/images/rust_memory/rust_memory_strings.png") }}
 
@@ -253,7 +254,7 @@ let s: String = String::from("hello");
 
 If you store a **string literal** directly into a variable, the data type of that variable will be a reference to a slice of the string with a `static lifetime`.  
 These strings are stored in `.rodata` (read-only data) directly in the binary code.  
-In this case, `s2` on the *stack* will be represented by a **fat pointer** (ptr + len).  
+In this case, `s2` on the *stack* will be represented by a **fat pointer** (`ptr` + `len`).  
 `ptr` will point to a specific range in static memory.  
 
 ``` rust
@@ -266,7 +267,7 @@ let ptr: *const u8 = s2.as_ptr();
 The `str` type in Rust is a **dynamically determined type** (DST), meaning that its size is unknown at compile time.  
 Therefore, you cannot create a variable of type `str` without using a pointer or reference, since the compiler does not know how much memory to allocate for such a variable.  
 
-Instead, you use a reference to `str`, i.e. `&str`, which is a **fat pointer**(ptr + len).  
+Instead, you use a reference to `str`, i.e. `&str`, which is a **fat pointer**(`ptr` + `len`).  
 Thus, `&str` has a known size at compile time and can be safely allocated on the *stack*.  
 
 It is possible to get a part of the string using ranges, but this will return a slice of the string.  
@@ -279,7 +280,7 @@ let s1: &str = &s[1..3];;
 This slice does not copy the data, but only **references it**, and includes information about the length of the slice.  
 
 
-### Struct
+### &emsp;&emsp; Struct
 {{ img(src = "/images/rust_memory/rust_memory_struct.png") }}
 
 There are 3 types of structs in Rust  
@@ -290,7 +291,7 @@ There are 3 types of structs in Rust
 A struct with named fields puts `pointers` and `copy types` next to each other on the *stack*.  
 If the vector inside the nums field has elements, they will be allocated on the *heap*.  
 
-### Enum
+### &emsp;&emsp; Enum
 
 {{ img(src = "/images/rust_memory/rust_memory_enum.png") }}
 
@@ -325,7 +326,7 @@ enum Data{
 }
 ```
 
-### Enum with Box
+### &emsp;&emsp; Enum with Box
 `Box` is a pointer to some memory allocated on the *heap*.  
 The most obvious way to optimize the memory of the entire enum is to limit the size of its maximum variant, instead of storing the vector directly in Array, you can store a `pointer to vector`.  
 ``` rust
@@ -341,8 +342,7 @@ In this case, the amount of memory required for this option is halved.
 In the *stack* of the function call, memory will be allocated for `ptr`, to store the memory address to which the vector points.  
 The Heap will store (`ptr`, `cap`, `len`), necessary for representing the vector. At the same time, if the vector contains values, they will also be stored in the *heap*.  
 
-
-### Option
+### &emsp;&emsp; Option
 `None` variant does **not store any values**, only the integer tag `0`  
 `Some` variant **stores the actual data** along with the integer tag `1`  
 
@@ -354,7 +354,7 @@ The value zero can be used to represent the `None` variant, and if the value is 
 Rust uses the **null pointer optimization** for pointer types that can never represent the value 0 (null).  
 This allows `Option<Box<T>>` to take up exactly the same amount of memory as `Box<T>`, because the value `None` is encoded in a null pointer, while `Some(ptr)` is encoded in a non-null pointer to data.  
 
-### Copy vs Move
+### &emsp;&emsp; Copy vs Move
 For `primitive types`, assigning one variable a value to another variable makes a`bit-by-bit` copies those values.  
 This is possible because the values ​​of those variables can be represented using only bytes on the *stack*.  
 
@@ -371,7 +371,7 @@ In the case where it is necessary to assign the value of the vector `v` to anoth
 If it is necessary to create a variable that will own a **full copy of the vector data** with a new allocation of data on the *heap*, it is necessary to explicitly call the `clone()` method.  
 In this case, each variable owns its own memory area with the same data.  
 
-### Reference Counter (Rc)
+### &emsp;&emsp; Reference Counter (Rc)
 
 When you want a **single value** to have **multiple owners**.  
 In most cases, you can use regular references to share values, but the problem is that when an owner goes out of scope, you can't use those references anymore.  
@@ -398,27 +398,27 @@ let v2 = v.clone();
 * when each owner goes out of scope, the reference counter is decremented, and when it reaches `0`, all data on the *heap* is deallocated.
 * the value that `Rc` points to **cannot be changed**.
 
-### Send and Sync
+### &emsp;&emsp; Send and Sync
 `Send` - means that a value of this type **can be moved** from one thread to another.  
 `Sync` - means that multiple **threads can share** a value of this type using a shared reference.  
 `Rc` - is not send\sync because if multiple threads have `Rc` - an attempt to increment a shared counter may result in a `data race`.  
 
 {{ img(src = "/images/rust_memory/rust_memory_rc_multithread.png") }}
 
-### Arc
+### &emsp;&emsp; Arc
 If you need `shared data between threads` - you need to use `Atomic Reference Counter (Arc)`.  
 It works the same way as `Rc`, but changing the counter is an **atomic operation**, which can be safely performed from multiple threads.  
 However, you have to pay a little performance for atomicity.  
 By default, `Arc` is immutable, even if multiple threads have a pointer to the same data - they are **not allowed to change it**.  
 
-### Mutex
+### &emsp;&emsp; Mutex
 If you need `mutable access` to shared data between multiple threads - you can wrap `Mutex` inside `Arc`.
 {{ img(src = "/images/rust_memory/rust_memory_arc_multithread.png") }}
 Now, if two threads try to access the same data, they will first need to get a `lock on that data.`  
 And only one thread will be able to access the data to modify it.  
 
 
-### Trait Object
+### &emsp;&emsp; Trait Object
 A pointer to a trait type is called a `Trait Object`  
 There are several ways to convert a concrete type to a `Trait Object`, both of which convert a vector of u8 to an object that implements `trait Write`.  
 

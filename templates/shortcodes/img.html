@@ -9,7 +9,7 @@
 
 {% if is_gif %}
     {% set image_full_url = src %}
-{% elif src is ending_with(".jpg") or src is ending_with(".jpeg") %}
+{% elif src is ending_with(".jpg") or src is ending_with(".jpeg") or src is ending_with(".png") %}
     {% set image_full = resize_image(path=src, width=1920, height=1920, op="fit") %}
     {% set image_full_url = image_full.url %}
 {% else %}

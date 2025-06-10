@@ -1,6 +1,6 @@
 {% set image_thumb = resize_image(path=path, width=360, height=360, op="fit", format="webp") %}
 
-{% if path is ending_with(".jpg") or path is ending_with(".jpeg") %}
+{% if path is ending_with(".jpg") or path is ending_with(".jpeg") or path is ending_with(".png") %}
 
 {% set image_full = resize_image(path=path, width=1920, height=1920, op="fit") %}
 
