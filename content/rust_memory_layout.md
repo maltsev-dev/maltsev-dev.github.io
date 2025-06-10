@@ -179,8 +179,8 @@ The size of all composite types is in order, but with alignment taken into accou
 * aligned size = 4 * 3 = `12`
 
 ``` rust
-	size_of::<(char, u8, i32)>();   // 12
-	align_of::<(char, u8, i32)>();  // 4
+size_of::<(char, u8, i32)>();   // 12
+align_of::<(char, u8, i32)>();  // 4
 ```
 
 ### Reference
@@ -193,7 +193,7 @@ The size of all composite types is in order, but with alignment taken into accou
 ### Array
 
 ``` rust
-	let a: [i32; 3] = [55, 66, 77];
+let a: [i32; 3] = [55, 66, 77];
 ```
 An array has a **fixed size** (unchangeable after creation), and this size **is part of the type**.  
 Values ​​of an array type are strictly of the **same type** and are placed one after another on the *stack*.  
@@ -201,7 +201,7 @@ Values ​​of an array type are strictly of the **same type** and are placed o
 ### Vector\
 
 ``` rust
-	let v: Vec<i32> = vec![55, 66, 77];
+let v: Vec<i32> = vec![55, 66, 77];
 ```
 Alternative to **resizeable** array  
 Vector will store 3 pointers `(ptr, len, cap)` in *stack*.
@@ -387,7 +387,6 @@ let v: Rc<Vec<String> = Rc::new(vec![
 ]);
 
 let v2 = v.clone();
-
 ```
 
 {{ img(src = "/images/rust_memory/rust_memory_rc.png") }}
@@ -440,7 +439,6 @@ use std::io::Write;
     fn writer(w: &mut dyn Write){
         ...
     }
-
 ```
 
 In memory, `Trait Object` is a **fat pointer** of two pointers (`data pointer` + `vtable pointer`)  
