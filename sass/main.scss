@@ -79,17 +79,21 @@ p {
 }
 
 figure {
-  display: table;
+  display: block; /* Измените с 'table' на 'block' */
   max-width: 100%;
-  margin: 25px 0;
+  margin: 25px 0; /* Сохраняем вертикальные отступы */
 
   &.left {
+    margin-right: auto; /* Добавляем центрирование для figure */
+    margin-left: 0;
     img {
       margin-right: auto;
     }
   }
 
   &.center {
+    margin-left: auto;
+    margin-right: auto;
     img {
       margin-left: auto;
       margin-right: auto;
@@ -97,6 +101,8 @@ figure {
   }
 
   &.right {
+    margin-left: auto;
+    margin-right: 0;
     img {
       margin-left: auto;
     }
