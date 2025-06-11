@@ -31,11 +31,13 @@ menu_items = [
     { name = "tags", url = "$BASE_URL/tags" },
     { name = "archive", url = "$BASE_URL/archive" },
     { name = "embedded", url = "$BASE_URL/tags/embedded/" },
-    { name = "about", url = "$BASE_URL/about" },
     { name = "🌐bookmarks", url = "$BASE_URL/bookmarks" },
-    { name = "Github", url = "https://github.com/maltsev-dev", newtab = true},
-    { name = "Linkedin", url = "https://www.linkedin.com/in/a-maltsev/", newtab = true},
+    { name = "about", url = "$BASE_URL/about" },
+    { name = "GitHub Portfolio", url = "https://github.com/maltsev-dev", newtab = true},
+    { name = "Follow on Linkedin", url = "https://www.linkedin.com/comm/mynetwork/discovery-see-all?usecase=PEOPLE_FOLLOWS&followMember=a-maltsev", newtab = true},
+    { name = "CV.pdf", url = "https://github.com/maltsev-dev/maltsev-dev.github.io/blob/main/static/Curriculum_Vitae_-_Anatoly_Maltsev.pdf", newtab = true },
 ]
+
 enable_post_view_navigation = true
 post_view_navigation_prompt = "Read other posts?"
 use_full_hack_font = true
