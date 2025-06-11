@@ -1,7 +1,22 @@
 {% set is_gif = src is ending_with(".gif") %}
 
-{% set image_thumb_url = src %}
-{% set image_full_url = src %}
+{% if is_gif %}
+    {% set image_thumb_url = src %}
+{% else %}
+    {% set image_thumb = resize_image(path=src, width=720, height=720, op="fit", format="webp") %}
+    {% set image_thumb_url = image_thumb.url %}
+{% endif %}
+
+{% if is_gif %}
+    {% set image_full_url = src %}
+{% elif src is ending_with(".jpg") or src is ending_with(".jpeg") or src is ending_with(".png") %}
+    {% set image_full = resize_image(path=src, width=1920, height=1920, op="fit") %}
+    {% set image_full_url = image_full.url %}
+{% else %}
+    {% set image_full = resize_image(path=src, width=1920, height=1920, op="fit", format="webp") %}
+    {% set image_full_url = image_full.url %}
+{% endif %}
+Add comment
 
 {% if src %}
 <figure class="{% if position %}{{ position }}{% else -%} center {%- endif %}">
