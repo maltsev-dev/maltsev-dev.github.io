@@ -1,23 +1,18 @@
 +++
-title = "actix_web server"
+title = "🌐 Actix-Web Server"
 date = "2024-10-19"
 
 [taxonomies]
 tags = ["rust", "actix_web", "project"]
 +++
 
-Experiments with [Actix-web](https://crates.io/crates/actix-web)  
-This is a basic representation of a backend web-server, designed for use in web applications thanks to its support for WebAssembly.
+**A lightweight backend service built with modern Rust web technologies, ideal for full-stack or API-centric applications.**
 
 <!-- more -->
+
 ---
 
-# &emsp;&emsp;&emsp; backend server
-
-[📚 raw_web_server](https://github.com/maltsev-dev/raw_web_server)
-
-**Note service** is a binary crate written in Rust.
-
+[📚 GitHub Repository](https://github.com/maltsev-dev/raw_web_server)
 <h3 style="text-align:center; margin-bottom:8px;">Tools</h3>
 <p align="center" style="margin:0; padding:0;">
   <img style="display:inline-block; vertical-align:middle;"
@@ -34,32 +29,101 @@ This is a basic representation of a backend web-server, designed for use in web 
        src="https://github.com/chemyl/note_service/actions/workflows/rust.yml/badge.svg" alt="Build status"/>
 </p>
 
-## &emsp;&emsp;&emsp; 🚀 Features
-- 🧮 Async CRUD operations.
-- 🌐 Actix-Web core.
-- ♻️ sqlx support.
+This project showcases a **RESTful backend service** built with the [Actix-Web](https://crates.io/crates/actix-web) framework, ideal for handling fast, asynchronous HTTP operations.
 
-## &emsp;&emsp;&emsp; 📦 Installation
-1. Make sure you have [Rust](https://www.rust-lang.org/tools/install)
-2. Install `sqlx` tools:
+It uses modern, production-ready Rust technologies like:
+
+* `actix_web` for the web server
+* `tokio` for async runtime
+* `sqlx` for SQL database interaction (with SQLite in this case)
+* `serde` for data serialization
+
+---
+
+## 🔧 Architecture Overview
+
+**Note Service** is structured as a standalone binary crate designed to perform common backend tasks:
+
+* Asynchronous request handling
+* Persistent database support via SQLite
+* JSON serialization/deserialization
+* RESTful route definitions
+* Clean separation of logic and data access
+
+---
+
+## 🚀 Features
+
+* ✅ **Fully async** using `tokio` and `actix-web`
+* 📄 **CRUD API** for a simple note model:
+
+  * `GET /notes`
+  * `GET /notes/{id}`
+  * `POST /notes`
+  * `PUT /notes/{id}`
+  * `DELETE /notes/{id}`
+* 🗃️ **Database abstraction** via `sqlx`
+* 🧪 **Ready-to-run with migrations and seed setup**
+* 🧼 **Structured error handling and API responses**
+
+---
+
+## ⚙️ Installation & Setup
+
+### 1. Install Rust (if not already):
+
+```bash
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+```
+
+### 2. Install `sqlx` CLI:
+
 ```bash
 cargo install sqlx-cli --features sqlite
-cargo sqlx prepare 
 ```
-3. Run `sqlx` migration
+
+### 3. Prepare the database:
+
 ```bash
+cargo sqlx prepare
 cargo sqlx migrate run
 ```
-4. Build and run the project
+
+### 4. Run the server:
+
 ```bash
 cargo build
 cargo run
 ```
-5. Open bind http://127.0.0.1:8080
 
-6. Use paths
-* GET `/notes` 
-* GET `/notes/{id}` 
-* POST `/notes`
-* PUT`/notes/{id}` 
-* DELETE `/notes/{id}`
+### 5. Open your browser:
+
+```
+http://127.0.0.1:8080
+```
+
+---
+
+## 🌐 API Endpoints
+
+| Method | Endpoint      | Description             |
+| ------ | ------------- | ----------------------- |
+| GET    | `/notes`      | List all notes          |
+| GET    | `/notes/{id}` | Get a specific note     |
+| POST   | `/notes`      | Create a new note       |
+| PUT    | `/notes/{id}` | Update an existing note |
+| DELETE | `/notes/{id}` | Delete a note           |
+
+---
+
+## 💡 Use Cases
+
+* As a lightweight backend for a frontend SPA (e.g., Yew, React)
+* Great for learning real-world Actix patterns
+* Boilerplate for full-stack Rust apps with WebAssembly frontend
+
+---
+
+## 📄 License
+
+This project is licensed under the **MIT License** — free for personal or commercial use.

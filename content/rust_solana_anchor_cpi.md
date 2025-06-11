@@ -1,68 +1,141 @@
 +++
-title = "Anchor CPI"
+title = "🔗 Anchor CPI – Cross-Program Invocation on Solana"
 date = "2025-03-19"
 
 [taxonomies]
 tags = ["rust", "solana", "anchor", "project"]
 +++
 
-Cross Program Invocations (CPIs) allow one program to invoke instructions on another program.  
+**A working example of Anchor-based CPI (Cross Program Invocation) — when one Solana program calls another.**
+This project demonstrates best practices for inter-program communication using the Anchor framework.
+
 <!-- more -->
+
 ---
-[📚 Anchor CPI Example](https://github.com/maltsev-dev/anchor_cpi)
 
-The process of implementing a CPI is the same as that of creating a instruction where you must specify:
-    1. The program ID of the program being called
-    2. The accounts required by the instruction
-    3. Any instruction data required as arguments
+[📚 GitHub Repository](https://github.com/maltsev-dev/anchor_cpi)
 
-This pattern ensures the CPI has all the information needed to invoke the target program's instruction.
+This project illustrates how to structure two Solana programs (`program-a` and `program-b`) where **Program A** performs a CPI to **Program B**, and also interacts with **System Program** (for SOL transfers).
 
-The System Program's transfer instruction requires two accounts:
+CPI (Cross-Program Invocation) is a critical building block for modular, reusable smart contracts on Solana. This example is ideal for:
 
-    `from`: The account sending SOL.
-    `to`: The account receiving SOL.
+* Developers learning advanced Solana development
+* Those building protocol layers or modular dApps
+* Projects where multiple programs need to coordinate actions
 
-### &emsp;&emsp;&emsp; Anchor CPI
-_invoke_signed()_
+---
 
-#### &emsp;&emsp;&emsp; Setup
+## 🔧 Stack & Tools
+
+* 🦀 **Rust** — primary language
+* ⚓ **Anchor** — Solana framework
+* 🔁 **CPI Pattern**
+* 🔍 **Transaction Explorer**
+* 🧪 **Anchor tests with local validator**
+
+---
+
+## ✨ Features
+
+1. **Call Another Program from Your Program**
+
+   * CPI pattern with `invoke_signed()` in Anchor
+
+2. **Pass Accounts & Instruction Data**
+
+   * Structured instruction building for inner program calls
+
+3. **Work with System Program**
+
+   * Demonstrates how to invoke built-in programs (e.g., SOL transfers)
+
+4. **Observe Execution Flow**
+
+   * View log output to understand program interaction sequence
+
+---
+
+## 🚀 Setup & Usage
+
+### 1. 🏗️ Initialize Projects
+
+Create two Anchor programs:
+
 ```bash
-1. anchor init program-a  cd program-b
-2. anchor new program-b
-3. Cargo.toml (program-a) add dependencies to program-b -> program-b = {path = "../program-b", features= ["cpi"]}
-4. Anchor.toml - set resolution to false
+anchor init program-a
+cd ..
+anchor init program-b
 ```
-#### &emsp;&emsp;&emsp; Run tests
+
+### 2. 🔁 Configure Dependencies
+
+In `Cargo.toml` of `program-a`, add:
+
+```toml
+program-b = { path = "../program-b", features = ["cpi"] }
+```
+
+In `Anchor.toml` of `program-a`, disable auto-resolution of dependencies:
+
+```toml
+[programs.localnet]
+program_b = "..." # Your local key
+
+[workspace.dependencies]
+program-b = { path = "../program-b", features = ["cpi"], resolution = false }
+```
+
+---
+
+### 3. 🧪 Run Tests
+
+Build and test CPI interaction:
+
 ```bash
 anchor build && anchor test
 ```
 
-#### &emsp;&emsp;&emsp; Start Local Validator
-```rust
+---
+
+### 4. 🧱 Start Local Validator
+
+```bash
 cd .anchor/
 solana-test-validator
 ```
 
-#### &emsp;&emsp;&emsp; Explorer
-1. open explorer.solana  
-2. switch to localhost  
-3. find test output transaction signature
+---
 
-#### &emsp;&emsp;&emsp; Expected Output
+### 5. 🔍 View Transactions
+
+1. Open [explorer.solana.com](https://explorer.solana.com)
+2. Switch to "Localhost" network
+3. Find your transaction signature in test output logs
+
+---
+
+## 🖥️ Sample Logs
+
 ```bash
-> Program logged: "Instruction: Initialize"
-> Program logged: "Greetings from: Program A"
-> Program invoked: System Program
-> Program returned success
-> Program invoked: Unknown Program (6grzSV1SpnQjt9Jf7cMtqQDUqaC7SZDXvKE5GCGrVHxZ)
-> Program logged: "Instruction: Initialize"
-> Program logged: "Greetings from: Progrma B"
-> Program consumed: 676 of 190087 compute units
-> Program returned success
-> Program consumed: 10862 of 200000 compute units
-> Program returned success
+Program logged: "Instruction: Initialize"
+Program logged: "Greetings from: Program A"
+Program invoked: System Program
+Program returned success
+Program invoked: Unknown Program (...)
+Program logged: "Instruction: Initialize"
+Program logged: "Greetings from: Program B"
+Program consumed: 676 of 190087 compute units
+Program returned success
 ```
 
-#### &emsp;&emsp;&emsp; **License**
-This project is licensed under the MIT License 
+These logs show:
+
+* Instruction flow through both programs
+* System-level interaction
+* Success/failure of each step
+
+---
+
+## 📄 License
+
+This project is licensed under the **MIT License** — free to use, modify, and extend.

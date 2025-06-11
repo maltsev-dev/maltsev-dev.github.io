@@ -1,16 +1,16 @@
 +++
-title = "WASM here"
+title = "Wasm-based Application: Tax Calculator"
 date = "2024-10-05"
 
 [taxonomies]
 tags = ["rust", "webassembly", "project"]
 +++
 
-The result of an experiment with a [wasm-bindgen](https://crates.io/crates/wasm-bindgen) to create a WebAssembly Program.  
+
+An experiment using [wasm-bindgen](https://crates.io/crates/wasm-bindgen) to create a WebAssembly program.  
 ![wasm-bindgen Version](https://img.shields.io/badge/wasm_bingen-0.2.95%20-orange)
+
 <!-- more -->
----
-### &emsp;&emsp;&emsp; Wasm-based app. Tax Calculator
 
 [📚 Tax WebAssembly](https://github.com/maltsev-dev/tax_app_webassembly)
 
@@ -24,16 +24,45 @@ The result of an experiment with a [wasm-bindgen](https://crates.io/crates/wasm-
        src="https://github.com/chemyl/tax_app_webassembly/actions/workflows/rust.yml/badge.svg" alt="Build Status"/>
 </p>
 
-- create library crate -> `cargo new project --lib`
-- add library annotation for compiler ->` [lib] crate-type = ["cdylib"]`
-- create skeleton inside `index.html` and extend `script block` with logic of working with wasm inclusion
-- install wasm-pack -> `cargo install wasm-pack`
-- build project with wasm-pack -> `wasm-pack build --target web`
-- include web server -> `npm install -g http-server`
-- start server in project root folder -> `http-server .`
+### How to build and run:
+
+* Create a library crate:
+
+  ```bash
+  cargo new project --lib
+  ```
+* Add crate type annotation for the compiler:
+
+  ```toml
+  [lib]
+  crate-type = ["cdylib"]
+  ```
+* Create a basic `index.html` skeleton and extend the script block to handle loading and interacting with the wasm module.
+* Install wasm-pack:
+
+  ```bash
+  cargo install wasm-pack
+  ```
+* Build the project with wasm-pack:
+
+  ```bash
+  wasm-pack build --target web
+  ```
+* Install a simple web server globally (if not installed):
+
+  ```bash
+  npm install -g http-server
+  ```
+* Start the web server from the project root folder:
+
+  ```bash
+  http-server .
+  ```
 
 {{ img(src = "/media/wasm_tax_app.gif") }}
 
+---
 
-#### &emsp;&emsp;&emsp; **License**
-This project is licensed under the MIT License 
+#### **License**
+
+This project is licensed under the MIT License.

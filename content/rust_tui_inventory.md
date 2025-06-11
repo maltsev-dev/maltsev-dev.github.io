@@ -1,19 +1,29 @@
 +++
-title = "TUI Inventory App"
+title = "🧾 TUI Inventory App"
 date = "2024-10-11"
 
 [taxonomies]
 tags = ["rust", "tui", "project"]
 +++
 
-The result of an experiment with a [Cursive](https://crates.io/crates/cursive) to create a Text User Interface(TUI) program in the style of old terminal programs.  
+**An old-school terminal-based inventory management system built with Rust and [Cursive](https://crates.io/crates/cursive).**  
 ![cursive Version](https://img.shields.io/badge/cursive-0.21.1%20-orange)
+
 <!-- more -->
+
 ---
 
-### &emsp;&emsp;&emsp; Text-based User Interface app. Inventory System
+## 🖥️ Text-based User Interface (TUI) Inventory System
 
-[📚 Inventory System](https://github.com/maltsev-dev/inventory_system_app)
+[📚 GitHub Repository](https://github.com/maltsev-dev/inventory_system_app)
+
+This project is an experiment in building a **Text User Interface** application using the [Cursive](https://github.com/gyscos/cursive) library — a powerful TUI framework for Rust. Inspired by classic terminal apps, it offers a practical solution for managing a simple inventory of products with full keyboard interaction.
+
+Ideal for Rust learners and enthusiasts exploring terminal UI development.
+
+---
+
+### ⚙️ Tools & Stack
 
 <h3 style="text-align:center; margin-bottom:8px;">Tools</h3>
 <p align="center" style="margin:0; padding:0;">
@@ -25,19 +35,65 @@ The result of an experiment with a [Cursive](https://crates.io/crates/cursive) t
        src="https://github.com/chemyl/inventory_system_app/actions/workflows/rust.yml/badge.svg" alt="Build Status"/>
 </p>
 
-### &emsp;&emsp;&emsp; Features
- 1. Create and save new item 
-    * product type
-    * quantity
-    * price per unit
- 2. Show all items 
-    * total price
-    * sales tax
- 3. Delete item by ID
- 4. DB located at `const FILE_PATH: &str = "products.json";`
+---
+
+## ✨ Features
+
+1. **Create and Save Items**
+
+   * Define product type
+   * Set quantity
+   * Input price per unit
+
+2. **Display All Items**
+
+   * View inventory in a structured list
+   * Automatically calculate total price and sales tax
+
+3. **Delete Items**
+
+   * Remove an item by specifying its ID
+
+4. **Local JSON-based Database**
+
+   * Persistent storage using a flat file database
+   * File path defined as:
+
+     ```rust
+     const FILE_PATH: &str = "products.json";
+     ```
+
+---
+
+### 🖼️ Demo
 
 {{ img(src = "/media/tui_inventory_app.gif") }}
 
+---
 
-#### &emsp;&emsp;&emsp; **License**
-This project is licensed under the MIT License 
+## 📦 Installation & Run
+
+1. **Clone the Repository**
+
+   ```bash
+   git clone https://github.com/maltsev-dev/inventory_system_app
+   cd inventory_system_app
+   ```
+
+2. **Build the Project**
+
+   ```bash
+   cargo build --release
+   ```
+
+3. **Run the App**
+
+   ```bash
+   cargo run
+   ```
+
+---
+
+## 📄 License
+
+This project is licensed under the **MIT License** — free to use, modify, and distribute.
