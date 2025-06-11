@@ -1,17 +1,19 @@
 +++
-title = "The Memory Management Landscape in Rust"
-date = "2025-06-01"
+title = "Understanding Memory Management in Rust: From Dynamically Sized Types to Fat Pointers"
+date = "2025-06-09"
 
 [taxonomies]
 tags = ["rust", "memory", "variables"]
 +++
 
-Why can't we create a pure `Dynamically Sized Types`?  
-What does the compiler actually use to `allocate memory` for variables?  
-Where does `ptr` actually point from the **fat pointer** of a string literal?  
-And what does `libc` have to do with it?  
 
-**And much more in my new article on memory management for the Rust Type System.**
+Rust’s approach to memory management is both powerful and intricate.  
+Why is it impossible to create purely Dynamically Sized Types?  
+How does the Rust compiler decide where and how to allocate memory for variables?  
+What exactly does a pointer inside a fat pointer reference, particularly for string literals?  
+And what role does the libc library play in this ecosystem?
+
+🟠 In this article, we’ll dive deep into the memory management landscape of Rust’s type system, uncovering these questions and more to provide a clearer understanding of how Rust handles memory under the hood.
 
 <!-- more -->
 ---

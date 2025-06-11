@@ -1,18 +1,17 @@
 +++
-title = "Wasm-based Application: Tax Calculator"
+title = "🖥️ Wasm-based Application: Tax Calculator"
 date = "2024-10-05"
 
 [taxonomies]
 tags = ["rust", "webassembly", "project"]
 +++
 
-
 An experiment using [wasm-bindgen](https://crates.io/crates/wasm-bindgen) to create a WebAssembly program.  
 ![wasm-bindgen Version](https://img.shields.io/badge/wasm_bingen-0.2.95%20-orange)
 
 <!-- more -->
 
-[📚 Tax WebAssembly](https://github.com/maltsev-dev/tax_app_webassembly)
+[📚 GitHub Repository]](https://github.com/maltsev-dev/tax_app_webassembly)
 
 <h3 style="text-align:center; margin-bottom:8px;">Tools</h3>
 <p align="center" style="margin:0; padding:0;">
@@ -65,4 +64,4 @@ An experiment using [wasm-bindgen](https://crates.io/crates/wasm-bindgen) to cre
 
 #### **License**
 
-This project is licensed under the MIT License.
+This project is licensed under the [MIT License](https://github.com/maltsev-dev/tax_app_webassembly?tab=MIT-1-ov-file).

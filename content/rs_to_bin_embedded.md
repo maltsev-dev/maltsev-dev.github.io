@@ -1,13 +1,16 @@
 +++
-title = "From Rust Source to Embedded Executable"
+title = "From Rust Source to Embedded Executable: A Deep Dive into the Compilation Process for Embedded Systems"
 date = "2025-06-05"
 
 [taxonomies]
 tags = ["rust", "compilers", "embedded"]
 +++
 
-This is the second part of [compilation stages and optimizations of Rust code](https://maltsev-dev.github.io/rs-to-bin/) but now for embedded systems.
-Embedded systems often operate with limited resources (memory, CPU power) and without an operating system (bare-metal), which requires lower-level control and careful optimization.
+This article is the second part of my exploration into the stages and optimizations of [Rust compilation]((https://maltsev-dev.github.io/rs-to-bin/)), focusing now on embedded systems development.  
+Embedded environments impose unique constraints such as limited memory, lack of an operating system, and strict real-time requirements.  
+Consequently, compiling Rust code for these systems demands special considerations — from the removal of the standard library to precise target specifications and custom linker scripts.  
+
+🟠 Here, we’ll walk through the Rust compilation pipeline with a focus on how it adapts for bare-metal, resource-constrained embedded platforms.
 
 <!-- more -->
 ---

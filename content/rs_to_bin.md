@@ -1,23 +1,15 @@
 +++
-title = "From Rust Source to Executable"
+title = "From Rust Source Code to Optimized Executable: Inside the Rust Compiler Pipeline"
 date = "2025-05-27"
 
 [taxonomies]
 tags = ["rust", "compilers", "aot"]
 +++
 
-The `rustc` compiler manages a complex, multi-stage process that transforms human-readable Rust source code into highly optimized, machine-executable binaries.  
-This multi-layered pipeline is fundamental to Rust's core promises: memory safety without GC, high performance, and robust concurrency.  
-* `Tokenization` of Source Code
-* Building an Abstract Syntax Tree (`AST`)
-* `Macro` Expansion and Name Resolution
-* Transformation to `HIR`: Desugaring of syntactic constructions
-* Providing a `Type System`
-* Converting to `MIR`: Generating a Control Flow Graph
-* `Borrow Checker`
-* Monomorphization and generation of `LLVM IR`
-* Generation of machine code and `object files`
-* `Linking`: Building the final executable file
+Rust’s compilation process is a sophisticated journey that converts human-readable source code into highly efficient machine-executable binaries.  
+This multi-stage pipeline ensures Rust’s guarantees of memory safety, zero-cost abstractions, and concurrency without sacrificing performance.  
+
+🟠 In this article, we’ll explore each key step, from tokenization and macro expansion to borrow checking, LLVM optimizations, and final linking—revealing how Rust transforms your code into a reliable executable.
 
 <!-- more -->
 ---
@@ -257,4 +249,3 @@ The final stage of the compilation process involves combining all the compiled *
 | **HIR**     | AST                     | Desugared AST; more compiler-friendly; includes implicit elements (e.g., omitted lifetimes); uses `DefId`/`HirId` for stability. | Type inference; Type checking; Trait resolution.                                      | The `for` loop is transformed into `loop + match`.       | `rustc_hir`            |
 | **MIR**     | HIR (through THIR)      | Radically simplified; based on Control Flow Graph (CFG); no nested expressions; explicit types; generic.                         | Checking for borrows; Checking data flow; MIR optimizations; Calculating constants. | High-level operations are broken down into basic blocks. | `rustc_middle/src/mir` |
 | **LLVM IR** | MIR                     | Typed assembly language; platform independent; rich in LLVM optimizations.                                                       | Monomorphization; LLVM optimizations; Machine code generation.                                                                                      | Generics are transformed into specific instances.        | `rustc_codegen_ssa`    |
-

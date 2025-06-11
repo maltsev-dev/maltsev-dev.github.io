@@ -1,5 +1,5 @@
 +++
-title = "Actix-web AI Agent"
+title = "🤖 Actix-web AI Agent"
 date = "2025-01-26"
 
 [taxonomies]

@@ -1,14 +1,15 @@
 +++
-title = "Critical Compression of Embedded Firmware"
+title = "Critical Compression of Embedded Firmware: Understanding cargo size and Linker Strategies in Rust"
 date = "2025-05-29"
 
 [taxonomies]
 tags = ["rust", "embedded"]
 +++
 
-In this article I want to look at `cargo size` input.  
-Touch on linker scripts.  
-And identify working strategies for optimizing binary file size in embedded Rust projects.  
+In embedded Rust development, minimizing the size of the compiled firmware is essential due to the limited memory resources of microcontrollers.  
+This article explores how to analyze binary sizes using the `cargo size` tool, the structure of ELF binaries produced during compilation, and the importance of linker scripts in controlling memory layout.  
+
+🟠 Focusing on the ARM Cortex-M0 target, we will discuss practical strategies to optimize and compress firmware for resource-constrained embedded systems.
 
 <!-- more -->
 ---
