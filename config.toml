@@ -35,7 +35,7 @@ menu_items = [
     { name = "about", url = "$BASE_URL/about" },
     { name = "GitHub", url = "https://github.com/maltsev-dev", newtab = true},
     { name = "Linkedin", url = "https://www.linkedin.com/comm/mynetwork/discovery-see-all?usecase=PEOPLE_FOLLOWS&followMember=a-maltsev", newtab = true},
-    { name = "CV.pdf", url = "https://github.com/maltsev-dev/maltsev-dev.github.io/raw/main/static/Curriculum_Vitae_-_Anatoly_Maltsev.pdf", newtab = true },
+    { name = "cv.pdf", url = "https://github.com/maltsev-dev/maltsev-dev.github.io/raw/main/static/CV_Anatoly_Maltsev.pdf", newtab = true },
 ]
 
 enable_post_view_navigation = true

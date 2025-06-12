@@ -15,6 +15,7 @@ YouTube🔴 [Build Embedded with Rust](https://www.youtube.com/watch?v=x7LQevYn7
 #### 🌐 Electronics  
 [🤖 tinkercad](https://www.tinkercad.com/)  
 [🤖 wokwi](https://wokwi.com/)  
+[🤖 dcaclab](https://dcaclab.com/)
 
 [🌐 lastminuteengineers](https://lastminuteengineers.com/electronics/basic-electronics/)  
 [🌐 Digital Design Guide ](https://tinytapeout.com/digital_design/)  
