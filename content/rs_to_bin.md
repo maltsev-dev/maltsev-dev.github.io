@@ -15,7 +15,7 @@ This multi-stage pipeline ensures Rust’s guarantees of memory safety, zero-cos
 ---
 ### &emsp;&emsp;&emsp; I. Initial code processing and abstract representation
 
-- **A. Lexical Analysis (Lexing): Tokenization of Source Code**
+- **A. Lexical Analysis (Lexing): Tokenization of Source Code**  
     The very first step in the compilation pipeline is *lexical analysis*, or lexing.  
     The compiler takes the program as raw `Unicode UTF-8` text and converts it into a more convenient data format: `TokenStream`.
 
@@ -23,7 +23,7 @@ This multi-stage pipeline ensures Rust’s guarantees of memory safety, zero-cos
     
     Procedural macros that operate on `TokenStream` need access to the underlying token structure, including their ranges, to generate correct and properly attributed code. By preserving this level of detail from the very beginning, `rustc` lays a solid foundation for advanced tooling and enables the sophisticated compile-time code generation that is the hallmark of the Rust language.
     
-- **B. Syntax analysis (parsing): Building an Abstract Syntax Tree (AST)**
+- **B. Syntax analysis (parsing): Building an Abstract Syntax Tree (AST)**  
     The stream of tokens produced by the lexer is then passed to the parser, which transforms this *linear sequence* into a *hierarchical*, tree-like structure known as the Abstract Syntax Tree (AST).  
     Each node in the AST directly represents a syntactic construct in a Rust program (e.g., an expression, a statement, a function definition). Each AST node is associated with a `Span`, which links it to its original location in the source text, and a `NodeId`.
     
@@ -33,7 +33,7 @@ This multi-stage pipeline ensures Rust’s guarantees of memory safety, zero-cos
     
     The AST serves as the primary input for macro expansion. Macros, especially the declarative `macro_rules!`, work by matching patterns against the syntactic structure of the input code. If the AST were already heavily desugared or transformed, macros would lack the rich syntactic context needed to perform their transformations efficiently.
 
-- **C. Early Semantic Transitions: Macro Expansion and Name Resolution**
+- **C. Early Semantic Transitions: Macro Expansion and Name Resolution**  
     Macro expansion and name resolution are critical early semantic transition that are closely coupled with the lexical and syntactic analysis steps. They are performed concurrently or iteratively as the compiler builds the AST.
     
     **Macro expansion:** Macros are a key metaprogramming feature in Rust, allowing code to generate other code at compile time, and dynamically modify the structure of the source code. It is important to note that macros are expanded _before_ the compiler has fully interpreted the semantic meaning of the code.
