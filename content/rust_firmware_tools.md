@@ -6,6 +6,10 @@ date = "2025-06-13"
 tags = ["rust", "embedded", "tools"]
 +++
 
+🟠 Tools, debugging and analysis
+<!-- more -->
+---
+
 ### &emsp;&emsp;&emsp; Tools for development
 
 - **`[rustup]`:** Manages the Rust toolchains (stable, beta, nightly) and target platform support (e.g. `thumbv7m-none-eabi`, `riscv64gc-unknown-none-elf`).  

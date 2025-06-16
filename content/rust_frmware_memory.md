@@ -6,6 +6,18 @@ date = "2025-06-16"
 tags = ["rust", "embedded", "memory"]
 +++
 
+In this article, I will explore:
+
+* How Rust ensures memory safety in no_std environments
+* What memory allocation strategies are viable on modern embedded targets
+* Which patterns help minimize memory usage without sacrificing reliability
+* The current state of Rust adoption in trustworthy embedded systems
+
+🟠 If you work with hardware, write firmware, or are simply interested in the topic of memory safety, then this text is for you.
+
+<!-- more -->
+---
+
 ## &emsp;&emsp;&emsp; The cost of a defect
 The better we become as developers, the less we are willing to tolerate bugs. Users even more so. Today, no one is willing to wait, especially if money has been paid for the software. Everything must work stably, instantly and always.  
 
@@ -30,14 +42,7 @@ It provides low-level control and deterministic behavior, but at the same time d
 Memory safety is built into the language architecture itself.  
 Therefore, Rust's unique value proposition fully meets the needs for safe and modern software for critical systems.  
 
-In this article, I will explore:
-
-* How Rust ensures memory safety in no_std environments
-* What memory allocation strategies are viable on modern embedded targets
-* Which patterns help minimize memory usage without sacrificing reliability
-* The current state of Rust adoption in trustworthy embedded systems
-
-If you work with hardware, write firmware, or are simply interested in the topic of memory safety, then this text is for you.
+---
 
 ## &emsp;&emsp;&emsp; 1. A quick overview of Rust's memory fundamentals
 
@@ -50,7 +55,7 @@ If you work with hardware, write firmware, or are simply interested in the topic
 | **Stack** | Memory for local variables and function call frames; LIFO; fixed size, known at compile time. | Random Access Memory (RAM) | Extremely fast and predictable allocation; minimizes fragmentation. |
 | **Heap** | Memory for dynamically allocated data; size determined at run time. | Random Access Memory (RAM) | Flexibility for dynamic structures (if explicitly managed); slower than stack. |
 
-
+---
 ## &emsp;&emsp;&emsp; 2. `no_std`: the foundation for embedded Rust
 
 The `no_std` attribute specifies that the crate will reference [`libcore`](https://doc.rust-lang.org/core/) instead of [`libstd`](https://doc.rust-lang.org/std/).   
@@ -69,7 +74,7 @@ The `no_std` attribute specifies that the crate will reference [`libcore`](https
 | `core::slice` | ✅ | Working with slices |
 | `core::str` | ✅ | Support for string slices |
 
-* The `no_std` runtime is not just a technical constraint; it serves as a strict contract that enforces a design philosophy focused on minimal overhead and explicit resource management.  
+* The `no_std` runtime is not just a technical constraint - it serves as a strict contract that enforces a design philosophy focused on minimal overhead and explicit resource management.  
 
 | Category | In `std` | In `no_std` | Possible alternative |
 | ---------------------------- | ----------------------------- | -------------------------------- | ------------------------------------------- |
@@ -91,16 +96,16 @@ The `no_std` attribute specifies that the crate will reference [`libcore`](https
 | **Signals, processes, env** | `std::env`, `std::process` | ❌ No | Not applicable |
 | **Randomness** | `rand`, `std::rand` | ❌ No | `rand_core`, hardware generator |
 
-### Optional allocator
+#### Optional allocator
 
 Although the `no_std` environment removes the default allocator, it does not completely disable *dynamic memory allocation* capabilities (e.g. `Vec`, `String`).  
 To reintroduce this capability, the controlled `alloc` gateway from `no_std` must be used.  
 After hooking into this gateway, a **custom allocator** must be **implemented** and **passed** to it `alloc` from the existing crates specifically designed for this purpose, [dlmalloc](https://crates.io/crates/dlmalloc), [buddy_alloc](https://crates.io/crates/buddy-alloc) or [wee_alloc](https://crates.io/crates/wee_alloc). These allocators typically implement the `core::alloc::GlobalAlloc` trait.  
 
-
+---
 ## &emsp;&emsp;&emsp; 3. Memory allocation strategies in constrained environments
 
-### 3.1 Static vs Dynamic Memory Allocation
+#### 3.1 Static vs Dynamic Memory Allocation
 
 * To ensure deterministic memory usage and minimize fragmentation, `static allocation` (global and stack variables) is preferred, since the memory for them is known and allocated at compile time.  
 * On the other hand, using `dynamic allocation` may introduce non-determinism. Using the heap carries the risk of some **memory allocation failures** and **fragmentation** problems.  
@@ -113,10 +118,9 @@ This design approach 🔻*reduces the flexibility* of the solution, but signific
 
 - **Minimize or avoid:** The general best practice is to *avoid dynamic allocations* entirely if possible.
 - **Pre-allocate:** If dynamically sized data is needed, *allocate memory once at startup* and reuse it. For `Vec`s `v.clear()` can clear them while preserving the allocated memory to prevent repeat allocations.
-- **`heapless` crate:** [heapless](https://crates.io/crates/heapless) collections (e.g. `heapless::Vec`) when dynamic resizing is needed but heap usage should be avoided.  
+- **`heapless`:** [heapless](https://crates.io/crates/heapless) collections (e.g. `heapless::Vec`) when dynamic resizing is needed but heap usage should be avoided.  
 The core principle behind heapless is that its data structures are backed by a static memory allocation. For example, you can think of `heapless::Vec` as an alternative version of `std::Vec` with fixed capacity and that can’t be re-allocated on the fly (e.g. via `push()`).
 - **Avoid in interrupts:** It is *strongly recommended* to avoid allocating or freeing memory in interrupt handlers due to potential deadlocks with non-blocking allocators.
-
 
 ### 3.3 Stack in `no_std`
 
@@ -124,7 +128,7 @@ The most common problem that happens with the stack is `stack overflows`, which 
 
 ⭐ Best practices for stack management:
 
-- **Linker scripts:** Linker scripts determine the `memory layout`, including the `RAM` areas for the stack and static data. They can specify stack boundaries, and the build will fail if the segments do not fit. Read more 
+- **Linker scripts:** Linker scripts determine the `memory layout`, including the `RAM` areas for the stack and static data. They can specify stack boundaries, and the build will fail if the segments do not fit.
 - **[flip-link](https://crates.io/crates/flip-link):** A zero-cost stack overflow protection tool for bare-metal Rust.
 - **Hardware Features (MPU/Stack Limit Registers):** Some microcontrollers (e.g. `Cortex-M)` provide memory protection units (`MPU`) or dedicated stack limit registers that can detect stack overflows by throwing a crash exception when the *stack pointer drops below* a certain limit. This changes undefined behavior to a deterministic exception.  
     
@@ -136,10 +140,10 @@ The most common problem that happens with the stack is `stack overflows`, which 
 
 A general recommendation for managing problems like stack overflows is to bring these errors into the **realm of complete determinism**, from UB to guaranteed and predictable failure.  
 
-
+---
 ## &emsp;&emsp;&emsp; 4. Hardware Memory Architectures and Protection
 
-### 4.1 Microcontrollers Memory
+#### 4.1 Microcontrollers Memory
 
 | | | | | |
 |---|---|---|---|---|
@@ -148,16 +152,16 @@ A general recommendation for managing problems like stack overflows is to bring 
 |**SRAM**|Volatile|Stack, Variables|Billions|Very Fast|Contents Undefined at Power-On |
 |**EEPROM**|Non-volatile|Configuration data, rarely changed|100,000|Slower than SRAM|Access is indirect, requiring multiple writes to I/O registers for each byte. |
 
-### 4.2 Memory Layout and Sections
+#### 4.2 Memory Layout and Sections
 
 While Rust provides high-level memory safety, the `linker script` is the critical **low-level component** that translates these abstractions into physical memory addresses.  
 In the absence of OS, `linker` dictates where code and data segments are located in `Flash` and `RAM`, and provides the ability to precisely define `stack`, `heap`, and `static data` regions to ensure that Rust's memory model is correctly implemented on the target hardware.  
 
-With #[export_name], #[no_mangle], and #[link_section], you literally control how the compiled Rust code fits into memory, and what becomes the **entry point** for the hardware. Without this, the firmware won't work.  
+With `#[export_name]`, `#[no_mangle]`, and `#[link_section]`, you literally control how the compiled Rust code fits into memory, and what becomes the **entry point** for the hardware. Without this, the firmware won't work.  
 
-You can 📖 [read more](https://maltsev-dev.github.io/rust-firmware-size/) about the role of the linker and the distribution of data across memory sections in my recent article.  
+*You can 📖 [read more](https://maltsev-dev.github.io/rust-firmware-size/) about the role of the linker and the distribution of data across memory sections in my recent article.*  
 
-### 4.3 Memory Protection Units (MPUs) and Memory Management Units (MMUs)
+#### 4.3 Memory Protection Units (MPUs) and Memory Management Units (MMUs)
 
 * `MPU` is an optional component in `Cortex-M` processors that protects memory regions by defining access permissions (read-only, read-write, no execute).  
 It can detect stack overflows by making the bottom of the stack **inaccessible**, prevent code injections by marking regions as non-executable (`XN`), and isolate application tasks.  
@@ -167,10 +171,10 @@ They allow physical memory to be mapped to virtual memory addresses, enabling fu
 
 Rust's memory safety guarantees are mostly provided at compile time.  
 However, hardware features such as the `MPU` and `stack limit registers` provide a crucial _runtime_ layer of protection, especially against logic errors that can occur in unsafe code.
-
+---
 ## &emsp;&emsp;&emsp; 5. Concurrency and Shared State Management
 
-### 5.1 `Send` and `Sync` Concurrency Primitives.
+#### 5.1 `Send` and `Sync` concurrency Primitives.
 * `Send` marks a type as safe to **share ownership** between threads (i.e. `&T` is `Send`)
 * `Sync` marks a type as safe to **share by reference** between threads (i.e. `T` is `Sync`)
 
@@ -185,7 +189,7 @@ However, there are exceptions to the rule:
 In embedded systems, concurrency often arises from **interrupts** (`ISRs`) and real-time tasks.  
 Applying `Send` and `Sync` to `static mut` variables and shared resources, in combination with **critical sections** or **atomic operations,** ensures that even in bare-metal or RTOS environments, race conditions are prevented at compile time. 
 
-### 5.2 Smart pointers in embedded systems
+#### 5.2 Smart pointers in embedded systems
 
 Smart pointers provide abstractions for managing memory and shared state at the cost of some **overhead**.  
 In resource-constrained embedded systems, these overheads require careful consideration.  
@@ -200,20 +204,20 @@ In resource-constrained embedded systems, these overheads require careful consid
 
 The preference for `heapless` collections and static memory allocation over heap-based `Arc` and `Box` in many embedded contexts indicates a conscious trade-off: raw efficiency is prioritized unless the complexity of shared ownership requires _absolutely_ smart pointers.
 
-### 5.3 Critical Sections and Atomic Operations
+#### 5.3 Critical Sections and Atomic Operations
 
 Critical sections are a basic primitive for concurrency control, literally a `global mutex` that can only be acquired by one thread/context at a time.  
 * On bare-metal *single-core* systems, this is typically implemented by **disabling interrupts**.  
 * On *multi-core* systems, this involves **disabling interrupts** on the current core and **acquiring a hardware spinlock**.  
+
+The `critical-section` [crate](https://crates.io/crates/critical-section) provides a generic API for critical sections across various target platforms.  
+It provides safe access to shared mutable data (e.g. `Mutex<Cell<u32>>`) in an interrupt-safe context.
 
 | | | | | | |
 |---|---|---|---|---|---|
 |**Primitive**|**Thread-Safe**|**Memory Overhead**|**Performance Impact**|**Primary Use Case**|**Key Limitation/Feature**|
 |**Critical Section (disable interrupts)**|Yes (on single core)|Low|High interrupt latency, jitter|Protects shared data from interrupts|Does not guarantee exclusivity on multi-core systems|
 |**Atomic Operations**|Yes|Low|Minimal overhead|Safe read-modify-write operations; inter-core synchronization|Depends on hardware support; more complex memory model|
-
-The `critical-section` [crate](https://crates.io/crates/critical-section) provides a generic API for critical sections across various target platforms.  
-It provides safe access to shared mutable data (e.g. `Mutex<Cell<u32>>`) in an interrupt-safe context.
 
 - **ARM Cortex-M:** 
     * [`thumbv6`](https://doc.rust-lang.org/nightly/rustc/platform-support/thumbv6m-none-eabi.html) (M0/M0+) provides atomic load/store operations.  
@@ -225,7 +229,7 @@ The choice between **disabling interrupts** and using fine-grained **atomic oper
 * `Critical sections` are simpler to implement, but incur higher interrupt latency and jitter.  
 * `Atomic operations` offer finer control and better performance for specific operations, especially on multi-core systems.  
 
-### 5.4 RTOS and concurrency frameworks
+#### 5.4 RTOS and concurrency frameworks
 
 Rust supports integration with real-time kernels and concurrency frameworks for multitasking.
 
@@ -244,10 +248,10 @@ Rust supports integration with real-time kernels and concurrency frameworks for 
     * The RTOS allocates a **stack for each task**. Proper sizing of these stacks is critical to avoid wastage or overflow.
     * RTOSes often use **memory block pools** for deterministic dynamic allocation, which is preferable to shared heaps that can become fragmented.
     * Each RTOS object (semaphores, mutexes, queues) has a **control block** with memory overhead; minimizing their use can save RAM.
-
+---
 ## &emsp;&emsp;&emsp; 6. Some approaches to memory optimization
 
-### 6.1. DST and fat pointers
+#### 6.1. DST and fat pointers
 
 References or raw pointers to a `DST` are **fat pointers**, and take up `2x` more memory than regular pointers (data + vtable).
 
@@ -274,7 +278,7 @@ In Rust, by default values ​​are "moved" when assigned or passed to a functi
 Although `Copy` and `Move` are often equivalent in performance **for small types**.  
 For **large fixed-size data structures** that _could_ be `Copy` (e.g. `[u8; 1024]`), the decision whether to implement `Copy` directly affects whether a full `memcpy` will occur on assignment.
 
-### 6.3. Memory Alignment Considerations
+#### 6.3. Memory Alignment Considerations
 
 Data alignment ensures that data structures are allocated at memory addresses that are `multiples of their size` or the specified alignment.  
 
@@ -293,7 +297,7 @@ align_of::<(char, u8, i32)>();  // 4
 ```
 By deliberately designing structs with alignment in mind (e.g. by ordering fields by size or using `#[repr(align)]`), to ensure optimal cache usage and single-cycle memory accesses, even though the compiler will eventually align the data anyway.  
 
-### 6.4. Best practices for minimizing memory usage and optimizing performance
+#### 6.4. Best practices for minimizing memory usage and optimizing performance
 
 - **Prioritize stack allocation:** Prefere stack memory whenever possible, due to its speed and predictability.
 - **Stack depth:** Minimize the depth of function stack calls.
@@ -303,14 +307,13 @@ By deliberately designing structs with alignment in mind (e.g. by ordering field
 - **Profiling and Testing:** Regularly profile memory usage and conduct continuous testing to identify and optimize allocation patterns and leaks.
 - **Static Analysis Tools:** Use tools like Clippy to identify common memory issues at compile time.   
 - **With alignment in mind:** Check data types alignment to ensure consistent and efficient access.
-
+---
 ## &emsp;&emsp;&emsp; 7. Mission Critical Systems and Certification
 
-### 7.1. Rust for Mission Critical
+#### 7.1. Rust for Mission Critical
 
-Traditional approaches to security in C/C++ and coding standards like MISRA and CERT are often involve **reactive measures** (testing, static analysis, runtime checks) to find vulnerabilities.  
-Rust, by design, _prevents_ many of these vulnerabilities from occurring. Significant portion of the "rules" are enforced by the compiler itself, potentially reducing the need for extensive manual checks or complex rejection processes.  
-This shifts the security paradigm from "find and fix" to "prevent by design", resulting in safer and more reliable systems.  
+* Traditional approaches to security in C/C++ and coding standards like MISRA and CERT are often involve **reactive measures** (testing, static analysis, runtime checks) to find vulnerabilities.  
+* Rust, by design, _prevents_ many of these vulnerabilities from occurring. Significant portion of the "rules" are enforced by the compiler itself, potentially reducing the need for extensive manual checks or complex rejection processes.  
 This proactive security model aligns with government initiatives to use safe-memory languages ​​(e.g., [CISA report](https://www.cisa.gov/news-events/news/urgent-need-memory-safety-software-products)), positioning Rust as a strategic choice for the future of mission-critical software development. 
 
 |   |   |   |
@@ -324,7 +327,7 @@ This proactive security model aligns with government initiatives to use safe-mem
 |**Stack and Heap Exploits**|Mitigated by structured memory safety mechanisms|Governed by coding conventions and checks|
 |**`unsafe` code annotation**|Explicitly marked (`unsafe` blocks)|Undefined behavior is governed by coding conventions and checks|
 
-### 7.2. ISome Industry initiatives
+#### 7.2. ISome Industry initiatives
 
 **Safety Critical Rust Consortium:** The Rust Foundation, in partnership with AdaCore, Arm, Ferrous Systems, and Woven by Toyota, formed this [consortium](https://github.com/rustfoundation/safety-critical-rust-consortium) to support the responsible use of the Rust language in mission-critical software. Their focus includes developing guidelines, linters, libraries, static analysis tools, formal methods, and language subsets to meet industry and legal requirements.
 
