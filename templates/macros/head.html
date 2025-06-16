@@ -17,7 +17,7 @@
     {% endif -%}
 {% endif -%}
 
-{%- if config.extra.use_full_hack_font %}
+{%- if config.extra.use_full_font %}
     <link rel="stylesheet" href="{{ get_url(path="font-quicksand.css", trailing_slash=false) | safe }}">
 {% else %}
     <link rel="stylesheet" href="{{ get_url(path="font-quicksand-subset.css", trailing_slash=false) | safe }}">

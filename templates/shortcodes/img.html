@@ -16,7 +16,6 @@
     {% set image_full = resize_image(path=src, width=1920, height=1920, op="fit", format="webp") %}
     {% set image_full_url = image_full.url %}
 {% endif %}
-Add comment
 
 {% if src %}
 <figure class="{% if position %}{{ position }}{% else -%} center {%- endif %}">

@@ -40,7 +40,7 @@ menu_items = [
 
 enable_post_view_navigation = true
 post_view_navigation_prompt = "Read other posts?"
-use_full_hack_font = true
+use_full_font = true
 favicon = "/favicon.png"
 favicon_mimetype = "image/png"
 page_titles = "combined"
