@@ -1,34 +1,37 @@
 /*!
- *  Hack typeface https://github.com/source-foundry/Hack
- *  License: https://github.com/source-foundry/Hack/blob/master/LICENSE.md
- */
+ * Quicksand typeface - https://fonts.google.com/specimen/Quicksand
+ * License: Apache License, Version 2.0
+ *
 /* FONT PATHS
  * -------------------------- */
 @font-face {
-  font-family: 'Hack';
-  /* Use full version (not a subset) for unicode icon support */
-  src: url('fonts/hack-regular.woff2?sha=3114f1256') format('woff2'), url('fonts/hack-regular.woff?sha=3114f1256') format('woff');
+  font-family: 'Quicksand';
+  src: url('fonts/quicksand-variablefont_wght-webfont.woff2') format('woff2'),
+       url('fonts/quicksand-variablefont_wght-webfont.woff') format('woff');
   font-weight: 400;
   font-style: normal;
 }
 
 @font-face {
-  font-family: 'Hack';
-  src: url('fonts/hack-bold-subset.woff2?sha=3114f1256') format('woff2'), url('fonts/hack-bold-subset.woff?sha=3114f1256') format('woff');
+  font-family: 'Quicksand';
+  src: url('fonts/quicksand-variablefont_wght-webfont.woff2') format('woff2'),
+       url('fonts/quicksand-variablefont_wght-webfont.woff') format('woff');
   font-weight: 700;
   font-style: normal;
 }
 
 @font-face {
-  font-family: 'Hack';
-  src: url('fonts/hack-italic-subset.woff2?sha=3114f1256') format('woff2'), url('fonts/hack-italic-webfont.woff?sha=3114f1256') format('woff');
+  font-family: 'Quicksand';
+  src: url('fonts/quicksand-variablefont_wght-webfont.woff2') format('woff2'),
+       url('fonts/quicksand-variablefont_wght-webfont.woff') format('woff');
   font-weight: 400;
   font-style: italic;
 }
 
 @font-face {
-  font-family: 'Hack';
-  src: url('fonts/hack-bolditalic-subset.woff2?sha=3114f1256') format('woff2'), url('fonts/hack-bolditalic-subset.woff?sha=3114f1256') format('woff');
+  font-family: 'Quicksand';
+  src: url('fonts/quicksand-variablefont_wght-webfont.woff2') format('woff2'),
+       url('fonts/quicksand-variablefont_wght-webfont.woff') format('woff');
   font-weight: 700;
   font-style: italic;
 }
