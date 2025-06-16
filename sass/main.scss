@@ -79,12 +79,12 @@ p {
 }
 
 figure {
-  display: block; /* Измените с 'table' на 'block' */
+  display: block;
   max-width: 100%;
-  margin: 25px 0; /* Сохраняем вертикальные отступы */
+  margin: 25px 0;
 
   &.left {
-    margin-right: auto; /* Добавляем центрирование для figure */
+    margin-right: auto;
     margin-left: 0;
     img {
       margin-right: auto;

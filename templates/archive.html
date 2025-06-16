@@ -9,10 +9,10 @@
         {% set rust_section = get_section(path="rust/_index.md") %}
         {% set embedded_section = get_section(path="embedded/_index.md") %}
 
-        {% set all_pages = main_section.pages | default(value=[])
-                         | concat(projects_section.pages | default(value=[]))
-                         | concat(rust_section.pages | default(value=[]))
-                         | concat(embedded_section.pages | default(value=[])) %}
+        {% set all_pages = main_section.pages | default(value=[]) %}
+        {% set all_pages = all_pages | concat(projects_section.pages | default(value=[])) %}
+        {% set all_pages = all_pages | concat(rust_section.pages | default(value=[])) %}
+        {% set all_pages = all_pages | concat(embedded_section.pages | default(value=[])) %}
 
         {% set sorted_pages = all_pages | sort(attribute="date", reverse=true) %}
         
