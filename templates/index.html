@@ -21,8 +21,6 @@
         <link rel="shortcut icon" type="{{ config.extra.favicon_mimetype | default(value="image/x-icon") | safe }}" href="{{ config.extra.favicon | safe }}">
     {% endif -%}
 
-    {# Open Graph and Twitter Card meta tags for social sharing #}
-    {# В этот блок было перемещено содержимое вашего старого `extra_head` из первого файла #}
     {%- block extra_head %}
     <meta property="og:site_name" content="{{ config.title | safe }}">
     {%- if page.title -%}

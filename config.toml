@@ -38,7 +38,7 @@ menu_items = [
     { name = "cv.pdf", url = "https://github.com/maltsev-dev/maltsev-dev.github.io/raw/main/static/CV_Anatoly_Maltsev.pdf", newtab = true },
 ]
 
-enable_post_view_navigation = true
+enable_post_view_navigation = false
 post_view_navigation_prompt = "Read other posts?"
 use_full_font = true
 favicon = "/favicon.png"

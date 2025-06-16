@@ -46,7 +46,7 @@ One of the most significant differences in embedded development in Rust is the u
 
 * No standard library: #![no_std] specifies that the program will not use the [Rust standard library](https://doc.rust-lang.org/std/), which depends on the OS.    
 Instead, the [core](https://doc.rust-lang.org/core/) library is used, which is a subset of std and is **OS-independent**.  
-This means that OS-dependent functions (e.g. `println!`, `File::open`, `Vec::new without an explicit allocator`) are not available.  
+This means that OS-dependent functions (e.g. `println!`, `File::open`, `Vec::new` without an explicit allocator) are not available.  
 Therefore, alternatives such as `core::fmt` for formatting or specialized crates for working with hardware must be used. [embedded-hal](https://crates.io/crates/embedded-hal)
 
 * Dependencies: If the core crate uses `no_std`, then all its transitive dependencies must also be `no_std` or explicitly support no_std environments.
