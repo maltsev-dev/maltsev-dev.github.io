@@ -1,5 +1,5 @@
 +++
-title = ""Building Safer Embedded Systems with `no_std` Rust"
+title = "Building Trustworthy Embedded Systems with Rust"
 date = "2025-06-16"
 
 [taxonomies]
