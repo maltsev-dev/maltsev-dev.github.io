@@ -3,7 +3,7 @@ title = "Understanding Memory Management in Rust: From Dynamically Sized Types t
 date = "2025-06-09"
 
 [taxonomies]
-tags = ["rust", "memory", "variables"]
+tags = ["rust", "memory"]
 +++
 
 

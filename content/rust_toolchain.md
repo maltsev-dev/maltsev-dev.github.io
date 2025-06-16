@@ -3,7 +3,7 @@ title = "Rust Toolchain: A Complete Guide to Managing and Configuring Your Rust 
 date = "2025-01-15"
 
 [taxonomies]
-tags = ["rust_mastering"]
+tags = ["rust"]
 +++
 
 The Rust toolchain is a collection of tools and components that streamline the development, building, and maintenance of Rust projects.  

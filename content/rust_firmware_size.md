@@ -3,7 +3,7 @@ title = "Critical Compression of Embedded Firmware: Understanding cargo size and
 date = "2025-05-29"
 
 [taxonomies]
-tags = ["rust", "embedded"]
+tags = ["rust", "embedded", "linker"]
 +++
 
 In embedded Rust development, minimizing the size of the compiled firmware is essential due to the limited memory resources of microcontrollers.  
