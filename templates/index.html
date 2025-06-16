@@ -1,18 +1,143 @@
-{% extends "terminimal/templates/index.html" %}
+{% import "macros/date.html" as date_macros -%}
+{% import "macros/head.html" as head_macros -%}
+{% import "macros/menu.html" as menu_macros -%}
+{% import "macros/post.html" as post_macros -%}
 
-{% block extra_head %}
-<meta property="og:site_name" content="{{ config.title | safe }}">
-{%- if page.title -%}
-<meta property="og:type" content="article">
-<meta property="og:title" content="{{ page.title | safe }}">
-{%- else -%}
-<meta property="og:type" content="website">
-<meta property="og:title" content="{{ config.title | safe }}">
-{%- endif -%}
-{%- if page.permalink -%}
-<meta property="og:url" content="{{ page.permalink | safe }}">
-{%- else -%}
-<meta property="og:url" content="{{ config.base_url | safe }}/">
-{%- endif -%}
-<meta property="og:image" content="https://github.com/maltsev-dev/favicon.png">
-{% endblock extra_head %}
+<!DOCTYPE html>
+<html lang="{%- if config.default_language -%}{{ config.default_language }}{%- else -%}en{%- endif -%}">
+
+<head>
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+    <title>{%- block title %}{{ config.title }}{% endblock title -%}</title>
+    {{ head_macros::head(config=config) }}
+
+    {# RSS Feed link if enabled in config #}
+    {%- if config.generate_feed %}
+        <link rel="alternate" type="application/rss+xml" title="RSS" href="{{ get_url(path="rss.xml") | safe }}">
+    {% endif -%}
+
+    {# Favicon link if enabled in config #}
+    {%- if config.extra.favicon %}
+        <link rel="shortcut icon" type="{{ config.extra.favicon_mimetype | default(value="image/x-icon") | safe }}" href="{{ config.extra.favicon | safe }}">
+    {% endif -%}
+
+    {# Open Graph and Twitter Card meta tags for social sharing #}
+    {# В этот блок было перемещено содержимое вашего старого `extra_head` из первого файла #}
+    {%- block extra_head %}
+    <meta property="og:site_name" content="{{ config.title | safe }}">
+    {%- if page.title -%}
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="{{ page.title | safe }}">
+    {%- else -%}
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="{{ config.title | safe }}">
+    {%- endif -%}
+    {%- if page.permalink -%}
+    <meta property="og:url" content="{{ page.permalink | safe }}">
+    {%- else -%}
+    <meta property="og:url" content="{{ config.base_url | safe }}/">
+    {%- endif -%}
+    <meta property="og:image" content="https://github.com/maltsev-dev/favicon.png">
+
+    {% endblock extra_head -%}
+
+</head>
+
+<body class="">
+<div class="container">
+    {% block header %}
+    <header class="header">
+        <div class="header__inner">
+            <div class="header__logo">
+                {%- if config.logo_home_link %}
+                    {% set logo_link = config.logo_home_link %}
+                {% else %}
+                    {% set logo_link = config.base_url %}
+                {% endif -%}
+                <a href="{{ logo_link | safe }}" style="text-decoration: none;">
+                    <div class="logo">
+                      {% block logo_content %}
+                        {%- if config.extra.logo_text %}
+                            {{ config.extra.logo_text }}
+                        {% else %}
+                            Terminimal theme
+                        {% endif -%}
+                        {% endblock logo_content %}
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        {% block header_menu %}
+        {{ menu_macros::menu(config=config, current_path=current_path) }}
+        {% endblock header_menu %}
+    </header>
+    <center><sub>If Venom told you about this site she's full of shit~</sub></center>
+    {% endblock header %}
+
+    <div class="content">
+        {% block content %}
+        <div class="posts">
+            {%- if paginator %}
+                {%- set show_pages = paginator.pages -%}
+            {% else %}
+                {%- set show_pages = section.pages -%}
+            {% endif -%}
+
+            {%- for page in show_pages %}
+                <div class="post on-list">
+                    {{ post_macros::header(page=page) }}
+                    {{ post_macros::content(page=page, summary=true) }}
+                </div>
+            {% endfor -%}
+            <div class="pagination">
+                <div class="pagination__buttons">
+                {%- if paginator.previous %}
+                    <span class="button previous">
+                        <a href="{{ paginator.previous | safe }}">
+                            <span class="button__icon">←</span>&nbsp;
+                            <span class="button__text">Newer posts</span>
+                        </a>
+                    </span>
+                {% endif -%}
+                {%- if paginator.next %}
+                    <span class="button next">
+                        <a href="{{ paginator.next | safe }}">
+                            <span class="button__text">Older posts</span>&nbsp;
+                            <span class="button__icon">→</span>
+                        </a>
+                    </span>
+                {% endif -%}
+                </div>
+            </div>
+        </div>
+        {% endblock content %}
+    </div>
+
+{% block footer %}
+<footer class="footer">
+    <div class="footer__inner">
+        {%- if config.extra.copyright_html %}
+            <div class="copyright copyright--user">{{ config.extra.copyright_html | safe }}</div>
+        {% else %}
+            <div class="copyright">
+                {%- if config.extra.author %}
+                    <span>© {{ date_macros::now_year() }} {{ config.extra.author }}</span>
+                {% else %}
+                    <span>© {{ date_macros::now_year() }} {{ config.extra.author }} </span>
+                {% endif -%}
+
+                <span class="copyright-theme-sep">|</span>
+                <span>Visitors: <img src="https://visitor-badge.laobi.icu/badge?page_id=maltsev-dev.github.io" alt="Visitors"></span>
+            </div>
+        {% endif -%}
+    </div>
+</footer>
+{% endblock footer %}
+
+</div>
+{%- block extra_body %}
+{% endblock extra_body -%}
+</body>
+
+</html>
