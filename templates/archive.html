@@ -3,19 +3,36 @@
 {% block content %}
     <div class="post">
         <h1 class="post-title">{{ page.title }}</h1>
-        
-        {% set main_section = get_section(path="_index.md") | default(value={}) %}
-        {% set projects_section = get_section(path="projects/_index.md") | default(value={}) %}
-        {% set rust_section = get_section(path="rust/_index.md") | default(value={}) %}
-        {% set embedded_section = get_section(path="embedded/_index.md") | default(value={}) %}
 
-        {% set all_pages = main_section.pages | default(value=[])
-                         | concat(projects_section.pages | default(value=[]))
-                         | concat(rust_section.pages | default(value=[]))
-                         | concat(embedded_section.pages | default(value=[])) %}
+        {#
+            First, retrieve the section objects.
+            They might be 'null' if the section doesn't exist.
+        #}
+        {% set main_section_obj = get_section(path="_index.md") %}
+        {% set projects_section_obj = get_section(path="projects/_index.md") %}
+        {% set rust_section_obj = get_section(path="rust/_index.md") %}
+        {% set embedded_section_obj = get_section(path="embedded/_index.md") %}
 
-        {% set sorted_pages = all_pages | sort(attribute="date", reverse=true) %}
+        {#
+            Now, safely get the 'pages' from each section.
+            If the section object exists (is not null), we get its pages and default them to an empty list.
+            If the section object is null, we directly set the page list to empty.
+        #}
+        {% set main_pages = main_section_obj.pages | default(value=[]) if main_section_obj else [] %}
+        {% set projects_pages = projects_section_obj.pages | default(value=[]) if projects_section_obj else [] %}
+        {% set rust_pages = rust_section_obj.pages | default(value=[]) if rust_section_obj else [] %}
+        {% set embedded_pages = embedded_section_obj.pages | default(value=[]) if embedded_section_obj else [] %}
+
+        {# Combine all the safely retrieved lists of pages #}
+        {% set all_combined_pages = main_pages
+                                   | concat(projects_pages)
+                                   | concat(rust_pages)
+                                   | concat(embedded_pages) %}
+
+        {# Sort all combined pages by date, from newest to oldest #}
+        {% set sorted_pages = all_combined_pages | sort(attribute="date", reverse=true) %}
         
+        {# Display the sorted pages using your post_macros #}
         {{ post_macros::list_posts(pages=sorted_pages) }}
     </div>
 {% endblock content %}
