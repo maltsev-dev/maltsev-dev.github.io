@@ -31,7 +31,7 @@ menu_items = [
     { name = "tags", url = "$BASE_URL/tags" },
     { name = "archive", url = "$BASE_URL/archive" },
     { name = "embedded", url = "$BASE_URL/tags/embedded/" },
-    { name = "🌐bookmarks", url = "$BASE_URL/bookmarks" },
+    { name = "bookmarks", url = "$BASE_URL/bookmarks" },
     { name = "about", url = "$BASE_URL/about" },
     { name = "GitHub", url = "https://github.com/maltsev-dev", newtab = true},
     { name = "Linkedin", url = "https://www.linkedin.com/comm/mynetwork/discovery-see-all?usecase=PEOPLE_FOLLOWS&followMember=a-maltsev", newtab = true},

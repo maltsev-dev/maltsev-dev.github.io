@@ -29,8 +29,7 @@
 
     &:after {
       content: '';
-      background: repeating-linear-gradient(90deg, var(--accent), var(--accent) 2px, transparent 0, transparent 16px);
-      display: block;
+      background: repeating-linear-gradient(90deg, var(--accent), var(--accent) 5px, var(--background) 5px, var(--background) 10px, var(--shadow) 10px, var(--shadow) 15px, transparent 15px, transparent 20px);      display: block;
       width: 100%;
       right: 10px;
     }
@@ -42,7 +41,7 @@
   }
 
   .menu {
-    margin: 20px 0 10px 0;
+    margin: 20px 0 0 0;
 
     &__inner {
       display: flex;
@@ -88,6 +87,7 @@
 
         li {
           font-family: PostTitle;
+          font-weight: normal;
           margin: 0;
           padding: 5px;
           white-space: nowrap;
