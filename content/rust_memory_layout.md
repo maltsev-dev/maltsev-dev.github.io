@@ -64,8 +64,7 @@ BSS **Block started by symbol** segment.
 This section stores `uninitialized global and static` variables. These variables are **guaranteed to be zero** before main is called.  
 
 ### &emsp; Stack
-Located at the top of the user space and **grows downwards**⬇️. The highest address that can be used is `hex(2**47-1)` = '`0x7ffffffff000`'  
-Example: `0x7ffffffff000` (approximately `128 TB` from zero).  
+Located at the top of the user space and grows **downwards**⬇️.  
 
 The *stack* is **unique to each individual thread** of the process. On 64-bit Linux Systems, Rust programs use an `8Mb` *stack* for the **main** thread.  
 The [Rust std](https://doc.rust-lang.org/std/thread/struct.Builder.html#method.stack_size) supports specifying the *stack* size for any thread that the program creates. The default value is `2Mb`.
@@ -75,33 +74,12 @@ The *stack* grows **downwards** - to a lower memory area.
 It can only grow until total *stack* size for that particular thread (if it is the main thread - up to `8Mb`)  
 If a program thread uses more *stack* space than it is allocated, the kernel will terminate the execution of that program with an error - **stack overflow**  
 
-
 ### &emsp; Heap
 All threads share **one common heap**.  
 The *heap* memory address starts close to zero (after code and data) and **grows upwards**⬆️.  
 The *heap* can grow to huge sizes (theoretically up to `128 TB`).  
 
 {{ img(src = "/images/rust_memory/rust_memory_stack_vs_heap.png") }}
-
-### &emsp; Address range
-
-Between the **highest heap** memory address and the **lowest stack** memory address there is a huge free space.
-
-64-bit address space. Theoretical range: `2⁶⁴ bytes = 16 EB` (**exabytes**).  
-Practical limitation: Modern processors (x86-64) only support 48-bit virtualization (256 TB), and OS often reserve some space:
-* **Linux**: 47 bits for the user (`128 TB`) + 47 bits for the kernel (`128 TB`).
-* **Windows**: 44–48 bits depending on the version.
-
-
-These are `virtual addresses`, so the kernel can use such large address ranges, even if the computer has only `16 GB` of RAM.  
-The OS "pretends" that there is much more memory, but in reality it only allocates it when used.  
-Imagine a city with a huge empty area between two districts. This makes the city safer (harder to cross the border accidentally or unnoticed), and leaves space for future development.
-
-Some Reasons for this design: 
-* [ASLR](https://en.wikipedia.org/wiki/Address_space_layout_randomization) (Address Space Layout Randomization)
-Random placement of code, libraries, *heap* and *stack* within their zones. The huge gap makes attacks (e.g. **buffer overflows**) more difficult.  
-* Overflow protection - the distance makes it almost impossible to accidentally "jump" from the *heap* to the *stack* or vice versa.  
-* Flexibility for large allocations
 
 ---
 
@@ -152,12 +130,12 @@ Signed and unsigned numbers indicate how many `bit` they can store.
 | 1 byte  | 2 bytes   | 4 bytes   | 8 bytes   | 16 bytes    | 4 / 8 bytes   | 4 / 8 bytes    |
 
 ### &emsp; Char
-Stored entirely on *stack*.  
-Stores `Unicode` characters.  
-Always `4 bytes`.  
+The char type in Rust is a primitive type that takes up a fixed amount of memory (`4 bytes`).  
+Like other primitives (i32, bool, etc.), it is stored on the `stack` by default.  
+The char type in Rust represents a single `Unicode Scalar Value`.  
+Regardless of the specific character (whether it's a, €, or 🦀), the char type in Rust always takes up exactly `4 bytes` (32-bit).  
 
 ### &emsp; Tuple
-
 A type consists of a **fixed set** of values ​​of **diffrent types**.  
 If all composite types are stored on a *stack*, then the entire tuple is stored on a *stack*.  
 The size of all composite types is in order, but with alignment taken into account.  
