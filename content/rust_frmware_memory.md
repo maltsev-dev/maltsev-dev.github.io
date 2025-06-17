@@ -43,7 +43,6 @@ Memory safety is built into the language architecture itself.
 Therefore, Rust's unique value proposition fully meets the needs for safe and modern software for critical systems.  
 
 ---
-
 ## &emsp;&emsp;&emsp; 1. A quick overview of Rust's memory fundamentals
 
 | | | | |
@@ -171,6 +170,7 @@ They allow physical memory to be mapped to virtual memory addresses, enabling fu
 
 Rust's memory safety guarantees are mostly provided at compile time.  
 However, hardware features such as the `MPU` and `stack limit registers` provide a crucial _runtime_ layer of protection, especially against logic errors that can occur in unsafe code.
+
 ---
 ## &emsp;&emsp;&emsp; 5. Concurrency and Shared State Management
 
