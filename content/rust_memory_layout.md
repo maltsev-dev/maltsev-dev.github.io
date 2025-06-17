@@ -6,7 +6,7 @@ date = "2025-06-09"
 tags = ["rust", "memory"]
 +++
 
-Rust's approach to memory management is both powerful and complex.
+Rust's approach to memory management is both powerful and complex.  
 🟠 In this article, I want to take a deep dive into how Rust handles memory for the type system under the hood, and try to answer questions like:
 * Why can't we create purely dynamic types?
 * How does the Rust compiler decide where and how to allocate memory for variables?
@@ -143,10 +143,9 @@ To reduce the number of system calls, `memory allocator` requests memory in bloc
 ## &emsp;&emsp;&emsp; Rust Data Types
 
 ### &emsp; Integer 
-Stored entirely on *stack*.
 
 {{ img(src = "/images/rust_memory/rust_memory_integers.png") }}
-
+Stored entirely on *stack*.
 Signed and unsigned numbers indicate how many `bit` they can store.  
 | i8 / u8 | i16 / u16 | i32 / u32 | i64 / u64 | i128 / u128 | f32 / f64 | isize / usize      |
 |:--------|:----------|:----------|:----------|:---------|:-------------|:-------------------|
