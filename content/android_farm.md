@@ -9,7 +9,6 @@ tags = ["java", "android", "project"]
 **A desktop application built with Java Swing for easy configuration, creation, and management of Android emulators.**
 
 <!-- more -->
-
 ---
 
 ### 🔧 Overview

@@ -10,6 +10,7 @@ An experiment using [wasm-bindgen](https://crates.io/crates/wasm-bindgen) to cre
 ![wasm-bindgen Version](https://img.shields.io/badge/wasm_bingen-0.2.95%20-orange)
 
 <!-- more -->
+---
 
 [📚 GitHub Repository]](https://github.com/maltsev-dev/tax_app_webassembly)
 

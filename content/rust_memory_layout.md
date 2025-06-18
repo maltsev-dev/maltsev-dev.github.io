@@ -3,7 +3,7 @@ title = "Understanding Memory Management in Rust: From Dynamically Sized Types t
 date = "2025-06-09"
 
 [taxonomies]
-tags = ["rust", "memory"]
+tags = ["rust", "memory", "basic"]
 +++
 
 Rust's approach to memory management is both powerful and complex.  
@@ -393,8 +393,7 @@ let data: Arc<Mutex<i32>> = Arc::new(Mutex::new(0));
 {
     let mut locked_data = data.lock().unwrap();
     *locked_data += 1;
-}
-
+} 
 ```
 
 ### &emsp; Trait Object
@@ -415,9 +414,7 @@ use std::io::Write;
         writer(&mut buffer);
     }
 
-    fn writer(w: &mut dyn Write){
-        ...
-    }
+    fn writer(w: &mut dyn Write){ ... }
 ```
 
 In memory, `Trait Object` is a **fat pointer** of two pointers (`data pointer` + `vtable pointer`)  

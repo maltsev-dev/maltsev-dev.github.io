@@ -10,7 +10,6 @@ tags = ["rust", "tui", "project"]
 ![cursive Version](https://img.shields.io/badge/cursive-0.21.1%20-orange)
 
 <!-- more -->
-
 ---
 
 ## ⏳ Text-based User Interface Pomodoro Timer

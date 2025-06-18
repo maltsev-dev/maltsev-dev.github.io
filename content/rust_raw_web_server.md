@@ -10,7 +10,6 @@ tags = ["rust", "sync", "project"]
 No external dependencies — just pure `std`.
 
 <!-- more -->
-
 ---
 
 [📚 GitHub Repository](https://github.com/maltsev-dev/raw_web_server)

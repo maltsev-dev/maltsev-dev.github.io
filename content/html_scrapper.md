@@ -9,7 +9,6 @@ tags = ["java", "spring", "project"]
 **A Spring Boot application for scraping and converting HTML data into an Excel spreadsheet.**
 
 <!-- more -->
-
 ---
 
 [📚 GitHub Repository](https://github.com/maltsev-dev/html_scraper_template)

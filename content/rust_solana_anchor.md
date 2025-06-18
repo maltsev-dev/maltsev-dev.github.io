@@ -10,7 +10,6 @@ tags = ["rust", "solana", "anchor", "project"]
 Developed with **Rust** and the **Anchor framework**.
 
 <!-- more -->
-
 ---
 
 [📚 GitHub Repository](https://github.com/maltsev-dev/guess_the_number_on_solana)

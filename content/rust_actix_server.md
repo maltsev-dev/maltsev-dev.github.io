@@ -9,7 +9,6 @@ tags = ["rust", "actix_web", "project"]
 **A lightweight backend service built with modern Rust web technologies, ideal for full-stack or API-centric applications.**
 
 <!-- more -->
-
 ---
 
 [📚 GitHub Repository](https://github.com/maltsev-dev/raw_web_server)

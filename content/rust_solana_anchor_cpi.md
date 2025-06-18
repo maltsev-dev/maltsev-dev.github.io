@@ -10,7 +10,6 @@ tags = ["rust", "solana", "anchor", "project"]
 This project demonstrates best practices for inter-program communication using the Anchor framework.
 
 <!-- more -->
-
 ---
 
 [📚 GitHub Repository](https://github.com/maltsev-dev/anchor_cpi)

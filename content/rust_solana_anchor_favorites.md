@@ -10,7 +10,6 @@ tags = ["rust", "solana", "anchor", "project"]
 Built with **Rust** and the **Anchor** framework.
 
 <!-- more -->
-
 ---
 
 [📚 GitHub Repository](https://github.com/maltsev-dev/send_data)

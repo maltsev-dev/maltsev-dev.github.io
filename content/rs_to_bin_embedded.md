@@ -105,9 +105,7 @@ It resolves any remaining symbol references and performs relocations.
 
 * For embedded systems: For bare-metal embedded systems, a **custom linker script** (usually a `.ld` file) must be provided.
 
-```
-memory.x
-
+```linker script
 MEMORY {
     BOOT2 : ORIGIN = 0x10000000, LENGTH = 0x100
     FLASH : ORIGIN = 0x10000100, LENGTH = 2048K - 0x100
@@ -143,7 +141,6 @@ SECTIONS {
         __bi_entries_end = .;
     } > FLASH
 } INSERT AFTER .text;
-
 ```
 
 This script defines the memory map of the target microcontroller (e.g. Flash, RAM, stack, heap locations) and tells the linker **where to place the various code** and data sections (e.g.

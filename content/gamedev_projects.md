@@ -9,7 +9,6 @@ tags = ["cpp", "gamedev", "project"]
 This collection represents my journey and experiments with C++ programming inside Unreal Engine 5, showcasing projects born from curiosity and a desire to bring interactive worlds to life.
 
 <!-- more -->
-
 ---
 
 ## My Journey into Unreal Engine
