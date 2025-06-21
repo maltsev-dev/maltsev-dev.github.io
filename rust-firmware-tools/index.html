@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+    <title>dev_stories</title>
+    
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+    <meta name="robots" content="noodp"/>
+
+    <link rel="stylesheet" href="https://maltsev-dev.github.io/style.css">
+    <link rel="stylesheet" href="https://maltsev-dev.github.io/color/orange.css">
+
+        <link rel="stylesheet" href="https://maltsev-dev.github.io/color/background_blue.css">
+    
+    <link rel="stylesheet" href="https://maltsev-dev.github.io/font-quicksand.css">
+
+
+    
+        <link rel="shortcut icon" type="image/png" href="/favicon.png">
+    
+    <meta property="og:site_name" content="dev_stories"><meta property="og:type" content="article">
+    <meta property="og:title" content="Rust's toolbox for Embedded"><meta property="og:url" content="https://maltsev-dev.github.io/rust-firmware-tools/"><meta property="og:image" content="https://github.com/maltsev-dev/favicon.png">
+
+    </head>
+
+<body class="">
+<div class="container">
+    
+    <header class="header">
+        <div class="header__inner">
+            <div class="header__logo">
+                    
+                <a href="https://maltsev-dev.github.io" style="text-decoration: none;">
+                    <div class="logo">
+                      
+                            busy hands == happy heart
+                        
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        
+        
+                <nav class="menu">
+            <ul class="menu__inner">
+                <li class="active"><a href="https://maltsev-dev.github.io">blog</a></li>
+            
+                <li><a href="https://maltsev-dev.github.io/tags">tags</a></li>
+            
+                <li><a href="https://maltsev-dev.github.io/archive">archive</a></li>
+            
+                <li><a href="https://maltsev-dev.github.io/tags/embedded/">embedded</a></li>
+            
+                <li><a href="https://maltsev-dev.github.io/bookmarks">bookmarks</a></li>
+            
+                <li><a href="https://maltsev-dev.github.io/about">about</a></li>
+            
+                <li><a href="https://github.com/maltsev-dev" target="_blank" rel="noopener noreferrer">GitHub</a></li>
+            
+                <li><a href="https://www.linkedin.com/comm/mynetwork/discovery-see-all?usecase=PEOPLE_FOLLOWS&followMember=a-maltsev" target="_blank" rel="noopener noreferrer">Linkedin</a></li>
+            
+                <li><a href="https://github.com/maltsev-dev/maltsev-dev.github.io/raw/main/static/CV_Anatoly_Maltsev.pdf" target="_blank" rel="noopener noreferrer">cv.pdf</a></li>
+            </ul>
+        </nav>
+    
+    
+        
+    </header>
+    
+
+    <div class="content">
+        
+    <div class="post">
+        
+    <h1 class="post-title"><a href="https://maltsev-dev.github.io/rust-firmware-tools/">Rust&#x27;s toolbox for Embedded</a></h1>
+    <div class="post-meta-inline">
+        
+    <span class="post-date">
+            2025-06-13
+        </span>
+
+    </div>
+
+    
+        <span class="post-tags-inline">
+                :: tags:&nbsp;
+                <a class="post-tag" href="https://maltsev-dev.github.io/tags/rust/">#rust</a>&nbsp;
+                <a class="post-tag" href="https://maltsev-dev.github.io/tags/embedded/">#embedded</a>&nbsp;
+                <a class="post-tag" href="https://maltsev-dev.github.io/tags/tools/">#tools</a></span>
+    
+
+        
+        <div class="post-content">
+            <p>🟠 Tools, debugging and analysis</p>
+<span id="continue-reading"></span>
+<hr />
+<h3 id="tools-for-development">    Tools for development</h3>
+<ul>
+<li>
+<p><strong><code>[rustup]</code>:</strong> Manages the Rust toolchains (stable, beta, nightly) and target platform support (e.g. <code>thumbv7m-none-eabi</code>, <code>riscv64gc-unknown-none-elf</code>).<br />
+Read more about how to properly set up the rust environment in the <a href="https://maltsev-dev.github.io/rust-toolchain/">article</a> and <a href="https://rustup.rs/">here</a></p>
+</li>
+<li>
+<p><strong><code>cargo</code>:</strong> The Rust package manager and build system. Used to build, run, test, and manage dependencies. <a href="https://doc.rust-lang.org/cargo/">Read More</a></p>
+</li>
+<li>
+<p><strong><code>svd2rust</code>:</strong> Generates safe, type-safe Rust code (Peripheral Access Crates - PACs) from SVD (System View Description) files, simplifying interaction with memory-mapped registers.<br />
+<a href="https://crates.io/crates/svd2rust">crates.io</a></p>
+</li>
+<li>
+<p><strong><code>embedded-hal</code>:</strong> A set of hardware abstraction interfaces for common peripherals (GPIO, UART, I2C) to promote portability across different microcontrollers.
+<a href="https://crates.io/crates/embedded-hal">crates.io</a></p>
+</li>
+<li>
+<p><strong><code>probe-rs</code>:</strong> A modern, Rust-oriented debugging tool that supports a variety of probes and targets, and integrates with VS Code. Aims to simplify debugging setup.
+<a href="https://crates.io/crates/probe-rs">crates.io</a> <a href="https://probe.rs/">Read More</a></p>
+</li>
+<li>
+<p><strong><code>OpenOCD</code>:</strong> An open source tool for debugging, testing, and programming embedded systems, providing an interface between the host and hardware, often used with GDB.</p>
+</li>
+</ul>
+<p>These tools automate boilerplate code, simplify interaction with hardware, and provide robust debugging capabilities.<br />
+This mature ecosystem is critical for enterprise adoption and for tackling more complex embedded workloads.<br />
+Strong tooling support, often cited as a key benefit of Rust, makes embedded development in Rust more productive and less error-prone, even when dealing with low-level aspects of memory.</p>
+<h3 id="tools-for-debugging-memory-issues">    Tools for debugging memory issues</h3>
+<ul>
+<li>
+<p><strong>GDB:</strong> General-purpose debugger for examining program state, setting breakpoints/checkpoints, and inspecting memory and registers. Can attach to embedded targets via <code>OpenOCD</code> or <code>probe-rs</code>. Supports Rust-specific debugging (pretty printing, IDE integration).</p>
+</li>
+<li>
+<p><strong>Inspecting memory with GDB:</strong> Developers can read and write to memory-mapped registers, set breakpoints, and inspect variables. Linker scripts define memory regions (FLASH, RAM) that can be inspected.</p>
+</li>
+<li>
+<p><strong><code>defmt</code>:</strong> High-performance logging framework for embedded systems, allowing structured logs to be streamed from the device. Can be integrated with GDB for simultaneous debugging and logging.</p>
+</li>
+</ul>
+<p>While safe Rust code provides strong guarantees, embedded development often requires the use of <code>unsafe</code> blocks to interact with hardware or improve performance.<br />
+Research shows that <code>unsafe</code> code requires manual verification.<br />
+Therefore, a robust embedded Rust workflow must combine Rust's compile-time safety with static analysis tools (Clippy, Miri) and runtime analysis techniques (high-water marks, profiling) to ensure correctness and optimize memory usage.</p>
+<h3 id="tools-for-memory-analysis-and-profiling">    Tools for memory Analysis and Profiling</h3>
+<ul>
+<li>
+<p><strong>Static Analysis Tools:</strong></p>
+<ul>
+<li><strong>Clippy:</strong> A Rust linter that catches common bugs, including memory-related ones.</li>
+<li><strong>Miri:</strong> A MIR (Mid-level Intermediate Representation) Rust interpreter that detects undefined behavior, useful for checking <code>unsafe</code> code.</li>
+</ul>
+</li>
+<li>
+<p><strong><code>cargo-call-stack</code> (nightly):</strong> Can be used with <code>-Z emit-stack-sizes</code> to analyze static stack usage.</p>
+</li>
+<li>
+<p><strong>Formal Verification Tools:</strong> Tools like TrustInSoft Analyzer can mathematically prove the absence of memory vulnerabilities and runtime bugs, which is especially useful for hybrid Rust/C/C++ codebases.</p>
+</li>
+<li>
+<p><strong>Runtime memory analysis:</strong></p>
+<ul>
+<li><strong>High-water mark monitoring:</strong> Filling unused stack/RAM with a pattern and checking the highest point of overwriting of the pattern indicates maximum usage.</li>
+<li><strong>Profiling tools (on host/simulation):</strong> <code>valgrind</code> and <code>heaptrack</code> (for host code or simulations) provide information about allocation patterns and leaks.</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+
+        
+        <div class="pagination">
+            <div class="pagination__title">
+                <span class="pagination__title-h">Read other posts?</span>
+                <hr />
+            </div>
+            <div class="pagination__buttons">
+                    <span class="button previous">
+                        <a href="https://maltsev-dev.github.io/embedded-acronyms/">
+                            <span class="button__icon">←</span>&nbsp;
+                            <span class="button__text">abbreviations and acronyms in embedded systems dev</span>
+                        </a>
+                    </span>
+                
+                
+                    <span class="button next">
+                        <a href="https://maltsev-dev.github.io/rust-frmware-memory/">
+                            <span class="button__text">Building Trustworthy Embedded Systems with Rust</span>&nbsp;
+                            <span class="button__icon">→</span>
+                        </a>
+                    </span>
+                </div>
+        </div>
+    
+    </div>
+
+    </div>
+
+
+<footer class="footer">
+    <div class="footer__inner">
+            <div class="copyright copyright--user"><div class="copyright">
+    <span>© 2025 A.Maltsev</span>
+    <span class="copyright-theme-sep"> | </span>
+    <span><img src="https://visitor-badge.laobi.icu/badge?page_id=maltsev-dev.github.io&right_color=orange" alt="Visitors"></span>
+</div>
+</div>
+        </div>
+</footer>
+
+
+</div>
+</body>
+
+</html>
