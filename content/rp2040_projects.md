@@ -29,7 +29,7 @@ It serves as a playground for testing ideas, learning embedded concepts, and bui
 
 * Raspberry Pi Pico W
 * Breadboard & jumper wires
-* Sensors: DHT11, MPU6050, BH1750, HW-416A, HC-SR04, HW-504,
+* Sensors: DHT11, MPU6050, BH1750, HW-416A, HC-SR04, HW-504, etc
 * Modules: OLED, WS2812 (Neopixels), relay, MOSFET driver
 * Power: USB / battery / external supply 
 
@@ -86,18 +86,22 @@ If you're tinkering with the Pico W too, feel free to fork, comment, or share id
 
 ## 📺 Demos
 
+[led_lamp](https://github.com/maltsev-dev/pico_rust/blob/master/src/bin/led_lamp.rs)
 <video controls width="720">  
 <source src="/media/led_lamp.webm" type="video/webm" />  
 </video>  
 
+[led_bar](https://github.com/maltsev-dev/pico_rust/blob/master/src/bin/led_bar.rs)
 <video controls width="720">  
 <source src="/media/led_bar.webm" type="video/webm" />  
 </video>  
 
+[led_analog](https://github.com/maltsev-dev/pico_rust/blob/master/src/bin/led_analog.rs)
 <video controls width="720">  
 <source src="/media/led_analog.webm" type="video/webm" />  
 </video>  
 
+[led_bar_pwm](https://github.com/maltsev-dev/pico_rust/blob/master/src/bin/led_bar_pwm.rs)
 <video controls width="720">  
 <source src="/media/led_bar_pwm.webm" type="video/webm" />  
 </video>  
