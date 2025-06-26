@@ -86,22 +86,22 @@ If you're tinkering with the Pico W too, feel free to fork, comment, or share id
 
 ## 📺 Demos
 
-[led_lamp](https://github.com/maltsev-dev/pico_rust/blob/master/src/bin/led_lamp.rs)
+[📚 Source led_lamp](https://github.com/maltsev-dev/pico_rust/blob/master/src/bin/led_lamp.rs)  
 <video controls width="720">  
 <source src="/media/led_lamp.webm" type="video/webm" />  
 </video>  
 
-[led_bar](https://github.com/maltsev-dev/pico_rust/blob/master/src/bin/led_bar.rs)
+[📚 Source led_bar](https://github.com/maltsev-dev/pico_rust/blob/master/src/bin/led_bar.rs)  
 <video controls width="720">  
 <source src="/media/led_bar.webm" type="video/webm" />  
 </video>  
 
-[led_analog](https://github.com/maltsev-dev/pico_rust/blob/master/src/bin/led_analog.rs)
+[📚 Source led_analog](https://github.com/maltsev-dev/pico_rust/blob/master/src/bin/led_analog.rs)  
 <video controls width="720">  
 <source src="/media/led_analog.webm" type="video/webm" />  
 </video>  
 
-[led_bar_pwm](https://github.com/maltsev-dev/pico_rust/blob/master/src/bin/led_bar_pwm.rs)
+[📚 Source led_bar_pwm](https://github.com/maltsev-dev/pico_rust/blob/master/src/bin/led_bar_pwm.rs)  
 <video controls width="720">  
 <source src="/media/led_bar_pwm.webm" type="video/webm" />  
 </video>  
