@@ -44,7 +44,9 @@ It serves as a playground for testing ideas, learning embedded concepts, and bui
 | `led_lamp`              | LED ON and LED OFF with button         | ✅ Done      |
 | `led_analog`            | Breathing LED with PWM                | ✅ Done |
 | `led_bar_pwm`             | Make LED flow on 10 LED bar graph with PWM | ✅ Done      |
-| `led_rgb`             | Experiments with RGB LED | ⏳ Planned      |
+| `led_rgb`             | Experiments with RGB LED | ✅ Done       |
+| `led_circle`             | Make LED circle with freenove | ⏳ Planned       |
+
 
 *More to come.*
 
@@ -104,4 +106,9 @@ If you're tinkering with the Pico W too, feel free to fork, comment, or share id
 [📚 Source led_bar_pwm](https://github.com/maltsev-dev/pico_rust/blob/master/src/bin/led_bar_pwm.rs)  
 <video controls width="720">  
 <source src="/media/led_bar_pwm.webm" type="video/webm" />  
+</video>  
+
+[📚 Source led_rgb](https://github.com/maltsev-dev/pico_rust/blob/master/src/bin/led_rgb.rs)  
+<video controls width="720">  
+<source src="/media/led_rgb.webm" type="video/webm" />  
 </video>  
