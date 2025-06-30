@@ -32,22 +32,9 @@ Most modern serial data transmission protocols use multiple channels (buses, wir
 
 ### Families of Serial Protocols
 
-1. **Low-speed (General)** 
-* ([UART](https://maltsev-dev.github.io/emb_sp_uart/)
-* [I2C](https://maltsev-dev.github.io/emb_sp_i2c/)
-* [SPI](https://maltsev-dev.github.io/emb_sp_spi/))
-* etc
-
-2. **Automotive**
-Protocols used in the automotive industry. Designed to perform complex tasks and ensure reliability in low and high speed and high electromagnetic noise conditions.  
-* `CAN` - high speed application, often used with sensors  
-* `LIN` - low speed. Usually works with car accessories - windows, mirrors, etc.  
-* `FlexRay` - for critical parts of the car, such as braking. Reliability, speed and redundancy.  
-* etc
-
-3. **Aerospace**, **Defence** (MIL-STD-1553)
-4. **High-speed** (USB, PCIe)
-5. **MIPI** (RFFE, SPMI)
+| **Low-speed (General)**                                                                                                                                         | **Automotive**                                                                                                                                                                                                                                   | **Aerospace**, **Defence** | **High-speed** | **MIPI** |
+|-----------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| ----- | ----- |----- |
+| [UART](https://maltsev-dev.github.io/emb-sp-uart/)</br> [I2C](https://maltsev-dev.github.io/emb-sp-i2c/) </br> [SPI](https://maltsev-dev.github.io/emb-sp-spi/) | `CAN` - high speed application, often used with sensors </br> `LIN` - low speed. Usually works with car accessories - windows, mirrors, etc. </br>`FlexRay` - for critical parts of the car, such as braking. Reliability, speed and redundancy. | MIL-STD-1553, etc | USB, PCIe, etc | RFFE, SPMI, etc |
 
 ### Levels, Timing, Framing, Protocols
 **Levels** - answers the question of what voltage is used to represent `zero` and `one`.

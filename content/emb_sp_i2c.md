@@ -42,8 +42,8 @@ In addition, the wires are connected to the `Vcc` supply using one `pull-up` res
 7. communication is stopped by `stop condition`
 
 #### Start Condition
-As in [UART](https://maltsev-dev.github.io/emb_sp_uart/), the `idle` state - for **SDA** and **SCL** - is high voltage (logical one)
-* the `start condition` occurs when the node first pulls down **SDA**, and then pulls down **SCL**. Pulling down in this order occurs to capture the data bus.
+As in [UART](https://maltsev-dev.github.io/emb-sp-uart/), the `idle` state - for **SDA** and **SCL** - is `high(1)`
+* the `start condition` occurs when the node first pulls `low(0)` **SDA**, and then pulls `low(0)` **SCL**. Pulling down in this order occurs to capture the data bus.
 * after the data bus is captured - the node becomes the **master**. This prevents other nodes from capturing the bus and reduces the risk of conflicts.
 
 #### Slave Address
@@ -53,14 +53,14 @@ As in [UART](https://maltsev-dev.github.io/emb_sp_uart/), the `idle` state - for
 
 #### R/W bit 
 Immediately after the slave address comes the `read` or `write` bit and is set by the master.
-* 0 - the master wants to **write** data
-* 1 - the master wants to **receive** data from the slave
+* `0` - the master wants to **write** data to the slave
+* `1` - the master wants to **receive** data from the slave
 
 #### Ack bit
 An acknowledge bit is sent by the receiver each time a byte of data is received
-* 0 - acknowledgement (ACK)
-* 1 - negation (NACK)
-The **I2C** is high(1) in `idle`, so if the receiver does not respond by actively switching the line to low level (0), it will be perceived as a failure.  
+* `0` - acknowledgement (ACK)
+* `1` - negation (NACK)  
+The **I2C** is `high(1)` in `idle`, so if the receiver does not respond by actively switching the line to `low(0)` level, it will be perceived as a **failure**.  
 After the address and each byte of data received (`8-bit`), there is an acknowledgement Arc.  
 
 #### Data bits
@@ -72,11 +72,11 @@ In most cases, multiple data transfers occur, with each `8-bit` having to be ack
 #### Stop Condition
 Mechanism to say that the last byte of data has been sent.
 Stop condition -
-* the **SCL** line goes `high` and stays there
-* then **SDA** goes `high` and stays there too
+* the **SCL** line goes `high(1)` and stays there
+* then **SDA** goes `high(1)` and stays there too
 
-- to transmit data bytes, the **SDA** line goes low only when **SCL** is low level
-- if the **SDA** line goes low when **SCL** is `high` - this is the `stop condition.`
+- to transmit data bytes, the **SDA** line goes `low(0)` only when **SCL** is `low(0)` level
+- if the **SDA** line goes `low(0)` when **SCL** is `high(1)` - this is the `stop condition.`
 
 After the stop condition - the bus becomes inactive and there is no clock signal.  
 And any node on the bus can use the start condition to take over the bus and start a new communication.  
@@ -85,21 +85,20 @@ And any node on the bus can use the start condition to take over the bus and sta
 {{ img(src = "/images/emb/i2c_sync.png") }}
 
 * data is always read in the `middle` of the clock pulse and never in the intervals between them.  
-This is necessary, because switching **SDA** at a high level of the clock signal would mean the `beginning or end` of the transfer.
-* it turns out that **SDA** switches (0-1) only at a low level (0) on **SCL**
+This is necessary, because switching **SDA** at a `high(1)` level of the **SCL** signal would mean the `beginning` or `end` of the data transfer. (start / stop condition)
+* it turns out that **SDA** switches (0-1) only at a `low(0)` level  on **SCL**
 
 ### &emsp;&emsp;&emsp; Open Drain
-{{ img(src = "/images/emb/i2c_open_drain.png") }}
-
-* usually **SDA** and **SDA** are `high` because each of them is connected to the power supply (`+Vcc`) via a **pull-up** resistor, with one resistor per line, not one node.
+* usually **SDA** and **SDA** are `high(1)` because each of them is connected to the power supply (`+Vcc`) via a **pull-up** resistor, with one resistor per line, not one node.
 
 1. Each **I2C** device contains a logic device inside that can open and close the drain
-2. When the drain is `closed`, the **SDA** or **SCL** lines are in a `low` state because now it is connected to ground (`GND`)
-3. When the drain is `opened`, the line goes `high` because now its connected to the power supply (`+Vcc`)
+2. When the drain is `closed`, the **SDA** or **SCL** lines are in a `low(0)` state because now it is connected to ground (`GND`)
+3. When the drain is `opened`, the line goes `high(1)` because now its connected to the power supply (`+Vcc`)
 
-When the lines are not in use, they are `high` voltage, that is why **I2C** is called an open drain system
+When the lines are not in use, they are `high(1)` voltage, that is why **I2C** is called an open drain system
+{{ img(src = "/images/emb/i2c_open_drain.png") }}
 
-#### Pull- Up resistor
+### &emsp;&emsp;&emsp; Pull- Up resistor
 - Pulling down to **low(0)** faster than pull up to `idle` **high(1)**
 - the `higher` the resistor resistance, the more time is needed to raise the line, and this in turn limits the `speed of the bus.`
 - the `lower` the resistor resistance, the faster the communication occurs, but at the same time `more energy` is required
