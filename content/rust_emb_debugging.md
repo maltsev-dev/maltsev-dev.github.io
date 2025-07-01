@@ -64,12 +64,12 @@ Supports Rust-specific debugging (pretty printing, IDE integration).
 
 # &emsp;&emsp;&emsp; 📐 Logging
 ## defmt
-- `[defmt](https://crates.io/crates/defmt)` (deferred formatting): an efficient logging framework for embedded systems:  
+- `[defmt]`(https://crates.io/crates/defmt) (deferred formatting): an efficient logging framework for embedded systems:  
     * Formats logs on the host, passing only indexes and values ​​from the device.
     * Integrates with GDB, suitable for real-time debugging.
     * Part of the Knurling-rs project.
 
-- `[defmt-rtt](https://crates.io/crates/defmt-rtt)` — transport layer for `defmt`:  
+- `[defmt-rtt]`(https://crates.io/crates/defmt-rtt) — transport layer for `defmt`:  
     * Uses **RTT** (Real-Time Transfer) for fast log transfer.
     * Uses macros (`defmt::info!`, `defmt::error!`) with lazy formatting.
     * Minimizes the load on **MCU**, saving useful data for analysis on the **host** side.
@@ -107,10 +107,9 @@ rtt_init_print!();
 rprintln!("\nREAD from address 0x1B");
 ```
 
-In VS Code, you can install the “Debugger for probe-rs” extension.  
+In VS Code, you can install the **“Debugger for probe-rs”** extension.  
 Then open the project and start debugging by pressing `F5` – it uses `probe-rs` to flash and run the application.  
 This approach allows you to see the `defmt`/`RTT` output directly in the VSCode console.
-
 
 # Debugging memory in Embedded Rust
 * **Memory inspection** via `GDB`: access to variables, registers and memory areas (print, `x/10x 0x...`). Memory is defined in memory.x.
@@ -124,19 +123,151 @@ This approach combines Rust's compile-time safety with analysis tools, ensuring 
 # &emsp;&emsp;&emsp; 🔄 Typical workflow
 1. Write code → add `rprintln!()` for logs.  
 2. `cargo build` → `cargo flash --chip ...`  
-3. Run `probe-rs run --gdb` in the background.  
+3. Run the server `probe-rs run --gdb` in the background.  
 4. Connect VS Code/GDB → set breakpoints → run.  
 5. Analyze variables/logs → fix error → repeat.  
 6. In case of panic → look at call stack and RTT logs.  
 
-| Stage | Tools | Flow | Point |
-|:-------------------|:---------------------------------------------------------------------------------------------------------|:-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **Development** | rustc + cargo </br> embedded-hal, rtt-target, panic-halt, etc | #![no_std]</br> #![no_main] | `no_std` disables the standard library. </br> `panic_handler` catches panics (will not compile without it). </br> `RTT/defmt` add a channel for logging. |
-| **Compilation** | - `cargo` + target toolchain (e.g. `thumbv7em-none-eabihf`) </br> - `probe-rs` (or `cargo-binutils`) | `cargo build --target thumbv7em-none-eabihf` (Build with debug symbols) </br> `cargo objcopy --bin app -- -O binary firmware.bin` (Convert to .bin for flashing) | * Toolchain (`thumbv7...`) generates code for a specific ARM Cortex-M processor. </br> * `objcopy` creates a binary image for the bootloader. |U. |
-| **Flashing** | **Hardware:** ST-Link, J-Link, Black Magic Probe </br> **Software:** `probe-rs`, `openocd`, `cargo-flash` | `probe-rs download --chip STM32F411CEUx firmware.bin`(Firmware the binary onto the device) </br> `cargo flash --chip STM32F411CEUx`(Or one command (build + firmware)) | `probe-rs` works directly with debug probes without configs. </br> Specify the exact chip model (`--chip`) to avoid errors. |
-| **Debugging** | **Debugging server:** `probe-rs`/`openocd` </br> **Client:** GDB (`arm-none-eabi-gdb`) + IDE (VS Code) | 1. Run the server `probe-rs run --gdb` on `:1337` port<br/> 2. Connect GDB `arm-none-eabi-gdb target/thumbv7em-none-eabihf/debug/app` <br/> `(gdb) target extended-remote :1337`<br/>`(gdb) break main # Set a breakpoint`<br/>`(gdb) continue # Start execution` <br/>`(gdb) print _x # Look at the variable`<br/> 3. **Or in VS Code (via Cortex-Debug)** | GDB allows you to step through the code, look at variables. <br/> VS Code provides a visual interface for breakpoints, call stack. |
-| **Diagnostics** | - **RTT Viewer** (SEGGER J-Link) <br/> - **defmt-print** <br/>- **GDB commands** | 1. RTT logs `probe-rs rtt --chip STM32F411CEUx` - output `Debug value: 42` <br/> 2. Memory analysis in GDB:<br/>`(gdb) x/16x 0x20000000 # View RAM`<br/>`(gdb) p &_x # Variable address`<br/>3. **View registers:**<br/>In VS Code: via `.svd` file (Peripherals panel). <br/> In GDB: `info registers`. | RTT shows real-time logs without UART. <br/> Memory viewing helps find data corruption. <br/> Registers indicate the state of peripherals (GPIO, UART, etc.). |
-| **Panic Handling** | - `panic-probe` + `defmt` <br/>GDB backtrace | For **panic with backtrace:** Always include `debug=2` in `Cargo.toml`.
+<style>
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+  }
+
+  th,
+  td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+    vertical-align: top;
+  }
+
+  th {
+    font-weight: bold;
+    text-align: center;
+  }
+
+  thead {
+    background-color: #f59140;
+  }
+</style>
+
+<table>
+  <thead>
+    <tr>
+      <th>Stage</th>
+      <th>Tools</th>
+      <th>Flow</th>
+      <th>Point</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>1️⃣ Development</strong></td>
+      <td>
+        - rustc + cargo<br>
+        - embedded-hal<br>
+        - rtt-target<br>
+        - panic-halt, etc
+      </td>
+      <td>
+        <code>#![no_std]</code><br>
+        <code>#![no_main]</code>
+      </td>
+      <td>
+        - <code>no_std</code> disables the standard library.<br>
+        - <code>panic_handler</code> is required.<br>
+        - RTT/defmt adds a logging channel.
+      </td>
+    </tr>
+    <tr>
+      <td><strong>2️⃣ Compilation</strong></td>
+      <td>
+        - cargo + target toolchain (e.g. <code>thumbv7em-none-eabihf</code>)<br>
+        - probe-rs / cargo-binutils
+      </td>
+      <td>
+        <code>cargo build --target thumbv7em-none-eabihf</code><br>
+        <code>cargo objcopy --bin app -- -O binary firmware.bin</code>
+      </td>
+      <td>
+        - Toolchain generates code for specific Cortex-M.<br>
+        - objcopy creates firmware image.
+      </td>
+    </tr>
+    <tr>
+      <td><strong>3️⃣ Flashing</strong></td>
+      <td>
+        - Hardware: ST-Link, J-Link, Black Magic Probe<br>
+        - Software: probe-rs, openocd, cargo-flash
+      </td>
+      <td>
+        <code>probe-rs download --chip STM32F411CEUx firmware.bin</code><br>
+        <code>cargo flash --chip STM32F411CEUx</code>
+      </td>
+      <td>
+        - probe-rs works without config files.<br>
+        - Use <code>--chip</code> to match the target MCU.
+      </td>
+    </tr>
+    <tr>
+      <td><strong>4️⃣ Debugging</strong></td>
+      <td>
+        - Server: probe-rs / openocd<br>
+        - Client: GDB, Cortex-Debug (VS Code)
+      </td>
+      <td>
+        1. <code>probe-rs run --gdb</code><br>
+        2. <code>gdb target/thumbv7em-none-eabihf/debug/app</code><br>
+        3. <code>(gdb) target extended-remote :1337</code><br>
+        4. <code>(gdb) break main</code><br>
+        5. <code>(gdb) continue</code><br>
+        6. <code>(gdb) print _x</code><br>
+        Or use VS Code.
+      </td>
+      <td>
+        - GDB enables stepping, variable inspection.<br>
+        - VS Code offers GUI for debugging.
+      </td>
+    </tr>
+    <tr>
+      <td><strong>5️⃣ Diagnostics</strong></td>
+      <td>
+        - RTT Viewer (J-Link)<br>
+        - defmt-print<br>
+        - GDB commands
+      </td>
+      <td>
+        1. <code>probe-rs rtt --chip STM32F411CEUx</code><br>
+        2. GDB memory:<br>
+        &nbsp;&nbsp; - <code>x/16x 0x20000000</code><br>
+        &nbsp;&nbsp; - <code>p &_x</code><br>
+        3. View registers:<br>
+        &nbsp;&nbsp; - In VS Code via .svd<br>
+        &nbsp;&nbsp; - In GDB: <code>info registers</code>
+      </td>
+      <td>
+        - RTT provides real-time logs.<br>
+        - Memory view helps detect corruption.<br>
+        - Registers show peripheral states.
+      </td>
+    </tr>
+    <tr>
+      <td><strong>6️⃣ Panic Handling</strong></td>
+      <td>
+        - panic-probe + defmt<br>
+        - GDB backtrace
+      </td>
+      <td>
+        - Enable backtrace: set <code>debug = 2</code> in <code>Cargo.toml</code>
+      </td>
+      <td>
+        - Allows debugging panic location with full context.
+      </td>
+    </tr>
+  </tbody>
+</table>
 
 * Automate builds in VS through `tasks.json`.
 ```json
