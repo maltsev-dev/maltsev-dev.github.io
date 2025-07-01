@@ -139,17 +139,22 @@ This approach combines Rust's compile-time safety with analysis tools, ensuring 
   td {
     border: 1px solid #ddd;
     padding: 8px;
-    text-align: left;
     vertical-align: top;
   }
 
   th {
     font-weight: bold;
     text-align: center;
+    color: white;
   }
 
   thead {
     background-color: #f59140;
+  }
+
+  td:first-child {
+    white-space: nowrap;
+    width: 1%;
   }
 </style>
 
@@ -218,13 +223,13 @@ This approach combines Rust's compile-time safety with analysis tools, ensuring 
         - Client: GDB, Cortex-Debug (VS Code)
       </td>
       <td>
-        1. <code>probe-rs run --gdb</code><br>
-        2. <code>gdb target/thumbv7em-none-eabihf/debug/app</code><br>
-        3. <code>(gdb) target extended-remote :1337</code><br>
-        4. <code>(gdb) break main</code><br>
-        5. <code>(gdb) continue</code><br>
-        6. <code>(gdb) print _x</code><br>
-        Or use VS Code.
+        1. Run the server <code>probe-rs run --gdb</code><br>
+        2. Connect GDB <code>gdb target/thumbv7em-none-eabihf/debug/app</code><br>
+        <code>(gdb) target extended-remote :1337</code><br>
+        <code>(gdb) break main</code><br>
+        <code>(gdb) continue</code><br>
+        <code>(gdb) print _x</code><br>
+        3. Or use VS Code.
       </td>
       <td>
         - GDB enables stepping, variable inspection.<br>
@@ -239,7 +244,7 @@ This approach combines Rust's compile-time safety with analysis tools, ensuring 
         - GDB commands
       </td>
       <td>
-        1. <code>probe-rs rtt --chip STM32F411CEUx</code><br>
+        1. RTT logs<code>probe-rs rtt --chip STM32F411CEUx</code><br>
         2. GDB memory:<br>
         &nbsp;&nbsp; - <code>x/16x 0x20000000</code><br>
         &nbsp;&nbsp; - <code>p &_x</code><br>
