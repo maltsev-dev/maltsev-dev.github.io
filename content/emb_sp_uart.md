@@ -3,7 +3,7 @@ title = "UART"
 date = "2025-06-30"
 
 [taxonomies]
-tags = ["rust", "embedded", "basic", "sp"]
+tags = ["embedded", "basic", "sp"]
 +++
 
 A technical introduction to the **UART** - low-speed two-wire asynchronous multi-duplex serial protocol.  

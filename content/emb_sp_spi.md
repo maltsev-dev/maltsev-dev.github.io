@@ -3,7 +3,7 @@ title = "SPI"
 date = "2025-06-30"
 
 [taxonomies]
-tags = ["rust", "embedded", "basic", "sp"]
+tags = ["embedded", "basic", "sp"]
 +++
 
 A technical introduction to the **SPI** - low-speed four-wire master-slave full-duplex serial protocol.  

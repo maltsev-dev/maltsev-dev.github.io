@@ -3,7 +3,7 @@ title = "Serial Protocols"
 date = "2025-06-28"
 
 [taxonomies]
-tags = ["rust", "embedded", "basic", "sp"]
+tags = ["embedded", "basic", "sp"]
 +++
 
 Digital systems are based on the concept of **bits**, in addition to using bits they often have to transfer them back and forth usually between two components (MCU and Sensor, LCD etc).  

@@ -3,7 +3,7 @@ title = "I2C"
 date = "2025-06-30"
 
 [taxonomies]
-tags = ["rust", "embedded", "basic", "sp"]
+tags = ["embedded", "basic", "sp"]
 +++ 
 
 A technical introduction to the **I2C** - low-speed two-wire master-slave serial protocol.  

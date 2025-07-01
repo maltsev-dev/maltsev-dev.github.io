@@ -82,6 +82,7 @@ When a `1` signal is received on the pin, control passes through the `PMOS` tran
 | **Analog** | ADC/DAC is used on the output | Temperature sensor, audio |
 | **Alternate Function** | Used by peripherals (SPI, PWM, UART) | SPI, I²C, PWM |
 
+If we wanted to use some Pin as an input, we would use either `.into_pull_up_input()`, `.into_pull_down_input()` to tell the chip to expect the system voltage (3.3 volts) to be `present` or `absent`, and react if that changes.
 
 ```rust
 // RP2040 (Rust embedded-hal, hi-Z)
