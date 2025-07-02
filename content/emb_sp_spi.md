@@ -1,5 +1,5 @@
 +++
-title = "SPI"
+title = "SPI (Serial Peripheral Interface)"
 date = "2025-06-30"
 
 [taxonomies]

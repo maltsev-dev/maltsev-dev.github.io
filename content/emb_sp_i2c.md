@@ -1,5 +1,5 @@
 +++
-title = "I2C"
+title = "I2C (Inter-Integrated Circuit)"
 date = "2025-06-30"
 
 [taxonomies]

@@ -1,5 +1,5 @@
 +++
-title = "UART"
+title = "UART (Universal Asynchronous Receiver / Transmitter)"
 date = "2025-06-30"
 
 [taxonomies]
@@ -8,6 +8,7 @@ tags = ["embedded", "basic", "sp"]
 
 A technical introduction to the **UART** - low-speed two-wire asynchronous multi-duplex serial protocol.  
 **UART** The earliest serial protocol. Still commonly used in modern electronics.
+
 {{ img(src = "/images/emb/uart_header.png") }}
 <!-- more -->
 ---

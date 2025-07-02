@@ -7,7 +7,7 @@ tags = ["embedded", "basic", "sp"]
 +++
 
 Digital systems are based on the concept of **bits**, in addition to using bits they often have to transfer them back and forth usually between two components (MCU and Sensor, LCD etc).  
-All the different methods of bit transfer can be divided into 2 categories - `Parallel` and `Serial` transfer  
+🟠 All the different methods of bit transfer can be divided into 2 categories - `Parallel` and `Serial` transfer  
 
 <!-- more -->
 ---
@@ -32,9 +32,65 @@ Most modern serial data transmission protocols use multiple channels (buses, wir
 
 ### Families of Serial Protocols
 
-| **Low-speed (General)**                                                                                                                                         | **Automotive**                                                                                                                                                                                                                                   | **Aerospace**, **Defence** | **High-speed** | **MIPI** |
-|-----------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| ----- | ----- |----- |
-| [UART](https://maltsev-dev.github.io/emb-sp-uart/)</br> [I2C](https://maltsev-dev.github.io/emb-sp-i2c/) </br> [SPI](https://maltsev-dev.github.io/emb-sp-spi/) | `CAN` - high speed application, often used with sensors </br> `LIN` - low speed. Usually works with car accessories - windows, mirrors, etc. </br>`FlexRay` - for critical parts of the car, such as braking. Reliability, speed and redundancy. | MIL-STD-1553, etc | USB, PCIe, etc | RFFE, SPMI, etc |
+<style>
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+  }
+
+  th,
+  td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    vertical-align: top;
+  }
+
+  th {
+    background-color: #f59140;
+    color: white;
+    text-align: center;
+  }
+
+  td:first-child {
+    width: auto;
+  }
+</style>
+
+<table>
+  <thead>
+    <tr>
+      <th>Low-speed (General)</th>
+      <th>Automotive</th>
+      <th>Aerospace / Defence</th>
+      <th>High-speed</th>
+      <th>MIPI</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>
+        <a href="https://maltsev-dev.github.io/emb-sp-uart/">UART</a><br/>
+        <a href="https://maltsev-dev.github.io/emb-sp-i2c/">I2C</a><br/>
+        <a href="https://maltsev-dev.github.io/emb-sp-spi/">SPI</a>
+      </td>
+      <td>
+        <code>CAN</code> – high speed application, often used with sensors<br/>
+        <code>LIN</code> – low speed. Usually works with car accessories – windows, mirrors, etc.<br/>
+        <code>FlexRay</code> – for critical parts of the car, such as braking. Reliability, speed and redundancy.
+      </td>
+      <td>
+        MIL-STD-1553, etc
+      </td>
+      <td>
+        USB, PCIe, etc
+      </td>
+      <td>
+        RFFE, SPMI, etc
+      </td>
+    </tr>
+  </tbody>
+</table>
 
 ### Levels, Timing, Framing, Protocols
 **Levels** - answers the question of what voltage is used to represent `zero` and `one`.

@@ -1,12 +1,12 @@
 +++
-title = "GPIO "
+title = "GPIO (General Purpose Input / Output)"
 date = "2025-06-12"
 
 [taxonomies]
 tags = ["rust", "embedded", "basic", "gpio"]
 +++
 
-What is a general purpose input output (GPIO) of the MCU
+🟠 What is a general purpose input output (GPIO) of the MCU
 
 <!-- more -->
 ---
