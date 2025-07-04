@@ -47,9 +47,6 @@ This means that the peripheral device can be accessed in the same way as regular
     font-weight: bold;
   }
 </style>
-
-<h3>📊 Comparison Table: <code>volatile</code> vs <code>atomic</code> vs <code>mutex</code></h3>
-
 <table>
   <thead>
     <tr>

@@ -28,9 +28,10 @@ copyright_html = """
 author = "maltsev-dev"
 menu_items = [
     { name = "blog", url = "$BASE_URL" },
-    { name = "tags", url = "$BASE_URL/tags" },
     { name = "archive", url = "$BASE_URL/archive" },
     { name = "embedded", url = "$BASE_URL/tags/embedded/" },
+    { name = "rust", url = "$BASE_URL/tags/rust/" },
+    { name = "projects", url = "$BASE_URL/tags/project/" },
     { name = "bookmarks", url = "$BASE_URL/bookmarks" },
     { name = "about", url = "$BASE_URL/about" },
     { name = "GitHub", url = "https://github.com/maltsev-dev", newtab = true},
