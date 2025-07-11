@@ -1,6 +1,6 @@
 +++
 title = "MCU Registers"
-date = "2025-06-12"
+date = "2025-07-11"
 
 [taxonomies]
 tags = ["embedded", "basic", "registers"]
@@ -88,8 +88,8 @@ Each register has a specific function and bit capacity.
 <td><code>SREG</code>, <code>CPSR</code>, <code>FLAGS</code></td>
 </tr>
 <tr>
-<td>Hardware registers </br> * hardware registers are like memory with additional hardware-related functions; or, memory circuits are like hardware registers that just store data </td>
-<td>Used in the interface between software and peripherals </td>
+<td>Hardware registers</td>
+<td>* Used in the interface between software and peripherals</td>
 <td>* Input/output (I/O) of different kinds </br> * Configuration and start-up of certain features, especially during initialization </br> * Used to interact with physical pins of the microcontroller: reading/writing levels, configuring directions, etc.</td>
 </tr>
 <tr>
@@ -121,7 +121,8 @@ To manually set up the system timer ([SysTick](https://developer.arm.com/documen
     * `clock source` (which specifies what clock rates the timer should support), 
     * `tick interrupt enable` (which allows an interrupt to fire when the timer reaches zero) and
     * `enabling the timer itself`  
-The parameters are controlled by the three least significant bits in our `32-bit` register. So for example, if you wanted to set all values ​​to one, our 32 bits would look like this. (`00000000_00000000_00000000_000000111`) The last three bits are set to one.
+The parameters are controlled by the three least significant bits in our `32-bit` register.  
+So for example, if you wanted to set all values ​​to one, our 32 bits would look like this. (`00000000_00000000_00000000_000000111`) The last three bits are set to one.
 
 * The `SYST_RVR` register specifies the start value to load into the `SYST_CVR` register.  
 It counts down from that value to `zero`.  
