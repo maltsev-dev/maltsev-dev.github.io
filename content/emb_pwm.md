@@ -29,45 +29,43 @@ This control method is efficient and causes almost no losses.
 - in some cases it can be used to transmit information for configuring the device.
 - has a low power loss and the ability to digitally/software control.
 
-
 It has 2 main parameters
 * **Frequency** (switching frequency, `Hz`),
 * **Duty cycle** (percentage of time in "HIGH" state, from `0% `to `100%`).
 
-{{ img(src = "/images/emb/pwm_50dc.png") }}
+{{ img(src = "/images/emb/pwm.png") }}
 
 ---
 
 ### Duty cycle
-- percentage of time during which the signal is active  
+- Percentage of time during which the **signal is active**
     * signal with 20% duty cycle is active 20% of the time
     * signal with 50% duty cycle is active 50% of the time
     * signal with 80% duty cycle is active 80% of the time
-- key parameter, since it determines the power supplied to the load  
 
 * The duty cycle can be set or controlled in `3 main ways`
-    1. Manual method (Use various knobs or sliders)
-    2. Automatic (for example, using feedback on the output voltage in a pulse power supply)
-    3. Software (using some kind of intelligent system that changes the pulse width depending on external logic or parameters)
+    * Manual method (Use various knobs or sliders)
+    * Automatic (for example, using feedback on the output voltage in a pulse power supply)
+    * Software (using some kind of intelligent system that changes the pulse width depending on external logic or parameters)
 
 {{ img(src = "/images/emb/pwm_duty_cycle.png") }}
 
 
 #### Average voltage level
 PWM - often used to vary power by changing the `average voltage level` across a load.
-* average load = `peak voltage` * `duty cycle`
+* average load = `peak voltage`(5V) * `duty cycle`(20%) = 1V
 
 {{ img(src = "/images/emb/pwm_average_voltage.png") }}
 
 ---
 
 ### Switching Frequency
-- switching frequency, which is defined as the reciprocal of the time between the leading edges of the voltage pulses.
-- the required switching frequency depends on the load or application area
-    * can be from 10Hz to several kHz
-    * for applications where faster or more precise control is required - higher switching frequencies are used
-    * but in most applications the switching frequency is fixed
-- signals can have the same duty cycles, but different switching frequencies
+- Switching frequency, which is defined as the reciprocal of the time between the leading edges of the voltage pulses.
+- The required switching frequency depends on the load or application area
+    * can be from `10H`z to several `kHz`
+    * for applications where faster or more precise control is required - **higher** switching frequencies are used
+    * but in most applications the switching frequency **is fixed**
+- Signals can have the same duty cycles, but different switching frequencies
 
 ---
 
@@ -83,17 +81,6 @@ PWM - often used to vary power by changing the `average voltage level` across a 
 | **7. Chargers** | ● Charging batteries (including from solar panels)<br>● PWM regulates average voltage to prevent overcharging and reverse current |
 
 ---
-
-## 🧰 Tips for working with PWM
-
-* **Do not exceed the frequency** - some devices work up to 1-10 kHz.
-* **PWM resolution** depends on the timer (8/10/12/16 bit).
-* PWM can be **center-aligned**, **edge-aligned**, **complementary** - depends on the HAL and MCU.
-* For **multi-channel PWM** use different channels of the same timer or timers.
-* Use a **logic analyzer** or **oscilloscope** for visualization.
-* Timers often work asynchronously - glitches at startup are possible.
-* For **silent PWM** (LED) use frequencies > 1 kHz.
-
 
 ## 🧱 Embedded Rust approach:
 
@@ -146,3 +133,14 @@ use rp2040_hal::{self as hal, pwm::Slices};
     }
 
 ```
+
+---
+
+## 🧰 Tips for working with PWM
+
+* **Do not exceed the frequency** - some devices work up to `1-10 kHz`.
+* **PWM resolution** depends on the timer (8/10/12/16 bit).
+* For **multi-channel PWM** use different channels of the same timer or timers.
+* Use a **logic analyzer** or **oscilloscope** for visualization.
+* Timers often work asynchronously - glitches at startup are possible.
+* For **silent PWM** (LED) use frequencies > `1 kHz.`
