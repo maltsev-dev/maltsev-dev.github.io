@@ -82,6 +82,7 @@ use defmt_rtt as _;
 #[panic_handler]
 fn panic(info: &core::panic::PanicInfo) -> ! {
     defmt::error!("PANIC: {}", defmt::Display2Format(info));
+    defmt::info!("Hello from probe-rs!");
     loop {}
 }
 ```
