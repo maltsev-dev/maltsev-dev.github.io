@@ -1,6 +1,6 @@
 +++
-title = ""
-date = "2024-14-07"
+title = "TinyML"
+date = "2025-07-14"
 
 [taxonomies]
 tags = ["tinyml", "basic"]
