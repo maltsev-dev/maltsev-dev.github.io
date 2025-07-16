@@ -27,15 +27,11 @@ copyright_html = """
 """
 author = "maltsev-dev"
 menu_items = [
-    { name = "blog", url = "$BASE_URL" },
     { name = "archive", url = "$BASE_URL/archive" },
-    { name = "embedded", url = "$BASE_URL/tags/embedded/" },
     { name = "rust", url = "$BASE_URL/tags/rust/" },
+    { name = "embedded", url = "$BASE_URL/tags/embedded/" },
     { name = "projects", url = "$BASE_URL/tags/project/" },
-    { name = "bookmarks", url = "$BASE_URL/bookmarks" },
     { name = "about", url = "$BASE_URL/about" },
-    { name = "GitHub", url = "https://github.com/maltsev-dev", newtab = true},
-    { name = "Linkedin", url = "https://www.linkedin.com/comm/mynetwork/discovery-see-all?usecase=PEOPLE_FOLLOWS&followMember=a-maltsev", newtab = true},
     { name = "cv.pdf", url = "https://github.com/maltsev-dev/maltsev-dev.github.io/raw/main/static/CV_Anatoly_Maltsev.pdf", newtab = true },
 ]
 

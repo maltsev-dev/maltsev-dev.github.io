@@ -15,8 +15,9 @@ path = "about"
 
 ---
 #### 🌐 Find me there
-[🥋 Codewars](https://www.codewars.com/users/chemyl) | [📷 Shutterstock](https://www.shutterstock.com/ru/g/chemylinc) | [🎨 ArtStation](https://www.artstation.com/chemylinc) | [🕶️ Instagram](https://www.instagram.com/chemylinc/)  
+[📚 Github](https://www.codewars.com/users/chemyl) | [🥋 Codewars](https://www.codewars.com/users/chemyl) | [📷 Shutterstock](https://www.shutterstock.com/ru/g/chemylinc) | [🎨 ArtStation](https://www.artstation.com/chemylinc) | [🕶️ Instagram](https://www.instagram.com/chemylinc/)  
 
 ---
 #### 🌐 Reach me out
-[📧 Email](mailto:mr.a.maltsev@gmail.com) | [📟 Telegram](https://t.me/replicantDuke)
+[👔 linkedin](https://www.linkedin.com/comm/mynetwork/discovery-see-all?usecase=PEOPLE_FOLLOWS&followMember=a-maltsev) | [📧 Email](mailto:mr.a.maltsev@gmail.com) | [📟 Telegram](https://t.me/replicantDuke)  
+[⚠️ CV](https://github.com/maltsev-dev/maltsev-dev.github.io/raw/main/static/CV_Anatoly_Maltsev.pdf)
