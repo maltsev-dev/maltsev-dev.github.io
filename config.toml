@@ -28,11 +28,10 @@ copyright_html = """
 author = "maltsev-dev"
 menu_items = [
     { name = "archive", url = "$BASE_URL/archive" },
-    { name = "rust", url = "$BASE_URL/tags/rust/" },
-    { name = "embedded", url = "$BASE_URL/tags/embedded/" },
     { name = "projects", url = "$BASE_URL/tags/project/" },
+    { name = "embedded", url = "$BASE_URL/tags/embedded/" },
+    { name = "rust", url = "$BASE_URL/tags/rust/" },
     { name = "about", url = "$BASE_URL/about" },
-    { name = "cv.pdf", url = "https://github.com/maltsev-dev/maltsev-dev.github.io/raw/main/static/CV_Anatoly_Maltsev.pdf", newtab = true },
 ]
 
 enable_post_view_navigation = false
