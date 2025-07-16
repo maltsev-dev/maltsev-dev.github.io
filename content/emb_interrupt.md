@@ -1,7 +1,7 @@
 
 +++
-title = "Interrupts"
-date = "2025-06-12"
+title = "Interrupts (ISR, IVT, NVIC)"
+date = "2025-07-15"
 
 [taxonomies]
 tags = ["embedded", "basic", "interrupts"]
