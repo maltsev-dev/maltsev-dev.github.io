@@ -1,6 +1,6 @@
 +++
 title = "Timers"
-date = "2025-06-12"
+date = "2025-07-14"
 
 [taxonomies]
 tags = ["embedded", "basic", "timers"]
@@ -105,7 +105,7 @@ unsafe {
 	let orig = *(RCC as *const u32); 			// to avoid overwriting the entire RCC register, we need to read the value that is in RCC.
 	let mask = !(0b1111 << 23); 				// create a mask of 4 bits and invert them. The mask will occupy bits 23 through 26
 	let rcc = (orig & mask) | sysdiv; 			// replace the bit values in the original with the mask.
-	*(RCC as *mut u32) = rcc; 					// set the preliminary scaling value.
+	*(RCC as *mut u32) = rcc; 				// set the preliminary scaling value.
 }
 ```
 
