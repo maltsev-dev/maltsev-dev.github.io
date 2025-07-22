@@ -12,6 +12,26 @@ In general, developing programs for **MCU** is aimed at obtaining some informati
 
 🟠 In this article I'll take a closer look at these abstraction levels and some other useful crates.
 
+┌─────────────────────────────────────────────────────┐
+│ BSP (Board Support Package) │ ◀▶ Specific board (pins, display, LED, etc.)
+│ └─ Peripheral configuration, pins, displays │
+├───────────────────────────────────────────┤
+│ Embedded HAL │ ◀▶ Traits for Cross-Platform Compatibility
+│ └─ Common Interfaces (digital::OutputPin) │
+├─────────────────────────────────────────────┤
+│ HAL (Hardware Abstraction Layer) │ ◀▶ Simplified management of timers, GPIO, UART
+│ └─ Implementation of embedded-hal traits via PAC
+├───────────────────────────────────────────┤
+│ PAC (Peripheral Access Crate) │ ◀▶ SVD-based API generation
+│ └─ Direct access to registers, type-safe
+├───────────────────────────────────────────┤
+│ SVD (System View Description) │ ◀▶ XML description of all registers, their bits and fields
+│ └─ Basis for PAC autogeneration (via svd2rust)
+├────────────────────────────────────────────┤
+│ Register Management (Low Level) │ ◀▶ Working directly with addresses and registers via `unsafe`
+│ └─ Working with MMIO, volatile, bitmasks │
+└─────────────────────────────────────────────────┘
+
 <!-- more -->
 ---
 
@@ -19,23 +39,23 @@ In general, developing programs for **MCU** is aimed at obtaining some informati
 
 ## &emsp;&emsp;&emsp; 1. Low Level
 To program an **MCU**, at the **lowest level**, you need to control a special set of `registers` available inside the **MCU**.  
-`Registers` are special memory locations that you can interact with: write data to, read, modify, and store values.  
-To write or read a value from a register, you need to manipulate individual bits at specific memory addresses reserved for those registers.  
+[Registers](https://maltsev-dev.github.io/emb-registers/) are special memory locations that you can interact with: write data to, read, modify, and store values.  
+To write or read a value from a register, you need to manipulate individual **bits** at specific memory addresses reserved for those registers.  
 Once the control bits are set in the right registers, at some point the write will be interpreted and passed to a **peripheral device** connected to one of the **MCU** pins to interact with the outside world.  
 
-* This approach can be unsafe, as it requires the use of unsafe blocks and pointer dereferencing to access register addresses - this can lead to undefined behavior (UB) on error.  
+* This approach can be unsafe, as it requires the use of **unsafe blocks** and **pointer dereferencing** to access register addresses - this can lead to undefined behavior (UB) and memory errors.  
 * Directly manipulating registers to control the **MCU** is powerful, but not the most intuitive or safe way to interact with the hardware.  
 
 ## &emsp;&emsp;&emsp; 2. SVD (System View Description) Level
 In addition to the datasheet describing the register structure, **MCU** manufacturers sometimes provide standardized **SVD** (System View Description) files in `xml` format.  
-These files contain information about the functions and location of registers in a format convenient for machine processing.  
+These files contain information about the functions and location of registers in a format `convenient for machine processing.`  
 * The [svd2rust](https://crates.io/crates/svd2rust) tool allows you to automatically generate safe Rust crates with type-safe access to **MCU** peripheral registers based on such **SVD** files.
 
 ## &emsp;&emsp;&emsp; 3. PAC (Peripheral Access Crate) Level
 
 After patching the **SVD** files and generating code through `svd2rust`, we get a safe and structured **PAC** - interface for working with the **MCU** peripherals.  
 
-**PAC** is a type-safe access to each register of the peripherals.  
+**PAC** is a `type-safe access` to each register of the peripherals.  
 A struct is created for each register. These structs are implemented using zero-cost abstractions (in release mode).  
 
 Thanks to the ownership system in Rust, **PAC** eliminates race conditions when accessing the peripherals.  
@@ -69,12 +89,11 @@ When creating the driver function, structures defined in a specific **HAL** for 
 The problem is that these types and structures **may not exist** in the same form in another **HAL** - in order to use this driver on another **MCU**, it must be rewritten.  
 
 ## &emsp;&emsp;&emsp; 5. Embedded HAL
-[embedded-hal](https://crates.io/crates/embedded-hal) is a project that provides a unified set of traits (**traits**) to abstract common **MCU** peripherals: `GPIO`, `Timers`, `SPI`, `UART`, `I2C`, etc.
+[embedded-hal](https://crates.io/crates/embedded-hal) is a project that provides a unified set of **traits** to abstract common **MCU** peripherals: `GPIO`, `Timers`, `SPI`, `UART`, `I2C`, etc.  
 
-🔗 How it works:  
-A **HAL** implemented for a specific **MCU** (e.g. [stm32f4xx-hal](https://crates.io/crates/stm32f4xx-hal) or [rp2040-hal](https://crates.io/crates/rp2040-hal)), implements the traits from `embedded-hal`, usually relying on low-level **PAC** interfaces.
+* A **HAL** implemented for a specific **MCU** (e.g. [stm32f4xx-hal](https://crates.io/crates/stm32f4xx-hal) or [rp2040-hal](https://crates.io/crates/rp2040-hal)), implements the traits from `embedded-hal`, usually relying on low-level **PAC** interfaces.
 
-This ensures compatibility of drivers with any chip that supports `embedded-hal` — this ensures 
+This ensures compatibility of drivers with any chip that supports `embedded-hal`
 * `modularity` (driver logic is separated from hardware)
 * code `reusability` and portability (the same driver can be used with any **HAL** that implements `embedded-hal`)
 * universal approach that allows `testing` the driver on multiple **MCU** in simulation.
@@ -105,15 +124,14 @@ where
 ```
 
 ## &emsp;&emsp;&emsp; 6. BSP (Board Support Package) Level
-BSP crates provide abstractions and utilities specific to a particular board (not just an **MCU**).
+`BSP` crates provide abstractions and utilities specific to a particular board (not just an **MCU**).
 
-While PAC and HAL correspond to **MCU families**, a BSP corresponds to a **specific board model** - with its layout, pinout, onboard components and peripherals.  
+While `PAC` and `HAL` correspond to **MCU families**, a `BSP` corresponds to a **specific board model** - with its layout, pinout, onboard components and peripherals.  
 BSPs are most often compatible with `embedded-hal` and speed up prototyping
 * [rp-pico](https://crates.io/crates/rp-pico) — BSP for Raspberry Pi Pico (based on `rp2040-hal`)
 * [nucleo-f401re](https://crates.io/crates/nucleo-f401re) - BSP for STM32 Nucleo F401RE
 * [microbit](https://crates.io/crates/microbit) - BSP for BBC micro:bit
 
-🔧 What does a BSP include:
 - Pin names that match the markings on the board
 - For example, instead of `PA9` you can write `usb_dm`, `led_blue`, `button_user`, etc.
 - Simplified initialization of peripherals specific to a particular board
@@ -124,8 +142,8 @@ BSPs are most often compatible with `embedded-hal` and speed up prototyping
     * USB, Wi-Fi, BLE, etc.
 - Clock and power settings optimal for a given board
 
-## 7. cortex crates
-In the Rust ecosystem for **ARM based MCU**, a set of key crates is allocated, designed to work with the **Cortex** architecture cores:
+## 7. Cortex crates
+In the Rust ecosystem for **ARM based MCU**, a set of key crates is allocated, designed to work with the **Cortex-M** design:
 | crate | purpose |
 |:--------|:-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | [cortex-m](https://crates.io/crates/cortex-m) | Used as a foundation in most **HAL** and **BSP** crates for **MCU** based on Cortex-M (`STM32`, `nRF`, `RP2040`, etc.). |
