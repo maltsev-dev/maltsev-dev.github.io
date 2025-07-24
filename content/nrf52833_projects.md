@@ -65,6 +65,28 @@ If you're tinkering with the micro:bit too, feel free to fork, comment, or share
 ## 📺 Demos
 
 [📚 Source led_circle](https://github.com/maltsev-dev/microbit_rust/blob/master/src/led_matrix.rs)  
+```linker
+led-matrix  :
+section              size        addr
+.vector_table         256         0x0
+.text                6812       0x100
+.rodata               856      0x1b9c
+.data                   0  0x20000000
+.gnu.sgstubs            0      0x1f00
+.bss                 1092  0x20000000
+.uninit                 0  0x20000444
+.debug_loc          14715         0x0
+.debug_abbrev        3137         0x0
+.debug_info         69578         0x0
+.debug_aranges        648         0x0
+.debug_ranges       12304         0x0
+.debug_str          76193         0x0
+.comment              153         0x0
+.ARM.attributes        56         0x0
+.debug_frame         1260         0x0
+.debug_line         21193         0x0
+Total              208253
+```
 <video controls width="720">  
-<source src="/media/nrf52833/led_circle.webm" type="video/webm" />  
+<source src="/media/nrf53833/led_circle.webm" type="video/webm" />  
 </video>  
