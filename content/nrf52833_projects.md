@@ -37,7 +37,9 @@ It serves as a playground for testing ideas, learning embedded concepts, and bui
 
 | Project Name            | Description                         | Status         |
 | ----------------------- | ----------------------------------- | -------------- |
-| `led_circle`  | led matrix circle controlled by bsc           | ✅ Done         |
+| `blinky`  | blink onboard led           | ✅ Done         |
+| `led_circle`  | onboard led matrix circle controlled by bsc           | ✅ Done         |
+| `uart_echo`  | connect MCu to PC through UART from BSC           | ✅ Done         |
 | `xxx`             | planned | ⏳ Planned       |
 
 
