@@ -12,26 +12,6 @@ In general, developing programs for **MCU** is aimed at obtaining some informati
 
 🟠 In this article I'll take a closer look at these abstraction levels and some other useful crates.
 
-┌─────────────────────────────────────────────────────┐
-│ BSP (Board Support Package) │ ◀▶ Specific board (pins, display, LED, etc.)
-│ └─ Peripheral configuration, pins, displays │
-├───────────────────────────────────────────┤
-│ Embedded HAL │ ◀▶ Traits for Cross-Platform Compatibility
-│ └─ Common Interfaces (digital::OutputPin) │
-├─────────────────────────────────────────────┤
-│ HAL (Hardware Abstraction Layer) │ ◀▶ Simplified management of timers, GPIO, UART
-│ └─ Implementation of embedded-hal traits via PAC
-├───────────────────────────────────────────┤
-│ PAC (Peripheral Access Crate) │ ◀▶ SVD-based API generation
-│ └─ Direct access to registers, type-safe
-├───────────────────────────────────────────┤
-│ SVD (System View Description) │ ◀▶ XML description of all registers, their bits and fields
-│ └─ Basis for PAC autogeneration (via svd2rust)
-├────────────────────────────────────────────┤
-│ Register Management (Low Level) │ ◀▶ Working directly with addresses and registers via `unsafe`
-│ └─ Working with MMIO, volatile, bitmasks │
-└─────────────────────────────────────────────────┘
-
 <!-- more -->
 ---
 

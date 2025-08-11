@@ -6,11 +6,12 @@ date = "2025-07-02"
 tags = ["embedded", "basic", "mmio"]
 +++ 
  
-
-<!-- more -->
 **MMIO (Memory-Mapped I/O)** is a way for the central processing unit (CPU) to interact with peripheral hardware devices (e.g. `UART`, `timers`, `GPIO`, `SPI`, etc.) by "sticking" the registers of these devices to specific addresses in the CPU memory.  
 These addresses in the CPU do not store regular data, but allow reading and writing to the device control registers.  
 This means that the peripheral device can be accessed in the same way as regular memory - via regular memory read/write instructions (`LDR`, `STR`, `MOV`, etc.). at specific addresses.  
+
+<!-- more -->
+---
 
 ### How does it work inside CPU?
 1. The CPU has a single **address bus**, which is used to access both RAM and MMIO devices.
