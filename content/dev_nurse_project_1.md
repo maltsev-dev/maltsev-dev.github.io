@@ -6,31 +6,36 @@ date = "2025-12-02"
 tags = ["project", "rust", "nurse", "product"]
 +++
 
-In this series of articles, I want to show you how I created my own **ESP32-S3**-based device with **ML** onboard.  
-The project is both a learning pet project and a minimal, repeatable, practical approach.  
+In this series of articles, I'd like to show you how to create your own **ESP32-S3**-based device with **ML** built right into the firmware. 
 🟠 I'll try to describe not only what I'm doing, but also how I got there—all the decisions, compromises, and challenges that arose along the way.  
 
 <!-- more -->
 ---
 
-## &emsp;&emsp;&emsp; Why and for what reason?
-There are several reasons why I decided to undertake this project and document the process:
+## &emsp;&emsp;&emsp; Why did I even take this on??
+The reasons are actually quite simple—and honest.
 
-1. Because it's objectively difficult for me  
-I don't have deep experience with microcontrollers, and I only have a superficial knowledge of machine learning.  
-This sounds like a complex technical challenge to me.
+1. It's an objectively difficult challenge.
+I don't have extensive, multi-year experience working with microcontrollers, and my knowledge of ML is only basic.  
+But that's precisely why the idea seemed interesting: it's a task with many unknowns, and it requires combining different skills into a single system.
 
 2. I want to improve my Rust skills  
-I want to use Rust as the primary language for developing firmware and the entire server side.  
-I've long liked it, and after several successfully implemented projects using it, I've never had to question what to use for firmware.
+I've been using Rust for a long time, and it's become my primary tool for many projects.  
+Therefore, the choice for firmware was obvious: Rust → safety, control, predictability, and a sign of engineering quality.  
+Moreover, I want to show that Rust firmware isn't exotic, but a fully functional approach.  
 
 3. Build a full cycle: **MCU → AI → Actix Web → Dashboard** 
-The philosophy of overspecialization is being replaced by interdisciplinarity and brave generalist engineers who are capable of understanding the entire product and improving any part of it.  
-Therefore, I'm interested in creating a full-cycle IoT product that will require a wealth of interdisciplinary technical knowledge and skills.
+Narrow specialization is being replaced by generalist engineers who understand the product as a whole.  
+That's why I'm interested in following the entire IoT product journey:
+* assembling the hardware,
+* integrating TinyML inference,
+* setting up Wi-Fi and MQTT,
+* processing data on the server,
+* displaying statistics and graphs on the dashboard. I want to cover the entire stack—from the registry to the UI.
 
 4. Document your journey  
-I'd be happy to return to this series of articles, in which I plan to document my learnings and describe a structured process.  
-This could also be useful for other developers, employers, or partners.
+want to document this journey: the approaches, the conclusions, the decisions made.  
+This will be useful for me in the future, and perhaps for other developers reading this series, my employers, or my partners.  
 
 
 ## &emsp;&emsp;&emsp; What exactly do I want to build?
