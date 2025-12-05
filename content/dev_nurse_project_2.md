@@ -6,7 +6,8 @@ date = "2025-12-05"
 tags = ["project", "rust", "nurse", "product"]
 +++
 
-🟠 In this article, I'll explain the hardware I'm using in my AI device project, why I chose it, and how I structured the firmware in Rust. This is the foundation of the entire project: the MCU, display, controls, and a minimal firmware skeleton that ensures modularity and expandability. 
+🟠 In this article, I'll explain the hardware I'm using in my AI device project, why I chose it, and how I structured the firmware in Rust.  
+This is the foundation of the entire project: the MCU, display, controls, and a minimal firmware skeleton that ensures modularity and expandability. 
 
 <!-- more -->
 ---
@@ -22,35 +23,38 @@ It can:
 
 
 ##  &emsp;&emsp;&emsp; Choosing an MCU: Why the ESP32-S3 Sense
-The main parameters influencing the choice of a microcontroller for this project were a powerful core, RAM and Flash memory capacity, and a Wi-Fi module.
+The main parameters influencing the choice of a microcontroller for this project were a powerful core, RAM and Flash memory capacity, and a Wi-Fi module.  
 I chose the XIAO ESP32-S3 Sense for three reasons:
 1. The Sense has a pluggable camera module that can be upgraded if needed.
 2. Improved AI performance based on the dual-core 32-bit Xtensa LX7 processor.
-3. 2.4GHz Wi-Fi with multiple power consumption modes.
+3. 2.4GHz Wi-Fi with multiple power consumption modes.  
 In addition to the chip, I needed a breadboard for easy prototyping, cables, an LCM1602 OLED 16x2 display (I²C), and a simple pull-up button with a resistor.
 ## Conceptual connection diagram
 {{ img(src = "/images/nurse_high_level_design.png") }}
 
 
 ## &emsp;&emsp;&emsp; DevJournal: The Journey from Idea to Working Prototype
-Development always begins with a simple impulse—an idea that catches your attention. For me, this impulse was the desire to implement something complex yet interesting, something I hadn't encountered before. But the path from "it would be cool to do" to the actual result is rarely straightforward.  
+Development always begins with a simple impulse—an idea that catches your attention.  
+For me, this impulse was the desire to implement something complex yet interesting, something I hadn't encountered before.  
+But the path from "it would be cool to do" to the actual result is rarely straightforward.  
 In this section, I'll highlight quotes from my development journal, which I kept throughout my work on the system.  
-It reflects my natural, living process: experiments, setbacks, sudden insights, periods of chaos, and moments when everything came together as a system. In a way, it's an honest record of how my thinking evolved, how a working approach is formed and reimagined, and why small steps are more important than big breakthroughs.  
+It reflects my natural, living process: experiments, setbacks, sudden insights, periods of chaos, and moments when everything came together as a system.  
+In a way, it's an honest record of how my thinking evolved, how a working approach is formed and reimagined, and why small steps are more important than big breakthroughs.  
 
-1. The Exploration Period: Adaptation and Restructuring  
+1. The Exploration Period: **Adaptation and Restructuring**  
 At first, chaos sets in: testing ideas, making small, hesitant edits, searching for reference points, and trying to understand what's going on.  
 While navigating this chaos, it's easy to find yourself overwhelmed by a good hundred lines of code from experiments and various hypotheses. It was at this stage that one of the key skills emerged: the ability to stop, look at the system's state, and roll back to a stable point.  
 > "Adapt, roll back to a stable point, and replan again. Repeat the controlled attempt one more time."
 
-2. The Period of Internal Support: The Emotional Side of Engineering  
-I've had periods when I spent weeks solving a single problem, approaching it from every possible angle, searching and asking questions on forms, taking everything apart and putting everything back together, becoming depressed, and more than once wanting to quit. I think this is a familiar feeling for any mature developer who challenges themselves. Technical progress is impossible without emotional stability, because any developer burns out not from the complexity of the tasks, but from their attitude toward them.
-
-At this stage, my "inner developer-mentor" is more deeply formed—one who carefully guides rather than criticizes.
+2. The Period of Internal Support: **The Emotional Side of Engineering**  
+I've had periods when I spent weeks solving a single problem, approaching it from every possible angle, searching and asking questions on forms, taking everything apart and putting everything back together, becoming depressed, and more than once wanting to quit. I think this is a familiar feeling for any mature developer who challenges themselves.  
+Technical progress is impossible without emotional stability, because any developer burns out not from the complexity of the tasks, but from their attitude toward them.  
+At this stage, my "inner developer-mentor" is more deeply formed—one who carefully guides rather than criticizes.  
 > _"I try to support myself, without pressure... gently return to the flow without destruction or self-recrimination."_
 
-3. Practice Period: Transition to Action  
-Every non-trivial project developed alone turns into a "mountain of tasks."
-I stopped waiting for the perfect moment of motivation and energy and simply started working with what I had. Work flows when there's no paralysis of choice.
+3. Practice Period: **Transition to Action** 
+Every non-trivial project developed alone turns into a "mountain of tasks."  
+I stopped waiting for the perfect moment of motivation and energy and simply started working with what I had. Work flows when there's no paralysis of choice.  
 Rejecting perfectionism accelerated my development without losing quality and turned the project into a series of small victories—and these are far more important than a fragile ideal, which is often unattainable and remains only in the mind.
 > _"I try to simply try without perfection, but sometimes the amount of work ahead overwhelms me..."
 
@@ -79,18 +83,21 @@ During development, I had to solve many minor technical issues: time synchroniza
 After several iterations, I managed to implement a compact model (~37 KB): I updated the frame preprocessing, added antialiasing, a median filter, a dynamic brightness threshold, and a check for frame differences to avoid running inference if the frame hadn't changed. This improved stability and reduced power consumption.
 
 - **Critical Bug: Freezing after a Power Cycle**  
-A serious problem arose: after a full power outage, the model would "freeze": the predictions would become identical, regardless of the input data. Everything worked correctly on a clean firmware, but after a reboot, it crashed.  
-After errors like "Guru Meditation," suspected stack overflows, allocator errors, defragmentation, and DRAM/PSRAM conflicts, we were able to identify the issue as being in arena allocation. The solution was to statically initialize the arena with hard alignment, move buffers from PSRAM to DRAM, use CAMERA_GRAB_WHEN_EMPTY, and avoid trying to handle "two cameras" with different modes. After that, the bug disappeared, and predictions became correct again.  
+A serious problem arose: after a full power outage, the model would "freeze": the predictions would become identical, regardless of the input data.  
+Everything worked correctly on a clean firmware, but after a reboot, it crashed.  
+After errors like "Guru Meditation," suspected stack overflows, allocator errors, defragmentation, and DRAM/PSRAM conflicts, we were able to identify the issue as being in arena allocation.  
+The solution was to statically initialize the arena with hard alignment, move buffers from PSRAM to DRAM, use CAMERA_GRAB_WHEN_EMPTY, and avoid trying to handle "two cameras" with different modes. After that, the bug disappeared, and predictions became correct again.  
 > Memory is a treasure trove of problems. Make sure you understand where static and dynamic memory is stored, what happens during a power cycle, peripheral deinitialization, and so on.
 
 - **FreeRTOS, stability, MQTT and backend connectivity**  
-I moved FreeRTOS tasks to the first core and reduced the button stack size. This freed up resources for two cameras and stabilized the inference at 15 kHz. Clearing NVS with a button became a must-have. Setting up antivirus exceptions allowed for stable MQTT operation. The resulting structure became MCU → MQTT → backend (Actix Web) → frontend.  
+I moved FreeRTOS tasks to the first core and reduced the button stack size. This freed up resources for two cameras and stabilized the inference at 15 kHz.
+The resulting structure became MCU → MQTT → backend (Actix Web) → frontend.  
 I implemented minute-based throttling: predictions are sent only when the minute changes (without timers), simply based on the current time change. This reduced the load on the network and server and made updates more meaningful.
-
 
 ## &emsp;&emsp;&emsp; DevJournal: Principles and Example  
 It's important to me that the hardware drivers, logic modules, and firmware (Rust + esp_idf_hal) are organized in a modular and extensible manner: each component is isolated, built on abstraction layers and the principle of loose coupling.  
-The code is structured so that commands and requests are separated, and the module code structure follows the logical flow of the device. This architecture reduces the firmware size, improves its testability, ensures performance monitoring, and allows for easy integration of the AI ​​model into the overall processing pipeline.  
+The code is structured so that commands and requests are separated, and the module code structure follows the logical flow of the device.  
+This architecture reduces the firmware size, improves its testability, ensures performance monitoring, and allows for easy integration of the AI ​​model into the overall processing pipeline.  
 ### Project file structure:
 ```
 components/
@@ -181,7 +188,8 @@ time_str: &str,
 ) -> Option<(f32, &'static str)>
 ```
 
-The result of the function is An option that, when certain conditions are met, is published to the mqtt topic `device/{}/stats` in the format: `device/UM001/stats Time: 12/03 12:24, AvgScore(5): 0.87, LastScore: 0.99, Label: human`
+The result of the function is An option that, when certain conditions are met, is published to the mqtt topic `device/{}/stats` in the format:  
+`device/UM001/stats Time: 12/03 12:24, AvgScore(5): 0.87, LastScore: 0.99, Label: human`
 
 
 ## &emsp;&emsp;&emsp;  What's next
