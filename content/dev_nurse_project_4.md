@@ -3,7 +3,7 @@ title = "From device to system: communication, backend, and dashboard for an emb
 date = "2026-01-07"
 
 [taxonomies]
-tags = ["embedded", "iot", "mqtt", "rust", "actix-web", "frontend", "product"]
+tags = ["project", "rust", "nurse", "product"]
 +++
 
 🟠 In this final article, I connect the embedded AI device to the real world.
@@ -152,6 +152,10 @@ Routing is handled client-side:
 
 Because the backend serves the frontend assets directly, the system behaves as a **single cohesive application** from the user’s perspective.
 
+<video controls width="720">  
+<source src="/media/dev_nurse_project_web.webm" type="video/webm" />  
+</video>  
+
 ---
 
 ##     System boundaries and responsibilities
@@ -204,7 +208,3 @@ By treating communication, backend, and UI as **first-class engineering problems
 
 This concludes the end-to-end pipeline —
 from camera frames and INT8 tensors to dashboards and users.
-
-<video controls width="720">  
-<source src="/media/dev_nurse_project_web.webm" type="video/webm" />  
-</video>  

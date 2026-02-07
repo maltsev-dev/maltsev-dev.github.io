@@ -29,9 +29,7 @@ author = "maltsev-dev"
 menu_items = [
     { name = "archive", url = "$BASE_URL/archive" },
     { name = "projects", url = "$BASE_URL/tags/project/" },
-    { name = "embedded", url = "$BASE_URL/tags/embedded/" },
-    { name = "rust", url = "$BASE_URL/tags/rust/" },
-    { name = "about", url = "$BASE_URL/about" },
+    { name = "about me", url = "$BASE_URL/about" },
 ]
 
 enable_post_view_navigation = false

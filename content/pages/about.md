@@ -3,9 +3,11 @@ title = "Anatoly Maltsev"
 path = "about"
 +++
 
-## About
+## Who I am
 
-I’m an engineer and researcher focused on building sustainable, reliable systems across embedded, backend, and applied AI domains.
+- 🟠 Advocate of **Sustainable Programming** — clarity, maintainability, and long-term thinking
+- 🟠 Research-oriented engineer with a strong learning mindset  
+- 🟠 Creative technologist with interests spanning AI, software, hardware, and visual domains
 
 This space is where I document my work, break down real engineering problems, and reflect on the process of learning and building complex systems — from low-level constraints to high-level architecture.
 
@@ -26,40 +28,20 @@ This space is where I document my work, break down real engineering problems, an
 
 ---
 
-## Who I am
 
-- 🟠 Advocate of **Sustainable Programming** — clarity, maintainability, and long-term thinking over short-term hacks  
-- 🟠 Research-oriented engineer with a strong learning mindset  
-- 🟠 Creative technologist with interests spanning software, hardware, and visual domains
+## Online Presence
 
----
+Connect with me across various platforms:
 
-## Online presence
+#### 🌐 Find Me Here
+- [📚 GitHub](https://github.com/maltsev-dev)
+- [🥋 Codewars](https://www.codewars.com/users/chemyl)
+- [📷 Unsplash](https://unsplash.com/@maltsev_)
+- [🎨 ArtStation](https://www.artstation.com/chemylinc)
+- [🕶️ Instagram](https://www.instagram.com/chemylinc/)
 
-- 📚 **GitHub** — code, experiments, and open-source work  
-  https://github.com/maltsev-dev
-
-- 🥋 **Codewars** — problem solving & algorithms  
-  https://www.codewars.com/users/chemyl
-
-- 📷 **Unsplash** — photography  
-  https://unsplash.com/@maltsev_
-
-- 🎨 **ArtStation** — visual & creative work  
-  https://www.artstation.com/chemylinc
-
----
-
-## Contact
-
-- 👔 **LinkedIn**  
-  https://www.linkedin.com/in/a-maltsev
-
-- 📧 **Email**  
-  mailto:mr.a.maltsev@gmail.com
-
-- 📟 **Telegram**  
-  https://t.me/replicantDuke
-
-- 📄 **CV**  
-  https://github.com/maltsev-dev/maltsev-dev.github.io/raw/main/static/CV_Anatoly_Maltsev.pdf
+#### 🌐 Get in Touch
+- [👔 LinkedIn](https://www.linkedin.com/in/a-maltsev)
+- [📧 Email](mailto:mr.a.maltsev@gmail.com)
+- [📟 Telegram](https://t.me/replicantDuke)
+- [⚠️ CV](https://github.com/maltsev-dev/maltsev-dev.github.io/raw/main/static/CV_Anatoly_Maltsev.pdf)
