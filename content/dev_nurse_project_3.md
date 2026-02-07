@@ -1,6 +1,6 @@
 +++
 title = "TinyML on MCU: from dataset to real-time inference in Rust firmware"
-date = "2026-01-07"
+date = "2025-12-26"
 
 [taxonomies]
 tags = ["project", "rust", "nurse", "product"]
