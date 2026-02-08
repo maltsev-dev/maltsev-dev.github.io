@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+    <title>dev_stories</title>
+    
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+    <meta name="robots" content="noodp"/>
+
+    <link rel="stylesheet" href="https://maltsev-dev.github.io/style.css">
+    <link rel="stylesheet" href="https://maltsev-dev.github.io/color/orange.css">
+
+        <link rel="stylesheet" href="https://maltsev-dev.github.io/color/background_blue.css">
+    
+    <link rel="stylesheet" href="https://maltsev-dev.github.io/font-quicksand.css">
+
+
+    
+        <link rel="shortcut icon" type="image/png" href="/favicon.png">
+    
+    <meta property="og:site_name" content="dev_stories"><meta property="og:type" content="article">
+    <meta property="og:title" content="I2C (Inter-Integrated Circuit)"><meta property="og:url" content="https://maltsev-dev.github.io/emb-sp-i2c/"><meta property="og:image" content="https://github.com/maltsev-dev/favicon.png">
+
+    </head>
+
+<body class="">
+<div class="container">
+    
+    <header class="header">
+        <div class="header__inner">
+            <div class="header__logo">
+                    
+                <a href="https://maltsev-dev.github.io" style="text-decoration: none;">
+                    <div class="logo">
+                      
+                            busy hands == happy heart
+                        
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        
+        <nav class="menu">
+            <ul class="menu__inner">
+                <li><a href="https://maltsev-dev.github.io/archive">archive</a></li>
+            
+                <li><a href="https://maltsev-dev.github.io/tags/project/">projects</a></li>
+            
+                <li><a href="https://maltsev-dev.github.io/about">about me</a></li>
+            </ul>
+        </nav>
+    
+    
+        
+    </header>
+    
+
+    <div class="content">
+        
+    <div class="post">
+        
+    <h1 class="post-title"><a href="https://maltsev-dev.github.io/emb-sp-i2c/">I2C (Inter-Integrated Circuit)</a></h1>
+    <div class="post-meta-inline">
+        
+    <span class="post-date">
+            2025-06-30
+        </span>
+
+    </div>
+
+    
+        <span class="post-tags-inline">
+                :: tags:&nbsp;
+                <a class="post-tag" href="https://maltsev-dev.github.io/tags/embedded/">#embedded</a>&nbsp;
+                <a class="post-tag" href="https://maltsev-dev.github.io/tags/basic/">#basic</a>&nbsp;
+                <a class="post-tag" href="https://maltsev-dev.github.io/tags/sp/">#sp</a></span>
+    
+
+        
+        <div class="post-content">
+            <p>A technical introduction to the <strong>I2C</strong> - low-speed two-wire master-slave serial protocol.<br />
+<strong>I2C</strong> is widely used for short-distance data transmission over a data bus (<code>SDA</code>) with a clock synchronization line (<code>SCL</code>).</p>
+
+
+
+    
+    
+
+
+
+    
+    
+
+
+
+<figure class="center">
+    <a href="https://maltsev-dev.github.io/processed_images/i2c_header.40718082c6eb21b7.png">
+        <img src="https://maltsev-dev.github.io/processed_images/i2c_header.5cdb33744262d4fc.webp"   />
+    </a>
+    
+</figure>
+<span id="continue-reading"></span>
+<hr />
+<h2 id="i2c">    I2C</h2>
+<p><code>I2C - Inter-Integrated Circuit</code>
+The most common protocol for transmitting data over <code>short distances</code>.<br />
+Synchronous <code>master-slave</code> protocol.<br />
+Both the master and slave can transmit data.<br />
+Usually operates in <code>half-duplex</code> (at any given moment, only send or receive data can occur) mode at different clock frequencies.<br />
+Message exchange occurs in <code>frames</code>.</p>
+
+
+
+    
+    
+
+
+
+    
+    
+
+
+
+<figure class="center">
+    <a href="https://maltsev-dev.github.io/processed_images/i2c_design.2aa1d1304aa76afc.png">
+        <img src="https://maltsev-dev.github.io/processed_images/i2c_design.0e9953023f1ba5b9.webp"   />
+    </a>
+    
+</figure>
+<p>Two wires are used -</p>
+<ul>
+<li><strong>SCL</strong> - serial clock signal</li>
+<li><strong>SDA</strong> - data bus</li>
+</ul>
+<p>In addition, the wires are connected to the <code>Vcc</code> supply using one <code>pull-up</code> resistor.</p>
+<h3 id="sda-frame-format">    SDA Frame Format</h3>
+
+
+
+    
+    
+
+
+
+    
+    
+
+
+
+<figure class="center">
+    <a href="https://maltsev-dev.github.io/processed_images/i2c_message_frame.9d780442959e61a1.png">
+        <img src="https://maltsev-dev.github.io/processed_images/i2c_message_frame.13ef477325ce19a4.webp"   />
+    </a>
+    
+</figure>
+<ol>
+<li>master capture <strong>SDA</strong> bus with <code>start condition</code></li>
+<li>via <strong>SDA</strong> is sent <code>slave address</code> which master wants to communicate</li>
+<li>after address is specified operation bit <code>R/W</code>. master wants to read or write data</li>
+<li>after operation bit slave sends <code>Arc</code>, indicating its presence</li>
+<li>if <code>Arc</code> is received from slave then master sends <code>useful data</code></li>
+<li>after data slave sends <code>Arc</code>, thus indicating that data is received</li>
+<li>communication is stopped by <code>stop condition</code></li>
+</ol>
+<h4 id="start-condition">Start Condition</h4>
+<p>As in <a href="https://maltsev-dev.github.io/emb-sp-uart/">UART</a>, the <code>idle</code> state - for <strong>SDA</strong> and <strong>SCL</strong> - is <code>high(1)</code></p>
+<ul>
+<li>the <code>start condition</code> occurs when the node first pulls <code>low(0)</code> <strong>SDA</strong>, and then pulls <code>low(0)</code> <strong>SCL</strong>. Pulling down in this order occurs to capture the data bus.</li>
+<li>after the data bus is captured - the node becomes the <strong>master</strong>. This prevents other nodes from capturing the bus and reduces the risk of conflicts.</li>
+</ul>
+<h4 id="slave-address">Slave Address</h4>
+<ul>
+<li>specifies which slave-node the master wants to communicate with.</li>
+<li>each node on the bus has a <code>unique fixed address</code> usually <code>7 bits</code> with <strong>MSB</strong> first (most significant bit is one)</li>
+<li>addresses can be hardcoded but sometimes they can be configured via wires</li>
+</ul>
+<h4 id="r-w-bit">R/W bit</h4>
+<p>Immediately after the slave address comes the <code>read</code> or <code>write</code> bit and is set by the master.</p>
+<ul>
+<li><code>0</code> - the master wants to <strong>write</strong> data to the slave</li>
+<li><code>1</code> - the master wants to <strong>receive</strong> data from the slave</li>
+</ul>
+<h4 id="ack-bit">Ack bit</h4>
+<p>An acknowledge bit is sent by the receiver each time a byte of data is received</p>
+<ul>
+<li><code>0</code> - acknowledgement (ACK)</li>
+<li><code>1</code> - negation (NACK)<br />
+The <strong>I2C</strong> is <code>high(1)</code> in <code>idle</code>, so if the receiver does not respond by actively switching the line to <code>low(0)</code> level, it will be perceived as a <strong>failure</strong>.<br />
+After the address and each byte of data received (<code>8-bit</code>), there is an acknowledgement Arc.</li>
+</ul>
+<h4 id="data-bits">Data bits</h4>
+<p>After the address bit come the <strong>data bits</strong> that are exchanged between the master and slave.</p>
+<ul>
+<li>often this data is a memory or register address in the slave</li>
+<li>data is always transmitted <code>8-bit</code> wide and MSB first<br />
+In most cases, multiple data transfers occur, with each <code>8-bit</code> having to be acknowledged separately</li>
+</ul>
+<h4 id="stop-condition">Stop Condition</h4>
+<p>Mechanism to say that the last byte of data has been sent.
+Stop condition -</p>
+<ul>
+<li>the <strong>SCL</strong> line goes <code>high(1)</code> and stays there</li>
+<li>then <strong>SDA</strong> goes <code>high(1)</code> and stays there too</li>
+</ul>
+<ul>
+<li>to transmit data bytes, the <strong>SDA</strong> line goes <code>low(0)</code> only when <strong>SCL</strong> is <code>low(0)</code> level</li>
+<li>if the <strong>SDA</strong> line goes <code>low(0)</code> when <strong>SCL</strong> is <code>high(1)</code> - this is the <code>stop condition.</code></li>
+</ul>
+<p>After the stop condition - the bus becomes inactive and there is no clock signal.<br />
+And any node on the bus can use the start condition to take over the bus and start a new communication.</p>
+<h3 id="synchronization-of-data-and-clock-pulses">    Synchronization of data and clock pulses</h3>
+
+
+
+    
+    
+
+
+
+    
+    
+
+
+
+<figure class="center">
+    <a href="https://maltsev-dev.github.io/processed_images/i2c_sync.d1613f0060a90fae.png">
+        <img src="https://maltsev-dev.github.io/processed_images/i2c_sync.bb4d54f920b80845.webp"   />
+    </a>
+    
+</figure>
+<ul>
+<li>data is always read in the <code>middle</code> of the clock pulse and never in the intervals between them.<br />
+This is necessary, because switching <strong>SDA</strong> at a <code>high(1)</code> level of the <strong>SCL</strong> signal would mean the <code>beginning</code> or <code>end</code> of the data transfer. (start / stop condition)</li>
+<li>it turns out that <strong>SDA</strong> switches (0-1) only at a <code>low(0)</code> level  on <strong>SCL</strong></li>
+</ul>
+<h3 id="open-drain">    Open Drain</h3>
+<ul>
+<li>usually <strong>SDA</strong> and <strong>SDA</strong> are <code>high(1)</code> because each of them is connected to the power supply (<code>+Vcc</code>) via a <strong>pull-up</strong> resistor, with one resistor per line, not one node.</li>
+</ul>
+<ol>
+<li>Each <strong>I2C</strong> device contains a logic device inside that can open and close the drain</li>
+<li>When the drain is <code>closed</code>, the <strong>SDA</strong> or <strong>SCL</strong> lines are in a <code>low(0)</code> state because now it is connected to ground (<code>GND</code>)</li>
+<li>When the drain is <code>opened</code>, the line goes <code>high(1)</code> because now its connected to the power supply (<code>+Vcc</code>)</li>
+</ol>
+<p>When the lines are not in use, they are <code>high(1)</code> voltage, that is why <strong>I2C</strong> is called an open drain system
+
+
+
+    
+    
+
+
+
+    
+    
+
+
+
+<figure class="center">
+    <a href="https://maltsev-dev.github.io/processed_images/i2c_open_drain.e06fc4adb255b818.png">
+        <img src="https://maltsev-dev.github.io/processed_images/i2c_open_drain.ce46522b9c817483.webp"   />
+    </a>
+    
+</figure>
+</p>
+<h3 id="pull-up-resistor">    Pull- Up resistor</h3>
+<ul>
+<li>Pulling down to <strong>low(0)</strong> faster than pull up to <code>idle</code> <strong>high(1)</strong></li>
+<li>the <code>higher</code> the resistor resistance, the more time is needed to raise the line, and this in turn limits the <code>speed of the bus.</code></li>
+<li>the <code>lower</code> the resistor resistance, the faster the communication occurs, but at the same time <code>more energy</code> is required</li>
+</ul>
+<ul>
+<li>usually the values ​​of pull-up resistors for <strong>I2C</strong> are in the range of <code>1kOm</code> - <code>10kOm</code></li>
+</ul>
+<h3 id="modes-speed">    Modes \ Speed</h3>
+<p>pull-up resistor values ​​are one of the factors limiting the maximum bus speed.<br />
+<strong>I2C</strong> speeds are usually called modes<br />
+<strong>I2C</strong> supports several speeds:</p>
+<ul>
+<li>standard (100 kbps),</li>
+<li>fast (400 kbps),</li>
+<li>fast+ (1 Mbps).
+There are also experimental implementations with even higher speeds, but they are usually rarely used.</li>
+</ul>
+
+        </div>
+
+        
+        <div class="pagination">
+            <div class="pagination__title">
+                <span class="pagination__title-h">Read other posts?</span>
+                <hr />
+            </div>
+            <div class="pagination__buttons">
+                    <span class="button previous">
+                        <a href="https://maltsev-dev.github.io/emb-sp-spi/">
+                            <span class="button__icon">←</span>&nbsp;
+                            <span class="button__text">SPI (Serial Peripheral Interface)</span>
+                        </a>
+                    </span>
+                
+                
+                    <span class="button next">
+                        <a href="https://maltsev-dev.github.io/rust-emb-debugging/">
+                            <span class="button__text">Debugging firmware</span>&nbsp;
+                            <span class="button__icon">→</span>
+                        </a>
+                    </span>
+                </div>
+        </div>
+    
+    </div>
+
+    </div>
+
+
+<footer class="footer">
+    <div class="footer__inner">
+            <div class="copyright copyright--user"><div class="copyright">
+    <span>© 2026 A.Maltsev</span>
+    <span class="copyright-theme-sep"></span>
+    <span><img src="https://visitor-badge.laobi.icu/badge?page_id=maltsev-dev.github.io&right_color=orange" alt="Visitors"></span>
+</div>
+</div>
+        </div>
+</footer>
+
+
+</div>
+</body>
+
+</html>

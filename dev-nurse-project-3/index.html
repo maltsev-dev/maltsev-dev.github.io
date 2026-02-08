@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+    <title>dev_stories</title>
+    
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+    <meta name="robots" content="noodp"/>
+
+    <link rel="stylesheet" href="https://maltsev-dev.github.io/style.css">
+    <link rel="stylesheet" href="https://maltsev-dev.github.io/color/orange.css">
+
+        <link rel="stylesheet" href="https://maltsev-dev.github.io/color/background_blue.css">
+    
+    <link rel="stylesheet" href="https://maltsev-dev.github.io/font-quicksand.css">
+
+
+    
+        <link rel="shortcut icon" type="image/png" href="/favicon.png">
+    
+    <meta property="og:site_name" content="dev_stories"><meta property="og:type" content="article">
+    <meta property="og:title" content="TinyML on MCU: from dataset to real-time inference in Rust firmware"><meta property="og:url" content="https://maltsev-dev.github.io/dev-nurse-project-3/"><meta property="og:image" content="https://github.com/maltsev-dev/favicon.png">
+
+    </head>
+
+<body class="">
+<div class="container">
+    
+    <header class="header">
+        <div class="header__inner">
+            <div class="header__logo">
+                    
+                <a href="https://maltsev-dev.github.io" style="text-decoration: none;">
+                    <div class="logo">
+                      
+                            busy hands == happy heart
+                        
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        
+        <nav class="menu">
+            <ul class="menu__inner">
+                <li><a href="https://maltsev-dev.github.io/archive">archive</a></li>
+            
+                <li><a href="https://maltsev-dev.github.io/tags/project/">projects</a></li>
+            
+                <li><a href="https://maltsev-dev.github.io/about">about me</a></li>
+            </ul>
+        </nav>
+    
+    
+        
+    </header>
+    
+
+    <div class="content">
+        
+    <div class="post">
+        
+    <h1 class="post-title"><a href="https://maltsev-dev.github.io/dev-nurse-project-3/">TinyML on MCU: from dataset to real-time inference in Rust firmware</a></h1>
+    <div class="post-meta-inline">
+        
+    <span class="post-date">
+            2025-12-26
+        </span>
+
+    </div>
+
+    
+        <span class="post-tags-inline">
+                :: tags:&nbsp;
+                <a class="post-tag" href="https://maltsev-dev.github.io/tags/project/">#project</a>&nbsp;
+                <a class="post-tag" href="https://maltsev-dev.github.io/tags/rust/">#rust</a>&nbsp;
+                <a class="post-tag" href="https://maltsev-dev.github.io/tags/nurse/">#nurse</a>&nbsp;
+                <a class="post-tag" href="https://maltsev-dev.github.io/tags/product/">#product</a></span>
+    
+
+        
+        <div class="post-content">
+            <p>🟠 In this article, I walk through the complete TinyML lifecycle on a microcontroller —
+from dataset preparation and model training to running TensorFlow Lite Micro on bare metal and integrating the model into a Rust firmware via a custom FFI wrapper.</p>
+<p>This project intentionally spans multiple domains: embedded systems, machine learning, data engineering, and low-level systems programming in Rust.</p>
+<span id="continue-reading"></span>
+<hr />
+<h2 id="defining-the-task-and-the-tinyml-pipeline">    Defining the task and the TinyML pipeline</h2>
+<p>The goal of the project is to deploy a binary classifier that determines whether a person is present in front of a camera — entirely on-device, without cloud inference.</p>
+<p>This kind of TinyML project forces you to reason about <strong>the full ML lifecycle</strong>, not just training accuracy.
+The resulting pipeline looks like this:</p>
+<ol>
+<li><strong>Collecting</strong>, cleaning, and labeling raw image data</li>
+<li>Designing <strong>data augmentations</strong> for robustness</li>
+<li>Writing Python scripts for <strong>preprocessing</strong> and training</li>
+<li><strong>Validating</strong> models and selecting an optimal architecture</li>
+<li><strong>Quantizing</strong> the model and converting <code>.keras → .tflite</code></li>
+<li><strong>Evaluating</strong> KPIs before and after quantization</li>
+<li><strong>Embedding</strong> the model into MCU firmware</li>
+<li>Building a safe wrapper and <strong>running inference</strong> on-device</li>
+<li><strong>Optimizing</strong> memory usage (arena sizing, cache alignment)</li>
+</ol>
+<hr />
+<h2 id="dataset-preparation-from-camera-frames-to-folders">    Dataset preparation: from camera frames to folders</h2>
+<p>High-quality labeled data is the single most important factor in supervised learning.<br />
+A model trained on weak or biased data will <strong>fail silently</strong>, especially on-device where debugging is expensive.</p>
+<p>For this project:</p>
+<ul>
+<li>The <strong>original dataset</strong> is split into <strong>train</strong> and <strong>test</strong></li>
+<li>A <strong>validation</strong> subset is derived from the training data</li>
+<li>Training and validation sets are used for optimization and tuning</li>
+<li>The test set is kept strictly isolated for evaluation</li>
+</ul>
+<p>Because a representative dataset without bias requires careful balancing across <strong>age, gender, ethnicity, lighting conditions, and backgrounds</strong>, I combined:</p>
+<ul>
+<li>large open-licensed face datasets;</li>
+<li>additional frames captured directly from the target device.</li>
+</ul>
+<p>The <code>not_person</code> class is intentionally broad: any image without a human face qualifies.</p>
+<p>All images were:</p>
+<ul>
+<li>resized to <strong>160×120</strong>;</li>
+<li>converted to <strong>grayscale</strong>;</li>
+<li>labeled and class-balanced.</li>
+</ul>
+<pre style="background-color:#151515;color:#e8e8d3;"><code><span>dataset/
+</span><span> ├── test/
+</span><span> │    ├── no_person/ 1726 images
+</span><span> │    └── person/    1726 images
+</span><span> ├── train/
+</span><span> │    ├── no_person/ 11740 images
+</span><span> │    └── person/    11740 images
+</span><span> └── val/
+</span><span>      ├── no_person/ 3666 images
+</span><span>      └── person/    3666 images
+</span></code></pre>
+<hr />
+<h2 id="data-augmentation-pipeline">    Data augmentation pipeline</h2>
+<p>To ensure the model generalizes to real-world conditions, the dataset is passed through an augmentation pipeline during training.</p>
+<p>The goal is not to artificially inflate the dataset, but to expose the model to:</p>
+<ul>
+<li>rotations and framing variance;</li>
+<li>brightness changes;</li>
+<li>scale distortions;</li>
+<li>mirrored perspectives.</li>
+</ul>
+<p>A typical augmentation block looks like this:</p>
+<pre data-lang="python" style="background-color:#151515;color:#e8e8d3;" class="language-python "><code class="language-python" data-lang="python"><span>data_augmentation = keras.</span><span style="color:#ffb964;">Sequential</span><span>(
+</span><span>    [
+</span><span>        layers.</span><span style="color:#ffb964;">Rescaling</span><span>(</span><span style="color:#cf6a4c;">1.0 </span><span>/ </span><span style="color:#cf6a4c;">255</span><span>, </span><span style="color:#ffb964;">dtype</span><span>=</span><span style="color:#556633;">&quot;</span><span style="color:#99ad6a;">float32</span><span style="color:#556633;">&quot;</span><span>),
+</span><span>        layers.</span><span style="color:#ffb964;">RandomFlip</span><span>(</span><span style="color:#556633;">&quot;</span><span style="color:#99ad6a;">horizontal</span><span style="color:#556633;">&quot;</span><span>),
+</span><span>        layers.</span><span style="color:#ffb964;">RandomRotation</span><span>(</span><span style="color:#cf6a4c;">0.08</span><span>),
+</span><span>        layers.</span><span style="color:#ffb964;">RandomZoom</span><span>(</span><span style="color:#cf6a4c;">0.2</span><span>),
+</span><span>        layers.</span><span style="color:#ffb964;">RandomBrightness</span><span>(</span><span style="color:#cf6a4c;">0.1</span><span>, </span><span style="color:#ffb964;">value_range</span><span>=(</span><span style="color:#cf6a4c;">0.0</span><span>, </span><span style="color:#cf6a4c;">0.6</span><span>)),
+</span><span>    ]
+</span><span>)
+</span></code></pre>
+<p>Preprocessing is intentionally embedded <strong>inside the model graph</strong> — this becomes important later during quantization.</p>
+<hr />
+<h2 id="model-training-strategy">    Model training strategy</h2>
+<p>The model must satisfy two constraints simultaneously:</p>
+<ul>
+<li>be accurate enough for real-world inference;</li>
+<li>be small and efficient enough to run on an MCU.</li>
+</ul>
+<p>After experimentation, <strong>MobileNetV2</strong> proved to be the best tradeoff for this task.
+The architecture was adapted to accept <strong>grayscale input</strong>.</p>
+<p>Training was split into two distinct phases.</p>
+<h3 id="head-only-training">Head-only training</h3>
+<p>In the first phase:</p>
+<ul>
+<li>the MobileNetV2 backbone is fully frozen;</li>
+<li>only the classification head is trained;</li>
+<li>optimizer: <code>Adam(1e-3)</code>;</li>
+<li>callbacks: <code>EarlyStopping</code>, <code>ReduceLROnPlateau</code>, <code>ModelCheckpoint</code>.</li>
+</ul>
+<p>This allows the classifier to adapt to the grayscale domain without destabilizing pretrained features.</p>
+<h3 id="fine-tuning-the-backbone">Fine-tuning the backbone</h3>
+<p>After convergence:</p>
+<ul>
+<li>the top <strong>60 layers</strong> of MobileNetV2 are unfrozen;</li>
+<li>these layers capture higher-level patterns that benefit from domain adaptation.</li>
+</ul>
+<p>After fine-tuning, the model consistently reaches <strong>92–96% accuracy</strong> on the test set, depending on noise and data distribution.</p>
+<hr />
+<h2 id="evaluating-the-fp32-model">    Evaluating the FP32 model</h2>
+<p>Before quantization, the <code>.keras</code> model is evaluated to establish a <strong>baseline</strong>.<br />
+For binary classification, the most informative visualization is the <strong>confusion matrix</strong>, which exposes class-specific failure modes.</p>
+
+
+
+    
+    
+
+
+
+    
+    
+
+
+
+<figure class="center">
+    <a href="https://maltsev-dev.github.io/processed_images/model_matrix.edd24924bde62f88.png">
+        <img src="https://maltsev-dev.github.io/processed_images/model_matrix.80abcf6fd773abae.webp"   />
+    </a>
+    
+</figure>
+<p>These FP32 results are later compared against the INT8 version to measure acceptable degradation.
+Once the baseline met expectations, I moved on to model compression.</p>
+<hr />
+<h2 id="int8-quantization-for-mcu-deployment">    INT8 quantization for MCU deployment</h2>
+<p>Quantizing the model to INT8:</p>
+<ul>
+<li>reduces model size by approximately <strong>4×</strong>;</li>
+<li>enables efficient execution on MCU-class hardware;</li>
+<li>eliminates floating-point dependencies.</li>
+</ul>
+<p>The conversion requires a custom wrapper that:</p>
+<ul>
+<li>defines correct <code>uint8/int8</code> input and output behavior;</li>
+<li>ensures preprocessing (e.g. division by 255) is part of the graph;</li>
+<li>guarantees that <strong>all internal ops remain INT8-compatible</strong>.</li>
+</ul>
+<p>If unsupported operations remain, TensorFlow will insert float fallbacks —
+and such a model <strong>will not run</strong> on TensorFlow Lite Micro.</p>
+<hr />
+<h2 id="post-quantization-tflite-evaluation">    Post-quantization TFLite evaluation</h2>
+<p>Quantization inevitably reduces precision by collapsing FP32 weights into 8-bit integers.
+Before deploying to firmware, a sanity check is mandatory.</p>
+<p>The INT8 <code>.tflite</code> model is loaded into a TFLite interpreter, and:</p>
+<ul>
+<li>random samples from the test set are evaluated;</li>
+<li>accuracy and confusion matrices are compared against the FP32 baseline.</li>
+</ul>
+<p>As long as degradation stays within acceptable limits, the model is considered deployment-ready.
+At this point, the pipeline is ready to transition from Python to <strong>Rust firmware and on-device inference</strong>.</p>
+
+        </div>
+
+        
+        <div class="pagination">
+            <div class="pagination__title">
+                <span class="pagination__title-h">Read other posts?</span>
+                <hr />
+            </div>
+            <div class="pagination__buttons">
+                    <span class="button previous">
+                        <a href="https://maltsev-dev.github.io/dev-nurse-project-2/">
+                            <span class="button__icon">←</span>&nbsp;
+                            <span class="button__text">Hardware and firmware organization: the foundation of an AI device on the ESP32-S3</span>
+                        </a>
+                    </span>
+                
+                
+                    <span class="button next">
+                        <a href="https://maltsev-dev.github.io/dev-nurse-project-4/">
+                            <span class="button__text">From device to system: communication, backend, and dashboard for an embedded AI product</span>&nbsp;
+                            <span class="button__icon">→</span>
+                        </a>
+                    </span>
+                </div>
+        </div>
+    
+    </div>
+
+    </div>
+
+
+<footer class="footer">
+    <div class="footer__inner">
+            <div class="copyright copyright--user"><div class="copyright">
+    <span>© 2026 A.Maltsev</span>
+    <span class="copyright-theme-sep"></span>
+    <span><img src="https://visitor-badge.laobi.icu/badge?page_id=maltsev-dev.github.io&right_color=orange" alt="Visitors"></span>
+</div>
+</div>
+        </div>
+</footer>
+
+
+</div>
+</body>
+
+</html>

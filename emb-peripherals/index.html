@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+    <title>dev_stories</title>
+    
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+    <meta name="robots" content="noodp"/>
+
+    <link rel="stylesheet" href="https://maltsev-dev.github.io/style.css">
+    <link rel="stylesheet" href="https://maltsev-dev.github.io/color/orange.css">
+
+        <link rel="stylesheet" href="https://maltsev-dev.github.io/color/background_blue.css">
+    
+    <link rel="stylesheet" href="https://maltsev-dev.github.io/font-quicksand.css">
+
+
+    
+        <link rel="shortcut icon" type="image/png" href="/favicon.png">
+    
+    <meta property="og:site_name" content="dev_stories"><meta property="og:type" content="article">
+    <meta property="og:title" content="MCU Peripherals"><meta property="og:url" content="https://maltsev-dev.github.io/emb-peripherals/"><meta property="og:image" content="https://github.com/maltsev-dev/favicon.png">
+
+    </head>
+
+<body class="">
+<div class="container">
+    
+    <header class="header">
+        <div class="header__inner">
+            <div class="header__logo">
+                    
+                <a href="https://maltsev-dev.github.io" style="text-decoration: none;">
+                    <div class="logo">
+                      
+                            busy hands == happy heart
+                        
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        
+        <nav class="menu">
+            <ul class="menu__inner">
+                <li><a href="https://maltsev-dev.github.io/archive">archive</a></li>
+            
+                <li><a href="https://maltsev-dev.github.io/tags/project/">projects</a></li>
+            
+                <li><a href="https://maltsev-dev.github.io/about">about me</a></li>
+            </ul>
+        </nav>
+    
+    
+        
+    </header>
+    
+
+    <div class="content">
+        
+    <div class="post">
+        
+    <h1 class="post-title"><a href="https://maltsev-dev.github.io/emb-peripherals/">MCU Peripherals</a></h1>
+    <div class="post-meta-inline">
+        
+    <span class="post-date">
+            2025-07-11
+        </span>
+
+    </div>
+
+    
+        <span class="post-tags-inline">
+                :: tags:&nbsp;
+                <a class="post-tag" href="https://maltsev-dev.github.io/tags/embedded/">#embedded</a>&nbsp;
+                <a class="post-tag" href="https://maltsev-dev.github.io/tags/basic/">#basic</a>&nbsp;
+                <a class="post-tag" href="https://maltsev-dev.github.io/tags/peripherals/">#peripherals</a></span>
+    
+
+        
+        <div class="post-content">
+            <p>Microcontroller peripherals are functional blocks integrated into the chip that enable it to interact with the outside world or carry out specific tasks — often without involving the processor core.</p>
+<p>🟠 When selecting a microcontroller, your choice should depend on the required peripherals, not the other way around.</p>
+<span id="continue-reading"></span>
+<hr />
+<p>The <strong>peripherals of a microcontroller</strong> act like its <strong>senses</strong>, enabling it to interact with the outside world, process analog signals, manage time, communicate with other devices, and perform various application-specific tasks.</p>
+<p>Each microcontroller includes a different set of <strong>peripheral modules</strong>, depends on its architecture, manufacturer, specific model etc, and which determine its capabilities and cost.<br />
+Typical peripherals include:</p>
+<ul>
+<li><strong>ADC</strong> (Analog-to-Digital Converter)</li>
+<li><strong>Timers</strong> and <strong>PWM Generators</strong></li>
+<li><strong>Analog Comparators</strong></li>
+<li><strong>Communication interfaces</strong> such as UART (serial port), SPI, I2C, USB, and CAN</li>
+</ul>
+<p>Most microcontrollers, regardless of brand or architecture, include a core set of these essential peripherals.</p>
+
+
+
+    
+    
+
+
+
+    
+    
+
+
+
+<figure class="center">
+    <a href="https://maltsev-dev.github.io/processed_images/mcu_peripherals.3926424873b3df1c.png">
+        <img src="https://maltsev-dev.github.io/processed_images/mcu_peripherals.de3acb1d76a99b04.webp"   />
+    </a>
+    
+</figure>
+<hr />
+<style> 
+table { 
+width: 100%; 
+border-collapse: collapse; 
+margin-bottom: 20px; 
+} 
+
+th, 
+td { 
+border: 1px solid #ddd; 
+padding: 8px; 
+vertical-align: top; 
+} 
+
+th { 
+background-color: #f59140; 
+color: white; 
+text-align: center; 
+} 
+
+td:first-child { 
+width: auto; 
+}
+</style>
+<table>
+<thead>
+<tr>
+<th>Category</th>
+<th>How it can be different</th>
+<th>MCU examples</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>GPIO</strong></td>
+<td>Number of pins, alt-functions, open-drain/push-pull, switching speed, pull-up resistors.</td>
+<td>
+<code>STM32F103</code> – basic set, alt-functions via AFIO<br/>
+<code>ESP32S3</code> – up to 45 pins, flexible routing via GPIO matrix<br/>
+<code>RP2040</code> – 30 GPIO, PIO support
+</td>
+</tr>
+<tr>
+<td><strong>TIMER / PWM</strong></td>
+<td>Bit depth (8/16/32 bit), number of timers, modes (OneShot, PWM, Capture), channels, dead-time.</td>
+<td>
+<code>STM32H7</code> – advanced timers with dead-time, synchronization<br/>
+<code>RP2040</code> – 8 PWM blocks with independent channels<br/>
+<code>ATmega328P</code> – 3 timers (2×8 bit, 1×16 bit)
+</td>
+</tr>
+<tr>
+<td><strong>UART / USART</strong></td>
+<td>Number of ports, DMA support, auto-detection of speed, support for IrDA, LIN, RS-485.</td>
+<td>
+<code>STM32F4</code> – up to 6 USARTs, IrDA and SmartCard support<br/>
+<code>ESP32</code> – 3 UARTs, all with DMA<br/>
+<code>RP2040</code> – 2 UARTs, software implementation via PIO
+</td>
+</tr>
+<tr>
+<td><strong>SPI / I2C</strong></td>
+<td>Number of modules, speed (up to 80+ MHz), master/slave modes, DMA support, multi-master.</td>
+<td>
+<code>STM32L4</code> – SPI with CRC and NSS support<br/>
+<code>ESP32S3</code> – up to 4 SPI/I2C, with DMA and master/slave modes<br/>
+<code>AVR ATmega328P</code> – I2C (TWI) and SPI with basic functionality
+</td>
+</tr>
+<tr>
+<td><strong>ADC / DAC</strong></td>
+<td>Bit depth (8-16 bit), number of channels, speed, built-in buffers, calibration.</td>
+<td>
+<code>STM32G4</code> – 16-bit ADC, 2 MSPS<br/>
+<code>ESP32</code> – 12-bit ADC (low quality), 2 DAC<br/>
+<code>RP2040</code> – 12-bit ADC, no DAC
+</td>
+</tr>
+<tr>
+<td><strong>DMA</strong></td>
+<td>Number of channels, peripheral support, linked list, circular mode, prio levels.</td>
+<td>
+<code>STM32F4</code> – up to 16 DMA channels, peripherals + memory<br/>
+<code>RP2040</code> – 12 channels, programmable transfers<br/>
+<code>ESP32</code> – built-in DMA controller with SPI/UART
+</td>
+</tr>
+<tr>
+<td><strong>USB</strong></td>
+<td>Support for host/device/OTG mode, protocols (CDC, HID, MSC), built-in or external PHY.</td>
+<td>
+<code>STM32F103</code> – USB FS device<br/>
+<code>STM32H7</code> – HS + FS, OTG<br/>
+<code>ESP32S3</code> – USB OTG (host + device)
+</td>
+</tr>
+<tr>
+<td><strong>Wi-Fi / BLE</strong></td>
+<td>Version support (BLE 4.2/5.0), co-existence, built-in stack or external module.</td>
+<td>
+<code>ESP32S3</code> – Wi-Fi 2.4 GHz, BLE 5.0<br/>
+<code>nRF52840</code> – BLE 5.3, Thread/Zigbee<br/>
+<code>STM32WB</code> – STM32 + BLE on a single chip
+</td>
+</tr>
+<tr>
+<td><strong>RTC / WDT / Power</strong></td>
+<td>External quartz support, wakeup from sleep, low power, independence from system clock.</td>
+<td>
+<code>STM32L4</code> – RTC + deep sleep<br/>
+<code>ESP32</code> – ULP core, wake-on-touch<br/>
+<code>AVR</code> – the simplest WDT, deep sleep with interrupts
+</td>
+</tr>
+<tr>
+<td><strong>Specialized</strong></td>
+<td>PIO, machine vision, crypto modules, LED drivers, graphic accelerators, LCD controllers.</td>
+<td>
+<code>RP2040</code> – 2 PIO blocks<br/>
+<code>ESP32S3</code> – AI acceleration + LCD controller<br/>
+<code>STM32H7</code> – ChromART GPU, JPEG decoder
+</td>
+</tr>
+</tbody>
+</table>
+<h2 id="bulb-usage-examples">💡 Usage examples</h2>
+<table><thead><tr><th>Device</th><th>Peripherals involved</th></tr></thead><tbody>
+<tr><td>Smart lamp</td><td>GPIO, PWM, UART (for BLE), ADC (for light sensor)</td></tr>
+<tr><td>Weather station</td><td>I2C (sensors), ADC (analog sensors), UART (screen), RTC</td></tr>
+<tr><td>Robot on wheels</td><td>PWM (motors), UART (Bluetooth), SPI (IMU), GPIO</td></tr>
+<tr><td>Oscilloscope on MCU</td><td>ADC, DMA, SPI display, USB</td></tr>
+</tbody></table>
+<hr />
+<h2 id="rocket-tips-for-working-with-peripherals">🚀 Tips for working with peripherals</h2>
+<ul>
+<li>Use <strong>HAL libraries</strong> or <strong>register access</strong> depending on the task.</li>
+<li>Always <strong>initialize peripherals correctly</strong>: setting up pins, frequencies, interrupts.</li>
+<li><strong>Handle errors</strong>: buffer overflows, loss of synchronization, etc.</li>
+<li><strong>Use the datasheet</strong> of the microcontroller - everything is described there in detail.</li>
+</ul>
+
+        </div>
+
+        
+        <div class="pagination">
+            <div class="pagination__title">
+                <span class="pagination__title-h">Read other posts?</span>
+                <hr />
+            </div>
+            <div class="pagination__buttons">
+                    <span class="button previous">
+                        <a href="https://maltsev-dev.github.io/emb-registers/">
+                            <span class="button__icon">←</span>&nbsp;
+                            <span class="button__text">MCU Registers</span>
+                        </a>
+                    </span>
+                
+                
+                    <span class="button next">
+                        <a href="https://maltsev-dev.github.io/emb-pwm/">
+                            <span class="button__text">PWM (Pulse Width Modulation)</span>&nbsp;
+                            <span class="button__icon">→</span>
+                        </a>
+                    </span>
+                </div>
+        </div>
+    
+    </div>
+
+    </div>
+
+
+<footer class="footer">
+    <div class="footer__inner">
+            <div class="copyright copyright--user"><div class="copyright">
+    <span>© 2026 A.Maltsev</span>
+    <span class="copyright-theme-sep"></span>
+    <span><img src="https://visitor-badge.laobi.icu/badge?page_id=maltsev-dev.github.io&right_color=orange" alt="Visitors"></span>
+</div>
+</div>
+        </div>
+</footer>
+
+
+</div>
+</body>
+
+</html>

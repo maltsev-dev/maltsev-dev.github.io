@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+    <title>dev_stories</title>
+    
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+    <meta name="robots" content="noodp"/>
+
+    <link rel="stylesheet" href="https://maltsev-dev.github.io/style.css">
+    <link rel="stylesheet" href="https://maltsev-dev.github.io/color/orange.css">
+
+        <link rel="stylesheet" href="https://maltsev-dev.github.io/color/background_blue.css">
+    
+    <link rel="stylesheet" href="https://maltsev-dev.github.io/font-quicksand.css">
+
+
+    
+        <link rel="shortcut icon" type="image/png" href="/favicon.png">
+    
+    <meta property="og:site_name" content="dev_stories"><meta property="og:type" content="article">
+    <meta property="og:title" content="From Rust Source to Embedded Executable: A Deep Dive into the Compilation Process for Embedded Systems"><meta property="og:url" content="https://maltsev-dev.github.io/rs-to-bin-emb/"><meta property="og:image" content="https://github.com/maltsev-dev/favicon.png">
+
+    </head>
+
+<body class="">
+<div class="container">
+    
+    <header class="header">
+        <div class="header__inner">
+            <div class="header__logo">
+                    
+                <a href="https://maltsev-dev.github.io" style="text-decoration: none;">
+                    <div class="logo">
+                      
+                            busy hands == happy heart
+                        
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        
+        <nav class="menu">
+            <ul class="menu__inner">
+                <li><a href="https://maltsev-dev.github.io/archive">archive</a></li>
+            
+                <li><a href="https://maltsev-dev.github.io/tags/project/">projects</a></li>
+            
+                <li><a href="https://maltsev-dev.github.io/about">about me</a></li>
+            </ul>
+        </nav>
+    
+    
+        
+    </header>
+    
+
+    <div class="content">
+        
+    <div class="post">
+        
+    <h1 class="post-title"><a href="https://maltsev-dev.github.io/rs-to-bin-emb/">From Rust Source to Embedded Executable: A Deep Dive into the Compilation Process for Embedded Systems</a></h1>
+    <div class="post-meta-inline">
+        
+    <span class="post-date">
+            2025-06-05
+        </span>
+
+    </div>
+
+    
+        <span class="post-tags-inline">
+                :: tags:&nbsp;
+                <a class="post-tag" href="https://maltsev-dev.github.io/tags/rust/">#rust</a>&nbsp;
+                <a class="post-tag" href="https://maltsev-dev.github.io/tags/compilers/">#compilers</a>&nbsp;
+                <a class="post-tag" href="https://maltsev-dev.github.io/tags/embedded/">#embedded</a></span>
+    
+
+        
+        <div class="post-content">
+            <p>This article is the second part of my exploration into the stages and optimizations of <a href="https://maltsev-dev.github.io/rs-to-bin-emb/(https://maltsev-dev.github.io/rs-to-bin/)">Rust compilation</a>, focusing now on embedded systems development.<br />
+Embedded environments impose unique constraints such as limited memory, lack of an operating system, and strict real-time requirements.<br />
+Consequently, compiling Rust code for these systems demands special considerations — from the removal of the standard library to precise target specifications and custom linker scripts.</p>
+<p>🟠 Here, we’ll walk through the Rust compilation pipeline with a focus on how it adapts for bare-metal, resource-constrained embedded platforms.</p>
+<span id="continue-reading"></span>
+<hr />
+<h3 id="i-initial-code-processing-and-abstract-representation">    I. Initial code processing and abstract representation</h3>
+<p>The initial stages of Rust compilation, including lexical analysis, parsing, and building an abstract syntax tree (AST), remain largely unchanged for embedded systems.</p>
+<p>A. <code>Lexing</code>: Tokenizing the source code</p>
+<ul>
+<li>As with regular applications, the first step is lexical analysis, where the Rust source code (Unicode <strong>UTF-8</strong> text) is converted into a <strong>stream of tokens.</strong></li>
+</ul>
+<p>B. <code>Parsing</code>: Building an abstract syntax tree (AST)</p>
+<ul>
+<li>The stream of tokens is then passed to the parser, which builds an Abstract Syntax Tree (AST) — a hierarchical, tree-like representation of the program.</li>
+</ul>
+<p>C. Early Semantic Passes: <code>Macro Expansion</code> and <code>Name Resolution</code></p>
+<ul>
+<li>Macro expansion and name resolution occur early in the process, often iteratively with parsing.</li>
+<li>Name resolution is the process of associating all symbolic references (variables, types, functions) with their declarations.<br />
+It is a two-phase process: the collection phase builds a CrateDefMap for each crate by iteratively expanding macros and resolving imports.<br />
+The resolution phase then traverses the AST, establishing links from each name to its definition.</li>
+<li>For embedded systems, these phases work the same as for regular applications. However, since embedded systems often have strict code size constraints, the use of macros (especially those that generate a lot of code) must be carefully considered to avoid "code bloat" in later phases.</li>
+</ul>
+<h3 id="ii-hir-and-semantic-analysis">    II. HIR and semantic analysis</h3>
+<p>This stage focuses on desugaring syntactic constructs and performing basic semantic analyses, including <strong>type checking</strong>, <strong>type inference</strong>, and <strong>trait resolution</strong>.</p>
+<p>A. <code>Transformation to HIR</code>: desugaring Syntactic Constructs</p>
+<ul>
+<li>For embedded systems, this transformation is critical because it simplifies subsequent analyses. HIR uses more stable identifiers (DefId, LocalDefId, HirId) that help in incremental compilation, which is useful when code changes frequently in embedded development.</li>
+</ul>
+<p>B. <code>Enforcing Types</code>: Type Inference, Type Checking, and Trait Resolution</p>
+<ul>
+<li>In the HIR stage, the rustc compiler performs basic semantic analyses to ensure Rust is type safe.</li>
+</ul>
+<p>C. Special considerations for embedded systems: no_std
+One of the most significant differences in embedded development in Rust is the use of the #![no_std] attribute.</p>
+<ul>
+<li>
+<p>No standard library: #![no_std] specifies that the program will not use the <a href="https://doc.rust-lang.org/std/">Rust standard library</a>, which depends on the OS.<br />
+Instead, the <a href="https://doc.rust-lang.org/core/">core</a> library is used, which is a subset of std and is <strong>OS-independent</strong>.<br />
+This means that OS-dependent functions (e.g. <code>println!</code>, <code>File::open</code>, <code>Vec::new</code> without an explicit allocator) are not available.<br />
+Therefore, alternatives such as <code>core::fmt</code> for formatting or specialized crates for working with hardware must be used. <a href="https://crates.io/crates/embedded-hal">embedded-hal</a></p>
+</li>
+<li>
+<p>Dependencies: If the core crate uses <code>no_std</code>, then all its transitive dependencies must also be <code>no_std</code> or explicitly support no_std environments.</p>
+</li>
+<li>
+<p>Benefits: Using <code>no_std</code> is critical for embedded systems because it allows for minimal binaries to be created without OS overhead, allowing direct control over the hardware and meeting stringent real-time requirements. <a href="https://github.com/rust-embedded/awesome-embedded-rust?tab=readme-ov-file#tools">embedded-rust tools</a></p>
+</li>
+</ul>
+<h3 id="iii-mir-and-basic-security-checks">    III. MIR and Basic Security Checks</h3>
+<p>A. <code>MIR Conversion</code>: Control Flow Graph Generation</p>
+<ul>
+<li>MIR is a radically simplified and explicit form of Rust code, specifically designed to perform flow-sensitive safety checks (in particular, borrow checking), as well as various compiler optimizations and constant computation.</li>
+</ul>
+<p>B. <code>Borrow Checker</code>: Memory Safety Enforcement</p>
+<ul>
+<li>Borrow checking, implemented in the <code>rustc_borrowck</code> crate, is a distinctive feature of Rust that provides memory safety without a garbage collector. It works directly with MIR.<br />
+For embedded systems, borrow checking is a huge benefit. It allows Rust to provide memory safety (e.g. data races, dangling pointers, use-after-free) at compile time, eliminating the need for a garbage collector or manual memory management, which is critical for resource-constrained systems with strong deterministic requirements.</li>
+</ul>
+<p>C. <code>MIR Optimizations</code></p>
+<ul>
+<li>After MIR borrow checking, a series of optimization passes are performed.</li>
+<li>For embedded systems, these optimizations are critical to minimizing code size and improving performance. Smaller code size means the program fits into the limited Flash/ROM memory of the microcontroller, and higher performance allows real-time tasks.</li>
+</ul>
+<h3 id="iv-code-generation-and-machine-specific-optimizations">    IV. Code generation and machine-specific optimizations</h3>
+<p>This final major stage of the rustc compiler involves translating the highly optimized MIR into executable machine code, using LLVM for architecture-specific transformations and extensive optimizations.</p>
+<p>A. Monomorphization and <code>LLVM IR Generation</code></p>
+<ul>
+<li>For embedded systems: <strong>Target Triples</strong>
+For embedded systems, choosing the right "target triple" is fundamental.<br />
+A target triple (e.g. <code>thumbv7em-none-eabihf</code> for ARM Cortex-M) tells the compiler the <code>architecture</code>, <code>vendor</code>, <code>OS type / runtime type</code> for which the binary will be generated.<br />
+For bare-metal systems, the OS type is often specified as <code>none</code> or <code>unknown</code>.</li>
+</ul>
+<p>This allows rustc to generate code specific to the target microcontroller, including the correct calling conventions and instruction set.<br />
+Size optimization: Monomorphization, while beneficial for performance, can lead to <code>code bloat</code>, which is a serious problem for memory-constrained embedded systems. You should be careful about using <code>generics</code> and consider using size optimization flags.</p>
+<p>B. <code>LLVM Optimizations</code>
+These optimizations are designed to improve the performance and efficiency of the generated code, including dead code removal, constant propagation, function inlining, and loop optimizations.</p>
+<ul>
+<li>For embedded systems, where binary file size is a critical constraint, special optimization levels are used:</li>
+<li>opt-level = "s" (optimize for size)</li>
+<li>opt-level = "z" (optimize for smallest size)<br />
+These layers significantly reduce LLVM's inlining threshold, which can help reduce code size by potentially inlining fewer functions.
+Developers can use <code>profile-overrides</code> in Cargo.toml to optimize dependencies for size while keeping the core crate more debuggable.
+ 
+<code>rustc_codegen_gcc</code> is an alternative backend that may be useful for platforms not supported by LLVM, or to take advantage of GCC optimizations.</li>
+</ul>
+<p>C. Generating <code>Machine Code and Object Files</code>
+The output of this stage is platform-specific assembly code, which is then assembled into object files (.o or .obj). The object files contain machine code, data, relocation information, and symbol tables.</p>
+<h3 id="v-linking-building-the-final-executable-file">    V. Linking: Building the final executable file</h3>
+<p>The final step of the compilation process involves <strong>combining all the compiled object</strong> files and required libraries into a single executable binary or shared library. This is done by the linker.</p>
+<p>A. Static vs. Dynamic Linking
+Embedded systems <code>almost always use static linking </code>(Resolution occurs during compilation. All required library code is built directly into the final executable). This is because most embedded systems do not have an operating system capable of managing dynamic libraries and require the binary to be completely self-contained. Static linking ensures that all required dependencies are included in a single executable, simplifying deployment to the target hardware.</p>
+<p>B. The Role of the Linker</p>
+<p>Merging Artifacts: The primary role of the linker is to combine the generated object files, static libraries, and dynamic libraries into the final executable.<br />
+It resolves any remaining symbol references and performs relocations.
+<a href="https://blog.rust-lang.org/2024/05/17/enabling-rust-lld-on-linux/">rust-lld</a> is the Rust-shipped copy of lld (the LLVM linker), used by default for bare-metal and WebAssembly targets.</p>
+<ul>
+<li>For embedded systems: For bare-metal embedded systems, a <strong>custom linker script</strong> (usually a <code>.ld</code> file) must be provided.</li>
+</ul>
+<pre data-lang="linker script" style="background-color:#151515;color:#e8e8d3;" class="language-linker script "><code class="language-linker script" data-lang="linker script"><span style="color:#8fbfdc;">MEMORY</span><span> {
+</span><span>    </span><span style="color:#ffb964;">BOOT2</span><span> : </span><span style="color:#8fbfdc;">ORIGIN</span><span> = </span><span style="color:#cf6a4c;">0x10000000</span><span>, </span><span style="color:#8fbfdc;">LENGTH</span><span> = </span><span style="color:#cf6a4c;">0x100
+</span><span>    </span><span style="color:#ffb964;">FLASH</span><span> : </span><span style="color:#8fbfdc;">ORIGIN</span><span> = </span><span style="color:#cf6a4c;">0x10000100</span><span>, </span><span style="color:#8fbfdc;">LENGTH</span><span> = </span><span style="color:#cf6a4c;">2048K</span><span> - </span><span style="color:#cf6a4c;">0x100
+</span><span>    </span><span style="color:#ffb964;">RAM</span><span> : </span><span style="color:#8fbfdc;">ORIGIN</span><span> = </span><span style="color:#cf6a4c;">0x20000000</span><span>, </span><span style="color:#8fbfdc;">LENGTH</span><span> = </span><span style="color:#cf6a4c;">256K
+</span><span>    </span><span style="color:#ffb964;">SRAM4</span><span> : </span><span style="color:#8fbfdc;">ORIGIN</span><span> = </span><span style="color:#cf6a4c;">0x20040000</span><span>, </span><span style="color:#8fbfdc;">LENGTH</span><span> = 4k
+</span><span>    </span><span style="color:#ffb964;">SRAM5</span><span> : </span><span style="color:#8fbfdc;">ORIGIN</span><span> = </span><span style="color:#cf6a4c;">0x20041000</span><span>, </span><span style="color:#8fbfdc;">LENGTH</span><span> = 4k
+</span><span>}
+</span><span>
+</span><span style="color:#ffb964;">EXTERN</span><span>(</span><span style="color:#ffb964;">BOOT2_FIRMWARE</span><span>)
+</span><span>
+</span><span style="color:#8fbfdc;">SECTIONS</span><span> {
+</span><span>    </span><span style="color:#ffb964;">.boot2 </span><span style="color:#8fbfdc;">ORIGIN</span><span>(</span><span style="color:#ffb964;">BOOT2</span><span>) :
+</span><span>    {
+</span><span>        </span><span style="color:#8fbfdc;">KEEP</span><span>(*(</span><span style="color:#ffb964;">.boot2</span><span>));
+</span><span>    } &gt; </span><span style="color:#ffb964;">BOOT2
+</span><span>} </span><span style="color:#ffb964;">INSERT BEFORE .text</span><span>;
+</span><span>
+</span><span style="color:#8fbfdc;">SECTIONS</span><span> {
+</span><span>    </span><span style="color:#ffb964;">.boot_info</span><span> : </span><span style="color:#8fbfdc;">ALIGN</span><span>(</span><span style="color:#cf6a4c;">4</span><span>)
+</span><span>    {
+</span><span>        </span><span style="color:#8fbfdc;">KEEP</span><span>(*(</span><span style="color:#ffb964;">.boot_info</span><span>));
+</span><span>    } &gt; </span><span style="color:#ffb964;">FLASH
+</span><span>
+</span><span>} </span><span style="color:#ffb964;">INSERT AFTER .vector_table</span><span>;
+</span><span style="color:#ffb964;">_stext</span><span> = </span><span style="color:#8fbfdc;">ADDR</span><span>(</span><span style="color:#ffb964;">.boot_info</span><span>) + </span><span style="color:#8fbfdc;">SIZEOF</span><span>(</span><span style="color:#ffb964;">.boot_info</span><span>);
+</span><span>
+</span><span style="color:#8fbfdc;">SECTIONS</span><span> {
+</span><span>    </span><span style="color:#ffb964;">.bi_entries</span><span> : </span><span style="color:#8fbfdc;">ALIGN</span><span>(</span><span style="color:#cf6a4c;">4</span><span>)
+</span><span>    {
+</span><span>        </span><span style="color:#ffb964;">__bi_entries_start</span><span> = </span><span style="color:#ffb964;">.</span><span>;
+</span><span>        </span><span style="color:#8fbfdc;">KEEP</span><span>(*(</span><span style="color:#ffb964;">.bi_entries</span><span>));
+</span><span>        </span><span style="color:#ffb964;">.</span><span> = </span><span style="color:#8fbfdc;">ALIGN</span><span>(</span><span style="color:#cf6a4c;">4</span><span>);
+</span><span>        </span><span style="color:#ffb964;">__bi_entries_end</span><span> = </span><span style="color:#ffb964;">.</span><span>;
+</span><span>    } &gt; </span><span style="color:#ffb964;">FLASH
+</span><span>} </span><span style="color:#ffb964;">INSERT AFTER .text</span><span>;
+</span></code></pre>
+<p>This script defines the memory map of the target microcontroller (e.g. Flash, RAM, stack, heap locations) and tells the linker <strong>where to place the various code</strong> and data sections (e.g.
+<code>.text</code>, <code>.data</code>, <code>.bss</code>).<br />
+Without such a script, the linker will not be able to correctly place the program in the device's memory.</p>
+<p><strong>Custom entry point</strong> (#![no_main], #[entry]): Embedded Rust programs do not use the standard main function as an entry point, since it depends on the OS runtime.<br />
+Instead, the #![no_main] attribute is used to disable the standard entry point.<br />
+The developer then defines a custom entry point, often using the #[entry] macro from an architecture-specific crate (e.g. <a href="https://crates.io/crates/cortex-m-rt">cortex-m-rt</a>).<br />
+This startup code is responsible for initializing the stack, data sections, and jumping to the main logic of the program.</p>
+<p>C. Final executable file</p>
+<p>Output format: By default, rustc generates an ELF file, which contains a lot of useful debugging information.<br />
+However, most microcontrollers require a very minimal binary (<code>.bin</code>) or hexadecimal (<code>.hex</code>) file consisting only of the program instructions.
+Tools such as <a href="https://crates.io/crates/cargo-binutils">cargo-binutils</a> (which provides objcopy) are used to <strong>convert the ELF file</strong> to these formats.</p>
+<h3 id="sticker">    Sticker</h3>
+<pre style="background-color:#151515;color:#e8e8d3;"><code><span>Compiling a Rust program for embedded systems follows the same fundamental multi-step process as for regular applications, but with critical adaptations.  
+</span><span>1. removal of the standard library (no_std)
+</span><span>2. target-specific triplets,
+</span><span>3. careful optimization of code size,
+</span><span>4. custom linker scripts
+</span><span>5. custom entry points. </span></code></pre>
+
+        </div>
+
+        
+        <div class="pagination">
+            <div class="pagination__title">
+                <span class="pagination__title-h">Read other posts?</span>
+                <hr />
+            </div>
+            <div class="pagination__buttons">
+                    <span class="button previous">
+                        <a href="https://maltsev-dev.github.io/basic-electronics-2/">
+                            <span class="button__icon">←</span>&nbsp;
+                            <span class="button__text">⚛️ The Aesthetics of Semiconductor Destruction: Understanding the PN Junction</span>
+                        </a>
+                    </span>
+                
+                
+                    <span class="button next">
+                        <a href="https://maltsev-dev.github.io/rust-memory-layout/">
+                            <span class="button__text">Understanding Memory Management in Rust: From Dynamically Sized Types to Fat Pointers</span>&nbsp;
+                            <span class="button__icon">→</span>
+                        </a>
+                    </span>
+                </div>
+        </div>
+    
+    </div>
+
+    </div>
+
+
+<footer class="footer">
+    <div class="footer__inner">
+            <div class="copyright copyright--user"><div class="copyright">
+    <span>© 2026 A.Maltsev</span>
+    <span class="copyright-theme-sep"></span>
+    <span><img src="https://visitor-badge.laobi.icu/badge?page_id=maltsev-dev.github.io&right_color=orange" alt="Visitors"></span>
+</div>
+</div>
+        </div>
+</footer>
+
+
+</div>
+</body>
+
+</html>

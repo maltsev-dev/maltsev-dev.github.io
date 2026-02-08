@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+    <title>dev_stories</title>
+    
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+    <meta name="robots" content="noodp"/>
+
+    <link rel="stylesheet" href="https://maltsev-dev.github.io/style.css">
+    <link rel="stylesheet" href="https://maltsev-dev.github.io/color/orange.css">
+
+        <link rel="stylesheet" href="https://maltsev-dev.github.io/color/background_blue.css">
+    
+    <link rel="stylesheet" href="https://maltsev-dev.github.io/font-quicksand.css">
+
+
+    
+        <link rel="shortcut icon" type="image/png" href="/favicon.png">
+    
+    <meta property="og:site_name" content="dev_stories"><meta property="og:type" content="article">
+    <meta property="og:title" content="Understanding Memory Management in Rust: From Dynamically Sized Types to Fat Pointers"><meta property="og:url" content="https://maltsev-dev.github.io/rust-memory-layout/"><meta property="og:image" content="https://github.com/maltsev-dev/favicon.png">
+
+    </head>
+
+<body class="">
+<div class="container">
+    
+    <header class="header">
+        <div class="header__inner">
+            <div class="header__logo">
+                    
+                <a href="https://maltsev-dev.github.io" style="text-decoration: none;">
+                    <div class="logo">
+                      
+                            busy hands == happy heart
+                        
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        
+        <nav class="menu">
+            <ul class="menu__inner">
+                <li><a href="https://maltsev-dev.github.io/archive">archive</a></li>
+            
+                <li><a href="https://maltsev-dev.github.io/tags/project/">projects</a></li>
+            
+                <li><a href="https://maltsev-dev.github.io/about">about me</a></li>
+            </ul>
+        </nav>
+    
+    
+        
+    </header>
+    
+
+    <div class="content">
+        
+    <div class="post">
+        
+    <h1 class="post-title"><a href="https://maltsev-dev.github.io/rust-memory-layout/">Understanding Memory Management in Rust: From Dynamically Sized Types to Fat Pointers</a></h1>
+    <div class="post-meta-inline">
+        
+    <span class="post-date">
+            2025-06-09
+        </span>
+
+    </div>
+
+    
+        <span class="post-tags-inline">
+                :: tags:&nbsp;
+                <a class="post-tag" href="https://maltsev-dev.github.io/tags/rust/">#rust</a>&nbsp;
+                <a class="post-tag" href="https://maltsev-dev.github.io/tags/memory/">#memory</a>&nbsp;
+                <a class="post-tag" href="https://maltsev-dev.github.io/tags/basic/">#basic</a></span>
+    
+
+        
+        <div class="post-content">
+            <p>Rust's approach to memory management is both powerful and complex.<br />
+🟠 In this article, I want to take a deep dive into how Rust handles memory for the type system under the hood, and try to answer questions like:</p>
+<ul>
+<li>Why can't we create purely dynamic types?</li>
+<li>How does the Rust compiler decide where and how to allocate memory for variables?</li>
+<li>What exactly does a pointer inside a fat pointer refer to, especially for string literals?</li>
+<li>And what role does libc play in this?</li>
+</ul>
+<span id="continue-reading"></span>
+<hr />
+<h2 id="some-definitions">    Some Definitions</h2>
+<p><strong>ZST</strong> (Zero Sized Types) - the entire size of this type is collapsed to zero at compile time. (always <code>impl Sized</code>)</p>
+<p><strong>DST</strong> (Dynamically Sized Types) - is a <strong>non-sized</strong> (<code>!Sized</code>) type that does not contain information <strong>about its length</strong> in the type itself, but <strong>the length is stored at runtime</strong> as metadata associated with the slice pointer.<br />
+At compile time, Rust <strong>does not know</strong> how much memory needs to be allocated for this type (<code>str</code>, <code>[T]</code>, <code>Arc</code>.. ).<br />
+Variables of these types can only be used <strong>behind references</strong> that include metadata about the length. (<code>&amp;str</code>, <code>&amp;[T]</code>, <code>Box&lt;[T]&gt;</code>...)</p>
+<p><strong>Machine Word</strong> (word) - is the amount of data that the <em>CPU</em> can process per unit of time.<br />
+The memory address range is determined by the size of the <code>machine word</code> in the current <em>CPU</em>, for a <code>64 bit</code> processor it is <code>64 bits </code>respectively (or <code>8 bytes</code>).<br />
+The size of the reference (<code>usize</code>) is equal to a machine word. (<code>ptr</code>, <code>cap</code>, <code>len</code>).</p>
+<hr />
+<h2 id="1-basic-concepts-of-memory-management">    1. Basic concepts of memory management</h2>
+<p>After compiling the executable file. <a href="https://maltsev-dev.github.io/rs-to-bin/">Read more</a> about Rust compiling pipeline in my article.
+This file stores <code>data</code>, <code>metadata</code>, and <code>machine instructions</code> for the <em>CPU</em> in specific platform-dependent formats. (<strong>ELF</strong> on Linux, <strong>PE</strong> on Windows,<strong>Mach-O</strong> on macOS). No matter what formats, the way they are executed is <em>almost</em> the same.</p>
+<p>When a program (<strong>process</strong>) is started on the target platform, the kernel allocates the necessary amount of memory based on the <strong>segment metadata</strong> (<code>.text,</code> <code>.data</code>, <code>.bss</code>, etc) from the ELF headers. This memory is a solid range of addresses to use, called the <code>virtual address space</code> of the program.<br />
+The kernel will map segments to the allocated memory at startup, the number of segments required depends on the <strong>compiler</strong>.<br />
+Since memory is allocated <code>lazily</code>, the kernel and hardware will do the mapping to physical addresses in RAM <code>only on the first access</code>.<br />
+From the point of view of the <strong>process</strong>, it sees a solid range of memory from <code>0</code> to the maximum value.</p>
+
+
+
+    
+    
+
+
+
+    
+    
+
+
+
+<figure class="center">
+    <a href="https://maltsev-dev.github.io/processed_images/rust_memory_1.0bbaf3647b7ad210.png">
+        <img src="https://maltsev-dev.github.io/processed_images/rust_memory_1.7d79e2aa5f16708d.webp"   />
+    </a>
+    
+</figure>
+<ul>
+<li>Some <strong>segment metadata</strong> of executable file:</li>
+</ul>
+<pre data-lang="linker-script" style="background-color:#151515;color:#e8e8d3;" class="language-linker-script "><code class="language-linker-script" data-lang="linker-script"><span>section               size        addr
+</span><span>.vector_table          192  0x10000100
+</span><span>.text                33044  0x100001d4
+</span><span>.rodata               4904  0x100082e8
+</span><span>.data                    0  0x20000000
+</span><span>.bss                     4  0x20000000
+</span><span>...
+</span></code></pre>
+<ul>
+<li><strong>text</strong><br />
+This section contains the compiled <code>machine instructions</code> of your program (<strong>executable code</strong>).<br />
+Loaded into memory with <code>Read + Execute</code> rights. The running program cannot change it.<br />
+These instructions depend on the architecture of the processor for which the code was compiled and cannot be automatically ported to another platform.</li>
+<li><strong>data</strong><br />
+This section contains<code> initialized global and static</code> variables.</li>
+<li><strong>bss</strong><br />
+BSS <strong>Block started by symbol</strong> segment.<br />
+This section stores <code>uninitialized global and static</code> variables. These variables are <strong>guaranteed to be zero</strong> before main is called.</li>
+</ul>
+<h3 id="stack">  Stack</h3>
+<p>Located at the top of the user space and grows <strong>downwards</strong>⬇️.</p>
+<p>The <em>stack</em> is <strong>unique to each individual thread</strong> of the process. On 64-bit Linux Systems, Rust programs use an <code>8Mb</code> <em>stack</em> for the <strong>main</strong> thread.<br />
+The <a href="https://doc.rust-lang.org/std/thread/struct.Builder.html#method.stack_size">Rust std</a> supports specifying the <em>stack</em> size for any thread that the program creates. The default value is <code>2Mb</code>.</p>
+<p>Although the size of the <em>stack</em> for the main thread is <code>8Mb</code>, this memory is not allocated immediately, it is allocated by the kernel only on the first access.<br />
+The <em>stack</em> grows <strong>downwards</strong> - to a lower memory area.<br />
+It can only grow until total <em>stack</em> size for that particular thread (if it is the main thread - up to <code>8Mb</code>)<br />
+If a program thread uses more <em>stack</em> space than it is allocated, the kernel will terminate the execution of that program with an error - <strong>stack overflow</strong></p>
+<h3 id="heap">  Heap</h3>
+<p>All threads share <strong>one common heap</strong>.<br />
+The <em>heap</em> memory address starts close to zero (after code and data) and <strong>grows upwards</strong>⬆️.<br />
+The <em>heap</em> can grow to huge sizes (theoretically up to <code>128 TB</code>).</p>
+
+
+
+    
+    
+
+
+
+    
+    
+
+
+
+<figure class="center">
+    <a href="https://maltsev-dev.github.io/processed_images/rust_memory_stack_vs_heap.931bc955dd01f8ca.png">
+        <img src="https://maltsev-dev.github.io/processed_images/rust_memory_stack_vs_heap.418d7165c3d5d160.webp"   />
+    </a>
+    
+</figure>
+<hr />
+<h2 id="rust-on-stack">    Rust on Stack</h2>
+<p>The main purpose of the <em>stack</em> memory is to store the data of the <strong>currently executing function</strong> (all parameter of the function, its local variables and the return address).<br />
+Only variables with a <code>fixed size</code> and whose <code>size is known at compile</code> time can be placed on the <em>stack</em>.</p>
+<ul>
+<li><code>stack frame</code> - the total amount of memory allocated for the execution of <strong>one function</strong>.</li>
+<li><code>stack pointer</code> - track the <strong>current top level</strong> of the <em>stack</em>.</li>
+</ul>
+<p>Allocation and deallocation on the <em>stack</em> requires only increasing or decreasing the hight of the <code>stack pointer</code> and is fast, since <strong>no system calls are required</strong>.</p>
+
+
+
+    
+    
+
+
+
+    
+    
+
+
+
+<figure class="center">
+    <a href="https://maltsev-dev.github.io/processed_images/rust_memory_stack.63b022476e793afd.png">
+        <img src="https://maltsev-dev.github.io/processed_images/rust_memory_stack.1713900e12999ca7.webp"   />
+    </a>
+    
+</figure>
+<ol>
+<li>First, a <code>stack frame</code> is created for the main function, all local variables with known sizes are placed in it.</li>
+<li>The <code>main()</code> calls another function, for which its own <code>stack frame</code> is created with enough memory to store its data.</li>
+<li>The <strong>return address</strong> (<code>0x23f</code>) is the next instruction in the <code>stack frame</code> of the <code>main()</code> (the assignment operator <code>let b =</code> ...), to which execution should return after the <code>add_one()</code> function is finished.</li>
+<li>At this point, the <code>stack pointer</code> will be raised, but the <code>stack frame</code> allocated memory for the <code>add_one()</code> function will not be fully deallocated, these addresses will be overwritten when another function is called.</li>
+</ol>
+<hr />
+<h2 id="rust-on-heap">    Rust on Heap</h2>
+<p>In Rust, <strong>Heap Allocator</strong> is described through the <code>GlobalAlloc</code> trait - it defines the functions that the <strong>allocator</strong> must provide.<br />
+Rust uses <code>malloc</code> from the standard <code>C</code> library, <code>libc</code>, to work with memory. Under the hood, Rust assumes that the running platform has <code>libc</code>.<br />
+Allocating and working with memory on the <em>heap</em> is <strong>slow</strong> primarily because of <strong>system calls</strong> to <code>libc</code> and the allocator searching for a suitable place for the data.<br />
+To reduce the number of system calls, <code>memory allocator</code> requests memory in blocks.</p>
+
+
+
+    
+    
+
+
+
+    
+    
+
+
+
+<figure class="center">
+    <a href="https://maltsev-dev.github.io/processed_images/rust_memory_heap.05f875e0b06c0354.png">
+        <img src="https://maltsev-dev.github.io/processed_images/rust_memory_heap.aafad8b538af8c2d.webp"   />
+    </a>
+    
+</figure>
+<ol>
+<li>The main <code>stack frame</code> is created for the <code>main()</code> function</li>
+<li>A nested <code>stack frame</code> is created for the <code>heap()</code> function</li>
+<li><code>Box</code> - allocates space on the <em>heap</em> for the number 23 (<code>i32 = 4 bytes</code>), and a <strong>pointer</strong> (<code>0x5f21</code>) to this space is written to the <code>b</code> variable on the <em>stack</em>, since the pointer has a fixed size. Therefore, the size of <code>b</code> in the <em>stack</em> is <code>usize = 8 bytes</code>.</li>
+<li>Through the return address from <code>heap()</code>, the pointer to <code>Box</code> is written to the <code>result</code> variable in the <code>main()</code> function.</li>
+<li>Now, even if the <em>stack</em> frame of the <code>heap()</code> function is deallocated, the <code>result</code> variable contains the address of the data in the <em>heap</em>.</li>
+</ol>
+<hr />
+<h2 id="rust-data-types">    Rust Data Types</h2>
+<h3 id="integer">  Integer</h3>
+<p>
+
+
+    
+    
+
+
+
+    
+    
+
+
+
+<figure class="center">
+    <a href="https://maltsev-dev.github.io/processed_images/rust_memory_integers.426f7f89b6a95566.png">
+        <img src="https://maltsev-dev.github.io/processed_images/rust_memory_integers.9c6a17f190094aeb.webp"   />
+    </a>
+    
+</figure>
+
+Stored entirely on <em>stack</em>.
+Signed and unsigned numbers indicate how many <code>bit</code> they can store.</p>
+<table><thead><tr><th style="text-align: left">i8 / u8</th><th style="text-align: left">i16 / u16</th><th style="text-align: left">i32 / u32</th><th style="text-align: left">i64 / u64</th><th style="text-align: left">i128 / u128</th><th style="text-align: left">f32 / f64</th><th style="text-align: left">isize / usize</th></tr></thead><tbody>
+<tr><td style="text-align: left">1 byte</td><td style="text-align: left">2 bytes</td><td style="text-align: left">4 bytes</td><td style="text-align: left">8 bytes</td><td style="text-align: left">16 bytes</td><td style="text-align: left">4 / 8 bytes</td><td style="text-align: left">4 / 8 bytes</td></tr>
+</tbody></table>
+<h3 id="char">  Char</h3>
+<p>The char type in Rust is a primitive type that takes up a fixed amount of memory (<code>4 bytes</code>).<br />
+Like other primitives (i32, bool, etc.), it is stored on the <code>stack</code> by default.<br />
+The char type in Rust represents a single <code>Unicode Scalar Value</code>.<br />
+Regardless of the specific character (whether it's a, €, or 🦀), the char type in Rust always takes up exactly <code>4 bytes</code> (32-bit).</p>
+<h3 id="tuple">  Tuple</h3>
+<p>A type consists of a <strong>fixed set</strong> of values ​​of <strong>diffrent types</strong>.<br />
+If all composite types are stored on a <em>stack</em>, then the entire tuple is stored on a <em>stack</em>.<br />
+The size of all composite types is in order, but with alignment taken into account.<br />
+<code>Alignment</code> is performed by the compiler so that <em>CPUs</em> can read data more efficiently.<br />
+
+
+
+    
+    
+
+
+
+    
+    
+
+
+
+<figure class="center">
+    <a href="https://maltsev-dev.github.io/processed_images/rust_memory_tuple.a2c5e07933698654.png">
+        <img src="https://maltsev-dev.github.io/processed_images/rust_memory_tuple.7ac031c16650a1a9.webp"   />
+    </a>
+    
+</figure>
+</p>
+<ul>
+<li>sum of sizes of types = <code>9</code></li>
+<li>sum of size including alignment = 12</li>
+<li>denominator of alignment = <code>4</code></li>
+<li>9\4 = 2.25 to the upper integer = <code>3</code></li>
+<li>aligned size = 4 * 3 = <code>12</code></li>
+</ul>
+<pre data-lang="rust" style="background-color:#151515;color:#e8e8d3;" class="language-rust "><code class="language-rust" data-lang="rust"><span>size_of::&lt;(</span><span style="color:#8fbfdc;">char</span><span>, </span><span style="color:#8fbfdc;">u8</span><span>, </span><span style="color:#8fbfdc;">i32</span><span>)&gt;();   </span><span style="color:#888888;">// 12
+</span><span>align_of::&lt;(</span><span style="color:#8fbfdc;">char</span><span>, </span><span style="color:#8fbfdc;">u8</span><span>, </span><span style="color:#8fbfdc;">i32</span><span>)&gt;();  </span><span style="color:#888888;">// 4
+</span></code></pre>
+<h3 id="reference">  Reference</h3>
+<ul>
+<li><code>&amp;T</code> <strong>shared</strong> references are stored in the <em>stack</em> and contain the <strong>address of the original variable</strong> it points to.</li>
+<li><code>&amp;&amp;T</code> <strong>shared</strong> reference to reference and also takes 1 machine word.</li>
+<li><code>&amp;mut T</code> <strong>unique</strong> references have the same layout in memory.</li>
+</ul>
+
+
+
+    
+    
+
+
+
+    
+    
+
+
+
+<figure class="center">
+    <a href="https://maltsev-dev.github.io/processed_images/rust_memory_references.97965e1281c46c02.png">
+        <img src="https://maltsev-dev.github.io/processed_images/rust_memory_references.fa1da7989f28c272.webp"   />
+    </a>
+    
+</figure>
+<h3 id="array">  Array</h3>
+<pre data-lang="rust" style="background-color:#151515;color:#e8e8d3;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="color:#8fbfdc;">let</span><span> a: [</span><span style="color:#8fbfdc;">i32</span><span>; </span><span style="color:#cf6a4c;">3</span><span>] = [</span><span style="color:#cf6a4c;">55</span><span>, </span><span style="color:#cf6a4c;">66</span><span>, </span><span style="color:#cf6a4c;">77</span><span>];
+</span></code></pre>
+<p>An array has a <strong>fixed size</strong> (constant after creation), and this size <strong>is part of the type</strong>.<br />
+Values ​​of an array type are strictly of the <strong>same type</strong> and are placed one after another on the <em>stack</em>.</p>
+<h3 id="vector">  Vector</h3>
+<pre data-lang="rust" style="background-color:#151515;color:#e8e8d3;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="color:#8fbfdc;">let</span><span> v: Vec&lt;</span><span style="color:#8fbfdc;">i32</span><span>&gt; = vec![</span><span style="color:#cf6a4c;">55</span><span>, </span><span style="color:#cf6a4c;">66</span><span>, </span><span style="color:#cf6a4c;">77</span><span>];
+</span></code></pre>
+<p>An alternative to a constant array that <strong>can change its size</strong> while keeping the data types inside the same.
+Vector will store 3 pointers <code>(ptr, len, cap)</code> in <em>stack</em>.</p>
+<ul>
+<li><code>ptr</code> - point to the beginning of the memory <strong>area in the <em>heap</em></strong> where the values ​​stored in this vector are written.</li>
+<li><code>cap</code> - shows how much data <strong>is allocated</strong> on the <em>heap</em> for this vector.</li>
+<li>when <code>cap</code> and <code>len</code> become the same, if more elements need to be added - reallocation occurs (allocating new memory in a larger <em>heap</em>, copying elements from the current location to the new array and updating the pointer).</li>
+</ul>
+<h3 id="slice">  Slice</h3>
+<p><code>[T]</code> - similar to a fixed size array, except that we don't have to specify the size and data type.</p>
+<pre data-lang="rust" style="background-color:#151515;color:#e8e8d3;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="color:#8fbfdc;">let</span><span> s1: [</span><span style="color:#8fbfdc;">i32</span><span>] = a[</span><span style="color:#cf6a4c;">0</span><span>..</span><span style="color:#cf6a4c;">2</span><span>];
+</span><span style="color:#8fbfdc;">let</span><span> s2: [</span><span style="color:#8fbfdc;">i32</span><span>] = v[</span><span style="color:#cf6a4c;">0</span><span>..</span><span style="color:#cf6a4c;">2</span><span>];
+</span></code></pre>
+<p>Usually a <strong>slice reference</strong> is used - which can be placed on the <em>stack</em>.<br />
+<code>&amp;[T]</code> - <strong>fat pointer</strong> 2 pointers - <code>ptr</code> + <code>len</code></p>
+
+
+
+    
+    
+
+
+
+    
+    
+
+
+
+<figure class="center">
+    <a href="https://maltsev-dev.github.io/processed_images/rust_memory_slices.3d12749afb527ae3.png">
+        <img src="https://maltsev-dev.github.io/processed_images/rust_memory_slices.f70f55dfd70f7cd9.webp"   />
+    </a>
+    
+</figure>
+<pre data-lang="rust" style="background-color:#151515;color:#e8e8d3;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="color:#8fbfdc;">let</span><span> a: [</span><span style="color:#8fbfdc;">i32</span><span>; </span><span style="color:#cf6a4c;">3</span><span>] = [</span><span style="color:#cf6a4c;">55</span><span>, </span><span style="color:#cf6a4c;">66</span><span>, </span><span style="color:#cf6a4c;">77</span><span>];
+</span><span style="color:#8fbfdc;">let</span><span> v: Vec&lt;</span><span style="color:#8fbfdc;">i32</span><span>&gt; = vec![</span><span style="color:#cf6a4c;">55</span><span>, </span><span style="color:#cf6a4c;">66</span><span>, </span><span style="color:#cf6a4c;">77</span><span>];
+</span><span>
+</span><span style="color:#8fbfdc;">let</span><span> s1: &amp;[</span><span style="color:#8fbfdc;">i32</span><span>] = &amp;a[</span><span style="color:#cf6a4c;">0</span><span>..</span><span style="color:#cf6a4c;">2</span><span>];
+</span><span style="color:#8fbfdc;">let</span><span> s2: &amp;[</span><span style="color:#8fbfdc;">i32</span><span>] = &amp;v[</span><span style="color:#cf6a4c;">0</span><span>..</span><span style="color:#cf6a4c;">2</span><span>];
+</span></code></pre>
+<p>Here <code>s1</code> and <code>s2</code> are a slices that contains <code>ptr</code> и <code>len</code>.
+This information is stored in a <strong>fat pointer</strong>, which consists of:</p>
+<ul>
+<li>A pointer to the data (<code>*const T</code>)</li>
+<li>A length (<code>usize</code>)<br />
+Thus, although the <code>[T]</code> type itself does not contain length information, this information is available through the <code>&amp;</code> pointers to the slice.</li>
+</ul>
+<h3 id="string-str-str">  String, str, &amp;str</h3>
+<p>String is a <code>Vec&lt;u8&gt;</code> where each value is a separate <strong>Unicode</strong> character in <code>UTF-8</code> encoding.<br />
+Like a vector, String stores 3 pointers to <em>stack</em> (<code>ptr</code>, <code>cap</code>, <code>len</code>)</p>
+
+
+
+    
+    
+
+
+
+    
+    
+
+
+
+<figure class="center">
+    <a href="https://maltsev-dev.github.io/processed_images/rust_memory_strings.ed189e61833a81d1.png">
+        <img src="https://maltsev-dev.github.io/processed_images/rust_memory_strings.f5f439eda353b78d.webp"   />
+    </a>
+    
+</figure>
+<pre data-lang="rust" style="background-color:#151515;color:#e8e8d3;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="color:#8fbfdc;">let</span><span> s: String = String::from(</span><span style="color:#556633;">&quot;</span><span style="color:#99ad6a;">hello</span><span style="color:#556633;">&quot;</span><span>);
+</span></code></pre>
+<hr />
+<p>If you store a <strong>string literal</strong> directly into a variable, the data type of that variable will be a reference to a slice of the string with a <code>static lifetime</code>.<br />
+These strings are stored in <code>.rodata</code> (read-only data) directly in the binary code.<br />
+In this case, <code>s2</code> on the <em>stack</em> will be represented by a <strong>fat pointer</strong> (<code>ptr</code> + <code>len</code>).<br />
+<code>ptr</code> will point to a specific range in static memory.</p>
+<pre data-lang="rust" style="background-color:#151515;color:#e8e8d3;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="color:#8fbfdc;">let</span><span> s2: &amp;</span><span style="color:#8fbfdc;">&#39;static str </span><span>= </span><span style="color:#556633;">&quot;</span><span style="color:#99ad6a;">hello</span><span style="color:#556633;">&quot;</span><span>;
+</span><span style="color:#8fbfdc;">let</span><span> ptr: </span><span style="color:#8fbfdc;">*const u8 </span><span>= s2.as_ptr();
+</span></code></pre>
+<hr />
+<p>The <code>str</code> type in Rust is a DST.<br />
+Therefore, you cannot create a variable of type <code>str</code> without using a pointer or reference.</p>
+<ul>
+<li>Instead, you use a <strong>reference</strong> to <code>str</code>, i.e. <code>&amp;str</code>, which is a <strong>fat pointer</strong>(<code>ptr</code> + <code>len</code>).<br />
+Thus, <code>&amp;str</code> has a known size at compile time and can be safely allocated on the <em>stack</em>.</li>
+</ul>
+<p>It is possible to get a part of the String using <strong>ranges</strong>, but this will return a slice of the String.</p>
+<ul>
+<li>Since the size of the String is not known at <code>compile-time</code>, it cannot be pushed onto the function <em>stack</em>, and Rust does not allow you to assign it to a variable.<br />
+Therefore, you must use a <strong>reference</strong> here as well.</li>
+</ul>
+<p>This slice does not copy the data, but only <strong>references it</strong>, and includes information about the length of the slice.</p>
+<pre data-lang="rust" style="background-color:#151515;color:#e8e8d3;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="color:#8fbfdc;">let</span><span> s1: &amp;</span><span style="color:#8fbfdc;">str </span><span>= &amp;s[</span><span style="color:#cf6a4c;">1</span><span>..</span><span style="color:#cf6a4c;">3</span><span>];;
+</span></code></pre>
+<h3 id="struct">  Struct</h3>
+<p>There are <strong>3 types</strong> of structs in Rust</p>
+<ul>
+<li>Struct with named fields.</li>
+<li>Tuple - Struct without named fields.</li>
+<li>Unit-like Struct - <strong>ZST</strong>.
+<strong>Struct</strong> have a memory representation similar to <strong>tuple</strong><br />
+A struct with named fields puts <code>pointers</code> and <code>copy types</code> next to each other on the <em>stack</em>.<br />
+If the vector inside the nums field has elements, they will be allocated on the <em>heap</em>.<br />
+
+
+
+    
+    
+
+
+
+    
+    
+
+
+
+<figure class="center">
+    <a href="https://maltsev-dev.github.io/processed_images/rust_memory_struct.f914b82f0dd3a2dc.png">
+        <img src="https://maltsev-dev.github.io/processed_images/rust_memory_struct.1302d0e8e4637836.webp"   />
+    </a>
+    
+</figure>
+</li>
+</ul>
+<h3 id="enum">  Enum</h3>
+<p>Rust has several different syntaxes for enums.</p>
+<ul>
+<li>C-style Enum
+In memory, they are stored as integers starting with <code>tag 0</code>.<br />
+The compiler will choose the smallest integer type that can fit the largest of the tags.</li>
+</ul>
+<pre data-lang="rust" style="background-color:#151515;color:#e8e8d3;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="color:#8fbfdc;">enum </span><span style="color:#ffb964;">HTTPStatuses</span><span>{
+</span><span>	</span><span style="color:#7697d6;">OK</span><span>,
+</span><span>	NoFound,
+</span><span>}
+</span></code></pre>
+<ul>
+<li>An enum with <strong>similar</strong> variant values type.<br />
+The maximum integer value <strong>404</strong> would require <code>2 bytes</code> to store, so each variant of the enumeration would weigh <code>2 bytes</code> due to alignment.</li>
+</ul>
+<pre data-lang="rust" style="background-color:#151515;color:#e8e8d3;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="color:#8fbfdc;">enum </span><span style="color:#ffb964;">HTTPStatuses</span><span>{
+</span><span>	</span><span style="color:#7697d6;">OK </span><span>= </span><span style="color:#cf6a4c;">200</span><span>,
+</span><span>	NoFound = </span><span style="color:#cf6a4c;">404</span><span>,
+</span><span>}
+</span></code></pre>
+<ul>
+<li>An enum with <strong>different</strong> variant values type.
+A variant integer tag (0, 1, 2...) must also be stored in memory<br />
+All variants must be the same size, so alignment will be by the <strong>largest</strong> variant.</li>
+</ul>
+<pre data-lang="rust" style="background-color:#151515;color:#e8e8d3;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="color:#8fbfdc;">enum </span><span style="color:#ffb964;">Data</span><span>{
+</span><span>	Empty,
+</span><span>	Number(</span><span style="color:#8fbfdc;">i32</span><span>),
+</span><span>	Array(Vec&lt;</span><span style="color:#8fbfdc;">i32</span><span>&gt;),
+</span><span>}
+</span></code></pre>
+
+
+
+    
+    
+
+
+
+    
+    
+
+
+
+<figure class="center">
+    <a href="https://maltsev-dev.github.io/processed_images/rust_memory_enum.c8ece25234ed3307.png">
+        <img src="https://maltsev-dev.github.io/processed_images/rust_memory_enum.2d8a133c6aed338e.webp"   />
+    </a>
+    
+</figure>
+<h3 id="enum-with-box">  Enum with Box</h3>
+<p><code>Box</code> is a pointer to some memory allocated on the <em>heap</em>.<br />
+The most obvious way to optimize the memory of the entire enum is to limit the size of its maximum variant, instead of storing the vector directly in Array, you can store a <code>pointer to vector</code>.</p>
+<pre data-lang="rust" style="background-color:#151515;color:#e8e8d3;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="color:#8fbfdc;">enum </span><span style="color:#ffb964;">Data</span><span>{
+</span><span>	Empty,
+</span><span>	Number(</span><span style="color:#8fbfdc;">i32</span><span>),
+</span><span>	Array(Box&lt;Vec&lt;</span><span style="color:#8fbfdc;">i32</span><span>&gt;&gt;),
+</span><span>}
+</span></code></pre>
+<p>In this case, the amount of memory required for this option is halved.<br />
+
+
+
+    
+    
+
+
+
+    
+    
+
+
+
+<figure class="center">
+    <a href="https://maltsev-dev.github.io/processed_images/rust_memory_enum_with_box.4102dbd0c29b762a.png">
+        <img src="https://maltsev-dev.github.io/processed_images/rust_memory_enum_with_box.3e23d27c06d7a4ee.webp"   />
+    </a>
+    
+</figure>
+</p>
+<p>In the <em>stack</em> of the function call, memory will be allocated for <code>ptr</code>, to store the memory address to which the vector points.<br />
+The Heap will store (<code>ptr</code>, <code>cap</code>, <code>len</code>), necessary for representing the vector. At the same time, if the vector contains values, they will also be stored in the <em>heap</em>.</p>
+<h3 id="option-enum">  Option Enum</h3>
+<p><code>None</code> variant does <strong>not store any values</strong>, only the integer tag <code>0</code><br />
+<code>Some</code> variant <strong>stores the actual data</strong> along with the integer tag <code>1</code></p>
+<ul>
+<li>If the value stored in <code>Some</code> is a <code>Box</code> or other similar smart pointer.<br />
+Assuming that Smart Pointers can't be null (<strong>a null pointer is forbidden</strong> - it would point to nowhere) - <code>Some(Box::new(42))</code> can be represented as a single <code>ptr</code>, without the need to store an integer tag. The compiler reserves the value <code>0</code> as the code for <code>Option::None</code> in <code>Option&lt;Box&lt;T&gt;&gt;</code>, and treats all non-null pointers as <code>Option::Some(boxed_value)</code></li>
+</ul>
+<p>Rust uses the <strong>null pointer optimization</strong> for pointer types that can never represent the value 0 (null).<br />
+This allows <code>Option&lt;Box&lt;T&gt;&gt;</code> to take up exactly the same amount of memory as <code>Box&lt;T&gt;</code>, because the value <code>None</code> is encoded in a null pointer, while <code>Some(ptr)</code> is encoded in a non-null pointer to data.</p>
+<h3 id="copy-vs-move">  Copy vs Move</h3>
+<p>For <code>primitive types</code>, assigning one variable a value to another variable makes a <code>bit-by-bit</code> copies of those values.<br />
+This is possible because the values ​​of those variables can be represented using only bytes on the <em>stack</em>.</p>
+<p>For values ​​that require <em>heap</em> allocation. For example, a vector of heap-allocated strings.</p>
+<ul>
+<li>each string is represented by 3 <code>usize</code> (<code>ptr</code>, <code>cap</code>, <code>len</code>)</li>
+<li>in the memory allocated for the vector on the <em>heap</em>, these <strong>string headers</strong> will be placed one after another.</li>
+<li>the actual bytes used to store the string values ​​will be allocated somewhere else in the <em>heap</em>, and pointers to this memory will be stored in the <strong>string headers</strong>.</li>
+<li>in the <code>stack-frame</code>, will be allocated 3 <code>usize</code> for the variable <code>v</code> to store the vector header. This variable is responsible for clearing the memory on the <em>heap</em>, this happens in the <code>drop()</code> function at the end of the scope.</li>
+</ul>
+
+
+
+    
+    
+
+
+
+    
+    
+
+
+
+<figure class="center">
+    <a href="https://maltsev-dev.github.io/processed_images/rust_memory_vec_string.d4f4599ab59786f1.png">
+        <img src="https://maltsev-dev.github.io/processed_images/rust_memory_vec_string.fee7343e97d39559.webp"   />
+    </a>
+    
+</figure>
+<p>In the case where it is necessary to assign the value of the vector <code>v</code> to another variable, the ownership is transferred to the new variable and it is now responsible for clearing the allocated memory on the <em>heap</em>. It is written 3 machine words, which represented <code>v</code><br />
+If it is necessary to create a variable that will own a <strong>full copy of the vector data</strong> with a new allocation of data on the <em>heap</em>, it is necessary to explicitly call the <code>clone()</code> method.<br />
+In this case, each variable owns its <strong>own memory area</strong> with the <strong>same data</strong>.</p>
+<h3 id="reference-counter-rc">  Reference Counter (Rc)</h3>
+<p>When you want a <strong>single value</strong> to have <strong>multiple owners</strong>.<br />
+In most cases, you can use regular references to share values, but the problem is that when an owner goes out of scope, you can't use those references anymore.<br />
+Instead, you want <strong>each value</strong> to have a <code>common owner</code> and remove value from memory only when all owners go out of scope.</p>
+<pre data-lang="rust" style="background-color:#151515;color:#e8e8d3;" class="language-rust "><code class="language-rust" data-lang="rust"><span>use std::rc::Rc;
+</span><span>
+</span><span style="color:#8fbfdc;">let</span><span> v: Rc&lt;Vec&lt;String&gt; = </span><span style="color:#8fbfdc;">Rc::</span><span>new(vec![
+</span><span>	&quot;Odin&quot;.to_string,
+</span><span>	&quot;Thor&quot;.to_string,
+</span><span>	&quot;Loki&quot;.to_string,
+</span><span>]);
+</span><span>
+</span><span style="color:#8fbfdc;">let</span><span> v2 = v.clone();
+</span></code></pre>
+
+
+
+    
+    
+
+
+
+    
+    
+
+
+
+<figure class="center">
+    <a href="https://maltsev-dev.github.io/processed_images/rust_memory_rc.a9a661cf107ced22.png">
+        <img src="https://maltsev-dev.github.io/processed_images/rust_memory_rc.b2e942bf4185bc06.webp"   />
+    </a>
+    
+</figure>
+<ul>
+<li>when a vector is wrapped in <code>Rc</code>, the 3 <code>usize</code> that represent the vector headers are allocated on the <em>heap</em> along with extra memory to hold the <code>reference counter</code> to that value.</li>
+<li>on the <em>stack</em> function, the variable <code>v</code> will consist of 1 <code>usize</code>, which will hold the memory allocation address for <code>Rc</code>.</li>
+<li>after that, a new variable <code>v2</code> can be created using the <code>clone()</code> built-in method. This will <strong>increment</strong> the reference counter by <code>1</code>.</li>
+<li>now <code>v</code> and <code>v2</code> are owners of the same data.</li>
+<li>when each owner goes out of scope, the reference counter is decremented, and when it reaches <code>0</code>, all data on the <em>heap</em> is deallocated.</li>
+<li>the value that <code>Rc</code> points to <strong>cannot be changed</strong>.</li>
+</ul>
+<h3 id="send-and-sync"> Send and Sync</h3>
+<p><code>Send</code> marks a type as safe to <strong>share ownership</strong> between threads (i.e. &amp;T is Send)
+<code>Sync</code> marks a type as safe to <strong>share by reference</strong> between threads (i.e. T is Sync)
+<code>Rc</code> - is not send\sync because if multiple threads have <code>Rc</code> - an attempt to increment a shared counter may result in a <code>data race</code>.</p>
+
+
+
+    
+    
+
+
+
+    
+    
+
+
+
+<figure class="center">
+    <a href="https://maltsev-dev.github.io/processed_images/rust_memory_rc_multithread.5cd88cf9b0ad6a74.png">
+        <img src="https://maltsev-dev.github.io/processed_images/rust_memory_rc_multithread.813c055cd9ab6db7.webp"   />
+    </a>
+    
+</figure>
+<h3 id="arc">  Arc</h3>
+<p>If you need <code>shared data between threads</code> - you need to use <code>Atomic Reference Counter (Arc)</code>.<br />
+It works the same way as <code>Rc</code>, but changing the counter is an <strong>atomic operation</strong>, which can be safely performed from multiple threads.<br />
+However, you have to pay a little performance for atomicity.<br />
+By default, <code>Arc</code> is immutable, even if multiple threads have a pointer to the same data - they are <strong>not allowed to change it</strong>.<br />
+
+
+
+    
+    
+
+
+
+    
+    
+
+
+
+<figure class="center">
+    <a href="https://maltsev-dev.github.io/processed_images/rust_memory_arc_multithread.b49475bb0be4ffee.png">
+        <img src="https://maltsev-dev.github.io/processed_images/rust_memory_arc_multithread.a4d3d09a31cc0d15.webp"   />
+    </a>
+    
+</figure>
+</p>
+<h3 id="mutex">  Mutex</h3>
+<p>If you need <code>mutable access</code> to shared data between multiple threads - you can wrap <code>Mutex</code> inside <code>Arc</code>.<br />
+Now, if two threads try to access the same data, they will first need to get a <code>lock on that data.</code><br />
+And only one thread will be able to access the data to modify it.</p>
+<pre data-lang="rust" style="background-color:#151515;color:#e8e8d3;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="color:#8fbfdc;">let</span><span> data: Arc&lt;Mutex&lt;</span><span style="color:#8fbfdc;">i32</span><span>&gt;&gt; = Arc::new(Mutex::new(</span><span style="color:#cf6a4c;">0</span><span>));
+</span><span>{
+</span><span>    </span><span style="color:#8fbfdc;">let mut</span><span> locked_data = data.lock().unwrap();
+</span><span>    *locked_data += </span><span style="color:#cf6a4c;">1</span><span>;
+</span><span>} 
+</span></code></pre>
+<h3 id="trait-object">  Trait Object</h3>
+<p>A pointer to a trait type is called a <code>Trait Object</code><br />
+There are several ways to convert a concrete type to a <code>Trait Object</code>, both of which convert a <code>Vec&lt;u8&gt;</code> to an object that implements trait <code>Write</code>.</p>
+<ul>
+<li>Assigning a variable to a variable <code>w</code></li>
+</ul>
+<pre data-lang="rust" style="background-color:#151515;color:#e8e8d3;" class="language-rust "><code class="language-rust" data-lang="rust"><span>use std::io::Write;
+</span><span>
+</span><span>    </span><span style="color:#8fbfdc;">let mut</span><span> buffer: Vec&lt;</span><span style="color:#8fbfdc;">u8</span><span>&gt; = vec![];
+</span><span>    </span><span style="color:#8fbfdc;">let</span><span> w: &amp;</span><span style="color:#8fbfdc;">mut</span><span> dyn Write = &amp;</span><span style="color:#8fbfdc;">mut</span><span> buffer;
+</span></code></pre>
+<ul>
+<li>Conversion occurs when passing a concrete type to a function that takes a <code>Trait Object</code></li>
+</ul>
+<pre data-lang="rust" style="background-color:#151515;color:#e8e8d3;" class="language-rust "><code class="language-rust" data-lang="rust"><span>    </span><span style="color:#8fbfdc;">fn </span><span style="color:#fad07a;">main</span><span>() {
+</span><span>        </span><span style="color:#8fbfdc;">let mut</span><span> buffer: Vec&lt;</span><span style="color:#8fbfdc;">u8</span><span>&gt; = vec![];
+</span><span>        writer(&amp;</span><span style="color:#8fbfdc;">mut</span><span> buffer);
+</span><span>    }
+</span><span>
+</span><span>    </span><span style="color:#8fbfdc;">fn </span><span style="color:#fad07a;">writer</span><span>(</span><span style="color:#ffb964;">w</span><span>: &amp;</span><span style="color:#8fbfdc;">mut</span><span> dyn Write){ ... }
+</span></code></pre>
+<p>In memory, <code>Trait Object</code> is a <strong>fat pointer</strong> of two pointers (<code>data pointer</code> + <code>vtable pointer</code>)</p>
+
+
+
+    
+    
+
+
+
+    
+    
+
+
+
+<figure class="center">
+    <a href="https://maltsev-dev.github.io/processed_images/rust_memory_fat_pointer.d9e4fe98c1853bea.png">
+        <img src="https://maltsev-dev.github.io/processed_images/rust_memory_fat_pointer.319e639f8d53f677.webp"   />
+    </a>
+    
+</figure>
+<ul>
+<li><code>data pointer</code> - a pointer to the actual values, in this case, a pointer to a <code>Vec&lt;u8&gt;</code>.</li>
+<li><code>vtable pointer</code> - a pointer to a table representing the value type. The table is generated once at compile time and is shared by <strong>all objects of that type</strong>.</li>
+<li>Table points to machine code of functions that must be present for the type to be <code>Writer</code>.</li>
+<li>Rust automatically calls the table when calling a method on <code>Trait Object</code>.</li>
+</ul>
+<p>Rust can convert normal references to <code>Trait Object</code><br />
+The same can be done with smart pointers <code>Box</code>, <code>Rc</code>, <code>Arc</code> ...<br />
+In these cases - they also become <strong>fat pointer</strong> - type <code>Box&lt;dyn Write&gt;</code> means that the value has a Writer on the <em>heap</em>.</p>
+
+        </div>
+
+        
+        <div class="pagination">
+            <div class="pagination__title">
+                <span class="pagination__title-h">Read other posts?</span>
+                <hr />
+            </div>
+            <div class="pagination__buttons">
+                    <span class="button previous">
+                        <a href="https://maltsev-dev.github.io/rs-to-bin-emb/">
+                            <span class="button__icon">←</span>&nbsp;
+                            <span class="button__text">From Rust Source to Embedded Executable: A Deep Dive into the Compilation Process for Embedded Systems</span>
+                        </a>
+                    </span>
+                
+                
+                    <span class="button next">
+                        <a href="https://maltsev-dev.github.io/emb-gpio/">
+                            <span class="button__text">GPIO (General Purpose Input &#x2F; Output)</span>&nbsp;
+                            <span class="button__icon">→</span>
+                        </a>
+                    </span>
+                </div>
+        </div>
+    
+    </div>
+
+    </div>
+
+
+<footer class="footer">
+    <div class="footer__inner">
+            <div class="copyright copyright--user"><div class="copyright">
+    <span>© 2026 A.Maltsev</span>
+    <span class="copyright-theme-sep"></span>
+    <span><img src="https://visitor-badge.laobi.icu/badge?page_id=maltsev-dev.github.io&right_color=orange" alt="Visitors"></span>
+</div>
+</div>
+        </div>
+</footer>
+
+
+</div>
+</body>
+
+</html>

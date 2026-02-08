@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+    <title>dev_stories</title>
+    
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+    <meta name="robots" content="noodp"/>
+
+    <link rel="stylesheet" href="https://maltsev-dev.github.io/style.css">
+    <link rel="stylesheet" href="https://maltsev-dev.github.io/color/orange.css">
+
+        <link rel="stylesheet" href="https://maltsev-dev.github.io/color/background_blue.css">
+    
+    <link rel="stylesheet" href="https://maltsev-dev.github.io/font-quicksand.css">
+
+
+    
+        <link rel="shortcut icon" type="image/png" href="/favicon.png">
+    
+    <meta property="og:site_name" content="dev_stories"><meta property="og:type" content="article">
+    <meta property="og:title" content="📄 HTML Scraper"><meta property="og:url" content="https://maltsev-dev.github.io/html-scrapper/"><meta property="og:image" content="https://github.com/maltsev-dev/favicon.png">
+
+    </head>
+
+<body class="">
+<div class="container">
+    
+    <header class="header">
+        <div class="header__inner">
+            <div class="header__logo">
+                    
+                <a href="https://maltsev-dev.github.io" style="text-decoration: none;">
+                    <div class="logo">
+                      
+                            busy hands == happy heart
+                        
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        
+        <nav class="menu">
+            <ul class="menu__inner">
+                <li><a href="https://maltsev-dev.github.io/archive">archive</a></li>
+            
+                <li><a href="https://maltsev-dev.github.io/tags/project/">projects</a></li>
+            
+                <li><a href="https://maltsev-dev.github.io/about">about me</a></li>
+            </ul>
+        </nav>
+    
+    
+        
+    </header>
+    
+
+    <div class="content">
+        
+    <div class="post">
+        
+    <h1 class="post-title"><a href="https://maltsev-dev.github.io/html-scrapper/">📄 HTML Scraper</a></h1>
+    <div class="post-meta-inline">
+        
+    <span class="post-date">
+            2023-06-26
+        </span>
+
+    </div>
+
+    
+        <span class="post-tags-inline">
+                :: tags:&nbsp;
+                <a class="post-tag" href="https://maltsev-dev.github.io/tags/java/">#java</a>&nbsp;
+                <a class="post-tag" href="https://maltsev-dev.github.io/tags/spring/">#spring</a>&nbsp;
+                <a class="post-tag" href="https://maltsev-dev.github.io/tags/project/">#project</a></span>
+    
+
+        
+        <div class="post-content">
+            <p><strong>A Spring Boot application for scraping and converting HTML data into an Excel spreadsheet.</strong></p>
+<span id="continue-reading"></span>
+<hr />
+<p><a href="https://github.com/maltsev-dev/html_scraper_template">📚 GitHub Repository</a></p>
+<p>This project demonstrates a complete pipeline of working with web data using Java and Spring Boot. It fetches raw HTML from a given URL, extracts relevant information, maps it to structured Java objects (POJOs), and writes the results into an <code>.xls</code> Excel file.</p>
+<hr />
+<h2 id="gear-tech-stack">⚙️ Tech Stack</h2>
+<ul>
+<li><strong>Spring Boot</strong> – main application framework</li>
+<li><strong>Jsoup</strong> – HTML parsing</li>
+<li><strong>Apache POI</strong> – Excel file generation</li>
+<li><strong>Spring Configuration</strong> – flexible setup via <code>application.properties</code></li>
+</ul>
+<hr />
+<h2 id="rocket-features">🚀 Features</h2>
+<ol>
+<li>
+<p><strong>Fetch HTML content</strong>
+Makes a <code>GET</code> request to the target URL and retrieves the HTML response.</p>
+</li>
+<li>
+<p><strong>Parse HTML with Jsoup</strong>
+Uses Jsoup to create a <code>Document</code> object and navigate the DOM.</p>
+</li>
+<li>
+<p><strong>Map to POJO objects</strong>
+Extracted data is converted into Java classes for easy manipulation.</p>
+</li>
+<li>
+<p><strong>Export to Excel (XLS)</strong>
+Generates a formatted <code>.xls</code> spreadsheet using Apache POI.</p>
+</li>
+<li>
+<p><strong>Configurable via properties file</strong>
+Keywords and target URL can be defined in <code>application.properties</code>.</p>
+</li>
+</ol>
+<hr />
+<h2 id="tools-how-to-run">🛠️ How to Run</h2>
+<ol>
+<li>Clone the repository:</li>
+</ol>
+<pre data-lang="bash" style="background-color:#151515;color:#e8e8d3;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#ffb964;">git</span><span> clone https://github.com/maltsev-dev/html_scraper_template
+</span><span>cd html_scraper_template
+</span></code></pre>
+<ol start="2">
+<li>Configure the app in <code>src/main/resources/application.properties</code>:</li>
+</ol>
+<pre data-lang="properties" style="background-color:#151515;color:#e8e8d3;" class="language-properties "><code class="language-properties" data-lang="properties"><span style="color:#ffb964;">target.url</span><span>=</span><span style="color:#99ad6a;">https://example.com
+</span><span style="color:#ffb964;">scraper.keywords</span><span>=</span><span style="color:#99ad6a;">Item,Price,Details
+</span></code></pre>
+<ol start="3">
+<li>Run the application:</li>
+</ol>
+<pre data-lang="bash" style="background-color:#151515;color:#e8e8d3;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#ffb964;">./mvnw</span><span> spring-boot:run
+</span></code></pre>
+<ol start="4">
+<li>The output Excel file (<code>output.xls</code>) will be generated in the project root.</li>
+</ol>
+<hr />
+<h2 id="white-check-mark-benefits">✅ Benefits</h2>
+<ul>
+<li>Fully based on the Java ecosystem</li>
+<li>Requires no browser automation or WebDriver</li>
+<li>Easily customizable for different scraping needs</li>
+<li>Simple to set up and extend</li>
+</ul>
+<hr />
+<h2 id="page-facing-up-license">📄 License</h2>
+<p>This project is licensed under the <strong>MIT License</strong>.</p>
+
+        </div>
+
+        
+    </div>
+
+    </div>
+
+
+<footer class="footer">
+    <div class="footer__inner">
+            <div class="copyright copyright--user"><div class="copyright">
+    <span>© 2026 A.Maltsev</span>
+    <span class="copyright-theme-sep"></span>
+    <span><img src="https://visitor-badge.laobi.icu/badge?page_id=maltsev-dev.github.io&right_color=orange" alt="Visitors"></span>
+</div>
+</div>
+        </div>
+</footer>
+
+
+</div>
+</body>
+
+</html>

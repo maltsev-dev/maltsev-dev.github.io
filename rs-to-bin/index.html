@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+    <title>dev_stories</title>
+    
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+    <meta name="robots" content="noodp"/>
+
+    <link rel="stylesheet" href="https://maltsev-dev.github.io/style.css">
+    <link rel="stylesheet" href="https://maltsev-dev.github.io/color/orange.css">
+
+        <link rel="stylesheet" href="https://maltsev-dev.github.io/color/background_blue.css">
+    
+    <link rel="stylesheet" href="https://maltsev-dev.github.io/font-quicksand.css">
+
+
+    
+        <link rel="shortcut icon" type="image/png" href="/favicon.png">
+    
+    <meta property="og:site_name" content="dev_stories"><meta property="og:type" content="article">
+    <meta property="og:title" content="From Rust Source Code to Optimized Executable: Inside the Rust Compiler Pipeline"><meta property="og:url" content="https://maltsev-dev.github.io/rs-to-bin/"><meta property="og:image" content="https://github.com/maltsev-dev/favicon.png">
+
+    </head>
+
+<body class="">
+<div class="container">
+    
+    <header class="header">
+        <div class="header__inner">
+            <div class="header__logo">
+                    
+                <a href="https://maltsev-dev.github.io" style="text-decoration: none;">
+                    <div class="logo">
+                      
+                            busy hands == happy heart
+                        
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        
+        <nav class="menu">
+            <ul class="menu__inner">
+                <li><a href="https://maltsev-dev.github.io/archive">archive</a></li>
+            
+                <li><a href="https://maltsev-dev.github.io/tags/project/">projects</a></li>
+            
+                <li><a href="https://maltsev-dev.github.io/about">about me</a></li>
+            </ul>
+        </nav>
+    
+    
+        
+    </header>
+    
+
+    <div class="content">
+        
+    <div class="post">
+        
+    <h1 class="post-title"><a href="https://maltsev-dev.github.io/rs-to-bin/">From Rust Source Code to Optimized Executable: Inside the Rust Compiler Pipeline</a></h1>
+    <div class="post-meta-inline">
+        
+    <span class="post-date">
+            2025-05-27
+        </span>
+
+    </div>
+
+    
+        <span class="post-tags-inline">
+                :: tags:&nbsp;
+                <a class="post-tag" href="https://maltsev-dev.github.io/tags/rust/">#rust</a>&nbsp;
+                <a class="post-tag" href="https://maltsev-dev.github.io/tags/compilers/">#compilers</a>&nbsp;
+                <a class="post-tag" href="https://maltsev-dev.github.io/tags/aot/">#aot</a></span>
+    
+
+        
+        <div class="post-content">
+            <p>Rust’s compilation process is a sophisticated journey that converts human-readable source code into highly efficient machine-executable binaries.<br />
+This multi-stage pipeline ensures Rust’s guarantees of memory safety, zero-cost abstractions, and concurrency without sacrificing performance.</p>
+<p>🟠 In this article, we’ll explore each key step, from tokenization and macro expansion to borrow checking, LLVM optimizations, and final linking—revealing how Rust transforms your code into a reliable executable.</p>
+<span id="continue-reading"></span>
+<hr />
+<h3 id="i-initial-code-processing-and-abstract-representation">    I. Initial code processing and abstract representation</h3>
+<ul>
+<li>
+<p><strong>A. Lexical Analysis (Lexing): Tokenization of Source Code</strong><br />
+The very first step in the compilation pipeline is <em>lexical analysis</em>, or lexing.<br />
+The compiler takes the program as raw <code>Unicode UTF-8</code> text and converts it into a more convenient data format: <code>TokenStream</code>.</p>
+<p>This crutial step is mainly implemented in the <a href="https://doc.rust-lang.org/stable/nightly-rustc/rustc_lexer/index.html"><code>rustc_lexer</code></a> crate. The lexer's job is to identify and categorize the various "words" or "symbols" (lexemes) in the code, including keywords (e.g. <code>int</code>, <code>if</code>), identifiers (e.g. <code>x</code>, <code>y</code>), numeric literals (e.g. <code>5</code>, <code>10</code>), operators (e.g. <code>=</code>, <code>+</code>), and punctuation marks (e.g. <code>;</code>, <code>(</code>, <code>{</code>).  </p>
+<p>Procedural macros that operate on <code>TokenStream</code> need access to the underlying token structure, including their ranges, to generate correct and properly attributed code. By preserving this level of detail from the very beginning, <code>rustc</code> lays a solid foundation for advanced tooling and enables the sophisticated compile-time code generation that is the hallmark of the Rust language.</p>
+</li>
+<li>
+<p><strong>B. Syntax analysis (parsing): Building an Abstract Syntax Tree (AST)</strong><br />
+The stream of tokens produced by the lexer is then passed to the parser, which transforms this <em>linear sequence</em> into a <em>hierarchical</em>, tree-like structure known as the Abstract Syntax Tree (AST).<br />
+Each node in the AST directly represents a syntactic construct in a Rust program (e.g., an expression, a statement, a function definition). Each AST node is associated with a <code>Span</code>, which links it to its original location in the source text, and a <code>NodeId</code>.</p>
+<p>The <code>rustc</code> parser, implemented in the <a href="https://doc.rust-lang.org/beta/nightly-rustc/rustc_parse/index.html"><code>rustc_parse</code></a> crate, uses a recursive descent (top-down) approach to parsing.</p>
+<p>The AST is designed to represent "almost exactly what the user wrote". The <a href="https://doc.rust-lang.org/beta/nightly-rustc/rustc_ast/index.html"><code>rustc_ast</code></a> crate defines various types of AST nodes, including fundamental elements such as <code>Crate</code> (the root compilation block), <code>Expr</code> (expressions), <code>Pat</code> (templates), <code>Item</code> (top-level elements such as functions, structs), <code>Stmt</code> (operators), <code>FnDecl</code> (function declarations), <code>Generics</code> (generic parameters), <code>Local</code> (local <code>let</code> bindings), <code>MacCall</code> (macro calls), and <code>Path</code> (names/paths in code).</p>
+<p>The AST serves as the primary input for macro expansion. Macros, especially the declarative <code>macro_rules!</code>, work by matching patterns against the syntactic structure of the input code. If the AST were already heavily desugared or transformed, macros would lack the rich syntactic context needed to perform their transformations efficiently.</p>
+</li>
+<li>
+<p><strong>C. Early Semantic Transitions: Macro Expansion and Name Resolution</strong><br />
+Macro expansion and name resolution are critical early semantic transition that are closely coupled with the lexical and syntactic analysis steps. They are performed concurrently or iteratively as the compiler builds the AST.</p>
+<p><strong>Macro expansion:</strong> Macros are a key metaprogramming feature in Rust, allowing code to generate other code at compile time, and dynamically modify the structure of the source code. It is important to note that macros are expanded <em>before</em> the compiler has fully interpreted the semantic meaning of the code.</p>
+<p>The macro expansion happens <em>at</em> parse time. When the regular Rust parser encounters macro calls, it defers their contents. Later, but still before a full name resolution pass, these macros are expanded. For declarative <code>macro_rules!</code>, this involves matching patterns against token trees and <strong>replacing them with generated code</strong>. Procedural macros, on the other hand, take a <code>TokenStream</code> as input, process it programmatically, <strong>and produce a new</strong> <code>TokenStream</code> as output. The resulting <code>TokenStream</code> is then re-parsed and integrated back into the AST. This expansion process can be iterative, since the newly generated code may contain further macro calls that need to be expanded.  </p>
+<p><strong>Name Resolution:</strong> Name resolution is the process of linking all symbolic references in the code (e.g. variables, types, functions, modules, macros, lifetimes) to their final declarations.</p>
+<p>Name resolution in Rust is a two-phase process:  </p>
+<ol>
+<li>
+<p><strong>Gathering phase (early resolution):</strong> This phase is performed during macro expansion. For each crate, a special structure called <code>CrateDefMap</code> is built. This structure stores all the elements available in the module. This is achieved using a "fixed-point iteration algorithm" where macros are iteratively expanded and imports are resolved until no further changes occur. This partial resolution is necessary to determine which macros need to be expanded at all. The fixed-point iteration algorithm used during the gathering phase for <code>CrateDefMap</code> <strong>is not incremental</strong> in nature. This means that any change that may affect name resolution (such as adding a new element) requires rebuilding the <code>CrateDefMap</code>.</p>
+</li>
+<li>
+<p><strong>Resolution phase (full resolution):</strong> After the entire AST (with all expanded macros) has been built, a full name resolution pass (<code>rustc_resolve::late</code>) traverses the syntax tree. It establishes links from each name in the source code to its corresponding definition.</p>
+</li>
+</ol>
+<p><strong>AST Checking and Early Linting:</strong> <em>At the same time</em> as macro expansion and name resolution, the compiler performs AST checking and early linting. AST checking is a separate pass that performs simple structural checks on the tree, ensuring that each element is in the correct state according to the basic rules of the language (for example, checking that a function has at most <code>u16::MAX</code> parameters). These checks are syntactic and do not involve complex type analysis or full name resolution. Early linting catches simple, common problems before deeper semantic analysis begins. </p>
+<p>To expand a macro, the compiler first needs to determine <em>which</em> macro is being called (which requires macro name resolution), and then process its arguments, which themselves may contain unresolved names or even other macro calls. This creates a circular dependency: name resolution requires the expanded code, but macro expansion depends on some level of name resolution. The "fixed-point iteration algorithm" is a solution to this dependency: the compiler repeatedly performs partial name resolution and macro expansion until no new macros are found and all top-level imports are resolved. This ensures that all "source code" (including all generated code) is fully formed and all top-level names are resolved before the compiler moves on to deeper semantic analysis.</p>
+<p>The "source code" that subsequent stages of the compiler operate on is not the literal text written by the user, but a <strong>fully expanded and resolved version</strong>. This allows for the rich abstractions and domain-specific language (DSL) features seen in Rust (e.g. <code>println!</code>, <code>vec!</code>, <code>#[derive]</code> macros).</p>
+</li>
+</ul>
+<hr />
+<h3 id="ii-high-level-intermediate-representation-hir-and-semantic-analysis">    II. High-level Intermediate Representation (HIR) and semantic analysis</h3>
+<p>The next step is for the compiler to transform the concrete AST into a more abstract High-Level Intermediate Representation (HIR).<br />
+This step focuses on desugaring syntactic constructs and performing basic semantic analysis, including <strong>type checking</strong>, <strong>type inference</strong>, and <strong>trait resolution</strong>.</p>
+<ul>
+<li>
+<p><strong>A. Transformation to HIR: Desugaring of syntactic constructions</strong></p>
+<p>The next major transformation in the pipeline involves converting AST to HIR.<br />
+This process is formally called <strong>"lowering"</strong>.  </p>
+<p>HIR is designed as a more "compiler-friendly representation of the AST" and is "the core IR used in most of <code>rustc</code>". Various high-level syntactic conveniences or "syntactic sugar" constructs are extended and formalized into more fundamental, explicit forms.
+The structure of HIR is defined in the <a href="https://doc.rust-lang.org/beta/nightly-rustc/rustc_hir/index.html"><code>rustc_hir</code></a> crate.</p>
+<p>Examples of desugaring include::  </p>
+<ul>
+<li><code>for</code> and <code>while let</code> loops are converted to more basic <code>loop</code> constructs combined with <code>match</code> statements.</li>
+<li><code>if let</code> expressions are converted to equivalent <code>match</code> statements.</li>
+<li>Asynchronous functions (<code>async fn</code>) are also desugared into their basic state machine representations.</li>
+</ul>
+<p>HIR also makes explicit certain implicit elements, such as omitted lifetimes, which are critical for subsequent type checking.</p>
+<p>To handle the instability of <code>NodeIds</code>, HIR introduces more stable identifiers:</p>
+<ul>
+<li><code>DefId</code>: This identifier uniquely identifies a particular definition (e.g. a function, struct, or enum) <strong>across all crates</strong>.<br />
+It consists of a <code>CrateNum</code> (identifying the crate) and a <code>DefIndex</code> (identifying the definition within that crate), providing stability across minor code changes.</li>
+<li><code>LocalDefId</code>: A specialized <code>DefId</code> that is guaranteed to refer to a definition within the currently compiled crate.</li>
+<li><code>HirId</code>: This identifier uniquely identifies any node in the HIR of the <em>current</em> crate. It consists of an <code>owner</code> (usually the <code>DefId</code> of the enclosing element) and a <code>local_id</code> that is unique only within that <code>owner</code>. This hierarchical structure ensures that changes outside the scope of an <code>owner</code> do not affect <code>HirId</code>s within that <code>owner</code>, making <code>HirId</code>s significantly more stable than <code>NodeId</code>s for incremental compilation. </li>
+</ul>
+<p>Transforming code into progressively simpler and more explicit intermediate representations allows each subsequent compilation step to focus on a more limited set of concerns, resulting in a more modular, maintainable, and ultimately more reliable compiler.</p>
+</li>
+<li>
+<p><strong>B. Providing a Type System: Type Inference, Type Checking, and Trait Resolution</strong></p>
+<p>When a program is converted to HIR, the <code>rustc</code> compiler performs basic semantic analysis to provide a robust Rust type system. This includes type inference, type checking, and trait resolution.</p>
+<p><strong>Type Inference:</strong> Rust's type system allows the compiler to automatically infer the type of a value based on the context in which it is used. Rust uses the <a href="https://en.wikipedia.org/wiki/Hindley%E2%80%93Milner_type_system">Hindley-Milner type inference algorithm</a>, which operates on the principle of <em>unification</em>. The compiler <strong>collects type constraints</strong> from the code and attempts to unify them to determine concrete types.</p>
+<p><strong>Type Checking:</strong> After type inference, the compiler performs type checking. This rigorous process verifies the type safety, correctness, and consistency of the entire program. It involves converting the types identified in HIR (<code>hir::Ty</code>) to the compiler's internal, canonical representation of types (<code>Ty&lt;'tcx&gt;</code>). This step ensures that all operations <strong>are performed on compatible types</strong>, preventing a large subset of runtime errors such as calling methods on incorrect types or performing arithmetic operations on incompatible data.</p>
+<p><strong>Trait Resolution:</strong> Trait resolution is an integral part of Rust's type system, particularly for its unique approach to polymorphism and generic programming. This process involves mapping a concrete <code>impl</code> (implementation) to each <code>trait</code> reference. Trait resolution ensures that all required trait methods are available on a given type, and that method calls are dispatched correctly, whether through <strong>static</strong> or <strong>dynamic</strong> means. This is how Rust resolves generic constraints and determines concrete method implementations at compile time.  </p>
+<p>This design decision is a cornerstone of Rust's "zero-cost abstractions" philosophy. The "cost" of type safety and powerful generics is mostly paid at compile time, not runtime. This means that Rust programs can achieve performance levels comparable to C/C++, while providing much stronger guarantees against common programming errors.<br />
+The combination of early desugaring, comprehensive type checking, and robust trait resolution on HIR forms a solid foundation for later, even more sophisticated analyses, such as borrow checking.</p>
+</li>
+</ul>
+<hr />
+<h3 id="iii-middle-level-intermediate-representation-mir-and-basic-security-checks">    III. Middle-level Intermediate Representation (MIR) and Basic Security Checks</h3>
+<p>This step introduces MIR, a highly simplified control flow graph-based representation that is the basis for Rust's unique memory safety guarantees, in particular borrow checking, as well as various compiler optimizations.</p>
+<ul>
+<li>
+<p><strong>A. Converting to MIR: Generating a Control Flow Graph</strong></p>
+<p><strong>HIR</strong> is converted to MIR. This downgrade often involves an intermediate step via <strong>Typed HIR</strong> (THIR), which is an even more desugared and fully typed version of HIR, making subsequent conversion to MIR easier.</p>
+<p><strong>MIR</strong> — is a radically simplified and explicit form of Rust code, specifically designed to perform <strong>flow-sensitive safety checks</strong> (in particular, borrow checking), as well as various compiler optimizations and constant computation. Its key characteristics are fundamental to its purpose:  </p>
+<ul>
+<li><strong>Basic Control Flow Graph (CFG):</strong> MIR represents a program as a Control Flow Graph <a href="https://en.wikipedia.org/wiki/Control-flow_graph">CFG</a>, a directed graph consisting of "basic blocks" connected by control flow edges. Each basic block contains a sequence of simple statements that are executed without jumping, ending with a single "terminal" instruction that dictates the flow of control (e.g., conditional jumps, function calls). Loops in the source code are explicitly represented as loops within this CFG. </li>
+<li><strong>No nested expressions:</strong> A distinctive feature of MIR is the complete alignment of expressions; complex, nested expressions from the source code are broken down into a sequence of simple, sequential statements.</li>
+<li><strong>Fully explicit types:</strong> Unlike earlier IRs that could have implicit type information, all types in MIR are fully explicit and unambiguous. </li>
+<li><strong>Indexed local variables and locations:</strong> Variables are no longer named by their original names, but by numeric indices (e.g. <code>_1</code>, <code>_2</code>) representing memory locations conceptually allocated on the stack. This includes function arguments, local variables, and temporary values. The special local variable <code>_0</code> is reserved for the return value of a function.</li>
+</ul>
+<p>The radical simplification from HIR to MIR is a fundamental and necessary step. While HIR is high-level and syntactically similar, MIR is a low-level, explicit, and highly structured Control Flow Graph (CFG). The CFG accurately models all possible execution paths, allowing the compiler to track the state of memory locations (e.g. initialized, borrowed, moved) with extreme precision on a per-branch and per-loop basis.</p>
+<p>MIR is often called Rust's "secret sauce" due to its role in enabling borrow checking. Its explicitness and the CFG structure allow the use of "non-lexical lifetimes" (NLLs), which are regions derived from the control flow graph rather than strict lexical scopes, resulting in more flexible and ergonomic borrowing rules for the programmer.</p>
+</li>
+<li>
+<p><strong>B. Borrow Checker: Ensuring Memory Safety</strong></p>
+<p>The borrow checker, implemented in the <a href="https://doc.rust-lang.org/stable/nightly-rustc/rustc_borrowck/index.html"><code>rustc_borrowck</code></a> crate, is perhaps the most distinctive feature of Rust, responsible for ensuring memory safety without using a garbage collector. It works directly with the MIR. Its main responsibilities include:</p>
+<ul>
+<li>Ensure that all variables are initialized before use.</li>
+<li>Prevent values ​​from being moved around again.</li>
+<li>Prevent a value from being moved while it is borrowed.</li>
+<li>Prevent access to a location while it is mutable borrowed, and vice versa (the "one mutable reference OR many immutable references" rule for overlapping scopes).</li>
+</ul>
+<p>The <code>mir_borrowck</code> request serves as the main entry point for the borrow checking process. The main phases include: </p>
+<ol>
+<li><strong>Create Local Copy of MIR:</strong> A local copy of MIR is created for analysis.</li>
+<li><strong>Replace Regions:</strong> All existing regions in MIR are replaced with new output variables.</li>
+<li><strong>Data Flow Analysis:</strong> Various data flow analyses are performed to determine when and what data is moved.</li>
+<li><strong>Second Type Check:</strong> Type checking over MIR determines the constraints between different regions.</li>
+<li><strong>Infer Regions:</strong> The values ​​of each region are computed, identifying the points in the control flow graph where each lifetime should remain valid based on the collected constraints.</li>
+<li><strong>Compute Scope Borrows:</strong> The "scope borrows" at each point in MIR are computed.</li>
+<li><strong>Pass MIR to Report Errors:</strong> A final pass over MIR examines the actions and reports errors if memory safety rules are violated.</li>
+</ol>
+<p>Borrow checking, which works with a precise, flow-sensitive MIR, represents a paradigm shift in memory safety. Instead of relying on runtime garbage collection (with its associated performance overhead and non-determinism) or manual memory management (prone to human errors like use after free or double free), Rust shifts the burden of memory correctness to compile-time static analysis.</p>
+<p>Borrow checking is a major reason for Rust's reputation for reliability and performance. By catching a wide range of memory-related bugs (e.g. data races, dangling pointers, use-after-frees) at compile time, it significantly reduces the need for extensive debugging and testing for memory errors at runtime.<br />
+This <strong>"if it compiles, it works"</strong> philosophy for memory safety allows developers to focus on application logic, resulting in more reliable and maintainable software. The performance benefit comes from the lack of runtime overhead associated with garbage collection or reference counting, making Rust suitable for performance-critical applications where predictability is key.</p>
+</li>
+<li>
+<p><strong>C. MIR Optimizations</strong></p>
+<p>After the critical borrow checking phase, a number of optimization passes are performed on MIR to further improve it before the final code generation phase.</p>
+<p>The key advantage of performing optimizations at the MIR stage is that the MIR is still <em>generalized</em>; it has not yet been <strong>monomorphized</strong>. This means that optimizations applied to the generalized MIR (such as constant propagation) are effective for <em>all</em> future concrete instances of the generalized functions.</p>
+<p>The <a href="https://doc.rust-lang.org/beta/nightly-rustc/rustc_mir_transform/index.html"><code>rustc_mir_transform</code></a> crate contains many of these optimization passes.<br />
+Examples of common MIR optimization passes include: </p>
+<ul>
+<li><code>CleanupPostBorrowck</code>: Removes information from the MIR that was only needed for previous analyses (such as borrow checking) but is no longer needed for code generation.</li>
+<li><code>ConstProp</code> (Constant Propagation): Replaces variable usages with known constant values.</li>
+<li><code>SimplifyCfg</code>: Simplifies the control flow graph. </li>
+</ul>
+<p>These passes are often grouped and executed within specific queries, such as the <code>optimized_mir</code> query, which generates the final optimized MIR for a given definition. The compiler performs optimizations once for the generic code, rather than multiple times for each monomorphized version. This design significantly reduces compilation times for projects with extensive generic code and improves overall efficiency. This makes the overall compilation process more efficient and ensures that LLVM gets a cleaner, more refined IR, reducing its own optimization burden.</p>
+</li>
+</ul>
+<hr />
+<h3 id="iv-backend-code-generation-and-machine-specific-optimizations">    IV. Backend: Code generation and machine-specific optimizations</h3>
+<p>This final major stage of the <code>rustc</code> compiler involves translating the highly optimized MIR into <strong>executable machine code</strong>, using <a href="https://en.wikipedia.org/wiki/LLVM">LLVM</a> for architecture-specific transformations and extensive optimizations.</p>
+<ul>
+<li>
+<p><strong>A. Monomorphization and generation of LLVM IR</strong></p>
+<ul>
+<li>
+<p><strong>Transformation:</strong> The optimized MIR is transformed into LLVM Intermediate Representation (<strong>LLVM IR)</strong>. This is the critical step where "monomorphization" occurs. </p>
+</li>
+<li>
+<p><strong>Monomorphization:</strong> Rust generics are handled via monomorphization, where generic code (e.g. function <code>fn foo&lt;T&gt;(x: T)</code>) is instantiated with concrete types for each unique use (e.g. <code>foo::&lt;i32&gt;</code>, <code>foo::&lt;String&gt;</code>). Monomorphization happens lazily, meaning instances are only generated when they are actually needed and used. The <a href="https://doc.rust-lang.org/beta/nightly-rustc/rustc_monomorphize/collector/index.html"><code>rustc_monomorphize::collector</code></a> module is responsible for discovering all the "monoelements" (functions, methods, closures, static variables, remover glue) that will contribute to code generation for the current crate.</p>
+</li>
+<li>
+<p><strong>LLVM IR:</strong> LLVM IR is a well-defined, platform-independent, and typed assembly language. It is designed to be easily generated by various language frontends (such as <code>rustc</code>, which is essentially an LLVM frontend), and is rich enough that LLVM can perform extensive optimizations on it. LLVM IR can be output in human-readable text format (<code>.ll</code> files) or in a more compact bytecode format (<code>.bc</code> files).</p>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>B. LLVM Optimizations</strong></p>
+<ul>
+<li>
+<p><strong>Extensive optimization passes:</strong> Once Rust code is converted to LLVM IR, LLVM takes over as the primary optimization engine. It performs a rich set of complex, language-independent, and architecture-independent optimization passes: </p>
+<ul>
+<li><strong>Dead code removal:</strong> Removing unreachable code or code that does not affect the program output.</li>
+<li><strong>Constant propagation:</strong> Replacing variables with their constant values ​​where possible.</li>
+<li><strong>Inlining</strong> Replacing function calls with the body of the called function to reduce the overhead of the call and allow for further optimizations.</li>
+<li><strong>Loop optimizations:</strong> Such as loop unrolling, moving invariant code out of loops, and reducing the power of operations. </li>
+</ul>
+</li>
+<li>
+<p><strong>LLVM Debugging:</strong> <code>rustc</code> provides several command-line flags for inspecting and debugging LLVM IR and its optimization passes.
+<code>-C llvm-args</code> (to pass arbitrary arguments to LLVM),
+<code>-Z print-llvm-passes</code> (to print a list of the passes being executed),
+<code>-Z time-llvm-passes</code> (to measure the time spent on each pass), and
+<code>-Z verify-llvm-ir</code> (to verify the correctness of the IR).</p>
+</li>
+</ul>
+<p>Complex, platform-specific code generation and optimization is offloaded to the specialized, high-performance, and widely used LLVM toolchain.</p>
+</li>
+<li>
+<p><strong>C. Generation of machine code and object files</strong></p>
+<ul>
+<li>
+<p><strong>LLVM's Role:</strong> After LLVM has performed its extensive optimizations on LLVM IR, its target-independent code generator transforms this optimized IR into target-specific <strong>machine code</strong>. This process involves several critical subphases: </p>
+<ul>
+<li><strong>Instruction Fetching:</strong> This phase translates the abstract LLVM IR instructions into concrete machine instructions <strong>for the target CPU</strong>. This often involves transforming the IR into a directed acyclic graph [DAG] (https://ericsink.com/vcbe/html/directed_acyclic_graphs.html) of the target instructions.</li>
+<li><strong>Register Allocation:</strong> This is a highly efficient optimization where physical CPU registers are assigned to virtual registers used in the intermediate machine code.</li>
+<li><strong>Instruction Scheduling:</strong> Reorders instructions to optimize pipeline utilization and minimize latency on the target CPU. This is critical to maximizing parallelism within the processor.</li>
+</ul>
+</li>
+<li>
+<p><strong>Output:</strong> The output of this stage is <strong>platform-specific assembler code</strong>, which is then assembled into <strong>object files</strong> (<code>.o</code> or <code>.obj</code> files). Object files contain machine code, data, relocation information, and symbol tables. </p>
+</li>
+</ul>
+<p>These subphases of LLVM code generation are where abstract, optimized IR is translated into concrete, executable instructions tailored to a specific CPU architecture. Register allocation is crutial to performance, since CPU registers are the fastest locations in memory. Instruction scheduling reorders operations to keep the CPU execution units busy, exploiting parallelism within the processor. The resulting object files are self-contained units of compiled code and data, but they are not yet executable. They contain unresolved references to external symbols (such as functions from other compilation units or libraries), which are the job of the linker to resolve.</p>
+<p>This phase is where Rust's "performance" promise is fully realized in hardware. The complexity of LLVM's backend directly translates to highly optimized machine code.</p>
+</li>
+</ul>
+<hr />
+<h3 id="v-linking-building-the-final-executable-file">    V. Linking: Building the final executable file</h3>
+<p>The final stage of the compilation process involves combining all the compiled <strong>object files</strong> and <strong>required libraries</strong> into a single executable binary file or shared library. This is done by the linker.</p>
+<ul>
+<li>
+<p><strong>A. Static vs Dynamic Linking</strong></p>
+<ul>
+<li>
+<p><strong>Major difference:</strong> The main difference is <em>when</em> external deps (e.g. functions from libraries) are resolved. The choice between static and dynamic linking is a critical deployment decision with significant implications.</p>
+</li>
+<li>
+<p><strong>Static linking:</strong> Resolution happens at compile time. All required library code is <strong>built directly into the final executable</strong>. This results in larger, self-contained binaries that do not depend on external library files at runtime. This can make deployment easier ("no guesswork"), but makes patching/hotfixing more difficult.</p>
+</li>
+<li>
+<p><strong>Dynamic linking:</strong> Resolution happens at runtime. The executable <strong>contains references to external libraries</strong> that are loaded into memory when the program starts. This results in smaller binaries and allows multiple programs to share a single copy of the library in memory, saving resources. It also makes it easier to update/patch libraries without recompiling the main application. However, it introduces runtime dependencies and potential <a href="https://en.wikipedia.org/wiki/DLL_hell">DLL hell</a> issues if the required library versions are missing or incompatible on the target system.</p>
+</li>
+<li>
+<p><strong>Rust support:</strong> <code>rustc</code> supports various <code>crate-type</code> options for linking, including</p>
+<ul>
+<li><code>bin</code> (the default executable that links Rust and native dependencies),</li>
+<li><code>dylib</code> (Rust's dynamic library),</li>
+<li><code>staticlib</code> (a static system library), and</li>
+<li><code>cdylib</code> (a dynamic system library for other languages).</li>
+</ul>
+</li>
+</ul>
+<p><code>rlib</code> files are intermediate "Rust static libraries" that contain metadata for future <code>rustc</code> linking.  </p>
+<p>This flexibility in linking options demonstrates Rust's suitability for a wide range of applications, from embedded systems (which often prefer static linking for minimal dependencies) to large-scale services (where dynamic linking can be used for shared components or faster updates).</p>
+</li>
+<li>
+<p><strong>B. Final executable file</strong></p>
+<ul>
+<li>The culmination of this entire pipeline is an executable binary (or shared library).</li>
+</ul>
+<p>This file contains the <strong>machine code</strong>, <strong>data</strong>, and the necessary <strong>metadata</strong> for the operating system to load and execute the program.<br />
+For executables, it includes the entry point (e.g., the <code>main</code> function) where the operating system begins execution. The format of the executable binary is platform-specific (e.g., ELF on Linux, PE/COFF on Windows, Mach-O on macOS).</p>
+<p>Multi-level IRs (AST, HIR, MIR, LLVM IR) allow the compiler to perform specific, targeted analyses and optimizations at the most appropriate level of abstraction, gradually refining the code for machine execution.</p>
+</li>
+</ul>
+<hr />
+<ul>
+<li>
+<p><strong>Table: Comparison of key intermediate representations (AST, HIR, MIR, LLVM IR)</strong></p>
+<p>The following table provides a comparative overview of the main intermediate representations (IRs) in the Rust compilation pipeline. It is intended to clarify the distinguishing characteristics, primary purposes, and transformations associated with each IR, providing a quick reference for understanding the gradual refinement of code representation.</p>
+</li>
+</ul>
+<table><thead><tr><th style="text-align: left">IR Name</th><th style="text-align: left">Input Source</th><th style="text-align: left">Key Points</th><th style="text-align: left">Main Goal/Analysis</th><th style="text-align: left">Example</th><th style="text-align: left">crate/rustc module</th></tr></thead><tbody>
+<tr><td style="text-align: left"><strong>AST</strong></td><td style="text-align: left">Rust source code (text)</td><td style="text-align: left">Accurately reflects user syntax; contains <code>NodeId</code> and <code>Span</code> for linking to source code.</td><td style="text-align: left">Syntax checking; Macro expansion; Initial name resolution.</td><td style="text-align: left">-</td><td style="text-align: left"><code>rustc_ast</code></td></tr>
+<tr><td style="text-align: left"><strong>HIR</strong></td><td style="text-align: left">AST</td><td style="text-align: left">Desugared AST; more compiler-friendly; includes implicit elements (e.g., omitted lifetimes); uses <code>DefId</code>/<code>HirId</code> for stability.</td><td style="text-align: left">Type inference; Type checking; Trait resolution.</td><td style="text-align: left">The <code>for</code> loop is transformed into <code>loop + match</code>.</td><td style="text-align: left"><code>rustc_hir</code></td></tr>
+<tr><td style="text-align: left"><strong>MIR</strong></td><td style="text-align: left">HIR (through THIR)</td><td style="text-align: left">Radically simplified; based on Control Flow Graph (CFG); no nested expressions; explicit types; generic.</td><td style="text-align: left">Checking for borrows; Checking data flow; MIR optimizations; Calculating constants.</td><td style="text-align: left">High-level operations are broken down into basic blocks.</td><td style="text-align: left"><code>rustc_middle/src/mir</code></td></tr>
+<tr><td style="text-align: left"><strong>LLVM IR</strong></td><td style="text-align: left">MIR</td><td style="text-align: left">Typed assembly language; platform independent; rich in LLVM optimizations.</td><td style="text-align: left">Monomorphization; LLVM optimizations; Machine code generation.</td><td style="text-align: left">Generics are transformed into specific instances.</td><td style="text-align: left"><code>rustc_codegen_ssa</code></td></tr>
+</tbody></table>
+
+        </div>
+
+        
+        <div class="pagination">
+            <div class="pagination__title">
+                <span class="pagination__title-h">Read other posts?</span>
+                <hr />
+            </div>
+            <div class="pagination__buttons">
+                    <span class="button previous">
+                        <a href="https://maltsev-dev.github.io/rust-solana-anchor-favorites/">
+                            <span class="button__icon">←</span>&nbsp;
+                            <span class="button__text">📦 On-Chain Key-Value Storage</span>
+                        </a>
+                    </span>
+                
+                
+                    <span class="button next">
+                        <a href="https://maltsev-dev.github.io/basic-electronics-1/">
+                            <span class="button__text">⚛️ Diving into the World of Semiconductors: From Atoms to Crystals</span>&nbsp;
+                            <span class="button__icon">→</span>
+                        </a>
+                    </span>
+                </div>
+        </div>
+    
+    </div>
+
+    </div>
+
+
+<footer class="footer">
+    <div class="footer__inner">
+            <div class="copyright copyright--user"><div class="copyright">
+    <span>© 2026 A.Maltsev</span>
+    <span class="copyright-theme-sep"></span>
+    <span><img src="https://visitor-badge.laobi.icu/badge?page_id=maltsev-dev.github.io&right_color=orange" alt="Visitors"></span>
+</div>
+</div>
+        </div>
+</footer>
+
+
+</div>
+</body>
+
+</html>

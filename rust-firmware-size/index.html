@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+    <title>dev_stories</title>
+    
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+    <meta name="robots" content="noodp"/>
+
+    <link rel="stylesheet" href="https://maltsev-dev.github.io/style.css">
+    <link rel="stylesheet" href="https://maltsev-dev.github.io/color/orange.css">
+
+        <link rel="stylesheet" href="https://maltsev-dev.github.io/color/background_blue.css">
+    
+    <link rel="stylesheet" href="https://maltsev-dev.github.io/font-quicksand.css">
+
+
+    
+        <link rel="shortcut icon" type="image/png" href="/favicon.png">
+    
+    <meta property="og:site_name" content="dev_stories"><meta property="og:type" content="article">
+    <meta property="og:title" content="Critical Compression of Embedded Firmware: Understanding cargo size and Linker Strategies in Rust"><meta property="og:url" content="https://maltsev-dev.github.io/rust-firmware-size/"><meta property="og:image" content="https://github.com/maltsev-dev/favicon.png">
+
+    </head>
+
+<body class="">
+<div class="container">
+    
+    <header class="header">
+        <div class="header__inner">
+            <div class="header__logo">
+                    
+                <a href="https://maltsev-dev.github.io" style="text-decoration: none;">
+                    <div class="logo">
+                      
+                            busy hands == happy heart
+                        
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        
+        <nav class="menu">
+            <ul class="menu__inner">
+                <li><a href="https://maltsev-dev.github.io/archive">archive</a></li>
+            
+                <li><a href="https://maltsev-dev.github.io/tags/project/">projects</a></li>
+            
+                <li><a href="https://maltsev-dev.github.io/about">about me</a></li>
+            </ul>
+        </nav>
+    
+    
+        
+    </header>
+    
+
+    <div class="content">
+        
+    <div class="post">
+        
+    <h1 class="post-title"><a href="https://maltsev-dev.github.io/rust-firmware-size/">Critical Compression of Embedded Firmware: Understanding cargo size and Linker Strategies in Rust</a></h1>
+    <div class="post-meta-inline">
+        
+    <span class="post-date">
+            2025-05-29
+        </span>
+
+    </div>
+
+    
+        <span class="post-tags-inline">
+                :: tags:&nbsp;
+                <a class="post-tag" href="https://maltsev-dev.github.io/tags/rust/">#rust</a>&nbsp;
+                <a class="post-tag" href="https://maltsev-dev.github.io/tags/embedded/">#embedded</a>&nbsp;
+                <a class="post-tag" href="https://maltsev-dev.github.io/tags/linker/">#linker</a></span>
+    
+
+        
+        <div class="post-content">
+            <p>In embedded Rust development, minimizing the size of the compiled firmware is essential due to the limited memory resources of microcontrollers.<br />
+This article explores how to analyze binary sizes using the <code>cargo size</code> tool, the structure of ELF binaries produced during compilation, and the importance of linker scripts in controlling memory layout.</p>
+<p>🟠 Focusing on the ARM Cortex-M0 target, we will discuss practical strategies to optimize and compress firmware for resource-constrained embedded systems.</p>
+<span id="continue-reading"></span>
+<hr />
+<h2 id="i-introduction-to-cargo-size-and-elf-binaries">    I. Introduction to  <code>cargo size</code> and ELF binaries</h2>
+<h3 id="a-the-role-of-cargo-size">    A. The role of <code>cargo size</code></h3>
+<ul>
+<li><code>cargo size</code> is a utility from the <a href="https://crates.io/crates/cargo-binutils">cargo-binutils</a> designed to check the memory occupied by an <a href="https://en.wikipedia.org/wiki/Executable_and_Linkable_Format">ELF</a> executable file.</li>
+<li>It allows one to quickly estimate how much memory their compiled application will consume, and identify potential areas of bloat or inefficiency.</li>
+</ul>
+<h3 id="b-elf-binaries">    B. ELF Binaries</h3>
+<ul>
+<li>The ELF file is the final result of the compilation and linking process, containing the compiled program ready to be flashed into the microcontroller's non-volatile memory (Flash).</li>
+<li>The ELF file is logically divided into different <code>sections</code>, each of which serves a specific purpose (e.g. executable instructions, initialized data, read-only data, debug information.</li>
+<li>The linker is responsible for arranging these sections according to a <code>predefined memory map</code>, which is usually specified in the linker script.</li>
+</ul>
+<h3 id="c-target-architecture-context">    C. Target Architecture Context</h3>
+<ul>
+<li>The project targets the <code>thumbv6m-none-eabi</code> target, which is the Rust compilation target for the <strong>ARM</strong> <code>Cortex-M0</code> and <code>Cortex-M0+</code> microcontrollers.</li>
+<li>These are low-power entry-level microprocessors with very limited Flash and RAM memory.</li>
+</ul>
+<h2 id="ii-detailed-analysis-of-cargo-size-output">    II. Detailed Analysis of <code>cargo size</code> Output</h2>
+<h3 id="a-output-overview">    A. Output Overview</h3>
+<p>The <code>cargo size</code> output is a list of sections, their sizes in bytes, and their corresponding memory addresses.</p>
+<pre style="background-color:#151515;color:#e8e8d3;"><code><span>cargo size --bin blink_external_led -- -A          
+</span><span>    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.14s
+</span><span>blink_external_led  :
+</span><span>section               size        addr
+</span><span>.vector_table          192  0x10000100
+</span><span>.boot_info              20  0x100001c0
+</span><span>.boot2                 256  0x10000000
+</span><span>.text                33044  0x100001d4
+</span><span>.bi_entries              0  0x100082e8
+</span><span>.rodata               4904  0x100082e8
+</span><span>.data                    0  0x20000000
+</span><span>.gnu.sgstubs             0  0x10009620
+</span><span>.bss                     4  0x20000000
+</span><span>.uninit                  0  0x20000004
+</span><span>.defmt                   3         0x0
+</span><span>.debug_abbrev        29892         0x0
+</span><span>.debug_info         737273         0x0
+</span><span>.debug_aranges       29600         0x0
+</span><span>.debug_ranges       123360         0x0
+</span><span>.debug_str          960891         0x0
+</span><span>.comment               153         0x0
+</span><span>.ARM.attributes         50         0x0
+</span><span>.debug_frame         86396         0x0
+</span><span>.debug_line         315121         0x0
+</span><span>.debug_loc            5256         0x0
+</span><span>.debug_pubnames        489         0x0
+</span><span>.debug_pubtypes         71         0x0
+</span><span>Total              2326975
+</span></code></pre>
+<p>The total size is <code>2326975 bytes</code>, which is approximately <code>2.33 MB.</code><br />
+As the output shows, the dev profile was used to create the file, which includes debug information, which is the reason for the large total size of the binary.</p>
+<pre style="background-color:#151515;color:#e8e8d3;"><code><span>cargo size --bin blink_external_led --release -- -A
+</span><span>    Finished `release` profile [optimized] target(s) in 0.15s
+</span><span>blink_external_led  :
+</span><span>section             size        addr
+</span><span>.vector_table        192  0x10000100
+</span><span>.boot_info            20  0x100001c0
+</span><span>.boot2               256  0x10000000
+</span><span>.text               6396  0x100001d4
+</span><span>.bi_entries            0  0x10001ad0
+</span><span>.rodata              888  0x10001ad0
+</span><span>.data                  0  0x20000000
+</span><span>.gnu.sgstubs           0  0x10001e60
+</span><span>.bss                   4  0x20000000
+</span><span>.uninit                0  0x20000004
+</span><span>.defmt                 3         0x0
+</span><span>.comment             153         0x0
+</span><span>.ARM.attributes       50         0x0
+</span><span>Total               7962
+</span><span>
+</span></code></pre>
+<p>When creating a release version, the size is <code>7962 bytes</code> just <code>7.9КБ</code> or <code>0.007962 MB.</code><br />
+Which is approximately <strong>293</strong> times smaller than the debug version.</p>
+<h3 id="b-main-memory-sections-loaded-into-flash-ram">    B. Main memory sections (loaded into Flash/RAM)</h3>
+<p>Next we will look at an example of a release-optimized <code>cargo size</code> output.<br />
+These sections represent the actual code and data that will be loaded into the microcontroller's memory for execution.</p>
+<ul>
+<li>
+<p><strong><code>.vector_table</code>:</strong> <code>192</code> bytes at <code>0x10000100</code>.</p>
+<ul>
+<li>It contains the initial value of the main stack pointer (<strong>MSP</strong>) as its first entry, followed by the address of the reset handler, and then an array of pointers to various exception (e.g. HardFault) and interrupt handlers. This is the central dispatch table for the CPU.</li>
+<li>This is the very first information that the ARM Cortex-M processor reads on reset to determine <code>where to start execution</code> and how to handle system events.</li>
+<li>It is always placed at the very beginning (<code>ORIGIN</code>) of the <code>FLASH</code> memory area so that the processor can immediately find it after reset.</li>
+</ul>
+</li>
+<li>
+<p><strong><code>.text</code>:</strong> <code>6396</code> bytes at <code>0x100001d4</code>.</p>
+<ul>
+<li>This section contains the compiled machine instructions of your program (<strong>executable code</strong>).</li>
+<li>Typically placed immediately after <code>.vector_table</code> in <code>FLASH</code> memory. The <code>cortex-m-rt</code> crate <strong>manages this placement</strong>.</li>
+</ul>
+</li>
+<li>
+<p><strong><code>.rodata</code>:</strong> <code>888</code> bytes at <code>0x10001ad0</code>.</p>
+<ul>
+<li>This section contains <strong>read-only data</strong>, which includes <code>global constants</code>, <code>string literals</code>, and other data that is fixed at compile time and is not subject to change during runtime.</li>
+<li>Placed in <code>FLASH</code> memory, often adjacent to or immediately after the <code>.text</code> section, as it is also part of the program's static image.</li>
+</ul>
+</li>
+<li>
+<p><strong><code>.data</code>:</strong> <code>0</code> bytes at <code>0x20000000</code>.</p>
+<ul>
+<li>This section contains <strong>initialized</strong> global and static variables.</li>
+<li>Places in <code>RAM</code>. During the microcontroller startup sequence (before <code>main</code> is called), the initial values ​​of these variables are copied from the appropriate section in <code>FLASH</code></li>
+</ul>
+</li>
+<li>
+<p><strong><code>.gnu.sgstubs</code>:</strong> <code>0</code> bytes at <code>0x10001e60</code>.</p>
+<ul>
+<li>This is a specialized section synthesized by the linker to support <strong>ARMv8-M TrustZone</strong> (<code>Cortex-M23</code>, <code>Cortex-M33</code>) and <code>Cortex-M Security Extensions (CMSE)</code>, typically in Flash memory.</li>
+<li>The target device (<code>thumbv6m-none-eabi</code>, Cortex-M0/M0+) <em>does</em> not_ support TrustZone.</li>
+</ul>
+</li>
+<li>
+<p><strong><code>.bss</code>:</strong> <code>4</code> bytes at <code>0x20000000</code>.</p>
+<ul>
+<li>This section stores <strong>uninitialized</strong> global and static variables. These variables are guaranteed to be zero before <code>main</code> is called.</li>
+<li>Placed in <code>RAM</code>.</li>
+</ul>
+</li>
+<li>
+<p><strong><code>.uninit</code>:</strong> <code>0</code> bytes at <code>0x20000004</code>.</p>
+<ul>
+<li>Like <code>.bss</code>, this section contains <strong>uninitialized data</strong>. However, unlike <code>.bss</code>, data in <code>.uninit</code> is <em>not</em> guaranteed to be zero at startup.</li>
+<li>This can be useful for variables that will be explicitly initialized later by the program, or to preserve values ​​across <code>soft resets</code> if the <code>RAM</code> is battery-backed.</li>
+<li>Resides in <code>RAM</code>.</li>
+</ul>
+</li>
+</ul>
+<p>Calculating the sizes of the main loaded sections:</p>
+<ul>
+<li><strong><code>.vector_table</code></strong> (192 bytes) +</li>
+<li><strong><code>.text</code></strong> (6396 bytes) +</li>
+<li><strong><code>.rodata</code></strong> (888 bytes) = <code>0x510</code> bytes (7962 bytes).</li>
+</ul>
+<p>The <code>.data</code>, <code>.bss</code>, <code>.uninit</code>, and <code>.gnu.sgstubs</code> sections are 4 bytes in total.<br />
+This means that the actual executable code and read-only data for the <code>blink_external_led</code> application take up just about <code>8KB</code> of Flash memory, and no static variable data is used in <code>RAM</code>.</p>
+<h3 id="c-debug-information-section-not-loaded-into-flash-devices-for-execution">    C. Debug information section (not loaded into Flash devices for execution)</h3>
+<pre style="background-color:#151515;color:#e8e8d3;"><code><span>.debug_abbrev        29892         0x0
+</span><span>.debug_info         737273         0x0
+</span><span>.debug_aranges       29600         0x0
+</span><span>.debug_ranges       123360         0x0
+</span><span>.debug_str          960891         0x0
+</span><span>.comment               153         0x0
+</span><span>.ARM.attributes         50         0x0
+</span><span>.debug_frame         86396         0x0
+</span><span>.debug_line         315121         0x0
+</span><span>.debug_loc            5256         0x0
+</span><span>.debug_pubnames        489         0x0
+</span><span>.debug_pubtypes         71         0x0
+</span></code></pre>
+<p>The <code>.debug_</code> sections (e.g. <code>.debug_info</code>, <code>.debug_line</code>) in an ELF file contain metadata formatted according to the <a href="https://en.wikipedia.org/wiki/DWARF">DWARF</a> standard.
+This information is needed by debuggers such as GDB to effectively interact with and analyze the compiled program.  </p>
+<p>Their primary purpose is to provide a comprehensive map between the compiled machine code and the source code.<br />
+During development, enabling these sections is invaluable for efficiently identifying and fixing bugs.</p>
+<p>Enabling debug symbols will increase the size of the generated ELF file, but typically does not affect the size of the downloaded program, as the debug information is <strong>removed</strong> before being loaded onto the device.</p>
+<ul>
+<li>
+<p><strong><code>.debug_abbrev</code>:</strong> <code>29892</code> bytes.</p>
+<ul>
+<li>Defines <strong>codes</strong> used to compress entries in <code>.debug_info</code> and <code>.debug_types</code>, making debug output more compact.</li>
+</ul>
+</li>
+<li>
+<p><strong><code>.debug_info</code>:</strong> <code>737273</code> bytes.</p>
+<ul>
+<li>The largest and central debug section. It contains the main debug information entries (<strong>DIEs</strong>) that describe the structure of the program, including details about compilation units (source files), functions (subprograms), global and local variables, and user-defined data types.</li>
+</ul>
+</li>
+<li>
+<p><strong><code>.debug_aranges</code>:</strong> <code>29600</code> bytes.</p>
+<ul>
+<li>Contains tables of address ranges that allow the debugger to quickly determine which compilation unit an arbitrary memory address belongs to, speeding up symbol lookups. </li>
+</ul>
+</li>
+<li>
+<p><strong><code>.debug_ranges</code>:</strong> <code>123360</code> bytes.</p>
+<ul>
+<li>Contains lists of address ranges that define specific memory areas occupied by routines or compilation units.  </li>
+</ul>
+</li>
+<li>
+<p><strong><code>.debug_str</code>:</strong> <code>960891</code> bytes.</p>
+<ul>
+<li>A string table containing all strings referenced by other debug sections (e.g. source file names, variable names, type names). This table is merged by the linker to remove duplicates.  </li>
+</ul>
+</li>
+<li>
+<p><strong><code>.debug_frame</code>:</strong> <code>86396</code> bytes.</p>
+<ul>
+<li>Provides information needed to <strong>unwind the stack</strong>, allowing the debugger to reconstruct the call stack and generate accurate stack traces, which is especially important when analyzing crashes.</li>
+</ul>
+</li>
+<li>
+<p><strong><code>.debug_line</code>:</strong> <code>315121</code> bytes.</p>
+<ul>
+<li>Contains line number tables that map program counter values ​​to specific locations in the source code (file, line, column). This allows the debugger to <strong>show the current line of code</strong>.</li>
+</ul>
+</li>
+<li>
+<p><strong><code>.debug_loc</code>:</strong> <code>5256</code> bytes.</p>
+<ul>
+<li>Contains <strong>location lists</strong>, which are expressions that describe to the debugger the exact location (e.g. register, stack offset) of a variable at various points in program execution, taking into account compiler optimizations.</li>
+</ul>
+</li>
+<li>
+<p><strong><code>.debug_pubnames</code>:</strong> <code>489</code> bytes.</p>
+<ul>
+<li>Lists <strong>public names</strong> (e.g. global functions, global variables) defined in the compilation unit, used by debuggers to quickly look up symbols.</li>
+</ul>
+</li>
+<li>
+<p><strong><code>.debug_pubtypes</code>:</strong> <code>71</code> bytes.</p>
+<ul>
+<li>Similar to <code>.debug_pubnames</code>, but lists <strong>public types</strong>. </li>
+</ul>
+</li>
+</ul>
+<p>In addition to the DWARF sections, <code>.comment</code> and <code>.ARM.attributes</code> are metadata sections that provide information about the build and architecture.</p>
+<ul>
+<li>
+<p><strong><code>.comment</code>:</strong> <code>153</code> bytes.</p>
+<ul>
+<li>A small section, typically containing <strong>compiler version</strong> information, <strong>build flags</strong>, or other text comments from the toolchain.</li>
+</ul>
+</li>
+<li>
+<p><strong><code>.ARM.attributes</code>:</strong> <code>50</code> bytes.</p>
+<ul>
+<li>Contains ARM-specific attributes related to the ABI (Application Binary Interface), architecture, and other platform-specific details.</li>
+</ul>
+</li>
+</ul>
+<h2 id="iii-memory-sections-in-embedded">    III. Memory Sections in Embedded</h2>
+<h3 id="a-flash-and-ram">    A. FLASH and RAM</h3>
+<p><strong>ARM Cortex-M</strong> microcontrollers feature <a href="https://en.wikipedia.org/wiki/Harvard_architecture">Harvard architecture</a> or similar memory partitioning, having separate memory areas for storing programs and volatile data.</p>
+<ul>
+<li>
+<p><strong><code>FLASH</code> (or ROM):</strong> This is <em>non-volatile</em> memory, meaning it <strong>retains its contents</strong> even when power is removed. It serves as the primary storage for the program's executable code (<code>.text</code>), read-only data (<code>.rodata</code>), and interrupt vector table (<code>.vector_table</code>).<br />
+The amount of available Flash memory is a fundamental limitation on the complexity and feature set of an embedded application.</p>
+</li>
+<li>
+<p><strong><code>RAM</code> (Random Access Memory):</strong> This is volatile memory that <strong>requires constant power</strong> to maintain data. It is used for runtime variables (both initialized and uninitialized), the program stack, and the heap (for dynamic memory allocation).<br />
+The amount of available RAM determines the maximum <code>stack dept</code>h, the number of <code>global/static variables</code>, and the capacity for dynamic data structures.</p>
+</li>
+</ul>
+<p>The <code>addr</code> values ​​in the <code>cargo size</code> output are not randomly. These addresses are confirmed to be the standard base addresses for <code>FLASH</code> and <code>RAM</code> on many <strong>ARM Cortex-M</strong> devices.<br />
+They correspond directly to the <strong>physical memory map</strong> of the target microcontroller.<br />
+Any attempt by the linker to place code or data outside these defined physical memory ranges will result in a <strong>linker error</strong> or, more critically, undefined behavior and system crashes at runtime if the program is flashed to the device.
+The <code>cortex-m-rt</code> crate provides default values, but customization for specific hardware variations or extended memory management units (MPUs) is often required.</p>
+<h3 id="b-stack-and-heap-runtime-memory">    B. Stack and Heap (Runtime Memory)</h3>
+<p>While <code>cargo size</code> provides a static view of sections of a binary, it is critical to understand the dynamic memory components that consume RAM at runtime.</p>
+<ul>
+<li>
+<p><strong><code>Stack</code>:</strong> This memory area is used for local variables, function call frames, and return addresses.<br />
+On ARM Cortex-M, the stack typically grows <strong>downwards</strong> from a high memory address to lower addresses.<br />
+Its initial position is typically set at the very end of the <code>RAM</code> region by the linker script.</p>
+</li>
+<li>
+<p><strong><code>Heap</code>:</strong> This memory area is used for dynamic memory allocation (e.g. using <code>Box</code>, <code>Vec</code>, or the <code>alloc</code> crate functions in the <code>std</code> or <code>alloc</code> environment).<br />
+The heap typically grows <strong>upwards</strong> after the <code>.data</code> and <code>.bss</code> sections in <code>RAM</code>.</p>
+</li>
+</ul>
+<h2 id="iv-managing-memory-layout-and-section-placement-linker-scripts">    IV. Managing Memory Layout and Section Placement (Linker Scripts)</h2>
+<h3 id="a-linker-scripts-role">    A. Linker Scripts Role</h3>
+<p>Linker scripts are text files that serve as configuration input to the <code>linker</code>.<br />
+They provide precise instructions on how to map input sections from <strong>object files</strong> to output sections in the final <strong>ELF executable</strong>.<br />
+Crucially, they also dictate where these output sections should be placed in specific memory areas (such as Flash and RAM) of the <strong>target embedded device</strong>.<br />
+While the <code>cortex-m-rt</code> crate provides a default linker script, for production embedded applications developers often need to customize it.</p>
+<h3 id="b-basic-directives-in-linker-scripts">    B. Basic directives in Linker Scripts</h3>
+<p>Linker scripts use several key directives to define and control memory layout, which can be described in the <code>memory.x</code> file:</p>
+<pre data-lang="ld" style="background-color:#151515;color:#e8e8d3;" class="language-ld "><code class="language-ld" data-lang="ld"><span style="color:#8fbfdc;">MEMORY</span><span> {
+</span><span>    </span><span style="color:#ffb964;">BOOT2</span><span> : </span><span style="color:#8fbfdc;">ORIGIN</span><span> = </span><span style="color:#cf6a4c;">0x10000000</span><span>, </span><span style="color:#8fbfdc;">LENGTH</span><span> = </span><span style="color:#cf6a4c;">0x100
+</span><span>
+</span><span>    </span><span style="color:#ffb964;">FLASH</span><span> : </span><span style="color:#8fbfdc;">ORIGIN</span><span> = </span><span style="color:#cf6a4c;">0x10000100</span><span>, </span><span style="color:#8fbfdc;">LENGTH</span><span> = </span><span style="color:#cf6a4c;">2048K</span><span> - </span><span style="color:#cf6a4c;">0x100
+</span><span>    </span><span style="color:#ffb964;">RAM</span><span> : </span><span style="color:#8fbfdc;">ORIGIN</span><span> = </span><span style="color:#cf6a4c;">0x20000000</span><span>, </span><span style="color:#8fbfdc;">LENGTH</span><span> = </span><span style="color:#cf6a4c;">256K
+</span><span>
+</span><span>    </span><span style="color:#ffb964;">SRAM4</span><span> : </span><span style="color:#8fbfdc;">ORIGIN</span><span> = </span><span style="color:#cf6a4c;">0x20040000</span><span>, </span><span style="color:#8fbfdc;">LENGTH</span><span> = 4k
+</span><span>    </span><span style="color:#ffb964;">SRAM5</span><span> : </span><span style="color:#8fbfdc;">ORIGIN</span><span> = </span><span style="color:#cf6a4c;">0x20041000</span><span>, </span><span style="color:#8fbfdc;">LENGTH</span><span> = 4k
+</span><span>}
+</span><span>
+</span><span style="color:#ffb964;">EXTERN</span><span>(</span><span style="color:#ffb964;">BOOT2_FIRMWARE</span><span>)
+</span><span>
+</span><span style="color:#8fbfdc;">SECTIONS</span><span> {
+</span><span>    </span><span style="color:#ffb964;">.boot2 </span><span style="color:#8fbfdc;">ORIGIN</span><span>(</span><span style="color:#ffb964;">BOOT2</span><span>) :
+</span><span>    {
+</span><span>        </span><span style="color:#8fbfdc;">KEEP</span><span>(*(</span><span style="color:#ffb964;">.boot2</span><span>));
+</span><span>    } &gt; </span><span style="color:#ffb964;">BOOT2
+</span><span>} </span><span style="color:#ffb964;">INSERT BEFORE .text</span><span>;
+</span><span>
+</span><span style="color:#8fbfdc;">SECTIONS</span><span> {
+</span><span>    </span><span style="color:#ffb964;">.boot_info</span><span> : </span><span style="color:#8fbfdc;">ALIGN</span><span>(</span><span style="color:#cf6a4c;">4</span><span>)
+</span><span>    {
+</span><span>        </span><span style="color:#8fbfdc;">KEEP</span><span>(*(</span><span style="color:#ffb964;">.boot_info</span><span>));
+</span><span>    } &gt; </span><span style="color:#ffb964;">FLASH
+</span><span>
+</span><span>} </span><span style="color:#ffb964;">INSERT AFTER .vector_table</span><span>;
+</span><span style="color:#ffb964;">_stext</span><span> = </span><span style="color:#8fbfdc;">ADDR</span><span>(</span><span style="color:#ffb964;">.boot_info</span><span>) + </span><span style="color:#8fbfdc;">SIZEOF</span><span>(</span><span style="color:#ffb964;">.boot_info</span><span>);
+</span><span>
+</span><span style="color:#8fbfdc;">SECTIONS</span><span> {
+</span><span>    </span><span style="color:#ffb964;">.bi_entries</span><span> : </span><span style="color:#8fbfdc;">ALIGN</span><span>(</span><span style="color:#cf6a4c;">4</span><span>)
+</span><span>    {
+</span><span>        </span><span style="color:#ffb964;">__bi_entries_start</span><span> = </span><span style="color:#ffb964;">.</span><span>;
+</span><span>        </span><span style="color:#8fbfdc;">KEEP</span><span>(*(</span><span style="color:#ffb964;">.bi_entries</span><span>));
+</span><span>        </span><span style="color:#ffb964;">.</span><span> = </span><span style="color:#8fbfdc;">ALIGN</span><span>(</span><span style="color:#cf6a4c;">4</span><span>);
+</span><span>        </span><span style="color:#ffb964;">__bi_entries_end</span><span> = </span><span style="color:#ffb964;">.</span><span>;
+</span><span>    } &gt; </span><span style="color:#ffb964;">FLASH
+</span><span>} </span><span style="color:#ffb964;">INSERT AFTER .text</span><span>;
+</span><span>
+</span></code></pre>
+<h4 id="1-block-memory">    1. Block <code>MEMORY</code></h4>
+<ul>
+<li>
+<p><strong><code>MEMORY</code>:</strong> section defines the physical memory map of the microcontroller or chip: where the <strong>bootloader</strong> is, where the <strong>flash</strong> is, where the <strong>RAM</strong> is, and also two "additional" small <strong>SRAM</strong> regions.</p>
+<ul>
+<li>Each region is given a name, starting address (<code>ORIGIN</code>) and size (<code>LENGTH</code>) or region.</li>
+</ul>
+</li>
+<li>
+<p><strong><code>BOOT2</code>:</strong> This is usually a small area of ​​memory where the <strong>minimal bootloader</strong> needed to start the processor is placed.</p>
+<ul>
+<li><strong>ORIGIN</strong> = 0x10000000 is the physical address where the <code>BOOT2</code> area begins.</li>
+<li><strong>LENGTH</strong> = 0x100 (256 bytes) is the size of this area.</li>
+</ul>
+</li>
+<li>
+<p><strong><code>FLASH</code>:</strong></p>
+<ul>
+<li><strong>ORIGIN</strong> = 0x10000100 — the next 256 bytes after the <code>BOOT2</code> area (i.e. the bootloader is already located at 0x10000000–0x100000FF, and then comes the flash space).</li>
+<li><strong>LENGTH</strong> = 2048K - 0x100 — the total flash capacity (2 MB) minus 0x100 (256 bytes), i.e. actually 2 MB minus the areas under <code>BOOT2</code>. This is the main space where the firmware code and data will be placed.</li>
+</ul>
+</li>
+<li>
+<p><strong><code>RAM</code>:</strong></p>
+<ul>
+<li><strong>ORIGIN</strong> = 0x20000000</li>
+<li><strong>LENGTH</strong> = 256K — RAM available for executing code (or for storing buffers, stacks, global variables, etc.).</li>
+</ul>
+</li>
+<li>
+<p><strong><code>SRAM4</code>, <code>SRAM5</code>:</strong> - These are additional "SRAM banks" (small (4 KB) autonomous memory segments are allocated).</p>
+<ul>
+<li><strong>ORIGIN</strong> = 0x20040000, LENGTH = 4k</li>
+<li><strong>ORIGIN</strong> = 0x20041000, LENGTH = 4k</li>
+</ul>
+</li>
+</ul>
+<h4 id="2-extern-directive">    2. <code>EXTERN</code> directive</h4>
+<ul>
+<li>Declares an external (outside this linker script) label/symbol <code>BOOT2_FIRMWARE</code>.</li>
+<li>Usually this means that <strong>somewhere in the source codes</strong> the symbol <code>BOOT2_FIRMWARE</code> is defined, and the linker should understand that it exists and can be referenced when forming the symbol table, even if we do not specify here which object file it is located in.</li>
+</ul>
+<h4 id="3-entry-directive">3. <code>ENTRY</code> directive</h4>
+<ul>
+<li>This directive specifies the program <strong>entry point symbol</strong> (e.g. <code>Reset</code> for Cortex-M devices).</li>
+<li>This is critical because linkers are lazy and aggressively discard any sections of code or data that are not reachable (recursively called or referenced) from this entry point.</li>
+</ul>
+<h4 id="4-sections-block">4. <code>SECTIONS</code> block</h4>
+<ul>
+<li>The block defines how to distribute logical sections (e.g. <code>.text</code>, <code>.data</code>, <code>.boot2</code>, etc.) across physical regions (e.g. <code>BOOT2</code>, <code>FLASH</code>, <code>RAM</code>).</li>
+</ul>
+<p>First <code>SECTIONS</code> block for <code>.boot2</code></p>
+<pre data-lang="ld" style="background-color:#151515;color:#e8e8d3;" class="language-ld "><code class="language-ld" data-lang="ld"><span style="color:#8fbfdc;">SECTIONS</span><span> {
+</span><span>    </span><span style="color:#ffb964;">.boot2 </span><span style="color:#8fbfdc;">ORIGIN</span><span>(</span><span style="color:#ffb964;">BOOT2</span><span>) :
+</span><span>    {
+</span><span>        </span><span style="color:#8fbfdc;">KEEP</span><span>(*(</span><span style="color:#ffb964;">.boot2</span><span>));
+</span><span>    } &gt; </span><span style="color:#ffb964;">BOOT2
+</span><span>} </span><span style="color:#ffb964;">INSERT BEFORE .text</span><span>;
+</span></code></pre>
+<ul>
+<li>
+<p><code>.boot2 ORIGIN(BOOT2) : { ... } &gt; BOOT2</code> - defines a new section named <code>.boot2</code>, where its start address is equal to the value of <code>ORIGIN(BOOT2)</code>, i.e. 0x10000000.</p>
+<ul>
+<li>Inside curly braces: <code>KEEP(*(.boot2));</code></li>
+<li><code>KEEP</code> - says that during GC this section should <strong>not be removed</strong>, even if it is not directly referenced from any code.</li>
+<li><code>*(.boot2)</code> - means "all entries (.o-files/modules) that have a <code>.boot2</code> section". Simply put, all code (or data) fragments marked with the <code>section(".boot2")</code> attribute in the sources will end up here.</li>
+<li><code>&gt; BOOT2</code> – specifies: place this new section (<code>.boot2</code>) in the physical memory region <code>BOOT2</code> (0x10000000—0x100000FF).</li>
+</ul>
+</li>
+<li>
+<p><code>INSERT BEFORE .text;</code></p>
+<ul>
+<li>Directive for controlling the order of section formation: it ensures that the <code>.boot2</code> section will be <strong>before</strong> the <code>.text</code> section in the final image.</li>
+<li>Any piece of code/data that has <code>.section(".boot2")</code> in the object attributes will be "hardcoded" into the first <code>0x100</code> bytes of flash starting from <code>0x10000000</code>, and it won't be thrown out during linking even with "optimization by removing unused code".</li>
+</ul>
+</li>
+</ul>
+<p>Second <code>SECTIONS</code> block for <code>.boot_info</code></p>
+<pre data-lang="ld" style="background-color:#151515;color:#e8e8d3;" class="language-ld "><code class="language-ld" data-lang="ld"><span style="color:#8fbfdc;">SECTIONS</span><span> {
+</span><span>    </span><span style="color:#ffb964;">.boot_info</span><span> : </span><span style="color:#8fbfdc;">ALIGN</span><span>(</span><span style="color:#cf6a4c;">4</span><span>)
+</span><span>    {
+</span><span>        </span><span style="color:#8fbfdc;">KEEP</span><span>(*(</span><span style="color:#ffb964;">.boot_info</span><span>));
+</span><span>    } &gt; </span><span style="color:#ffb964;">FLASH
+</span><span>
+</span><span>} </span><span style="color:#ffb964;">INSERT AFTER .vector_table</span><span>;
+</span><span style="color:#ffb964;">_stext</span><span> = </span><span style="color:#8fbfdc;">ADDR</span><span>(</span><span style="color:#ffb964;">.boot_info</span><span>) + </span><span style="color:#8fbfdc;">SIZEOF</span><span>(</span><span style="color:#ffb964;">.boot_info</span><span>);
+</span></code></pre>
+<ul>
+<li>
+<p><strong><code>.boot_info : ALIGN(4) { ... } &gt; FLASH</code></strong> - creates a new <strong><code>.boot_info</code></strong> section, which will be placed in the <code>FLASH</code> region (i.e. starting from 0x10000100 and further).</p>
+<ul>
+<li><code>ALIGN(4)</code> ensures that the beginning of this section is <strong>aligned on a 4-byte</strong> boundary.</li>
+</ul>
+</li>
+<li>
+<p><strong><code>INSERT AFTER .vector_table;</code></strong> - specifies: "Place the <code>.boot_info</code> section immediately <strong>after</strong> the <code>.vector_table</code> section".</p>
+<ul>
+<li>Usually <code>.vector_table</code> is a standard section where the interrupt vector table go. It also resides in <code>FLASH</code>. And <code>.boot_info</code> is guaranteed to be right after this table.</li>
+</ul>
+</li>
+<li>
+<p><strong><code>_stext = ADDR(.boot_info) + SIZEOF(.boot_info);</code></strong> - The symbol (global label) <code>_stext</code> is created.</p>
+<ul>
+<li><code>ADDR(.boot_info)</code> — calculates the start address of the new <code>.boot_info</code> section.</li>
+<li><code>SIZEOF(.boot_info)</code> — its size in bytes.</li>
+<li>As a result, <code>_stext</code> = start of <code>.boot_info</code> + its size, i.e. the address of the byte immediately <strong>after</strong> the end of <code>.boot_info</code>.</li>
+<li>The <code>_stext</code> symbol is usually used in code to mark the start of the "main" <code>.text</code> sector (to know from what address the "normal" code starts), or to configure loading/copying of firmware from one area of ​​the flash to RAM.</li>
+<li>after <code>.vector_table</code> there is a special area <code>.boot_info</code> some data about the bootloader/configuration. And then with the help of <code>_stext</code> the "boundary" is defined - from there the placement of the rest of the code (the main sector <code>.text</code>) begins.</li>
+</ul>
+</li>
+</ul>
+<p>Third <code>SECTIONS</code> block for <code>.bi_entries</code></p>
+<pre data-lang="ld" style="background-color:#151515;color:#e8e8d3;" class="language-ld "><code class="language-ld" data-lang="ld"><span style="color:#8fbfdc;">SECTIONS</span><span> {
+</span><span>    </span><span style="color:#ffb964;">.bi_entries</span><span> : </span><span style="color:#8fbfdc;">ALIGN</span><span>(</span><span style="color:#cf6a4c;">4</span><span>)
+</span><span>    {
+</span><span>        </span><span style="color:#ffb964;">__bi_entries_start</span><span> = </span><span style="color:#ffb964;">.</span><span>;
+</span><span>        </span><span style="color:#8fbfdc;">KEEP</span><span>(*(</span><span style="color:#ffb964;">.bi_entries</span><span>));
+</span><span>        </span><span style="color:#ffb964;">.</span><span> = </span><span style="color:#8fbfdc;">ALIGN</span><span>(</span><span style="color:#cf6a4c;">4</span><span>);
+</span><span>        </span><span style="color:#ffb964;">__bi_entries_end</span><span> = </span><span style="color:#ffb964;">.</span><span>;
+</span><span>    } &gt; </span><span style="color:#ffb964;">FLASH
+</span><span>} </span><span style="color:#ffb964;">INSERT AFTER .text</span><span>;
+</span></code></pre>
+<ul>
+<li>
+<p><strong><code>.bi_entries : ALIGN(4) { ... } &gt; FLASH</code></strong> - A new section <strong><code>.bi_entries</code></strong> in the <code>FLASH</code> region</p>
+<ul>
+<li>The beginning of the section is aligned to 4 bytes using to ensure correct alignment of structures (e.g. data tables written in <code>.bi_entries</code>)</li>
+</ul>
+</li>
+<li>
+<p><strong><code>__bi_entries_start = .;</code></strong></p>
+<ul>
+<li>At the moment of defining this label, the point «<code>.</code>» (the current address during linking) will point to the beginning of the <code>.bi_entries</code> section.</li>
+</ul>
+</li>
+<li>
+<p><strong><code>. = ALIGN(4);</code></strong></p>
+<ul>
+<li>Shifts the address of "<code>.</code>" (the current pointer in the section) forward so that it aligns to the nearest <strong>4-byte</strong> boundary after the last element of <code>.bi_entries</code>.</li>
+<li>This ensures that if there is another section after this one (e.g. <code>.rodata</code> or <code>.data</code>), it will start "on a level boundary" and <strong>not in the middle</strong> of some 4-byte block.</li>
+</ul>
+</li>
+<li>
+<p><strong><code>__bi_entries_end = .;</code></strong></p>
+<ul>
+<li>Once we have done the alignment, here the dot "<code>.</code>" indicates the end of all data from <code>.bi_entries</code>. We store this address in the symbol <code>__bi_entries_end</code>.</li>
+<li>So in the binary image there is a start point and end point of "boot-info entries", and the second stage of the bootloader or application can go through the range <code>[__bi_entries_start, __bi_entries_end)</code> and parse these entries.</li>
+</ul>
+</li>
+<li>
+<p><strong><code>INSERT AFTER .text;</code></strong></p>
+<ul>
+<li>The directive emphasizes: the <code>.bi_entries</code> section must appear immediately after the <code>.text</code> section (regular code) in memory (<code>FLASH</code>).</li>
+<li>first <code>.vector_table</code></li>
+<li>then <code>.boot_info</code></li>
+<li>then <code>.text</code> (main code)</li>
+<li>after <code>.text</code> — <code>.bi_entries</code></li>
+</ul>
+</li>
+</ul>
+<h4 id="section-mods-and-macros">    SECTION Mods and Macros</h4>
+<ul>
+<li>
+<p><strong><code>KEEP(...)</code></strong><br />
+Instructs the linker not to "clean up" (collect, delete) a section. This is important for areas where, at startup, reading occurs not via regular function calls, but, say, the loader reads a "raw" byte array from a specific address.</p>
+</li>
+<li>
+<p><strong><code>ALIGN(n)</code></strong><br />
+Ensures that the start (or end) of a section is aligned to <code>n</code> bytes. Embedding tables, heaps, or simply meeting microcontroller requirements (when, for example, some structures must lie on a 4-byte boundary) requires alignment.</p>
+</li>
+<li>
+<p><strong><code>. = ALIGN(4);</code></strong><br />
+Sets the "current address" to a 4-byte aligned position. <strong>Usually written after data</strong> has been placed, to align the "end" of the section and prevent the next logical area from being "smeared" across unaligned boundaries.</p>
+</li>
+<li>
+<p><strong><code>ADDR(&lt;section_name&gt;)</code></strong> и <strong><code>SIZEOF(&lt;section_name&gt;)</code></strong></p>
+<ul>
+<li>These expressions allow symbolic addresses and section sizes to be calculated at link time.</li>
+<li><code>ADDR(.boot_info)</code> — is the base address from which <code>.boot_info</code> is loaded.</li>
+<li><code>SIZEOF(.boot_info)</code> — how many bytes are in this section?<br />
+Thus, the expression <code>ADDR(.boot_info) + SIZEOF(.boot_info)</code> gives the address of the <strong>first empty byte</strong> immediately after the end of <code>.boot_info</code>.</li>
+</ul>
+</li>
+<li>
+<p><strong><code>INSERT BEFORE .text</code> / <code>INSERT AFTER .vector_table</code> / <code>INSERT AFTER .text</code></strong></p>
+<ul>
+<li>These directives control the order of "insertion" of <strong>additional</strong> sections (<code>.boot2</code>, <code>.boot_info</code>, <code>.bi_entries</code>) relative to <strong>standard</strong> sections (<code>.vector_table</code>, <code>.text</code>).</li>
+<li>Without these inserts, the linker would arrange everything by default (usually: <code>.vector_table</code>, <code>.text</code>, <code>.rodata</code>, etc.)</li>
+</ul>
+</li>
+</ul>
+<h2 id="v-strategies-for-optimizing-binary-file-size-in-rust-embedded-projects">    V. Strategies for Optimizing Binary File Size in Rust Embedded Projects</h2>
+<h3 id="a-compiler-and-linker-configuration-the-easiest-and-most-effective">    A. Compiler and Linker Configuration (The Easiest and Most Effective)</h3>
+<p>These optimizations in the <code>Cargo.toml</code> file.</p>
+<ul>
+<li>
+<p><strong>Build in release mode (<code>cargo build --release</code>):</strong></p>
+</li>
+<li>
+<p><strong>Remove symbols from a binary (<code>strip = true</code>):</strong></p>
+<ul>
+<li>Since Rust 1.59, Cargo can be configured to strip symbols automatically by adding <code>strip = true</code> to the <code>[profile.release]</code> section of <code>Cargo.toml</code>.</li>
+</ul>
+</li>
+<li>
+<p><strong>Optimize for size (<code>opt-level = "z"</code> or <code>"s"</code>):</strong></p>
+<ul>
+<li>Level <code>"s"</code> also optimizes for size, but sometimes <code>"z"</code> can give better results.</li>
+</ul>
+</li>
+<li>
+<p><strong>Enabling Link Time Optimization (LTO):</strong></p>
+<ul>
+<li>Enabling LTO in <code>Cargo.toml</code> (<code>lto = true</code>) allows the compiler to perform program-wide optimizations, resulting in smaller binaries by eliminating dead code and performing more aggressive optimizations at crate boundaries.</li>
+</ul>
+</li>
+<li>
+<p><strong>Reduce parallel code generation units (<code>codegen-units=1</code>):</strong></p>
+<ul>
+<li>Cargo by default specifies <code>16</code> parallel code generation units for release builds to improve compilation times. However, this prevents some optimizations.</li>
+<li>Setting <code>codegen-units=1</code> in <code>Cargo.toml</code> allows for maximum optimizations to reduce size.</li>
+</ul>
+</li>
+<li>
+<p><strong>Abort on panic (<code>panic = "abort"</code>):</strong></p>
+<ul>
+<li>The <code>rustc</code> instruction to abort immediately instead of stack unwinding removes some extra code.</li>
+</ul>
+</li>
+<li>
+<p><strong>Removing <code>core::fmt</code> and using <code>#![no_std]</code>:</strong></p>
+<ul>
+<li>For very small executables (less than 20kb), it may be necessary to completely remove Rust's string formatting code (<code>core::fmt</code>).</li>
+<li>This involves using <code>#![no_main]</code>, manually managing <code>stdio</code>, and carefully analyzing the code to avoid using bloated <code>core::fmt</code> functions.</li>
+<li>Removing <code>libstd</code> with <code>#![no_std]</code> its reduce the binary size to the size of an equivalent C program that depends only on <code>libc</code>.   </li>
+</ul>
+</li>
+</ul>
+<h3 id="b-dependency-management-and-analysis-tools">    B. Dependency management and analysis tools</h3>
+<ul>
+<li><strong><code>cargo-bloat</code>:</strong> This tool helps identify what is taking up the most space in an executable by providing a breakdown by dependencies and functions.</li>
+<li><strong><code>cargo-unused-features</code></strong>: Finds and removes enabled but potentially unused feature flags from your project.</li>
+<li><strong>Disabling features:</strong> Many Rust crates offer optional features that can be enabled or disabled. Exploring and <strong>disabling unnecessary features</strong> in dependencies can help reduce the size of compiled code.</li>
+</ul>
+<h3 id="c-micro-optimizations-and-code-structure">    C. Micro-optimizations and code structure</h3>
+<ul>
+<li>
+<p><strong>Reduce or eliminate of using generics:</strong> in Rust can lead to monomorphism, this can increase code size.  </p>
+</li>
+<li>
+<p><strong>Limit length offsets to buffer:</strong> Optimize functions that operate on buffers by <strong>explicitly limiting input</strong> lengths to the actual buffer length (e.g. <code>len.min(buf.len())</code>).<br />
+This can allow the compiler to remove<code> panic checks related to out-of-bounds</code>, resulting in fewer instructions.</p>
+</li>
+<li>
+<p><strong>Idiomatic method chaining:</strong> Using Rust's idiomatic method chaining (e.g. with the <code>Option</code> and <code>Result</code> combinators) can result in assembly code that is as optimized as the more verbose or <code>unsafe</code> alternatives, demonstrating that "fewer lines really are faster" in terms of compiled output. </p>
+</li>
+<li>
+<p><strong>Using <code>u64</code> for <code>Duration</code> calculations:</strong> When working with embedded time intervals, performing arithmetic operations using <code>u64</code> directly and converting to <code>Duration</code> only when necessary can significantly reduce the size and complexity of assembly code. </p>
+</li>
+<li>
+<p><strong>Packaging <code>u16</code> into <code>[u8; 4]</code>:</strong> Using larger integer types (such as <code>u32</code>) and their conversion methods to pack data can result in more compact and efficient assembly code for packing operations. </p>
+</li>
+<li>
+<p><strong>Returning <code>1</code> or <code>-1</code> from a logical comparison:</strong> Sometimes more readable <code>if/else</code> code can generate similar assembly code as more "tricky" arithmetic conversions, indicating that readability does not always sacrifice optimization in Rust.</p>
+</li>
+</ul>
+<h2 id="sticker">    Sticker</h2>
+<ol>
+<li><strong>Switch to a release build:</strong> Always compile your project with <code>cargo build --release</code>.</li>
+<li><strong>Configure the <code>release</code> profile in <code>Cargo.toml</code>:</strong>
+<ul>
+<li><strong>Symbol stripping:</strong> Add <code>strip=true</code> to automatically strip debug symbols.</li>
+<li><strong>Size-first optimizations:</strong> Set <code>opt-level="z"</code> (or <code>"s"</code>) to prioritize size optimizations.</li>
+<li><strong>Link-time optimizations (LTO):</strong> Enable <code>lto=true</code> for cross-module optimizations and dead code removal.</li>
+<li><strong>Code generation units:</strong> Set <code>codegen-units=1</code> for maximum optimizations, though this will increase compile times.</li>
+<li><strong>Panic strategy:</strong> Consider <code>panic="abort"</code> to remove stack unwinding code if that suits your application's requirements.</li>
+</ul>
+</li>
+<li><strong>Dependency Analysis:</strong> Use <code>cargo-bloat</code> to identify dependencies that contribute the most to the binary size.</li>
+<li><strong>Understand and Manage Linker Scripts:</strong> Familiarize yourself with the linker script file (<code>memory.x</code> or <code>device.x</code>) used by your project. Optionally, customize it with <code>MEMORY</code>, <code>ENTRY</code>, <code>SECTIONS</code> directives, and Rust attributes like <code>#[link_section]</code> to fine-tune the placement of code and data in the microcontroller's memory.</li>
+<li><strong>Analyze Dynamic Memory Usage:</strong> In addition to the static binary size, use tools like <code>cargo-call-stack</code> to analyze stack usage at runtime to prevent stack overflows that could lead to system crashes. 6. <strong>Micro-optimizations:</strong> Although less significant than compiler tweaks, small changes to the code such as buffer handling optimizations, idiomatic method chaining, and efficient type conversions can further contribute to code size reduction.</li>
+</ol>
+
+        </div>
+
+        
+        <div class="pagination">
+            <div class="pagination__title">
+                <span class="pagination__title-h">Read other posts?</span>
+                <hr />
+            </div>
+            <div class="pagination__buttons">
+                    <span class="button previous">
+                        <a href="https://maltsev-dev.github.io/basic-electronics-1/">
+                            <span class="button__icon">←</span>&nbsp;
+                            <span class="button__text">⚛️ Diving into the World of Semiconductors: From Atoms to Crystals</span>
+                        </a>
+                    </span>
+                
+                
+                    <span class="button next">
+                        <a href="https://maltsev-dev.github.io/basic-electronics-2/">
+                            <span class="button__text">⚛️ The Aesthetics of Semiconductor Destruction: Understanding the PN Junction</span>&nbsp;
+                            <span class="button__icon">→</span>
+                        </a>
+                    </span>
+                </div>
+        </div>
+    
+    </div>
+
+    </div>
+
+
+<footer class="footer">
+    <div class="footer__inner">
+            <div class="copyright copyright--user"><div class="copyright">
+    <span>© 2026 A.Maltsev</span>
+    <span class="copyright-theme-sep"></span>
+    <span><img src="https://visitor-badge.laobi.icu/badge?page_id=maltsev-dev.github.io&right_color=orange" alt="Visitors"></span>
+</div>
+</div>
+        </div>
+</footer>
+
+
+</div>
+</body>
+
+</html>

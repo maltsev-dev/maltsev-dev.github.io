@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+    <title>dev_stories</title>
+    
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+    <meta name="robots" content="noodp"/>
+
+    <link rel="stylesheet" href="https://maltsev-dev.github.io/style.css">
+    <link rel="stylesheet" href="https://maltsev-dev.github.io/color/orange.css">
+
+        <link rel="stylesheet" href="https://maltsev-dev.github.io/color/background_blue.css">
+    
+    <link rel="stylesheet" href="https://maltsev-dev.github.io/font-quicksand.css">
+
+
+    
+        <link rel="shortcut icon" type="image/png" href="/favicon.png">
+    
+    <meta property="og:site_name" content="dev_stories"><meta property="og:type" content="article">
+    <meta property="og:title" content="From device to system: communication, backend, and dashboard for an embedded AI product"><meta property="og:url" content="https://maltsev-dev.github.io/dev-nurse-project-4/"><meta property="og:image" content="https://github.com/maltsev-dev/favicon.png">
+
+    </head>
+
+<body class="">
+<div class="container">
+    
+    <header class="header">
+        <div class="header__inner">
+            <div class="header__logo">
+                    
+                <a href="https://maltsev-dev.github.io" style="text-decoration: none;">
+                    <div class="logo">
+                      
+                            busy hands == happy heart
+                        
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        
+        <nav class="menu">
+            <ul class="menu__inner">
+                <li><a href="https://maltsev-dev.github.io/archive">archive</a></li>
+            
+                <li><a href="https://maltsev-dev.github.io/tags/project/">projects</a></li>
+            
+                <li><a href="https://maltsev-dev.github.io/about">about me</a></li>
+            </ul>
+        </nav>
+    
+    
+        
+    </header>
+    
+
+    <div class="content">
+        
+    <div class="post">
+        
+    <h1 class="post-title"><a href="https://maltsev-dev.github.io/dev-nurse-project-4/">From device to system: communication, backend, and dashboard for an embedded AI product</a></h1>
+    <div class="post-meta-inline">
+        
+    <span class="post-date">
+            2026-01-07
+        </span>
+
+    </div>
+
+    
+        <span class="post-tags-inline">
+                :: tags:&nbsp;
+                <a class="post-tag" href="https://maltsev-dev.github.io/tags/project/">#project</a>&nbsp;
+                <a class="post-tag" href="https://maltsev-dev.github.io/tags/rust/">#rust</a>&nbsp;
+                <a class="post-tag" href="https://maltsev-dev.github.io/tags/nurse/">#nurse</a>&nbsp;
+                <a class="post-tag" href="https://maltsev-dev.github.io/tags/product/">#product</a></span>
+    
+
+        
+        <div class="post-content">
+            <p>🟠 In this final article, I connect the embedded AI device to the real world.
+I describe how inference results leave the MCU, travel through MQTT and HTTP, land in a Rust backend, and become visible through a web dashboard.</p>
+<p>This is the layer where a TinyML prototype turns into an actual <strong>end-to-end product</strong>.</p>
+<span id="continue-reading"></span>
+<hr />
+<h2 id="from-inference-to-communication-wi-fi-mqtt-and-reliability">    From inference to communication: Wi-Fi, MQTT, and reliability</h2>
+<p>Once inference works reliably on-device, the next challenge is not accuracy — it’s <strong>communication</strong>.</p>
+<p>The MCU operates in an unstable environment:</p>
+<ul>
+<li>Wi-Fi may drop;</li>
+<li>power can fluctuate;</li>
+<li>the backend may be temporarily unavailable.</li>
+</ul>
+<p>Because of that, the device communication layer is built around a few principles:</p>
+<ul>
+<li><strong>stateless inference</strong>, stateful delivery;</li>
+<li>retry-safe messaging;</li>
+<li>decoupling inference from transport.</li>
+</ul>
+<h3 id="why-mqtt">Why MQTT</h3>
+<p>MQTT is a natural fit for embedded AI devices:</p>
+<ul>
+<li>low overhead;</li>
+<li>persistent sessions;</li>
+<li>QoS guarantees;</li>
+<li>simple reconnect semantics.</li>
+</ul>
+<p>The device publishes inference results as compact messages:</p>
+<ul>
+<li>device ID;</li>
+<li>timestamp;</li>
+<li>prediction score;</li>
+<li>optional debug metadata.</li>
+</ul>
+<p>If Wi-Fi drops, the MCU buffers messages and reconnects automatically.
+Inference never blocks on network I/O — this separation is critical for real-time behavior.</p>
+<hr />
+<h2 id="backend-architecture-rust-actix-web-and-data-ingestion">    Backend architecture: Rust, Actix Web, and data ingestion</h2>
+<p>On the server side, the backend acts as the <strong>central nervous system</strong> of the product.</p>
+<p>Its responsibilities:</p>
+<ul>
+<li>ingest data from devices via MQTT;</li>
+<li>expose an HTTP API for clients;</li>
+<li>store structured data in PostgreSQL;</li>
+<li>handle authentication and authorization;</li>
+<li>serve the frontend SPA.</li>
+</ul>
+<p>Rust + Actix Web was a deliberate choice:</p>
+<ul>
+<li>predictable performance;</li>
+<li>strong typing across the entire stack;</li>
+<li>explicit async behavior.</li>
+</ul>
+<h3 id="mqtt-ingestion-as-a-background-task">MQTT ingestion as a background task</h3>
+<p>The MQTT listener runs as a dedicated async task inside the backend process:</p>
+<ul>
+<li>subscribes to device topics;</li>
+<li>validates incoming payloads;</li>
+<li>writes inference data into the database.</li>
+</ul>
+<p>Because MQTT and HTTP are decoupled, ingestion continues even if no users are connected.</p>
+<p>This pattern avoids the classic IoT anti-pattern of “HTTP from devices”.</p>
+<hr />
+<h2 id="api-layer-and-authorization-model">    API layer and authorization model</h2>
+<p>The HTTP API exposes structured access to collected data.</p>
+<p>Key design decisions:</p>
+<ul>
+<li>JWT-based authentication;</li>
+<li>protected routes via middleware;</li>
+<li>strict separation between public and private endpoints.</li>
+</ul>
+<p>In Actix Web this maps cleanly to scoped routes:</p>
+<ul>
+<li><code>/api/auth/*</code> — login, profile, token refresh;</li>
+<li><code>/api/predictions/*</code> — protected inference data access.</li>
+</ul>
+<p>Middleware enforces authorization centrally, not per-handler —
+this keeps business logic clean and auditable.</p>
+<hr />
+<h2 id="backend-as-a-deployment-unit">    Backend as a deployment unit</h2>
+<p>The backend is built and deployed as a <strong>minimal container</strong>.</p>
+<p>The Docker setup follows a multi-stage pattern:</p>
+<ul>
+<li>Rust build stage with cached dependencies;</li>
+<li>slim Debian runtime with only OpenSSL and certificates.</li>
+</ul>
+<p>This yields:</p>
+<ul>
+<li>fast builds;</li>
+<li>small images;</li>
+<li>reproducible deployments.</li>
+</ul>
+<p>Docker Compose ties everything together:</p>
+<ul>
+<li>PostgreSQL for persistence;</li>
+<li>Mosquitto as the MQTT broker;</li>
+<li>backend API;</li>
+<li>frontend static server.</li>
+</ul>
+<p>At this point, the system can be deployed locally or on a single VPS without modification.</p>
+<hr />
+<h2 id="frontend-dashboard-making-data-visible">    Frontend dashboard: making data visible</h2>
+<p>Raw inference data is useless without interpretation.</p>
+<p>The dashboard provides:</p>
+<ul>
+<li>a login-protected UI;</li>
+<li>real-time and historical predictions;</li>
+<li>device-level visibility;</li>
+<li>documentation and onboarding pages.</li>
+</ul>
+<p>The frontend is a React SPA served as static assets via Nginx.</p>
+<p>Routing is handled client-side:</p>
+<ul>
+<li>core pages (login, dashboard, purchase);</li>
+<li>static legal pages;</li>
+<li>documentation sections;</li>
+<li>graceful SPA fallback for unknown routes.</li>
+</ul>
+<p>Because the backend serves the frontend assets directly, the system behaves as a <strong>single cohesive application</strong> from the user’s perspective.</p>
+<video controls width="720">  
+<source src="/media/dev_nurse_project_web.webm" type="video/webm" />  
+</video>  
+<hr />
+<h2 id="system-boundaries-and-responsibilities">    System boundaries and responsibilities</h2>
+<p>At this stage, the architecture has clear boundaries:</p>
+<ul>
+<li>
+<p><strong>MCU</strong></p>
+<ul>
+<li>real-time inference;</li>
+<li>sensor interaction;</li>
+<li>unreliable network handling.</li>
+</ul>
+</li>
+<li>
+<p><strong>MQTT</strong></p>
+<ul>
+<li>transport layer;</li>
+<li>buffering and delivery guarantees.</li>
+</ul>
+</li>
+<li>
+<p><strong>Backend</strong></p>
+<ul>
+<li>data ingestion;</li>
+<li>persistence;</li>
+<li>authorization;</li>
+<li>API surface.</li>
+</ul>
+</li>
+<li>
+<p><strong>Frontend</strong></p>
+<ul>
+<li>visualization;</li>
+<li>analysis;</li>
+<li>user interaction.</li>
+</ul>
+</li>
+</ul>
+<p>Each layer can evolve independently without breaking the others —
+this is what turns a demo into a maintainable product.</p>
+<hr />
+<h2 id="closing-thoughts">    Closing thoughts</h2>
+<p>This project deliberately spans:</p>
+<ul>
+<li>TinyML and quantization;</li>
+<li>low-level firmware concerns;</li>
+<li>async backend design;</li>
+<li>frontend product thinking.</li>
+</ul>
+<p>The key insight is simple but often missed:</p>
+<blockquote>
+<p>An embedded AI model is only valuable when it is part of a system.</p>
+</blockquote>
+<p>By treating communication, backend, and UI as <strong>first-class engineering problems</strong>, the device stops being “just a model on a chip” and becomes a real, deployable AI product.</p>
+<p>This concludes the end-to-end pipeline —
+from camera frames and INT8 tensors to dashboards and users.</p>
+
+        </div>
+
+        
+        <div class="pagination">
+            <div class="pagination__title">
+                <span class="pagination__title-h">Read other posts?</span>
+                <hr />
+            </div>
+            <div class="pagination__buttons">
+                    <span class="button previous">
+                        <a href="https://maltsev-dev.github.io/dev-nurse-project-3/">
+                            <span class="button__icon">←</span>&nbsp;
+                            <span class="button__text">TinyML on MCU: from dataset to real-time inference in Rust firmware</span>
+                        </a>
+                    </span>
+                
+                </div>
+        </div>
+    
+    </div>
+
+    </div>
+
+
+<footer class="footer">
+    <div class="footer__inner">
+            <div class="copyright copyright--user"><div class="copyright">
+    <span>© 2026 A.Maltsev</span>
+    <span class="copyright-theme-sep"></span>
+    <span><img src="https://visitor-badge.laobi.icu/badge?page_id=maltsev-dev.github.io&right_color=orange" alt="Visitors"></span>
+</div>
+</div>
+        </div>
+</footer>
+
+
+</div>
+</body>
+
+</html>

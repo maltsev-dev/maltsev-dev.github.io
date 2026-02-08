@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+    <title>dev_stories</title>
+    
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+    <meta name="robots" content="noodp"/>
+
+    <link rel="stylesheet" href="https://maltsev-dev.github.io/style.css">
+    <link rel="stylesheet" href="https://maltsev-dev.github.io/color/orange.css">
+
+        <link rel="stylesheet" href="https://maltsev-dev.github.io/color/background_blue.css">
+    
+    <link rel="stylesheet" href="https://maltsev-dev.github.io/font-quicksand.css">
+
+
+    
+        <link rel="shortcut icon" type="image/png" href="/favicon.png">
+    
+    <meta property="og:site_name" content="dev_stories"><meta property="og:type" content="article">
+    <meta property="og:title" content="Building Trustworthy Embedded Systems with Rust"><meta property="og:url" content="https://maltsev-dev.github.io/rust-firmware-memory/"><meta property="og:image" content="https://github.com/maltsev-dev/favicon.png">
+
+    </head>
+
+<body class="">
+<div class="container">
+    
+    <header class="header">
+        <div class="header__inner">
+            <div class="header__logo">
+                    
+                <a href="https://maltsev-dev.github.io" style="text-decoration: none;">
+                    <div class="logo">
+                      
+                            busy hands == happy heart
+                        
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        
+        <nav class="menu">
+            <ul class="menu__inner">
+                <li><a href="https://maltsev-dev.github.io/archive">archive</a></li>
+            
+                <li><a href="https://maltsev-dev.github.io/tags/project/">projects</a></li>
+            
+                <li><a href="https://maltsev-dev.github.io/about">about me</a></li>
+            </ul>
+        </nav>
+    
+    
+        
+    </header>
+    
+
+    <div class="content">
+        
+    <div class="post">
+        
+    <h1 class="post-title"><a href="https://maltsev-dev.github.io/rust-firmware-memory/">Building Trustworthy Embedded Systems with Rust</a></h1>
+    <div class="post-meta-inline">
+        
+    <span class="post-date">
+            2025-06-16
+        </span>
+
+    </div>
+
+    
+        <span class="post-tags-inline">
+                :: tags:&nbsp;
+                <a class="post-tag" href="https://maltsev-dev.github.io/tags/rust/">#rust</a>&nbsp;
+                <a class="post-tag" href="https://maltsev-dev.github.io/tags/embedded/">#embedded</a>&nbsp;
+                <a class="post-tag" href="https://maltsev-dev.github.io/tags/memory/">#memory</a></span>
+    
+
+        
+        <div class="post-content">
+            <p>In this article, I will explore:</p>
+<ul>
+<li>How Rust ensures memory safety in no_std environments</li>
+<li>What memory allocation strategies are viable on modern embedded targets</li>
+<li>Which patterns help minimize memory usage without sacrificing reliability</li>
+<li>The current state of Rust adoption in trustworthy embedded systems</li>
+</ul>
+<p>🟠 If you work with hardware, write firmware, or are simply interested in the topic of memory safety, then this text is for you.</p>
+<span id="continue-reading"></span>
+<hr />
+<h2 id="the-cost-of-a-defect">    The cost of a defect</h2>
+<p>The better we become as developers, the less we are willing to tolerate bugs. Users even more so. Today, no one is willing to wait, especially if money has been paid for the software. Everything must work stably, instantly and always.</p>
+<p>But the reality is more complicated. The world of software, electronics and network communications is a huge, multi-layered organism. Errors in it are almost inevitable, especially when there is a person in the chain. And there is nothing more dangerous than self-confidence: “everything is stable, there are no defects.”
+In practice, they always exist. Some of them just haven’t fired yet.</p>
+<p>The hardest thing to catch and predict are <code>memory errors</code>. They can be microscopic — imperceptible leaks that after 100,000 iterations lead to a crash or, worse, to undefined behavior.</p>
+<p>And here the question becomes relevant: <strong>what the cost of one bug?</strong><br />
+For a startup, it could be a microservice failure in the middle of a sale on a new mainstream toy, leading to the company's closure.<br />
+For a corporation, it could be millions in losses due to a vulnerability in production.<br />
+And for an embedded system in an airplane with a glitched flap firmware, it could all end in a fatal crash.</p>
+<p>We are used to seeing bugs in applications, the web, interfaces. But this is just the tip of the iceberg.<br />
+Under the hood of the modern world are complex systems invisible to the user: digital electronics, POS terminals, escalator controllers, microcontrollers in medicine, transport, and defense. They work quietly and ensure our everyday life. <strong>We simply do not notice them — until a failure occurs</strong>.</p>
+<p>Developing for such systems is not just “another type of programming.” It is working with limited resources, strict standards, and <code>zero tolerance for errors</code>.<br />
+For many years, <code>C/C++</code> reigned here: fast, flexible, but also extremely dangerous when working with memory. Segfault, use-after-free, race conditions — all these are the consequences of unsafe memory work, the price of which can be human lives.</p>
+<p><code>Rust</code> is a game changer.<br />
+It provides low-level control and deterministic behavior, but at the same time does not allow the developer to shoot himself in the foot.<br />
+Memory safety is built into the language architecture itself.<br />
+Therefore, Rust's unique value proposition fully meets the needs for safe and modern software for critical systems.</p>
+<hr />
+<h2 id="1-a-quick-overview-of-rust-s-memory-fundamentals">    1. A quick overview of Rust's memory fundamentals</h2>
+<table><thead><tr><th></th><th></th><th></th><th></th></tr></thead><tbody>
+<tr><td><strong>Concept</strong></td><td><strong>Description</strong></td><td><strong>Key Layout</strong></td><td><strong>Key Benefit for Embedded Systems</strong></td></tr>
+<tr><td><strong>Ownership</strong></td><td>Each value has a single owner; memory is automatically freed when the owner goes out of scope.</td><td>Compile Time</td><td>Eliminates memory leaks, double frees, use-after-frees.</td></tr>
+<tr><td><strong>Borrow</strong></td><td>Allows temporary access to data (immutable or mutable) without transferring ownership; compiler ensures safety.</td><td>Compile Time</td><td>Prevents race conditions; ensures thread safety.</td></tr>
+<tr><td><strong>Lifetime</strong></td><td>Ensures that references are valid as long as the data they point to.</td><td>Compile Time</td><td>Prevents dangling pointers.</td></tr>
+<tr><td><strong>Stack</strong></td><td>Memory for local variables and function call frames; LIFO; fixed size, known at compile time.</td><td>Random Access Memory (RAM)</td><td>Extremely fast and predictable allocation; minimizes fragmentation.</td></tr>
+<tr><td><strong>Heap</strong></td><td>Memory for dynamically allocated data; size determined at run time.</td><td>Random Access Memory (RAM)</td><td>Flexibility for dynamic structures (if explicitly managed); slower than stack.</td></tr>
+</tbody></table>
+<hr />
+<h2 id="2-no-std-the-foundation-for-embedded-rust">    2. <code>no_std</code>: the foundation for embedded Rust</h2>
+<p>The <code>no_std</code> attribute specifies that the crate will reference <a href="https://doc.rust-lang.org/core/"><code>libcore</code></a> instead of <a href="https://doc.rust-lang.org/std/"><code>libstd</code></a>.</p>
+<ul>
+<li>
+<p>📓 no_std <a href="https://doc.rust-lang.org/beta/embedded-book/intro/no-std.html?highlight=no_std#overview">highlights</a></p>
+</li>
+<li>
+<p>The <code>libcore</code> is a <strong>platform-independent</strong> subset of <code>libstd</code> that provides some language primitives and processor features (atomic operations, SIMD), but has no API for <strong>platform integration</strong>, including a default memory allocator. This means that <code>std</code> features such as <em>file I/O</em>, <em>networking</em>, stack overflow protection, command line argument handling, and starting the main thread and <em>dynamic memory allocation</em> (<code>Vec</code>, <code>String</code>) are <strong>not available by default</strong>. This requires developers to manually handle these aspects or use specialized crates.</p>
+</li>
+</ul>
+<table><thead><tr><th>Module</th><th>Available?</th><th>Notes</th></tr></thead><tbody>
+<tr><td><code>core</code></td><td>✅</td><td>Core - arithmetic, Option, Result, iterators</td></tr>
+<tr><td><code>core::fmt</code></td><td>✅</td><td>Formatting via <code>core::write!</code> and <code>Debug</code></td></tr>
+<tr><td><code>core::ops</code></td><td>✅</td><td>Operators: <code>Add</code>, <code>Deref</code>, <code>Drop</code>, etc.</td></tr>
+<tr><td><code>core::cmp</code></td><td>✅</td><td>Comparison, <code>PartialEq</code>, <code>Ord</code>, etc.</td></tr>
+<tr><td><code>core::ptr</code></td><td>✅</td><td>Working with pointers</td></tr>
+<tr><td><code>core::mem</code></td><td>✅</td><td>Sizes, allocation, <code>MaybeUninit</code></td></tr>
+<tr><td><code>core::slice</code></td><td>✅</td><td>Working with slices</td></tr>
+<tr><td><code>core::str</code></td><td>✅</td><td>Support for string slices</td></tr>
+</tbody></table>
+<ul>
+<li>The <code>no_std</code> runtime is not just a technical constraint - it serves as a strict contract that enforces a design philosophy focused on minimal overhead and explicit resource management.</li>
+</ul>
+<table><thead><tr><th>Category</th><th>In <code>std</code></th><th>In <code>no_std</code></th><th>Possible alternative</th></tr></thead><tbody>
+<tr><td><strong>Prelude</strong></td><td>Full <code>std::prelude</code></td><td><code>core::prelude</code>, limited</td><td>by <code>core</code> and <code>alloc::prelude</code></td></tr>
+<tr><td><strong>Panic (<code>panic!</code>)</strong></td><td>Yes, calls <code>std::panic()</code></td><td>Requires custom implementation</td><td><code>#[panic_handler]</code></td></tr>
+<tr><td><strong>Hip/dynamics</strong></td><td>Yes <code>Box</code>, <code>Vec</code>, <code>String</code></td><td>No - no <code>alloc</code></td><td>Add <code>alloc</code> and allocator</td></tr>
+<tr><td><strong>Default allocator</strong></td><td>Yes</td><td>No</td><td><code>wee_alloc</code>, <code>dlmalloc</code>, <code>buddy_alloc</code>, etc.</td></tr>
+<tr><td><strong>Files and File System</strong></td><td><code>std::fs</code></td><td>❌ No</td><td>Not supported</td></tr>
+<tr><td><strong>Network</strong></td><td><code>std::net</code></td><td>❌ No</td><td>Use HAL/RTOS or <code>smoltcp</code></td></tr>
+<tr><td><strong>Threads</strong></td><td><code>std::thread</code></td><td>❌ No</td><td>RTOS / <code>embassy</code> / <code>RTIC</code></td></tr>
+<tr><td><strong>Synchronization</strong></td><td><code>Mutex</code>, <code>RwLock</code>, <code>Condvar</code></td><td>❌ No</td><td><code>spin</code>, <code>critical-section</code>, <code>cortex-m</code></td></tr>
+<tr><td><strong>Clocks and Timers</strong></td><td><code>std::time</code></td><td>❌ Almost everything</td><td>Hardware timers, HAL</td></tr>
+<tr><td><strong>Standard Output</strong></td><td><code>println!</code>, <code>std::io</code></td><td>❌ No</td><td><code>defmt</code>, UART/ITM over HAL</td></tr>
+<tr><td><strong>I/O</strong></td><td><code>std::io::Read/Write</code></td><td>❌ No</td><td>HAL drivers, <code>embedded-hal</code></td></tr>
+<tr><td><strong>Formatting</strong></td><td><code>format!</code>, <code>std::fmt</code></td><td>✅ Partial (<code>core::fmt</code>)</td><td><code>core::fmt</code> without allocation</td></tr>
+<tr><td><strong>Standard collections</strong></td><td><code>HashMap</code>, <code>Vec</code>, <code>String</code></td><td>❌ No</td><td><code>heapless</code>, <code>arrayvec</code>, <code>alloc</code></td></tr>
+<tr><td><strong>Error trait)</strong></td><td><code>std::error::Error</code></td><td>❌ No</td><td>Custom traits or <code>core::fmt::Debug</code></td></tr>
+<tr><td><strong>C FFI</strong></td><td>✅ Yes</td><td>✅ Yes</td><td><code>extern "C"</code> works</td></tr>
+<tr><td><strong>Signals, processes, env</strong></td><td><code>std::env</code>, <code>std::process</code></td><td>❌ No</td><td>Not applicable</td></tr>
+<tr><td><strong>Randomness</strong></td><td><code>rand</code>, <code>std::rand</code></td><td>❌ No</td><td><code>rand_core</code>, hardware generator</td></tr>
+</tbody></table>
+<h4 id="optional-allocator">Optional allocator</h4>
+<p>Although the <code>no_std</code> environment removes the default allocator, it does not completely disable <em>dynamic memory allocation</em> capabilities (e.g. <code>Vec</code>, <code>String</code>).<br />
+To reintroduce this capability, the controlled <code>alloc</code> gateway from <code>no_std</code> must be used.<br />
+After hooking into this gateway, a <strong>custom allocator</strong> must be <strong>implemented</strong> and <strong>passed</strong> to it <code>alloc</code> from the existing crates specifically designed for this purpose, <a href="https://crates.io/crates/dlmalloc">dlmalloc</a>, <a href="https://crates.io/crates/buddy-alloc">buddy_alloc</a> or <a href="https://crates.io/crates/wee_alloc">wee_alloc</a>. These allocators typically implement the <code>core::alloc::GlobalAlloc</code> trait.</p>
+<hr />
+<h2 id="3-memory-allocation-strategies-in-constrained-environments">    3. Memory allocation strategies in constrained environments</h2>
+<h4 id="3-1-static-vs-dynamic-memory-allocation">3.1 Static vs Dynamic Memory Allocation</h4>
+<ul>
+<li>To ensure deterministic memory usage and minimize fragmentation, <code>static allocation</code> (global and stack variables) is preferred, since the memory for them is known and allocated at compile time.</li>
+<li>On the other hand, using <code>dynamic allocation</code> may introduce non-determinism. Using the heap carries the risk of some <strong>memory allocation failures</strong> and <strong>fragmentation</strong> problems.<br />
+The <strong>community recommends</strong> using <code>dynamic allocation</code> only in exceptional cases, otherwise the "deterministic by default" sub-approach should be followed.<br />
+This design approach 🔻<em>reduces the flexibility</em> of the solution, but significantly 🔺<em>increases the predictability</em> of its behavior and overall reliability.</li>
+</ul>
+<h3 id="3-2-heap-in-no-std">3.2 Heap in <code>no_std</code></h3>
+<p>⭐ Best practices for heap management:</p>
+<ul>
+<li><strong>Minimize or avoid:</strong> The general best practice is to <em>avoid dynamic allocations</em> entirely if possible.</li>
+<li><strong>Pre-allocate:</strong> If dynamically sized data is needed, <em>allocate memory once at startup</em> and reuse it. For <code>Vec</code>s <code>v.clear()</code> can clear them while preserving the allocated memory to prevent repeat allocations.</li>
+<li><strong><code>heapless</code>:</strong> <a href="https://crates.io/crates/heapless">heapless</a> collections (e.g. <code>heapless::Vec</code>) when dynamic resizing is needed but heap usage should be avoided.<br />
+The core principle behind heapless is that its data structures are backed by a static memory allocation. For example, you can think of <code>heapless::Vec</code> as an alternative version of <code>std::Vec</code> with fixed capacity and that can’t be re-allocated on the fly (e.g. via <code>push()</code>).</li>
+<li><strong>Avoid in interrupts:</strong> It is <em>strongly recommended</em> to avoid allocating or freeing memory in interrupt handlers due to potential deadlocks with non-blocking allocators.</li>
+</ul>
+<h3 id="3-3-stack-in-no-std">3.3 Stack in <code>no_std</code></h3>
+<p>The most common problem that happens with the stack is <code>stack overflows</code>, which causes the program to overwrite adjacent memory, which can lead to UB or crashes.</p>
+<p>⭐ Best practices for stack management:</p>
+<ul>
+<li><strong>Linker scripts:</strong> Linker scripts determine the <code>memory layout</code>, including the <code>RAM</code> areas for the stack and static data. They can specify stack boundaries, and the build will fail if the segments do not fit.</li>
+<li><strong><a href="https://crates.io/crates/flip-link">flip-link</a>:</strong> A zero-cost stack overflow protection tool for bare-metal Rust.</li>
+<li><strong>Hardware Features (MPU/Stack Limit Registers):</strong> Some microcontrollers (e.g. <code>Cortex-M)</code> provide memory protection units (<code>MPU</code>) or dedicated stack limit registers that can detect stack overflows by throwing a crash exception when the <em>stack pointer drops below</em> a certain limit. This changes undefined behavior to a deterministic exception.</li>
+</ul>
+<p>⭐ Monitoring stack memory usage:</p>
+<ul>
+<li><strong>Static Analysis:</strong> <a href="https://crates.io/crates/framehop"><code>framehop</code></a>. <a href="https://crates.io/crates/cargo-call-stack">cargo-call-stack</a> can report or inspect stack usage, but last update at oct 2024.</li>
+<li><strong>Runtime Monitoring:</strong> This can be done by filling the remaining <em>free stack space</em> with some data pattern, and <strong>checking at runtime</strong> that the pattern is still in the same place at the end of the stack.</li>
+<li><strong>Interrupt Stack Usage Considerations:</strong> Interrupt handlers have their own stack frames. Their memory usage should be carefully considered to avoid overflows, especially since they can preempt the main program. Static mutable variables in ISRs can be used to safely store state.</li>
+</ul>
+<p>A general recommendation for managing problems like stack overflows is to bring these errors into the <strong>realm of complete determinism</strong>, from UB to guaranteed and predictable failure.</p>
+<hr />
+<h2 id="4-hardware-memory-architectures-and-protection">    4. Hardware Memory Architectures and Protection</h2>
+<h4 id="4-1-microcontrollers-memory">4.1 Microcontrollers Memory</h4>
+<table><thead><tr><th></th><th></th><th></th><th></th><th></th></tr></thead><tbody>
+<tr><td><strong>Memory Type</strong></td><td><strong>Volatility</strong></td><td><strong>Primary Usage</strong></td><td><strong>Typical Write Cycles</strong></td><td><strong>Access Speed ​​(Relative)</strong></td></tr>
+<tr><td><strong>Flash</strong></td><td>Non-Volatile</td><td>Program Code, Constants</td><td>1,000 - 10,000</td><td>Fast Reads, Slow Writes</td></tr>
+<tr><td><strong>SRAM</strong></td><td>Volatile</td><td>Stack, Variables</td><td>Billions</td><td>Very Fast</td></tr>
+<tr><td><strong>EEPROM</strong></td><td>Non-volatile</td><td>Configuration data, rarely changed</td><td>100,000</td><td>Slower than SRAM</td></tr>
+</tbody></table>
+<h4 id="4-2-memory-layout-and-sections">4.2 Memory Layout and Sections</h4>
+<p>While Rust provides high-level memory safety, the <code>linker script</code> is the critical <strong>low-level component</strong> that translates these abstractions into physical memory addresses.<br />
+In the absence of OS, <code>linker</code> dictates where code and data segments are located in <code>Flash</code> and <code>RAM</code>, and provides the ability to precisely define <code>stack</code>, <code>heap</code>, and <code>static data</code> regions to ensure that Rust's memory model is correctly implemented on the target hardware.</p>
+<p>With <code>#[export_name]</code>, <code>#[no_mangle]</code>, and <code>#[link_section]</code>, you literally control how the compiled Rust code fits into memory, and what becomes the <strong>entry point</strong> for the hardware. Without this, the firmware won't work.</p>
+<p><em>You can 📖 <a href="https://maltsev-dev.github.io/rust-firmware-size/">read more</a> about the role of the linker and the distribution of data across memory sections in my recent article.</em></p>
+<h4 id="4-3-memory-protection-units-mpus-and-memory-management-units-mmus">4.3 Memory Protection Units (MPUs) and Memory Management Units (MMUs)</h4>
+<ul>
+<li>
+<p><code>MPU</code> is an optional component in <code>Cortex-M</code> processors that protects memory regions by defining access permissions (read-only, read-write, no execute).<br />
+It can detect stack overflows by making the bottom of the stack <strong>inaccessible</strong>, prevent code injections by marking regions as non-executable (<code>XN</code>), and isolate application tasks.</p>
+</li>
+<li>
+<p><code>MMUs</code> are more advanced, typically found in <code>Cortex-A</code> processors and some <code>RISC-V</code> SoCs.<br />
+They allow physical memory to be mapped to virtual memory addresses, enabling full OS functionality such as user applications, process isolation, and paging.</p>
+</li>
+</ul>
+<p>Rust's memory safety guarantees are mostly provided at compile time.<br />
+However, hardware features such as the <code>MPU</code> and <code>stack limit registers</code> provide a crucial <em>runtime</em> layer of protection, especially against logic errors that can occur in unsafe code.</p>
+<hr />
+<h2 id="5-concurrency-and-shared-state-management">    5. Concurrency and Shared State Management</h2>
+<h4 id="5-1-send-and-sync-concurrency-primitives">5.1 <code>Send</code> and <code>Sync</code> concurrency Primitives.</h4>
+<ul>
+<li><code>Send</code> marks a type as safe to <strong>share ownership</strong> between threads (i.e. <code>&amp;T</code> is <code>Send</code>)</li>
+<li><code>Sync</code> marks a type as safe to <strong>share by reference</strong> between threads (i.e. <code>T</code> is <code>Sync</code>)</li>
+</ul>
+<p>These are marker traits with <strong>no methods</strong>, which are automatically inferred if the type consists entirely of <code>Send</code> or <code>Sync</code> types.</p>
+<p>They report thread safety information at the type system level.<br />
+However, there are exceptions to the rule:</p>
+<ul>
+<li>raw pointers are neither <code>Send</code> nor <code>Sync</code>.</li>
+<li><code>UnsafeCell</code> (and thus <code>Cell</code>, <code>RefCell</code>) is not <code>Sync</code>.</li>
+<li><code>Rc</code> is neither <code>Send</code> nor <code>Sync</code>.</li>
+</ul>
+<p>In embedded systems, concurrency often arises from <strong>interrupts</strong> (<code>ISRs</code>) and real-time tasks.<br />
+Applying <code>Send</code> and <code>Sync</code> to <code>static mut</code> variables and shared resources, in combination with <strong>critical sections</strong> or <strong>atomic operations,</strong> ensures that even in bare-metal or RTOS environments, race conditions are prevented at compile time.</p>
+<h4 id="5-2-smart-pointers-in-embedded-systems">5.2 Smart pointers in embedded systems</h4>
+<p>Smart pointers provide abstractions for managing memory and shared state at the cost of some <strong>overhead</strong>.<br />
+In resource-constrained embedded systems, these overheads require careful consideration.</p>
+<table><thead><tr><th></th><th></th><th></th><th></th><th></th><th></th></tr></thead><tbody>
+<tr><td><strong>Primitive</strong></td><td><strong>Thread-Safe</strong></td><td><strong>Memory Overhead</strong></td><td><strong>Performance Impact</strong></td><td><strong>Primary Use Case</strong></td><td><strong>Key Limitation/Feature</strong></td></tr>
+<tr><td><strong><code>Rc&lt;T&gt;</code></strong></td><td>None</td><td>Low (reference count)</td><td>Fast</td><td>Shared ownership in single-threaded scenarios</td><td>Not thread-safe</td></tr>
+<tr><td><strong><code>RefCell&lt;T&gt;</code></strong></td><td>None</td><td>Low</td><td>Fast</td><td>Internal mutability in single-threaded scenarios</td><td>Not thread-safe</td></tr>
+<tr><td><strong><code>Arc&lt;T&gt;</code></strong></td><td>Yes</td><td>Moderate (atomic count)</td><td>Fast (for cloning), low (for dereferencing)</td><td>Shared ownership in multi-threaded scenarios</td><td>Default data immutability</td></tr>
+<tr><td><strong><code>Mutex&lt;T&gt;</code></strong></td><td>Yes</td><td>Moderate (lock structure)</td><td>Potential contention/blocking</td><td>Exclusive access to shared mutable data</td><td>May lead to deadlocks; locking overhead</td></tr>
+</tbody></table>
+<p>The preference for <code>heapless</code> collections and static memory allocation over heap-based <code>Arc</code> and <code>Box</code> in many embedded contexts indicates a conscious trade-off: raw efficiency is prioritized unless the complexity of shared ownership requires <em>absolutely</em> smart pointers.</p>
+<h4 id="5-3-critical-sections-and-atomic-operations">5.3 Critical Sections and Atomic Operations</h4>
+<p>Critical sections are a basic primitive for concurrency control, literally a <code>global mutex</code> that can only be acquired by one thread/context at a time.</p>
+<ul>
+<li>On bare-metal <em>single-core</em> systems, this is typically implemented by <strong>disabling interrupts</strong>.</li>
+<li>On <em>multi-core</em> systems, this involves <strong>disabling interrupts</strong> on the current core and <strong>acquiring a hardware spinlock</strong>.</li>
+</ul>
+<p>The <code>critical-section</code> <a href="https://crates.io/crates/critical-section">crate</a> provides a generic API for critical sections across various target platforms.<br />
+It provides safe access to shared mutable data (e.g. <code>Mutex&lt;Cell&lt;u32&gt;&gt;</code>) in an interrupt-safe context.</p>
+<table><thead><tr><th></th><th></th><th></th><th></th><th></th><th></th></tr></thead><tbody>
+<tr><td><strong>Primitive</strong></td><td><strong>Thread-Safe</strong></td><td><strong>Memory Overhead</strong></td><td><strong>Performance Impact</strong></td><td><strong>Primary Use Case</strong></td><td><strong>Key Limitation/Feature</strong></td></tr>
+<tr><td><strong>Critical Section (disable interrupts)</strong></td><td>Yes (on single core)</td><td>Low</td><td>High interrupt latency, jitter</td><td>Protects shared data from interrupts</td><td>Does not guarantee exclusivity on multi-core systems</td></tr>
+<tr><td><strong>Atomic Operations</strong></td><td>Yes</td><td>Low</td><td>Minimal overhead</td><td>Safe read-modify-write operations; inter-core synchronization</td><td>Depends on hardware support; more complex memory model</td></tr>
+</tbody></table>
+<ul>
+<li>
+<p><strong>ARM Cortex-M:</strong></p>
+<ul>
+<li><a href="https://doc.rust-lang.org/nightly/rustc/platform-support/thumbv6m-none-eabi.html"><code>thumbv6</code></a> (M0/M0+) provides atomic load/store operations.</li>
+<li><a href="https://doc.rust-lang.org/nightly/rustc/platform-support/thumbv7m-none-eabi.html"><code>thumbv7</code></a> (M3+) provides full Compare and Swap (CAS) instructions. They are safe even across multiple cores.</li>
+</ul>
+</li>
+<li>
+<p><strong>RISC-V:</strong> <code>Extension A</code> provides atomic read-modify-write (AMO) and <code>load-reserved/store-conditional</code> (LR/SC) instructions for synchronization. They support different memory coherence orders (out-of-order, acquire, release, sequentially coherent). The <code>portable-atomic</code> crate provides atomic types for various targets, including RISC-V without extension A.</p>
+</li>
+</ul>
+<p>The choice between <strong>disabling interrupts</strong> and using fine-grained <strong>atomic operations</strong> reflects a tradeoff between simplicity/guarantees and performance/latency.</p>
+<ul>
+<li><code>Critical sections</code> are simpler to implement, but incur higher interrupt latency and jitter.</li>
+<li><code>Atomic operations</code> offer finer control and better performance for specific operations, especially on multi-core systems.</li>
+</ul>
+<h4 id="5-4-rtos-and-concurrency-frameworks">5.4 RTOS and concurrency frameworks</h4>
+<p>Rust supports integration with real-time kernels and concurrency frameworks for multitasking.</p>
+<ul>
+<li>
+<p><strong>RTIC (Real-Time Interrupt-driven Concurrency):</strong> <a href="https://rtic.rs/2/book/en/">Framework</a> focuses on shared resource management, message passing, and task scheduling.</p>
+<ul>
+<li>Uses the <code>NVIC</code> (Nested Vectored Interrupt Controller) of the <code>Cortex-M</code> for scheduling.</li>
+<li>Ideal for <code>hard-RTOS</code> and interrupt-driven systems. Allows safe sharing of peripherals and data between interrupts and tasks without <code>unsafe</code>.</li>
+</ul>
+</li>
+<li>
+<p><strong>Embassy:</strong> <a href="https://embassy.dev/">Framework</a> based on <code>async/await</code> with executors, priorities, timers, network and USB support.</p>
+<ul>
+<li>Provide effortless async approach while maintaining bare-metal simplicity.</li>
+<li><code>async fn</code> moves part of its stack into a <code>Future</code> type, which has a size known at compile time.</li>
+<li>Futures only store variables held through <code>.await</code> points, not the entire stack frame.</li>
+</ul>
+</li>
+<li>
+<p><strong>TockOS:</strong> A safety-focused <a href="https://tockos.org/">RTOS</a> for <code>Cortex-M</code> and <code>RISC-V</code>, with an emphasis on application isolation via <code>MPU</code> support.</p>
+<ul>
+<li>The kernel is written in Rust, processes can be in any language.</li>
+<li>Has no shared heap in the kernel.</li>
+<li>The RTOS allocates a <strong>stack for each task</strong>. Proper sizing of these stacks is critical to avoid wastage or overflow.</li>
+<li>RTOSes often use <strong>memory block pools</strong> for deterministic dynamic allocation, which is preferable to shared heaps that can become fragmented.</li>
+<li>Each RTOS object (semaphores, mutexes, queues) has a <strong>control block</strong> with memory overhead; minimizing their use can save RAM.</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h2 id="6-some-approaches-to-memory-optimization">    6. Some approaches to memory optimization</h2>
+<h4 id="6-1-dst-and-fat-pointers">6.1. DST and fat pointers</h4>
+<p>References or raw pointers to a <code>DST</code> are <strong>fat pointers</strong>, and take up <code>2x</code> more memory than regular pointers (data + vtable).</p>
+<p>Trait objects (<code>dyn Trait</code>) are a common <code>DST</code>. They provide dynamic dispatch (runtime method resolution via <code>vtables</code>).
+<strong>Dynamic dispatch</strong> via <code>vtables</code> also incurs a small runtime overhead compared to <strong>static dispatch</strong>.</p>
+<p>In resource-constrained embedded systems, the cost of flexibility from using <code>DST</code>s and <code>fat pointers</code> becomes more obvious.
+The choice involves a tradeoff between</p>
+<ul>
+<li><code>dyn Trait</code> (dynamic dispatch) - smaller binary but slower runtimme prformance.</li>
+<li><code>impl Trait</code> (static dispatch/monomorphization) - larger binary but faster runtime.</li>
+</ul>
+<h4 id="6-2-move-vs-copy">6.2. <code>Move</code> vs <code>Copy</code></h4>
+<p>In Rust, by default values ​​are "moved" when assigned or passed to a function.</p>
+<ul>
+<li>
+<p>For types that own memory on the heap (such as <code>Vec</code> or <code>String</code>), <code>Copy</code> cannot be implemented to prevent accidental <em>deep copies</em> and <em>double frees</em>.</p>
+<ul>
+<li>A move is bassically a <strong>shallow bitwise copy</strong>, with the compiler statically checking that the <strong>original variable</strong> <em>cannot</em> be used afterwards.</li>
+<li>Only moves or explicit <code>clone()</code> are allowed.</li>
+<li>A move of this type copies only a group of pointers on the stack (<code>ptr</code>, <code>cap</code>, <code>len</code>), not the contents of the heap. </li>
+</ul>
+</li>
+<li>
+<p><code>Copy</code> types (such as primitives or fixed-size arrays) are <strong>implicitly copied</strong>, and the <strong>original variable</strong> <em>may</em> be used afterwards.</p>
+<ul>
+<li>For <code>Copy</code>-compatible types, <code>move</code> and <code>copy</code> operations are identical at runtime and are subject to the same optimizations.</li>
+<li>For small types (such as <code>i8</code>), pass-by-value (copy) may be faster than pass-by-reference, due to passing <strong>through registers</strong>.</li>
+</ul>
+</li>
+</ul>
+<p>Although <code>Copy</code> and <code>Move</code> are often equivalent in performance <strong>for small types</strong>.<br />
+For <strong>large fixed-size data structures</strong> that <em>could</em> be <code>Copy</code> (e.g. <code>[u8; 1024]</code>), the decision whether to implement <code>Copy</code> directly affects whether a full <code>memcpy</code> will occur on assignment.</p>
+<h4 id="6-3-memory-alignment-considerations">6.3. Memory Alignment Considerations</h4>
+<p>Data alignment ensures that data structures are allocated at memory addresses that are <code>multiples of their size</code> or the specified alignment.</p>
+<p>This is critical for performance (CPUs often read data in <strong>machine word</strong> sized chunks) and correctness (unaligned accesses can throw exceptions or be slower).<br />
+The Rust (and <code>LLVM</code>) compilers <strong>handle alignment automatically</strong>. Struct fields are padded to align with the <strong>largest alignment</strong> of any of their fields.</p>
+<ul>
+<li>sum of sizes of types = <code>9</code></li>
+<li>sum of size including alignment = 12</li>
+<li>denominator of alignment = <code>4</code></li>
+<li>9\4 = 2.25 to the upper integer = <code>3</code></li>
+<li>aligned size = 4 * 3 = <code>12</code></li>
+</ul>
+<pre data-lang="rust" style="background-color:#151515;color:#e8e8d3;" class="language-rust "><code class="language-rust" data-lang="rust"><span>size_of::&lt;(</span><span style="color:#8fbfdc;">char</span><span>, </span><span style="color:#8fbfdc;">u8</span><span>, </span><span style="color:#8fbfdc;">i32</span><span>)&gt;();   </span><span style="color:#888888;">// 12
+</span><span>align_of::&lt;(</span><span style="color:#8fbfdc;">char</span><span>, </span><span style="color:#8fbfdc;">u8</span><span>, </span><span style="color:#8fbfdc;">i32</span><span>)&gt;();  </span><span style="color:#888888;">// 4
+</span></code></pre>
+<p>By deliberately designing structs with alignment in mind (e.g. by ordering fields by size or using <code>#[repr(align)]</code>), to ensure optimal cache usage and single-cycle memory accesses, even though the compiler will eventually align the data anyway.</p>
+<h4 id="6-4-best-practices-for-minimizing-memory-usage-and-optimizing-performance">6.4. Best practices for minimizing memory usage and optimizing performance</h4>
+<ul>
+<li><strong>Prioritize stack allocation:</strong> Prefere stack memory whenever possible, due to its speed and predictability.</li>
+<li><strong>Stack depth:</strong> Minimize the depth of function stack calls.</li>
+<li><strong>Avoid dynamic allocation:</strong> If dynamic resizing is required, chose <code>heapless</code> collections or pre-allocate memory once at startup.</li>
+<li><strong>RAII principles:</strong> Tie allocation and deallocation to the lifetime of objects using <strong>RAII</strong> and the <code>Drop</code> trait to ensure timely resource release and minimize leaks.</li>
+<li><strong>Borrow instead of clone:</strong> Prefere borrowing to reduce unnecessary cloning, saving memory and processing power.</li>
+<li><strong>Profiling and Testing:</strong> Regularly profile memory usage and conduct continuous testing to identify and optimize allocation patterns and leaks.</li>
+<li><strong>Static Analysis Tools:</strong> Use tools like Clippy to identify common memory issues at compile time.</li>
+<li><strong>With alignment in mind:</strong> Check data types alignment to ensure consistent and efficient access.</li>
+</ul>
+<hr />
+<h2 id="7-mission-critical-systems-and-certification">    7. Mission Critical Systems and Certification</h2>
+<h4 id="7-1-rust-for-mission-critical">7.1. Rust for Mission Critical</h4>
+<ul>
+<li>Traditional approaches to security in C/C++ and coding standards like MISRA and CERT are often involve <strong>reactive measures</strong> (testing, static analysis, runtime checks) to find vulnerabilities.</li>
+<li>Rust, by design, <em>prevents</em> many of these vulnerabilities from occurring. Significant portion of the "rules" are enforced by the compiler itself, potentially reducing the need for extensive manual checks or complex rejection processes.<br />
+This proactive security model aligns with government initiatives to use safe-memory languages ​​(e.g., <a href="https://www.cisa.gov/news-events/news/urgent-need-memory-safety-software-products">CISA report</a>), positioning Rust as a strategic choice for the future of mission-critical software development.</li>
+</ul>
+<table><thead><tr><th></th><th></th><th></th></tr></thead><tbody>
+<tr><td><strong>Aspect</strong></td><td><strong>Rust Approach (Built-in Guarantees)</strong></td><td><strong>C/C++ Approach (Optional Safeguards)</strong></td></tr>
+<tr><td><strong>Memory Safety and Ownership</strong></td><td>Guaranteed by compiler ownership model</td><td>Manually managed; depends on developer/tooling discipline</td></tr>
+<tr><td><strong>Garbage Collector</strong></td><td>None (managed at compile time)</td><td>None (manually managed)</td></tr>
+<tr><td><strong>Buffer Overflow Prevention</strong></td><td>Prevented at compile time</td><td>Depends on developer discipline, tools, and runtime checks</td></tr>
+<tr><td><strong>Use-After-Free Prevention</strong></td><td>Guaranteed by ownership model</td><td>Depends on developer discipline, tools, and runtime checks</td></tr>
+<tr><td><strong>Race Condition Prevention</strong></td><td>Enforced by type system (<code>Send</code>/<code>Sync</code>)</td><td>Manually managed thread safety; error prone</td></tr>
+<tr><td><strong>Stack and Heap Exploits</strong></td><td>Mitigated by structured memory safety mechanisms</td><td>Governed by coding conventions and checks</td></tr>
+<tr><td><strong><code>unsafe</code> code annotation</strong></td><td>Explicitly marked (<code>unsafe</code> blocks)</td><td>Undefined behavior is governed by coding conventions and checks</td></tr>
+</tbody></table>
+<h4 id="7-2-isome-industry-initiatives">7.2. ISome Industry initiatives</h4>
+<p><strong>Safety Critical Rust Consortium:</strong> The Rust Foundation, in partnership with AdaCore, Arm, Ferrous Systems, and Woven by Toyota, formed this <a href="https://github.com/rustfoundation/safety-critical-rust-consortium">consortium</a> to support the responsible use of the Rust language in mission-critical software. Their focus includes developing guidelines, linters, libraries, static analysis tools, formal methods, and language subsets to meet industry and legal requirements.</p>
+<p><strong>Ferrocene:</strong> A key development is <a href="https://ferrocene.dev/en/">Ferrocene</a>, a qualified <strong>open-source Rust compiler</strong> toolchain for mission-critical systems.<br />
+It is qualified for automotive (<code>ISO 26262 ASIL D</code>), industrial (<code>IEC 61508 SIL 4</code>) and medical (<code>IEC 62304 Class C</code>) design.</p>
+<ul>
+<li>
+<p>Rust is no longer just a promising language — it is rapidly becoming a practical foundation for mission-critical software. With its proactive safety guarantees, strong community initiatives, and growing ecosystem of certified tools, Rust enables developers to build systems that are not only efficient and performant but also fundamentally safer by design.</p>
+</li>
+<li>
+<p>As industries shift toward more secure and verifiable software, Rust stands out as a forward-looking, standards-aligned choice — ready to meet the demands of tomorrow’s most critical applications.</p>
+</li>
+</ul>
+
+        </div>
+
+        
+        <div class="pagination">
+            <div class="pagination__title">
+                <span class="pagination__title-h">Read other posts?</span>
+                <hr />
+            </div>
+            <div class="pagination__buttons">
+                    <span class="button previous">
+                        <a href="https://maltsev-dev.github.io/emb-gpio/">
+                            <span class="button__icon">←</span>&nbsp;
+                            <span class="button__text">GPIO (General Purpose Input &#x2F; Output)</span>
+                        </a>
+                    </span>
+                
+                
+                    <span class="button next">
+                        <a href="https://maltsev-dev.github.io/rp2040-projects/">
+                            <span class="button__text">🧪 RP2040 Pico W Lab</span>&nbsp;
+                            <span class="button__icon">→</span>
+                        </a>
+                    </span>
+                </div>
+        </div>
+    
+    </div>
+
+    </div>
+
+
+<footer class="footer">
+    <div class="footer__inner">
+            <div class="copyright copyright--user"><div class="copyright">
+    <span>© 2026 A.Maltsev</span>
+    <span class="copyright-theme-sep"></span>
+    <span><img src="https://visitor-badge.laobi.icu/badge?page_id=maltsev-dev.github.io&right_color=orange" alt="Visitors"></span>
+</div>
+</div>
+        </div>
+</footer>
+
+
+</div>
+</body>
+
+</html>

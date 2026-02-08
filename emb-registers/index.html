@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+    <title>dev_stories</title>
+    
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+    <meta name="robots" content="noodp"/>
+
+    <link rel="stylesheet" href="https://maltsev-dev.github.io/style.css">
+    <link rel="stylesheet" href="https://maltsev-dev.github.io/color/orange.css">
+
+        <link rel="stylesheet" href="https://maltsev-dev.github.io/color/background_blue.css">
+    
+    <link rel="stylesheet" href="https://maltsev-dev.github.io/font-quicksand.css">
+
+
+    
+        <link rel="shortcut icon" type="image/png" href="/favicon.png">
+    
+    <meta property="og:site_name" content="dev_stories"><meta property="og:type" content="article">
+    <meta property="og:title" content="MCU Registers"><meta property="og:url" content="https://maltsev-dev.github.io/emb-registers/"><meta property="og:image" content="https://github.com/maltsev-dev/favicon.png">
+
+    </head>
+
+<body class="">
+<div class="container">
+    
+    <header class="header">
+        <div class="header__inner">
+            <div class="header__logo">
+                    
+                <a href="https://maltsev-dev.github.io" style="text-decoration: none;">
+                    <div class="logo">
+                      
+                            busy hands == happy heart
+                        
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        
+        <nav class="menu">
+            <ul class="menu__inner">
+                <li><a href="https://maltsev-dev.github.io/archive">archive</a></li>
+            
+                <li><a href="https://maltsev-dev.github.io/tags/project/">projects</a></li>
+            
+                <li><a href="https://maltsev-dev.github.io/about">about me</a></li>
+            </ul>
+        </nav>
+    
+    
+        
+    </header>
+    
+
+    <div class="content">
+        
+    <div class="post">
+        
+    <h1 class="post-title"><a href="https://maltsev-dev.github.io/emb-registers/">MCU Registers</a></h1>
+    <div class="post-meta-inline">
+        
+    <span class="post-date">
+            2025-07-11
+        </span>
+
+    </div>
+
+    
+        <span class="post-tags-inline">
+                :: tags:&nbsp;
+                <a class="post-tag" href="https://maltsev-dev.github.io/tags/embedded/">#embedded</a>&nbsp;
+                <a class="post-tag" href="https://maltsev-dev.github.io/tags/basic/">#basic</a>&nbsp;
+                <a class="post-tag" href="https://maltsev-dev.github.io/tags/registers/">#registers</a></span>
+    
+
+        
+        <div class="post-content">
+            <p>A <code>processor register</code> is a quickly accessible location available to a computer's processor.
+Registers usually consist of a small amount of fast storage, although some registers have specific hardware functions, and may be read-only or write-only.<br />
+Its used to store <strong>data</strong>, <strong>operands</strong>, <strong>calculation</strong> results, <strong>memory addressing</strong>, <strong>peripheral control</strong>, and <strong>microcontroller operation</strong> during instruction execution.</p>
+<p>Each register has a specific function and bit capacity.<br />
+🟠 When performing an arithmetic operation, the processor may load the operands into general-purpose registers, perform the operation, and then store the result in another register or in memory.</p>
+<span id="continue-reading"></span>
+<hr />
+<h2 id="pushpin-why-registers-are-important">📌 Why registers are important</h2>
+<ul>
+<li>They are the fastest way to access information and allow operations to be performed without accessing external <code>RAM</code> memory.</li>
+<li>Almost every microprocessor <code>command</code> relies on the use of registers.</li>
+<li>Setting up the microcontroller <code>peripherals</code> directly depends on writing to <strong>control registers</strong>.</li>
+</ul>
+<hr />
+<h2 id="jigsaw-basic-types-of-registers">🧩 Basic types of registers</h2>
+<style>
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+  }
+
+  th,
+  td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    vertical-align: top;
+  }
+
+  th {
+    background-color: #f59140;
+    color: white;
+    text-align: center;
+  }
+
+  td:first-child {
+    width: 25%;
+    font-weight: bold;
+  }
+</style>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Purpose</th>
+<th>Examples</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>General-purpose registers (GPR) </td>
+<td>* Stores data and intermediate values and adresses</br> * When adding numbers, the processor loads the values ​​from `RAM` into registers, performs the operation and stores the result back. </td>
+<td><code>R0–R31</code> (AVR), <code>EAX–EDX</code> (x86), <code>R0–R12</code> (ARM)</td>
+</tr>
+<tr>
+<td>Special-purpose registers (SFR)</td>
+<td>* Hold some elements of the program state </br> * Each SFR has a **fixed address** in memory and is controlled by software </br>* They usually include the program counter, also called the instruction pointer </br> * Microcontrollers, can also have special function registers corresponding to specialized hardware elements.(timers, UART, ADC, etc.)</td>
+<td><code>TCCR0</code>, <code>ADCSRA</code>, <code>USART_CR</code></td>
+</tr>
+<tr>
+<td>Address Registers</td>
+<td>* Hold addresses and are used by instructions that indirectly access primary memory. </td>
+<td><code>SP</code>, <code>BP</code>, <code>SI</code>, <code>DI</code>, <code>X</code>, <code>Y</code>, <code>Z</code></td>
+</tr>
+<tr>
+<td>Data Registers</td>
+<td>* Can hold numeric data values such as `integers` and, (in some architectures `floating-point` numbers), as well as `characters`, small `bit arrays` and other data for I/O</td>
+<td><code>PORTx</code>, <code>PINx</code>, <code>DDRx</code></td>
+</tr>
+<tr>
+<td>Status (Flag) Registers </br> Condition code register (CCR)</td>
+<td>* Contain bits of the flags of the operation result </br>* Hold truth values often used to determine whether some instruction should or should not be executed.</td>
+<td><code>SREG</code>, <code>CPSR</code>, <code>FLAGS</code></td>
+</tr>
+<tr>
+<td>Hardware registers</td>
+<td>* Used in the interface between software and peripherals</td>
+<td>* Input/output (I/O) of different kinds </br> * Configuration and start-up of certain features, especially during initialization </br> * Used to interact with physical pins of the microcontroller: reading/writing levels, configuring directions, etc.</td>
+</tr>
+<tr>
+<td>Command registers (IP/PC) </br> * not accessible by instructions and are used internally for processor operations </td>
+<td>Point to the currently executing instruction</td>
+<td><code>PC</code>, <code>EIP</code>, <code>R15</code></td>
+</tr>
+<tr>
+<td>Segment registers </br> * not accessible by instructions and are used internally for processor operations </td>
+<td>Point to memory segments (x86)</td>
+<td><code>CS</code>, <code>DS</code>, <code>SS</code>, <code>ES</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="tools-example-setting-up-systick-arm-cortex-m">🛠 Example: Setting up SysTick (ARM Cortex-M)</h2>
+<p>To manually set up the system timer (<a href="https://developer.arm.com/documentation/dui0552/a/cortex-m3-peripherals/system-timer--systick">SysTick</a>) three registers are used:</p>
+<table><thead><tr><th>Register Name</th><th>Purpose</th><th>Address</th></tr></thead><tbody>
+<tr><td><code>SYST_CSR</code></td><td>Control and Status</td><td><code>0xE000E010</code></td></tr>
+<tr><td><code>SYST_RVR</code></td><td>Reset Value</td><td><code>0xE000E014</code></td></tr>
+<tr><td><code>SYST_CVR</code></td><td>Current Value</td><td><code>0xE000E018</code></td></tr>
+</tbody></table>
+<ul>
+<li>
+<p>The <code>SYST_CSR</code> register enables the SysTick features. It has <strong>three parameters</strong> that we are interested in:</p>
+<ul>
+<li><code>clock source</code> (which specifies what clock rates the timer should support),</li>
+<li><code>tick interrupt enable</code> (which allows an interrupt to fire when the timer reaches zero) and</li>
+<li><code>enabling the timer itself</code><br />
+The parameters are controlled by the three least significant bits in our <code>32-bit</code> register.<br />
+So for example, if you wanted to set all values ​​to one, our 32 bits would look like this. (<code>00000000_00000000_00000000_000000111</code>) The last three bits are set to one.</li>
+</ul>
+</li>
+<li>
+<p>The <code>SYST_RVR</code> register specifies the start value to load into the <code>SYST_CVR</code> register.<br />
+It counts down from that value to <code>zero</code>.<br />
+It's a 24-bit register, so the total number of values ​​we have is about <code>16.7 million.</code></p>
+</li>
+<li>
+<p>The <code>SYST_CVR</code> register contains the current value of the counter.<br />
+If the timer restarted with a reset value of <code>250</code> and <code>100</code> ticks have passed, the current value will be <code>150</code>.<br />
+You can go to this register to clear the value.<br />
+It is good practice to clear this register before enabling the timer so that its value makes sense when you read it.</p>
+</li>
+</ul>
+<h3 id="rust-example">Rust example:</h3>
+<pre data-lang="rust" style="background-color:#151515;color:#e8e8d3;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="color:#8fbfdc;">const </span><span style="color:#7697d6;">SYST_CSR</span><span>: </span><span style="color:#8fbfdc;">u32 </span><span>= </span><span style="color:#cf6a4c;">0xE000E010</span><span>;
+</span><span style="color:#8fbfdc;">const </span><span style="color:#7697d6;">SYST_RVR</span><span>: </span><span style="color:#8fbfdc;">u32 </span><span>= </span><span style="color:#cf6a4c;">0xE000E014</span><span>;
+</span><span style="color:#8fbfdc;">const </span><span style="color:#7697d6;">SYST_CVR</span><span>: </span><span style="color:#8fbfdc;">u32 </span><span>= </span><span style="color:#cf6a4c;">0xE000E018</span><span>;
+</span><span>
+</span><span style="color:#8fbfdc;">let</span><span> sleep_dur = </span><span style="color:#7697d6;">CPU_FREQ</span><span>; </span><span style="color:#888888;">// duration = 1 second
+</span><span>
+</span><span style="color:#8fbfdc;">unsafe </span><span>{
+</span><span>    *(</span><span style="color:#7697d6;">SYST_RVR </span><span>as </span><span style="color:#8fbfdc;">*mut u32</span><span>) = sleep_dur;    </span><span style="color:#888888;">// set timer duration
+</span><span>    *(</span><span style="color:#7697d6;">SYST_CVR </span><span>as </span><span style="color:#8fbfdc;">*mut u32</span><span>) = </span><span style="color:#cf6a4c;">0</span><span>;            </span><span style="color:#888888;">// set current value to 0
+</span><span>    *(</span><span style="color:#7697d6;">SYST_CSR </span><span>as </span><span style="color:#8fbfdc;">*mut u32</span><span>) = </span><span style="color:#cf6a4c;">0b111</span><span>;        </span><span style="color:#888888;">// set source, enable timer and interrupts
+</span><span>}
+</span></code></pre>
+
+        </div>
+
+        
+        <div class="pagination">
+            <div class="pagination__title">
+                <span class="pagination__title-h">Read other posts?</span>
+                <hr />
+            </div>
+            <div class="pagination__buttons">
+                    <span class="button previous">
+                        <a href="https://maltsev-dev.github.io/emb-rust-flow/">
+                            <span class="button__icon">←</span>&nbsp;
+                            <span class="button__text">Basic Embedded Rust Flow (Cortex-M)</span>
+                        </a>
+                    </span>
+                
+                
+                    <span class="button next">
+                        <a href="https://maltsev-dev.github.io/emb-peripherals/">
+                            <span class="button__text">MCU Peripherals</span>&nbsp;
+                            <span class="button__icon">→</span>
+                        </a>
+                    </span>
+                </div>
+        </div>
+    
+    </div>
+
+    </div>
+
+
+<footer class="footer">
+    <div class="footer__inner">
+            <div class="copyright copyright--user"><div class="copyright">
+    <span>© 2026 A.Maltsev</span>
+    <span class="copyright-theme-sep"></span>
+    <span><img src="https://visitor-badge.laobi.icu/badge?page_id=maltsev-dev.github.io&right_color=orange" alt="Visitors"></span>
+</div>
+</div>
+        </div>
+</footer>
+
+
+</div>
+</body>
+
+</html>

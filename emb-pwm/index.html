@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+    <title>dev_stories</title>
+    
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+    <meta name="robots" content="noodp"/>
+
+    <link rel="stylesheet" href="https://maltsev-dev.github.io/style.css">
+    <link rel="stylesheet" href="https://maltsev-dev.github.io/color/orange.css">
+
+        <link rel="stylesheet" href="https://maltsev-dev.github.io/color/background_blue.css">
+    
+    <link rel="stylesheet" href="https://maltsev-dev.github.io/font-quicksand.css">
+
+
+    
+        <link rel="shortcut icon" type="image/png" href="/favicon.png">
+    
+    <meta property="og:site_name" content="dev_stories"><meta property="og:type" content="article">
+    <meta property="og:title" content="PWM (Pulse Width Modulation)"><meta property="og:url" content="https://maltsev-dev.github.io/emb-pwm/"><meta property="og:image" content="https://github.com/maltsev-dev/favicon.png">
+
+    </head>
+
+<body class="">
+<div class="container">
+    
+    <header class="header">
+        <div class="header__inner">
+            <div class="header__logo">
+                    
+                <a href="https://maltsev-dev.github.io" style="text-decoration: none;">
+                    <div class="logo">
+                      
+                            busy hands == happy heart
+                        
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        
+        <nav class="menu">
+            <ul class="menu__inner">
+                <li><a href="https://maltsev-dev.github.io/archive">archive</a></li>
+            
+                <li><a href="https://maltsev-dev.github.io/tags/project/">projects</a></li>
+            
+                <li><a href="https://maltsev-dev.github.io/about">about me</a></li>
+            </ul>
+        </nav>
+    
+    
+        
+    </header>
+    
+
+    <div class="content">
+        
+    <div class="post">
+        
+    <h1 class="post-title"><a href="https://maltsev-dev.github.io/emb-pwm/">PWM (Pulse Width Modulation)</a></h1>
+    <div class="post-meta-inline">
+        
+    <span class="post-date">
+            2025-07-13
+        </span>
+
+    </div>
+
+    
+        <span class="post-tags-inline">
+                :: tags:&nbsp;
+                <a class="post-tag" href="https://maltsev-dev.github.io/tags/embedded/">#embedded</a>&nbsp;
+                <a class="post-tag" href="https://maltsev-dev.github.io/tags/basic/">#basic</a>&nbsp;
+                <a class="post-tag" href="https://maltsev-dev.github.io/tags/pwm/">#pwm</a></span>
+    
+
+        
+        <div class="post-content">
+            <p>🟠 How to handle pulse width modulation</p>
+<span id="continue-reading"></span>
+<hr />
+<p><strong>PWM (pulse width modulation)</strong> is used to control the power supplied to the load.</p>
+<p>🔸 <strong>Classic method</strong> - reducing the voltage through a rheostat or potentiometer.<br />
+🔻 Disadvantage: inefficient, since part of the energy is lost as heat.</p>
+<p>🔸 <strong>PWM method</strong> - supplying voltage in short pulses with a fixed amplitude.<br />
+Instead of changing the voltage, the <strong>duty cycle</strong> changes:</p>
+<ul>
+<li>More on time → more power</li>
+<li>Less on time → less power</li>
+</ul>
+<p>This control method is efficient and causes almost no losses.</p>
+<h3 id="brief">Brief</h3>
+<ul>
+<li>mainly used to control the power supplied to the device.</li>
+<li>in some cases it can be used to transmit information for configuring the device.</li>
+<li>has a low power loss and the ability to digitally/software control.</li>
+</ul>
+<p>It has 2 main parameters</p>
+<ul>
+<li><strong>Frequency</strong> (switching frequency, <code>Hz</code>),</li>
+<li><strong>Duty cycle</strong> (percentage of time in "HIGH" state, from <code>0% </code>to <code>100%</code>).</li>
+</ul>
+
+
+
+    
+    
+
+
+
+    
+    
+
+
+
+<figure class="center">
+    <a href="https://maltsev-dev.github.io/processed_images/pwm.8d316a2b5cb85912.png">
+        <img src="https://maltsev-dev.github.io/processed_images/pwm.cad5074243bb6759.webp"   />
+    </a>
+    
+</figure>
+<hr />
+<h3 id="duty-cycle">Duty cycle</h3>
+<ul>
+<li>Percentage of time during which the <strong>signal is active</strong>
+<ul>
+<li>signal with 20% duty cycle is active 20% of the time</li>
+<li>signal with 50% duty cycle is active 50% of the time</li>
+<li>signal with 80% duty cycle is active 80% of the time</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li>The duty cycle can be set or controlled in <code>3 main ways</code>
+<ul>
+<li>Manual method (Use various knobs or sliders)</li>
+<li>Automatic (for example, using feedback on the output voltage in a pulse power supply)</li>
+<li>Software (using some kind of intelligent system that changes the pulse width depending on external logic or parameters)</li>
+</ul>
+</li>
+</ul>
+
+
+
+    
+    
+
+
+
+    
+    
+
+
+
+<figure class="center">
+    <a href="https://maltsev-dev.github.io/processed_images/pwm_duty_cycle.bbfeaef691f2ce86.png">
+        <img src="https://maltsev-dev.github.io/processed_images/pwm_duty_cycle.a53133abd5838a72.webp"   />
+    </a>
+    
+</figure>
+<h4 id="average-voltage-level">Average voltage level</h4>
+<p>PWM - often used to vary power by changing the <code>average voltage level</code> across a load.</p>
+<ul>
+<li>average load = <code>peak voltage</code>(5V) * <code>duty cycle</code>(20%) = 1V</li>
+</ul>
+
+
+
+    
+    
+
+
+
+    
+    
+
+
+
+<figure class="center">
+    <a href="https://maltsev-dev.github.io/processed_images/pwm_average_voltage.54ef44673126e1c5.png">
+        <img src="https://maltsev-dev.github.io/processed_images/pwm_average_voltage.8fad7231bb21ff9b.webp"   />
+    </a>
+    
+</figure>
+<hr />
+<h3 id="switching-frequency">Switching Frequency</h3>
+<ul>
+<li>Switching frequency, which is defined as the reciprocal of the time between the leading edges of the voltage pulses.</li>
+<li>The required switching frequency depends on the load or application area
+<ul>
+<li>can be from <code>10H</code>z to several <code>kHz</code></li>
+<li>for applications where faster or more precise control is required - <strong>higher</strong> switching frequencies are used</li>
+<li>but in most applications the switching frequency <strong>is fixed</strong></li>
+</ul>
+</li>
+<li>Signals can have the same duty cycles, but different switching frequencies</li>
+</ul>
+<hr />
+<h3 id="examples-of-pwm-systems">Examples of PWM Systems</h3>
+<table><thead><tr><th>System</th><th>Description</th></tr></thead><tbody>
+<tr><td><strong>1. Visual Devices</strong></td><td>● Screen brightness control (high frequency to avoid flickering)<br>● RGB LED color control</td></tr>
+<tr><td><strong>2. Audio</strong></td><td>● Digital to analog conversion via filtering<br>● Use efficient Class D amplifiers</td></tr>
+<tr><td><strong>3. Switching Power Supplies (SMPS)</strong></td><td>● The basis of switching converters<br>● Use MOSFETs to switch pulses</td></tr>
+<tr><td><strong>4. DC Motors</strong></td><td>● Fan or pump speed control<br>● Lower duty cycle → lower speed<br>● Inertia smooths out operation</td></tr>
+<tr><td><strong>5. Servos</strong></td><td>● PWM sets position, not speed<br>● Pulse width corresponds to deviation from neutral<br>● Power is supplied via a separate channel</td></tr>
+<tr><td><strong>6. Inverters (DC→AC)</strong></td><td>● Generating an alternating signal from PWM pulses</td></tr>
+<tr><td><strong>7. Chargers</strong></td><td>● Charging batteries (including from solar panels)<br>● PWM regulates average voltage to prevent overcharging and reverse current</td></tr>
+</tbody></table>
+<hr />
+<h2 id="bricks-embedded-rust-approach">🧱 Embedded Rust approach:</h2>
+<ol>
+<li>HAL library (e.g. <code>stm32f1xx-hal</code>, <code>rp2040-hal</code>, <code>esp32-hal</code>) provides API to peripherals.</li>
+<li><code>PWM</code> is usually implemented via <strong>timers (TIM)</strong>.</li>
+<li>Each <code>PWM</code> channel is assigned a <code>GPIO</code> pin and a timer.</li>
+</ol>
+<hr />
+<h2 id="hammer-general-flow-of-creating-pwm-in-rust">🔨 General flow of creating PWM in Rust</h2>
+<ol>
+<li>Access <code>PWM</code> slices (<code>Slices::new</code>)</li>
+<li>Configure <code>PWM7</code> (it controls <code>GPIO15</code> pin)</li>
+<li>Configure channel B of this <code>PWM</code> (channel connected to <code>GPIO15</code>)</li>
+<li>Connect <code>GPIO15</code> to <code>PWM</code> as <strong>output</strong></li>
+<li>In the loop, change the duty cycle value to get the breathing effect</li>
+</ol>
+<hr />
+<h2 id="bulb-implementation-rp2040">💡 Implementation: RP2040</h2>
+<pre data-lang="rust" style="background-color:#151515;color:#e8e8d3;" class="language-rust "><code class="language-rust" data-lang="rust"><span>use rp2040_hal::{</span><span style="color:#ffb964;">self </span><span>as hal, pwm::Slices};
+</span><span>
+</span><span>    </span><span style="color:#888888;">// PWM Slices Init
+</span><span>    </span><span style="color:#8fbfdc;">let</span><span> pwm_slices = Slices::new(pac.</span><span style="color:#7697d6;">PWM</span><span>, &amp;</span><span style="color:#8fbfdc;">mut</span><span> pac.</span><span style="color:#7697d6;">RESETS</span><span>);
+</span><span>    </span><span style="color:#888888;">// Get 7th slice (controls GPIO 14 (A) and GPIO 15 (B))
+</span><span>    </span><span style="color:#8fbfdc;">let mut</span><span> pwm_slice = pwm_slices.pwm7;
+</span><span>
+</span><span>    pwm_slice.set_ph_correct(); </span><span style="color:#888888;">// Phase correct mode = smoother signal
+</span><span>    pwm_slice.set_top(</span><span style="color:#cf6a4c;">255</span><span>); </span><span style="color:#888888;">// 8-bit duty cycle precision
+</span><span>    pwm_slice.enable(); </span><span style="color:#888888;">// enable slice
+</span><span>
+</span><span>    </span><span style="color:#888888;">// Get channel_b from 7th slice
+</span><span>    </span><span style="color:#8fbfdc;">let mut</span><span> channel_b = pwm_slice.channel_b;
+</span><span>    </span><span style="color:#888888;">// Make channel_b output to 15th pin
+</span><span>    </span><span style="color:#8fbfdc;">let</span><span> _pin = channel_b.output_to(pins.gpio15);
+</span><span>
+</span><span>    </span><span style="color:#8fbfdc;">let mut</span><span> duty: </span><span style="color:#8fbfdc;">i16 </span><span>= </span><span style="color:#cf6a4c;">0</span><span>;
+</span><span>    </span><span style="color:#8fbfdc;">let mut</span><span> step: </span><span style="color:#8fbfdc;">i16 </span><span>= </span><span style="color:#cf6a4c;">1</span><span>;
+</span><span>
+</span><span>    </span><span style="color:#8fbfdc;">loop </span><span>{
+</span><span>        </span><span style="color:#8fbfdc;">let </span><span>_ = channel_b.set_duty_cycle(duty as </span><span style="color:#8fbfdc;">u16</span><span>);
+</span><span>        timer.delay_us(</span><span style="color:#cf6a4c;">1000</span><span>);
+</span><span>
+</span><span>        duty += step;
+</span><span>        </span><span style="color:#8fbfdc;">if</span><span> duty &gt;= </span><span style="color:#cf6a4c;">255 </span><span>|| duty &lt;= </span><span style="color:#cf6a4c;">0 </span><span>{
+</span><span>            step = -step;
+</span><span>        }
+</span><span>    }
+</span><span>
+</span></code></pre>
+<hr />
+<h2 id="toolbox-tips-for-working-with-pwm">🧰 Tips for working with PWM</h2>
+<ul>
+<li><strong>Do not exceed the frequency</strong> - some devices work up to <code>1-10 kHz</code>.</li>
+<li><strong>PWM resolution</strong> depends on the timer (8/10/12/16 bit).</li>
+<li>For <strong>multi-channel PWM</strong> use different channels of the same timer or timers.</li>
+<li>Use a <strong>logic analyzer</strong> or <strong>oscilloscope</strong> for visualization.</li>
+<li>Timers often work asynchronously - glitches at startup are possible.</li>
+<li>For <strong>silent PWM</strong> (LED) use frequencies &gt; <code>1 kHz.</code></li>
+</ul>
+
+        </div>
+
+        
+        <div class="pagination">
+            <div class="pagination__title">
+                <span class="pagination__title-h">Read other posts?</span>
+                <hr />
+            </div>
+            <div class="pagination__buttons">
+                    <span class="button previous">
+                        <a href="https://maltsev-dev.github.io/emb-peripherals/">
+                            <span class="button__icon">←</span>&nbsp;
+                            <span class="button__text">MCU Peripherals</span>
+                        </a>
+                    </span>
+                
+                
+                    <span class="button next">
+                        <a href="https://maltsev-dev.github.io/emb-timers/">
+                            <span class="button__text">Timers</span>&nbsp;
+                            <span class="button__icon">→</span>
+                        </a>
+                    </span>
+                </div>
+        </div>
+    
+    </div>
+
+    </div>
+
+
+<footer class="footer">
+    <div class="footer__inner">
+            <div class="copyright copyright--user"><div class="copyright">
+    <span>© 2026 A.Maltsev</span>
+    <span class="copyright-theme-sep"></span>
+    <span><img src="https://visitor-badge.laobi.icu/badge?page_id=maltsev-dev.github.io&right_color=orange" alt="Visitors"></span>
+</div>
+</div>
+        </div>
+</footer>
+
+
+</div>
+</body>
+
+</html>

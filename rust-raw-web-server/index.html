@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+    <title>dev_stories</title>
+    
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+    <meta name="robots" content="noodp"/>
+
+    <link rel="stylesheet" href="https://maltsev-dev.github.io/style.css">
+    <link rel="stylesheet" href="https://maltsev-dev.github.io/color/orange.css">
+
+        <link rel="stylesheet" href="https://maltsev-dev.github.io/color/background_blue.css">
+    
+    <link rel="stylesheet" href="https://maltsev-dev.github.io/font-quicksand.css">
+
+
+    
+        <link rel="shortcut icon" type="image/png" href="/favicon.png">
+    
+    <meta property="og:site_name" content="dev_stories"><meta property="og:type" content="article">
+    <meta property="og:title" content="🌐 std web_server"><meta property="og:url" content="https://maltsev-dev.github.io/rust-raw-web-server/"><meta property="og:image" content="https://github.com/maltsev-dev/favicon.png">
+
+    </head>
+
+<body class="">
+<div class="container">
+    
+    <header class="header">
+        <div class="header__inner">
+            <div class="header__logo">
+                    
+                <a href="https://maltsev-dev.github.io" style="text-decoration: none;">
+                    <div class="logo">
+                      
+                            busy hands == happy heart
+                        
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        
+        <nav class="menu">
+            <ul class="menu__inner">
+                <li><a href="https://maltsev-dev.github.io/archive">archive</a></li>
+            
+                <li><a href="https://maltsev-dev.github.io/tags/project/">projects</a></li>
+            
+                <li><a href="https://maltsev-dev.github.io/about">about me</a></li>
+            </ul>
+        </nav>
+    
+    
+        
+    </header>
+    
+
+    <div class="content">
+        
+    <div class="post">
+        
+    <h1 class="post-title"><a href="https://maltsev-dev.github.io/rust-raw-web-server/">🌐 std web_server</a></h1>
+    <div class="post-meta-inline">
+        
+    <span class="post-date">
+            2024-12-10
+        </span>
+
+    </div>
+
+    
+        <span class="post-tags-inline">
+                :: tags:&nbsp;
+                <a class="post-tag" href="https://maltsev-dev.github.io/tags/rust/">#rust</a>&nbsp;
+                <a class="post-tag" href="https://maltsev-dev.github.io/tags/sync/">#sync</a>&nbsp;
+                <a class="post-tag" href="https://maltsev-dev.github.io/tags/project/">#project</a></span>
+    
+
+        
+        <div class="post-content">
+            <p><strong>Minimal yet functional multi-threaded web server implemented entirely using the Rust standard library.</strong>
+No external dependencies — just pure <code>std</code>.</p>
+<span id="continue-reading"></span>
+<hr />
+<p><a href="https://github.com/maltsev-dev/raw_web_server">📚 GitHub Repository</a>
+<img src="https://img.shields.io/badge/rust-1.83.0%20-green" alt="Rust Version" /></p>
+<p>This project demonstrates how to build a basic but concurrent HTTP server by leveraging only the <strong>Rust Standard Library</strong>.<br />
+It serves as a deep dive into Rust’s core capabilities around file <code>I/O</code>, <code>networking</code>, <code>threading</code>, and <code>concurrency</code>.</p>
+<p>An excellent hands-on learning example for:</p>
+<ul>
+<li>Systems programmers</li>
+<li>Backend developers exploring Rust</li>
+<li>Students building web server fundamentals</li>
+</ul>
+<hr />
+<h2 id="tools-tech-stack-std-only">🛠 Tech Stack – std Only</h2>
+<p>The server is powered by a <strong>thread pool</strong> and handles each TCP connection asynchronously using:</p>
+<ul>
+<li>📂 <code>fs</code> – for serving static HTML files</li>
+<li>🔗 <code>net::{TcpListener, TcpStream}</code> – for socket connections</li>
+<li>🧵 <code>thread</code> – to spawn workers</li>
+<li>📦 <code>sync::{mpsc, Arc, Mutex}</code> – for shared message passing</li>
+<li>🕒 <code>time::Duration</code> – for simulated delays (e.g., thread sleeping)</li>
+<li>📖 <code>io::{BufReader, prelude::*}</code> – to read and parse incoming streams</li>
+</ul>
+<hr />
+<h2 id="sparkles-features">✨ Features</h2>
+<ol>
+<li>
+<p><strong>Multi-threaded request handling</strong></p>
+<ul>
+<li>Built-in thread pool to handle requests concurrently.</li>
+</ul>
+</li>
+<li>
+<p><strong>Graceful connection handling</strong></p>
+<ul>
+<li>Supports reading HTTP headers via <code>BufReader</code> and routing based on request paths.</li>
+</ul>
+</li>
+<li>
+<p><strong>Static file serving</strong></p>
+<ul>
+<li>Can serve <code>.html</code> files directly from the filesystem.</li>
+</ul>
+</li>
+<li>
+<p><strong>Clean shutdown mechanism</strong></p>
+<ul>
+<li>Implements graceful shutdown via message passing.</li>
+</ul>
+</li>
+<li>
+<p><strong>Zero dependencies</strong></p>
+<ul>
+<li>Uses only what <code>std</code> offers — perfect for understanding how things work under the hood.</li>
+</ul>
+</li>
+</ol>
+<hr />
+<h2 id="open-file-folder-project-structure">📂 Project Structure</h2>
+<ul>
+<li><code>main.rs</code> – entry point, sets up listener and thread pool</li>
+<li><code>lib.rs</code> – contains thread pool implementation</li>
+<li><code>static/</code> – directory for HTML files (index.html, 404.html, etc.)</li>
+</ul>
+<hr />
+<h2 id="test-tube-example-usage">🧪 Example Usage</h2>
+<pre data-lang="bash" style="background-color:#151515;color:#e8e8d3;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#ffb964;">cargo</span><span> run
+</span></code></pre>
+<p>Then open your browser and go to:
+<code>http://localhost:7878</code></p>
+<p>To simulate a delayed response:</p>
+<ul>
+<li>Access route <code>/sleep</code> — one thread will sleep for 5 seconds.</li>
+</ul>
+<hr />
+<h2 id="brain-educational-value">🧠 Educational Value</h2>
+<p>This project mirrors the concepts from "The Rust Programming Language" book (Chapter 20), but it goes further with:</p>
+<ul>
+<li>Better thread pool abstraction</li>
+<li>Error handling improvements</li>
+<li>Project-ready formatting</li>
+</ul>
+<p>Use it to:</p>
+<ul>
+<li>Learn how a basic HTTP server works</li>
+<li>Build custom functionality (routes, MIME types, logging, etc.)</li>
+<li>Extend toward async runtime by comparing with <code>tokio</code> later</li>
+</ul>
+<hr />
+<h2 id="page-facing-up-license">📄 License</h2>
+<p>This project is licensed under the <strong>MIT License</strong> — feel free to build on it, fork it, or turn it into something bigger.</p>
+
+        </div>
+
+        
+        <div class="pagination">
+            <div class="pagination__title">
+                <span class="pagination__title-h">Read other posts?</span>
+                <hr />
+            </div>
+            <div class="pagination__buttons">
+                    <span class="button previous">
+                        <a href="https://maltsev-dev.github.io/rust-actix-server/">
+                            <span class="button__icon">←</span>&nbsp;
+                            <span class="button__text">🌐 Actix-Web Server</span>
+                        </a>
+                    </span>
+                
+                
+                    <span class="button next">
+                        <a href="https://maltsev-dev.github.io/rust-toolchain/">
+                            <span class="button__text">Rust Toolchain: A Complete Guide to Managing and Configuring Your Rust Environment</span>&nbsp;
+                            <span class="button__icon">→</span>
+                        </a>
+                    </span>
+                </div>
+        </div>
+    
+    </div>
+
+    </div>
+
+
+<footer class="footer">
+    <div class="footer__inner">
+            <div class="copyright copyright--user"><div class="copyright">
+    <span>© 2026 A.Maltsev</span>
+    <span class="copyright-theme-sep"></span>
+    <span><img src="https://visitor-badge.laobi.icu/badge?page_id=maltsev-dev.github.io&right_color=orange" alt="Visitors"></span>
+</div>
+</div>
+        </div>
+</footer>
+
+
+</div>
+</body>
+
+</html>

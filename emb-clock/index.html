@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+    <title>dev_stories</title>
+    
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+    <meta name="robots" content="noodp"/>
+
+    <link rel="stylesheet" href="https://maltsev-dev.github.io/style.css">
+    <link rel="stylesheet" href="https://maltsev-dev.github.io/color/orange.css">
+
+        <link rel="stylesheet" href="https://maltsev-dev.github.io/color/background_blue.css">
+    
+    <link rel="stylesheet" href="https://maltsev-dev.github.io/font-quicksand.css">
+
+
+    
+        <link rel="shortcut icon" type="image/png" href="/favicon.png">
+    
+    <meta property="og:site_name" content="dev_stories"><meta property="og:type" content="article">
+    <meta property="og:title" content="MCU Clock System"><meta property="og:url" content="https://maltsev-dev.github.io/emb-clock/"><meta property="og:image" content="https://github.com/maltsev-dev/favicon.png">
+
+    </head>
+
+<body class="">
+<div class="container">
+    
+    <header class="header">
+        <div class="header__inner">
+            <div class="header__logo">
+                    
+                <a href="https://maltsev-dev.github.io" style="text-decoration: none;">
+                    <div class="logo">
+                      
+                            busy hands == happy heart
+                        
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        
+        <nav class="menu">
+            <ul class="menu__inner">
+                <li><a href="https://maltsev-dev.github.io/archive">archive</a></li>
+            
+                <li><a href="https://maltsev-dev.github.io/tags/project/">projects</a></li>
+            
+                <li><a href="https://maltsev-dev.github.io/about">about me</a></li>
+            </ul>
+        </nav>
+    
+    
+        
+    </header>
+    
+
+    <div class="content">
+        
+    <div class="post">
+        
+    <h1 class="post-title"><a href="https://maltsev-dev.github.io/emb-clock/">MCU Clock System</a></h1>
+    <div class="post-meta-inline">
+        
+    <span class="post-date">
+            2025-07-15
+        </span>
+
+    </div>
+
+    
+        <span class="post-tags-inline">
+                :: tags:&nbsp;
+                <a class="post-tag" href="https://maltsev-dev.github.io/tags/embedded/">#embedded</a>&nbsp;
+                <a class="post-tag" href="https://maltsev-dev.github.io/tags/basic/">#basic</a>&nbsp;
+                <a class="post-tag" href="https://maltsev-dev.github.io/tags/clock/">#clock</a></span>
+    
+
+        
+        <div class="post-content">
+            <p>🟠 <strong>Clock is the basis for timers and interrupts</strong>
+The clock system sets the pace of all digital components of the microcontroller. Timers use its signals to generate interrupts and perform tasks with precise time control.</p>
+<span id="continue-reading"></span>
+<hr />
+<h2 id="stopwatch-what-is-a-clock-in-an-mcu">⏱ What is a clock in an MCU?</h2>
+<p>A clock is not primarily about "<code>time</code>" - it is a system that generates clock signals to <code>synchronize</code> the CPU and peripheral modules (timers, UART, ADC, etc.). The frequency of the clock signal determines how fast the MCU executes instructions and processes events.<br />
+MCU components usually operate at different frequencies and need to be synchronized to perform operations at the same time.</p>
+<p>A simple digital signal switches between high and low levels at a certain <strong>frequency</strong> (in Hertz).<br />
+Frequency is the number of events that occur per unit of time, usually per second.</p>
+<ul>
+<li>1 Hz = 1 switching per second</li>
+<li>1 MHz = 1 million switchings per second</li>
+</ul>
+<p><strong>Important:</strong> High frequency provides performance, but increases power consumption and heat generation. Therefore, peripheral devices often operate at a lower frequency.</p>
+<h2 id="gear-how-do-clocks-work">⚙️ How do clocks work?</h2>
+<p>The most common clock generator is the <strong>quartz crystal</strong>.<br />
+It is used because it can vibrate at a stable frequency (the resonant frequency) when voltage is applied to it.</p>
+<p>One of the disadvantages of a quartz crystal is that it is usually limited to generating a single frequency in the megahertz range. On complex boards, this can be a problem, since different components often operate at different frequencies and at much higher speeds. To solve the problem of having to use multiple frequencies on a single board, designers often use a PLL and prescalers.</p>
+<p>To obtain different frequencies, use:</p>
+<ul>
+<li>
+<p><strong>PLL (phase-locked loop)</strong> - a circuit that creates a desired frequency from a base signal (for example, 1 GHz from 100 MHz). It is used to obtain high and accurate clock signals from a limited number of resonators.</p>
+</li>
+<li>
+<p><strong>Prescalers</strong> - reduce the frequency for individual modules.</p>
+</li>
+</ul>
+<h2 id="wrench-clock-system-components">🔧 Clock system components</h2>
+<ul>
+<li>
+<p><strong>Clock sources</strong></p>
+<ul>
+<li>Internal RC oscillator (less accurate, but energy-saving)</li>
+<li>External quartz (high stability)</li>
+<li>PLL — frequency multiplication</li>
+</ul>
+</li>
+<li>
+<p><strong>Dividers and prescalers</strong>
+Allow you to set the desired frequency for each block</p>
+</li>
+<li>
+<p><strong>System clock (SYSCLK)</strong>
+Main processor clock signal</p>
+</li>
+<li>
+<p><strong>Peripheral clock</strong>
+Frequency division between modules (e.g. AHB, APB in STM32)</p>
+</li>
+</ul>
+<h2 id="watch-clock-types">⌚ Clock types</h2>
+<p>Clocks are also used for their usual function - <code>keeping time</code>. There are 2 types of clocks for this purpose:</p>
+<ul>
+<li>
+<p><strong>RTC (Real-Time Clock)</strong>
+Hardware clock that works even when the power is off (from the battery).
+Used for accurate real-time counting.</p>
+</li>
+<li>
+<p><strong>System Clock</strong>
+Virtual clock, monitored by the OS, initialized at startup (usually from the RTC).</p>
+</li>
+</ul>
+<h2 id="tools-example-of-clocks-setup-in-rust-rp2040">🛠 Example of clocks setup in Rust (RP2040)</h2>
+<pre data-lang="rust" style="background-color:#151515;color:#e8e8d3;" class="language-rust "><code class="language-rust" data-lang="rust"><span>use rp2040_hal as hal;
+</span><span style="color:#8fbfdc;">const </span><span style="color:#7697d6;">XTAL_FREQ_HZ</span><span>: </span><span style="color:#8fbfdc;">u32 </span><span>= </span><span style="color:#cf6a4c;">12_000_000</span><span>;
+</span><span>
+</span><span style="color:#8fbfdc;">let mut</span><span> watchdog = hal::Watchdog::new(pac.</span><span style="color:#7697d6;">WATCHDOG</span><span>);
+</span><span>
+</span><span style="color:#8fbfdc;">let</span><span> clocks = hal::clocks::init_clocks_and_plls(
+</span><span>    </span><span style="color:#7697d6;">XTAL_FREQ_HZ</span><span>,
+</span><span>    pac.</span><span style="color:#7697d6;">XOSC</span><span>,
+</span><span>    pac.</span><span style="color:#7697d6;">CLOCKS</span><span>,
+</span><span>    pac.</span><span style="color:#7697d6;">PLL_SYS</span><span>,
+</span><span>    pac.</span><span style="color:#7697d6;">PLL_USB</span><span>,
+</span><span>    &amp;</span><span style="color:#8fbfdc;">mut</span><span> pac.</span><span style="color:#7697d6;">RESETS</span><span>,
+</span><span>    &amp;</span><span style="color:#8fbfdc;">mut</span><span> watchdog,
+</span><span>).unwrap();
+</span></code></pre>
+<h2 id="zap-communicating-with-interrupts">⚡ Communicating with interrupts</h2>
+<ul>
+<li>Timers receive their frequency from the system clock and use it to accurately generate interrupts.</li>
+<li>Without proper frequency settings, timers may work with errors or become unstable.</li>
+<li>Some interrupts (e.g. Watchdog) use independent clock sources (e.g. <strong>LSI</strong> in STM32).</li>
+</ul>
+
+        </div>
+
+        
+        <div class="pagination">
+            <div class="pagination__title">
+                <span class="pagination__title-h">Read other posts?</span>
+                <hr />
+            </div>
+            <div class="pagination__buttons">
+                    <span class="button previous">
+                        <a href="https://maltsev-dev.github.io/emb-interrupt/">
+                            <span class="button__icon">←</span>&nbsp;
+                            <span class="button__text">Interrupts (ISR, IVT, NVIC)</span>
+                        </a>
+                    </span>
+                
+                
+                    <span class="button next">
+                        <a href="https://maltsev-dev.github.io/emb-sync/">
+                            <span class="button__text">MCU Synchronization</span>&nbsp;
+                            <span class="button__icon">→</span>
+                        </a>
+                    </span>
+                </div>
+        </div>
+    
+    </div>
+
+    </div>
+
+
+<footer class="footer">
+    <div class="footer__inner">
+            <div class="copyright copyright--user"><div class="copyright">
+    <span>© 2026 A.Maltsev</span>
+    <span class="copyright-theme-sep"></span>
+    <span><img src="https://visitor-badge.laobi.icu/badge?page_id=maltsev-dev.github.io&right_color=orange" alt="Visitors"></span>
+</div>
+</div>
+        </div>
+</footer>
+
+
+</div>
+</body>
+
+</html>

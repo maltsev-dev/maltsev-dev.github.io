@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+    <title>dev_stories</title>
+    
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+    <meta name="robots" content="noodp"/>
+
+    <link rel="stylesheet" href="https://maltsev-dev.github.io/style.css">
+    <link rel="stylesheet" href="https://maltsev-dev.github.io/color/orange.css">
+
+        <link rel="stylesheet" href="https://maltsev-dev.github.io/color/background_blue.css">
+    
+    <link rel="stylesheet" href="https://maltsev-dev.github.io/font-quicksand.css">
+
+
+    
+        <link rel="shortcut icon" type="image/png" href="/favicon.png">
+    
+    <meta property="og:site_name" content="dev_stories"><meta property="og:type" content="article">
+    <meta property="og:title" content="GPIO (General Purpose Input / Output)"><meta property="og:url" content="https://maltsev-dev.github.io/emb-gpio/"><meta property="og:image" content="https://github.com/maltsev-dev/favicon.png">
+
+    </head>
+
+<body class="">
+<div class="container">
+    
+    <header class="header">
+        <div class="header__inner">
+            <div class="header__logo">
+                    
+                <a href="https://maltsev-dev.github.io" style="text-decoration: none;">
+                    <div class="logo">
+                      
+                            busy hands == happy heart
+                        
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        
+        <nav class="menu">
+            <ul class="menu__inner">
+                <li><a href="https://maltsev-dev.github.io/archive">archive</a></li>
+            
+                <li><a href="https://maltsev-dev.github.io/tags/project/">projects</a></li>
+            
+                <li><a href="https://maltsev-dev.github.io/about">about me</a></li>
+            </ul>
+        </nav>
+    
+    
+        
+    </header>
+    
+
+    <div class="content">
+        
+    <div class="post">
+        
+    <h1 class="post-title"><a href="https://maltsev-dev.github.io/emb-gpio/">GPIO (General Purpose Input &#x2F; Output)</a></h1>
+    <div class="post-meta-inline">
+        
+    <span class="post-date">
+            2025-06-12
+        </span>
+
+    </div>
+
+    
+        <span class="post-tags-inline">
+                :: tags:&nbsp;
+                <a class="post-tag" href="https://maltsev-dev.github.io/tags/rust/">#rust</a>&nbsp;
+                <a class="post-tag" href="https://maltsev-dev.github.io/tags/embedded/">#embedded</a>&nbsp;
+                <a class="post-tag" href="https://maltsev-dev.github.io/tags/basic/">#basic</a>&nbsp;
+                <a class="post-tag" href="https://maltsev-dev.github.io/tags/gpio/">#gpio</a></span>
+    
+
+        
+        <div class="post-content">
+            <p>🟠 What is a general purpose input output (GPIO) of the MCU</p>
+<span id="continue-reading"></span>
+<hr />
+<h3 id="gpio">GPIO</h3>
+<p>GPIO stands for general purpose input/output. It is a type of pin found on an integrated circuit that does not have a specific function.<br />
+While most pins have a dedicated purpose, such as sending a signal to a certain component, the function of a <strong>GPIO pin is customizable</strong> and can be controlled by the software.</p>
+<p>It can work as:
+📥 Input (reads logical signals, such as from a button)<br />
+📤 Output (controls something - LED, relay, motor)<br />
+🔄 Sometimes - both as an input and as an output (push-pull)</p>
+<h3 id="pin">Pin</h3>
+<p><strong>Pin Mode</strong> : Each port bit of the general-purpose I/O (GPIO) ports can be individually configured by software in several modes:</p>
+<ul>
+<li>input or output</li>
+<li>analog</li>
+<li>alternate function (AF).
+<strong>Pin characteristics</strong> :</li>
+<li>Input : no <code>pull-up</code> and no <code>pull-down</code> or pull-up or pull-down</li>
+<li>Output : <code>push-pull</code> or <code>open-drain</code> with pull-up or pull-down capability</li>
+<li>Alternate function : push-pull or open-drain with pull-up or pull-down capability.<br />
+
+
+
+    
+    
+
+
+
+    
+    
+
+
+
+<figure class="center">
+    <a href="https://maltsev-dev.github.io/processed_images/gpio_design_1.9f6c30e1266966f4.png">
+        <img src="https://maltsev-dev.github.io/processed_images/gpio_design_1.a9fc1194057772e9.webp"   />
+    </a>
+    
+</figure>
+</li>
+</ul>
+<h3 id="gpio-design">GPIO Design</h3>
+<p>Each GPIO pin of the microcontroller consists of <strong>three key components</strong>:<br />
+
+
+
+    
+    
+
+
+
+    
+    
+
+
+
+<figure class="center">
+    <a href="https://maltsev-dev.github.io/processed_images/gpio_design.65557e2e6de1fefb.png">
+        <img src="https://maltsev-dev.github.io/processed_images/gpio_design.ffb3326bd5e91bb2.webp"   />
+    </a>
+    
+</figure>
+</p>
+<ol>
+<li><strong>Enable Line</strong></li>
+</ol>
+<ul>
+<li>Configures the pin mode: <code>input</code>, <code>output</code>, <code>alternate function</code>, <code>analog</code>, etc.</li>
+<li>Controls the activation of internal pull-up resistors</li>
+<li>Enables/disables <strong>input/output buffers</strong> and logic enable</li>
+</ul>
+<ol start="2">
+<li><strong>Output Buffer</strong></li>
+</ol>
+<ul>
+<li>It is a combination of <strong>two transistors (PMOS + NMOS)</strong></li>
+<li>In <strong>Push-Pull</strong> mode both can work</li>
+<li>In <strong>Open-Drain</strong> only <code>NMOS</code> is active</li>
+<li>Allows to output logic levels to an external pin</li>
+</ul>
+<p>When the signal <code>0</code> comes out, control goes through the <code>NMOS</code> transistor and no logical one is supplied to the pin.<br />
+
+
+
+    
+    
+
+
+
+    
+    
+
+
+
+<figure class="center">
+    <a href="https://maltsev-dev.github.io/processed_images/output_buffer_zero.650f3e6ce4b1db5e.png">
+        <img src="https://maltsev-dev.github.io/processed_images/output_buffer_zero.8b4f021df7855e78.webp"   />
+    </a>
+    
+</figure>
+
+When the signal <code>1</code> comes out, control goes through the <code>PMOS</code> transistor and a logical one is supplied to the pin.<br />
+
+
+
+    
+    
+
+
+
+    
+    
+
+
+
+<figure class="center">
+    <a href="https://maltsev-dev.github.io/processed_images/output_buffer_one.4150d2fb0785c641.png">
+        <img src="https://maltsev-dev.github.io/processed_images/output_buffer_one.f765516ea19199c0.webp"   />
+    </a>
+    
+</figure>
+</p>
+<ol start="3">
+<li><strong>Input Buffer</strong></li>
+</ol>
+<ul>
+<li>Monitors the signal level on the pin</li>
+<li>Can be <strong>enabled or disabled</strong> - for example to disable reading during output</li>
+<li>Used to read logic level or generate interrupts</li>
+</ul>
+<p>When a <code>0</code> signal is received on the pin, control passes through the <code>NMOS</code> transistor and goes to <code>GND</code><br />
+
+
+
+    
+    
+
+
+
+    
+    
+
+
+
+<figure class="center">
+    <a href="https://maltsev-dev.github.io/processed_images/input_buffer_zero.705a926f597e1cd6.png">
+        <img src="https://maltsev-dev.github.io/processed_images/input_buffer_zero.86a0e2bb83bde8b6.webp"   />
+    </a>
+    
+</figure>
+
+When a <code>1</code> signal is received on the pin, control passes through the <code>PMOS</code> transistor and is powered from <code>+VCC</code><br />
+
+
+
+    
+    
+
+
+
+    
+    
+
+
+
+<figure class="center">
+    <a href="https://maltsev-dev.github.io/processed_images/input_buffer_one.29cabbab83e19221.png">
+        <img src="https://maltsev-dev.github.io/processed_images/input_buffer_one.624b97a55d21cbb0.webp"   />
+    </a>
+    
+</figure>
+</p>
+<h3 id="gear-gpio-modes">⚙️ GPIO Modes</h3>
+<ul>
+<li><strong>By default</strong> all GPIOs on most microcontrollers are configured in <strong>Input mode</strong>.</li>
+<li>In this mode they are <strong>not connected to either Vcc or GND</strong> - the pin is in the <strong>High Impedance (Hi-Z)</strong> state.</li>
+<li>This means that the <strong>GPIO is not "involved" in the circuit's operation</strong>, but may be subject to <strong>noise and flow currents</strong>, especially if the input is left "floating".</li>
+</ul>
+<table><thead><tr><th>Mode</th><th>Description</th><th>Example</th></tr></thead><tbody>
+<tr><td><strong>Input</strong></td><td>Reading signal from outside</td><td>Button, sensor</td></tr>
+<tr><td><strong>Input Pull-Up</strong></td><td>Input with pull-up to Vcc (internal resistor)</td><td>Button to GND</td></tr>
+<tr><td><strong>Input Pull-Down</strong></td><td>Input with pull-up to GND</td><td>Button to Vcc</td></tr>
+<tr><td><strong>Output Push-Pull</strong></td><td>Normal output (0 or 1)</td><td>LED, relay</td></tr>
+<tr><td><strong>Output Open-Drain</strong></td><td>Only "0", "1" — via external resistor</td><td>I²C, external bus</td></tr>
+<tr><td><strong>Analog</strong></td><td>ADC/DAC is used on the output</td><td>Temperature sensor, audio</td></tr>
+<tr><td><strong>Alternate Function</strong></td><td>Used by peripherals (SPI, PWM, UART)</td><td>SPI, I²C, PWM</td></tr>
+</tbody></table>
+<p>If we wanted to use some Pin as an input, we would use either <code>.into_pull_up_input()</code>, <code>.into_pull_down_input()</code> to tell the chip to expect the system voltage (3.3 volts) to be <code>present</code> or <code>absent</code>, and react if that changes.</p>
+<pre data-lang="rust" style="background-color:#151515;color:#e8e8d3;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="color:#888888;">// RP2040 (Rust embedded-hal, hi-Z)
+</span><span>    _pin_28.into_pull_down_input(); </span><span style="color:#888888;">// Set GPIO 28 as input with pull-down
+</span><span>    _pin_28.into_floating_input(); </span><span style="color:#888888;">// Set GPIO 28 as floating input
+</span><span>    _pin_28.into_pull_up_input(); </span><span style="color:#888888;">// Set GPIO 28 as input with pull-up
+</span><span>
+</span><span>    _pin_28.into_pull_up_disabled(); </span><span style="color:#888888;">// Disable pull-up on GPIO 28
+</span><span>    _pin_28.into_pull_down_disabled(); </span><span style="color:#888888;">// Disable pull-down on GPIO 28
+</span><span>
+</span><span>    _pin_28.into_push_pull_output(); </span><span style="color:#888888;">// Set GPIO 28 as push-pull output
+</span></code></pre>
+<h2 id="output">Output</h2>
+<h3 id="push-pull">Push-Pull</h3>
+<ul>
+<li>GPIO uses <strong>two transistors</strong>: <strong>PMOS</strong> (to supply "1") and <strong>NMOS</strong> (to supply "0").</li>
+<li>In Push-Pull mode, the pin can actively:
+<ul>
+<li>Supply the line with <strong>logical 1 (Vcc)</strong> via PMOS</li>
+<li>Supply <strong>logical 0 (GND)</strong> via NMOS</li>
+</ul>
+</li>
+<li>This is the standard mode for driving LEDs, relays and other loads.</li>
+</ul>
+<h3 id="open-drain">Open-Drain</h3>
+<ul>
+<li>In this mode, GPIO <strong>can only short the pin to ground (0)</strong> via <strong>NMOS</strong>.</li>
+<li>Internal <strong>PMOS is missing</strong> or disabled → you <strong>cannot</strong> apply "1" directly.</li>
+<li>When GPIO is driven to logic "1" → transistor <strong>is off</strong> and pin becomes <strong>floating</strong>.</li>
+<li>To make the line to be logic "1", a <strong>pull-up resistor</strong> is used:
+<ul>
+<li><strong>Internal</strong> (enabled by software if available)</li>
+<li><strong>External</strong> (usually 4.7k–10k Ohm to Vcc)</li>
+</ul>
+</li>
+</ul>
+<p>Useful when
+When need a <strong>common bus</strong> with <strong>many devices</strong> connected to it. (All participants can <strong>only "pull down"</strong> to avoid conflict)</p>
+
+        </div>
+
+        
+        <div class="pagination">
+            <div class="pagination__title">
+                <span class="pagination__title-h">Read other posts?</span>
+                <hr />
+            </div>
+            <div class="pagination__buttons">
+                    <span class="button previous">
+                        <a href="https://maltsev-dev.github.io/rust-memory-layout/">
+                            <span class="button__icon">←</span>&nbsp;
+                            <span class="button__text">Understanding Memory Management in Rust: From Dynamically Sized Types to Fat Pointers</span>
+                        </a>
+                    </span>
+                
+                
+                    <span class="button next">
+                        <a href="https://maltsev-dev.github.io/rust-firmware-memory/">
+                            <span class="button__text">Building Trustworthy Embedded Systems with Rust</span>&nbsp;
+                            <span class="button__icon">→</span>
+                        </a>
+                    </span>
+                </div>
+        </div>
+    
+    </div>
+
+    </div>
+
+
+<footer class="footer">
+    <div class="footer__inner">
+            <div class="copyright copyright--user"><div class="copyright">
+    <span>© 2026 A.Maltsev</span>
+    <span class="copyright-theme-sep"></span>
+    <span><img src="https://visitor-badge.laobi.icu/badge?page_id=maltsev-dev.github.io&right_color=orange" alt="Visitors"></span>
+</div>
+</div>
+        </div>
+</footer>
+
+
+</div>
+</body>
+
+</html>

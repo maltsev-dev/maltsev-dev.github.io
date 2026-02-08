@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+    <title>dev_stories</title>
+    
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+    <meta name="robots" content="noodp"/>
+
+    <link rel="stylesheet" href="https://maltsev-dev.github.io/style.css">
+    <link rel="stylesheet" href="https://maltsev-dev.github.io/color/orange.css">
+
+        <link rel="stylesheet" href="https://maltsev-dev.github.io/color/background_blue.css">
+    
+    <link rel="stylesheet" href="https://maltsev-dev.github.io/font-quicksand.css">
+
+
+    
+        <link rel="shortcut icon" type="image/png" href="/favicon.png">
+    
+    <meta property="og:site_name" content="dev_stories"><meta property="og:type" content="article">
+    <meta property="og:title" content="📦 On-Chain Key-Value Storage"><meta property="og:url" content="https://maltsev-dev.github.io/rust-solana-anchor-favorites/"><meta property="og:image" content="https://github.com/maltsev-dev/favicon.png">
+
+    </head>
+
+<body class="">
+<div class="container">
+    
+    <header class="header">
+        <div class="header__inner">
+            <div class="header__logo">
+                    
+                <a href="https://maltsev-dev.github.io" style="text-decoration: none;">
+                    <div class="logo">
+                      
+                            busy hands == happy heart
+                        
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        
+        <nav class="menu">
+            <ul class="menu__inner">
+                <li><a href="https://maltsev-dev.github.io/archive">archive</a></li>
+            
+                <li><a href="https://maltsev-dev.github.io/tags/project/">projects</a></li>
+            
+                <li><a href="https://maltsev-dev.github.io/about">about me</a></li>
+            </ul>
+        </nav>
+    
+    
+        
+    </header>
+    
+
+    <div class="content">
+        
+    <div class="post">
+        
+    <h1 class="post-title"><a href="https://maltsev-dev.github.io/rust-solana-anchor-favorites/">📦 On-Chain Key-Value Storage</a></h1>
+    <div class="post-meta-inline">
+        
+    <span class="post-date">
+            2025-04-09
+        </span>
+
+    </div>
+
+    
+        <span class="post-tags-inline">
+                :: tags:&nbsp;
+                <a class="post-tag" href="https://maltsev-dev.github.io/tags/rust/">#rust</a>&nbsp;
+                <a class="post-tag" href="https://maltsev-dev.github.io/tags/solana/">#solana</a>&nbsp;
+                <a class="post-tag" href="https://maltsev-dev.github.io/tags/anchor/">#anchor</a>&nbsp;
+                <a class="post-tag" href="https://maltsev-dev.github.io/tags/project/">#project</a></span>
+    
+
+        
+        <div class="post-content">
+            <p><strong>A Solana smart contract project that demonstrates how to send, store, and update data on-chain using keys.</strong>
+Built with <strong>Rust</strong> and the <strong>Anchor</strong> framework.</p>
+<span id="continue-reading"></span>
+<hr />
+<p><a href="https://github.com/maltsev-dev/send_data">📚 GitHub Repository</a></p>
+<p>This project explores how to interact with a <strong>Solana program</strong> by writing and updating user-defined data directly on-chain.
+It simulates a simple <strong>“favorites” manager</strong> — where users can send strings or numbers to the chain, associate them with a unique key, and later update those entries.</p>
+<p>A great starting point for:</p>
+<ul>
+<li>Understanding persistent on-chain state</li>
+<li>Managing user-specific data using derived accounts</li>
+<li>Creating decentralized CRUD-style apps</li>
+</ul>
+<hr />
+<h3 id="toolbox-stack-tools">🧰 Stack &amp; Tools</h3>
+<ul>
+<li>🦀 <strong>Rust</strong> (Solana smart contract logic)</li>
+<li>⚓ <strong>Anchor</strong> (framework for Solana programs)</li>
+<li>🧪 <strong>Local test validator</strong></li>
+<li>🧪 <strong>Rust unit/integration tests</strong></li>
+</ul>
+<hr />
+<h2 id="sparkles-features">✨ Features</h2>
+<ol>
+<li>
+<p><strong>Send Arbitrary Data to the Blockchain</strong></p>
+<ul>
+<li>Insert a value associated with a custom key.</li>
+</ul>
+</li>
+<li>
+<p><strong>Update Stored Data by Key</strong></p>
+<ul>
+<li>Modify entries via a transaction that targets a specific key.</li>
+</ul>
+</li>
+<li>
+<p><strong>Simple Chain Storage Pattern</strong></p>
+<ul>
+<li>Uses Solana accounts to persist user-defined values.</li>
+</ul>
+</li>
+<li>
+<p><strong>Full Test Coverage</strong></p>
+<ul>
+<li>Rust-based tests validate program logic locally.</li>
+</ul>
+</li>
+</ol>
+<hr />
+<h2 id="rocket-getting-started">🚀 Getting Started</h2>
+<h3 id="1-test-tube-start-local-solana-validator">1. 🧪 Start Local Solana Validator</h3>
+<p>Spin up a local blockchain testnet:</p>
+<pre data-lang="bash" style="background-color:#151515;color:#e8e8d3;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#ffb964;">solana-test-validator
+</span></code></pre>
+<h3 id="2-tools-build-and-deploy">2. 🛠 Build and Deploy</h3>
+<p>Compile and deploy the Anchor program:</p>
+<pre data-lang="bash" style="background-color:#151515;color:#e8e8d3;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#ffb964;">anchor</span><span> build &amp;&amp; </span><span style="color:#ffb964;">anchor</span><span> deploy
+</span></code></pre>
+<h3 id="3-purse-add-wallet">3. 👛 Add Wallet</h3>
+<p>Set your Solana CLI wallet path:</p>
+<pre data-lang="bash" style="background-color:#151515;color:#e8e8d3;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#8fbfdc;">export </span><span style="color:#ffb964;">ANCHOR_WALLET</span><span>=</span><span style="color:#ffb964;">~</span><span style="color:#99ad6a;">/.config/solana/id.json
+</span></code></pre>
+<h3 id="4-white-check-mark-run-tests">4. ✅ Run Tests</h3>
+<p>Ensure everything works as expected with:</p>
+<pre data-lang="bash" style="background-color:#151515;color:#e8e8d3;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#ffb964;">cargo</span><span> test
+</span></code></pre>
+<h3 id="5-mag-view-transactions">5. 🔍 View Transactions</h3>
+<p>Access the local explorer to track activity:
+<a href="http://localhost:8899">http://localhost:8899</a></p>
+<hr />
+<h2 id="brain-use-cases-ideas">🧠 Use Cases &amp; Ideas</h2>
+<ul>
+<li>⭐ Store favorite quotes, URLs, or topics by key</li>
+<li>🧾 Use it as a base for decentralized note-taking or bookmarking</li>
+<li>🔑 Extend it with access control and per-user namespaces</li>
+</ul>
+<hr />
+<h2 id="page-facing-up-license">📄 License</h2>
+<p>This project is licensed under the <strong>MIT License</strong> — free for personal and commercial use.</p>
+
+        </div>
+
+        
+        <div class="pagination">
+            <div class="pagination__title">
+                <span class="pagination__title-h">Read other posts?</span>
+                <hr />
+            </div>
+            <div class="pagination__buttons">
+                    <span class="button previous">
+                        <a href="https://maltsev-dev.github.io/rust-solana-anchor-cpi/">
+                            <span class="button__icon">←</span>&nbsp;
+                            <span class="button__text">🔗 Anchor CPI – Cross-Program Invocation on Solana</span>
+                        </a>
+                    </span>
+                
+                
+                    <span class="button next">
+                        <a href="https://maltsev-dev.github.io/rs-to-bin/">
+                            <span class="button__text">From Rust Source Code to Optimized Executable: Inside the Rust Compiler Pipeline</span>&nbsp;
+                            <span class="button__icon">→</span>
+                        </a>
+                    </span>
+                </div>
+        </div>
+    
+    </div>
+
+    </div>
+
+
+<footer class="footer">
+    <div class="footer__inner">
+            <div class="copyright copyright--user"><div class="copyright">
+    <span>© 2026 A.Maltsev</span>
+    <span class="copyright-theme-sep"></span>
+    <span><img src="https://visitor-badge.laobi.icu/badge?page_id=maltsev-dev.github.io&right_color=orange" alt="Visitors"></span>
+</div>
+</div>
+        </div>
+</footer>
+
+
+</div>
+</body>
+
+</html>

@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+    <title>dev_stories</title>
+    
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+    <meta name="robots" content="noodp"/>
+
+    <link rel="stylesheet" href="https://maltsev-dev.github.io/style.css">
+    <link rel="stylesheet" href="https://maltsev-dev.github.io/color/orange.css">
+
+        <link rel="stylesheet" href="https://maltsev-dev.github.io/color/background_blue.css">
+    
+    <link rel="stylesheet" href="https://maltsev-dev.github.io/font-quicksand.css">
+
+
+    
+        <link rel="shortcut icon" type="image/png" href="/favicon.png">
+    
+    <meta property="og:site_name" content="dev_stories"><meta property="og:type" content="article">
+    <meta property="og:title" content="🧪 RP2040 Pico W Lab"><meta property="og:url" content="https://maltsev-dev.github.io/rp2040-projects/"><meta property="og:image" content="https://github.com/maltsev-dev/favicon.png">
+
+    </head>
+
+<body class="">
+<div class="container">
+    
+    <header class="header">
+        <div class="header__inner">
+            <div class="header__logo">
+                    
+                <a href="https://maltsev-dev.github.io" style="text-decoration: none;">
+                    <div class="logo">
+                      
+                            busy hands == happy heart
+                        
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        
+        <nav class="menu">
+            <ul class="menu__inner">
+                <li><a href="https://maltsev-dev.github.io/archive">archive</a></li>
+            
+                <li><a href="https://maltsev-dev.github.io/tags/project/">projects</a></li>
+            
+                <li><a href="https://maltsev-dev.github.io/about">about me</a></li>
+            </ul>
+        </nav>
+    
+    
+        
+    </header>
+    
+
+    <div class="content">
+        
+    <div class="post">
+        
+    <h1 class="post-title"><a href="https://maltsev-dev.github.io/rp2040-projects/">🧪 RP2040 Pico W Lab</a></h1>
+    <div class="post-meta-inline">
+        
+    <span class="post-date">
+            2025-06-24
+        </span>
+
+    </div>
+
+    
+        <span class="post-tags-inline">
+                :: tags:&nbsp;
+                <a class="post-tag" href="https://maltsev-dev.github.io/tags/rust/">#rust</a>&nbsp;
+                <a class="post-tag" href="https://maltsev-dev.github.io/tags/rp2040/">#rp2040</a>&nbsp;
+                <a class="post-tag" href="https://maltsev-dev.github.io/tags/embedded/">#embedded</a>&nbsp;
+                <a class="post-tag" href="https://maltsev-dev.github.io/tags/project/">#project</a></span>
+    
+
+        
+        <div class="post-content">
+            <p><strong>Experiments, Prototypes &amp; Notes with the Raspberry Pi Pico W</strong></p>
+<p>This repository contains my projects, experiments, and notes using the <strong>Raspberry Pi Pico W</strong>, built on the <strong>RP2040</strong> microcontroller with integrated Wi-Fi.<br />
+It serves as a playground for testing ideas, learning embedded concepts, and building small prototypes.</p>
+<span id="continue-reading"></span>
+<hr />
+<p><strong>Goals:</strong></p>
+<ul>
+<li>Explore RP2040 features with <code>rp2040_hal</code></li>
+<li>Build Wi-Fi-enabled IoT devices</li>
+<li>Interface with peripherals (GPIO, I2C, SPI, UART, ADC, PWM)</li>
+<li>Experiment with power management, timers, interrupts</li>
+<li>Integrate with sensors and modules (temperature, motion, light, etc.)</li>
+</ul>
+<hr />
+<h2 id="gear-hardware-used">⚙️ Hardware Used</h2>
+<ul>
+<li>Raspberry Pi Pico W</li>
+<li>Breadboard &amp; jumper wires</li>
+<li>Sensors: DHT11, MPU6050, BH1750, HW-416A, HC-SR04, HW-504, etc</li>
+<li>Modules: OLED, WS2812 (Neopixels), relay, MOSFET driver</li>
+<li>Power: USB / battery / external supply</li>
+</ul>
+<hr />
+<h2 id="jigsaw-projects-experiments">🧩 Projects &amp; Experiments</h2>
+<table><thead><tr><th>Project Name</th><th>Description</th><th>Status</th></tr></thead><tbody>
+<tr><td><code>blinky_led_by_button</code></td><td>External LED blink controlled by button</td><td>✅ Done</td></tr>
+<tr><td><code>led_bar</code></td><td>Make LED flow on 10 LED bar graph</td><td>✅ Done</td></tr>
+<tr><td><code>led_lamp</code></td><td>LED ON and LED OFF with button</td><td>✅ Done</td></tr>
+<tr><td><code>led_analog</code></td><td>Breathing LED with PWM</td><td>✅ Done</td></tr>
+<tr><td><code>led_bar_pwm</code></td><td>Make LED flow on 10 LED bar graph with PWM</td><td>✅ Done</td></tr>
+<tr><td><code>led_rgb</code></td><td>Experiments with RGB LED</td><td>✅ Done</td></tr>
+<tr><td><code>led_circle</code></td><td>Make LED circle with freenove</td><td>✅ Done</td></tr>
+<tr><td><code>doorbell</code></td><td>Touch active buzzer</td><td>⏳ Planned</td></tr>
+</tbody></table>
+<p><em>More to come.</em></p>
+<hr />
+<h2 id="wrench-tools-tech-stack">🔧 Tools &amp; Tech Stack</h2>
+<ul>
+<li>Languages:  Rust</li>
+<li>IDEs: VSCode</li>
+<li>Libraries: <code>embedded_hal</code>, <code>rp2040_hal</code>, <code>panic_halt</code>, <code>hal</code></li>
+<li>Protocols: GPIO, MQTT, UDP, TCP</li>
+<li>Flash storage &amp; OTA update experiments (planned)</li>
+</ul>
+<hr />
+<h2 id="file-folder-repo-structure">📁 Repo Structure</h2>
+<pre style="background-color:#151515;color:#e8e8d3;"><code><span>/bin/
+</span><span>  └── blinky_external_led/
+</span><span>  └── blinky_led_by_button/
+</span><span>  └── led_analog/
+</span><span>  └── led_bar/
+</span><span>  └── led_lamp/
+</span><span>  └── ...
+</span><span>/docs/
+</span><span>  └── wiring_schematics/
+</span><span>  └── setup_notes/
+</span><span>README.md
+</span></code></pre>
+<hr />
+<h2 id="paperclip-notes">📎 Notes</h2>
+<p>This is an open lab space – not a polished library or framework. Things may be messy, experimental, or half-finished.
+If you're tinkering with the Pico W too, feel free to fork, comment, or share ideas.</p>
+<h2 id="tv-demos">📺 Demos</h2>
+<p><a href="https://github.com/maltsev-dev/pico_rust/blob/master/src/bin/led_lamp.rs">📚 Source led_lamp</a><br />
+<video controls width="720"><br />
+<source src="/media/led_lamp.webm" type="video/webm" /><br />
+</video></p>
+<p><a href="https://github.com/maltsev-dev/pico_rust/blob/master/src/bin/led_bar.rs">📚 Source led_bar</a><br />
+<video controls width="720"><br />
+<source src="/media/led_bar.webm" type="video/webm" /><br />
+</video></p>
+<p><a href="https://github.com/maltsev-dev/pico_rust/blob/master/src/bin/led_analog.rs">📚 Source led_analog</a><br />
+<video controls width="720"><br />
+<source src="/media/led_analog.webm" type="video/webm" /><br />
+</video></p>
+<p><a href="https://github.com/maltsev-dev/pico_rust/blob/master/src/bin/led_bar_pwm.rs">📚 Source led_bar_pwm</a><br />
+<video controls width="720"><br />
+<source src="/media/led_bar_pwm.webm" type="video/webm" /><br />
+</video></p>
+<p><a href="https://github.com/maltsev-dev/pico_rust/blob/master/src/bin/led_rgb.rs">📚 Source led_rgb</a><br />
+<video controls width="720"><br />
+<source src="/media/led_rgb.webm" type="video/webm" /><br />
+</video></p>
+<p><a href="https://github.com/maltsev-dev/pico_rust/blob/master/src/bin/led_circle.rs">📚 Source led_circle</a><br />
+<video controls width="720"><br />
+<source src="/media/led_circle.webm" type="video/webm" /><br />
+</video></p>
+
+        </div>
+
+        
+        <div class="pagination">
+            <div class="pagination__title">
+                <span class="pagination__title-h">Read other posts?</span>
+                <hr />
+            </div>
+            <div class="pagination__buttons">
+                    <span class="button previous">
+                        <a href="https://maltsev-dev.github.io/rust-firmware-memory/">
+                            <span class="button__icon">←</span>&nbsp;
+                            <span class="button__text">Building Trustworthy Embedded Systems with Rust</span>
+                        </a>
+                    </span>
+                
+                
+                    <span class="button next">
+                        <a href="https://maltsev-dev.github.io/rust-emb-ecosystem/">
+                            <span class="button__text">Embedded 📦 crates ecosystem</span>&nbsp;
+                            <span class="button__icon">→</span>
+                        </a>
+                    </span>
+                </div>
+        </div>
+    
+    </div>
+
+    </div>
+
+
+<footer class="footer">
+    <div class="footer__inner">
+            <div class="copyright copyright--user"><div class="copyright">
+    <span>© 2026 A.Maltsev</span>
+    <span class="copyright-theme-sep"></span>
+    <span><img src="https://visitor-badge.laobi.icu/badge?page_id=maltsev-dev.github.io&right_color=orange" alt="Visitors"></span>
+</div>
+</div>
+        </div>
+</footer>
+
+
+</div>
+</body>
+
+</html>

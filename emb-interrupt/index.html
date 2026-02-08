@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+    <title>dev_stories</title>
+    
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+    <meta name="robots" content="noodp"/>
+
+    <link rel="stylesheet" href="https://maltsev-dev.github.io/style.css">
+    <link rel="stylesheet" href="https://maltsev-dev.github.io/color/orange.css">
+
+        <link rel="stylesheet" href="https://maltsev-dev.github.io/color/background_blue.css">
+    
+    <link rel="stylesheet" href="https://maltsev-dev.github.io/font-quicksand.css">
+
+
+    
+        <link rel="shortcut icon" type="image/png" href="/favicon.png">
+    
+    <meta property="og:site_name" content="dev_stories"><meta property="og:type" content="article">
+    <meta property="og:title" content="Interrupts (ISR, IVT, NVIC)"><meta property="og:url" content="https://maltsev-dev.github.io/emb-interrupt/"><meta property="og:image" content="https://github.com/maltsev-dev/favicon.png">
+
+    </head>
+
+<body class="">
+<div class="container">
+    
+    <header class="header">
+        <div class="header__inner">
+            <div class="header__logo">
+                    
+                <a href="https://maltsev-dev.github.io" style="text-decoration: none;">
+                    <div class="logo">
+                      
+                            busy hands == happy heart
+                        
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        
+        <nav class="menu">
+            <ul class="menu__inner">
+                <li><a href="https://maltsev-dev.github.io/archive">archive</a></li>
+            
+                <li><a href="https://maltsev-dev.github.io/tags/project/">projects</a></li>
+            
+                <li><a href="https://maltsev-dev.github.io/about">about me</a></li>
+            </ul>
+        </nav>
+    
+    
+        
+    </header>
+    
+
+    <div class="content">
+        
+    <div class="post">
+        
+    <h1 class="post-title"><a href="https://maltsev-dev.github.io/emb-interrupt/">Interrupts (ISR, IVT, NVIC)</a></h1>
+    <div class="post-meta-inline">
+        
+    <span class="post-date">
+            2025-07-15
+        </span>
+
+    </div>
+
+    
+        <span class="post-tags-inline">
+                :: tags:&nbsp;
+                <a class="post-tag" href="https://maltsev-dev.github.io/tags/embedded/">#embedded</a>&nbsp;
+                <a class="post-tag" href="https://maltsev-dev.github.io/tags/basic/">#basic</a>&nbsp;
+                <a class="post-tag" href="https://maltsev-dev.github.io/tags/interrupts/">#interrupts</a></span>
+    
+
+        
+        <div class="post-content">
+            <p>🟠 Interrupts allow the microcontroller to <strong>instantly respond to important events</strong> without wasting resources on constantly polling the peripherals.</p>
+<p>When an interrupt occurs, the <strong>CPU suspends the current task</strong>, goes to the <strong>Interrupt Service Routine (ISR)</strong>, performs the required action, and returns back.</p>
+<span id="continue-reading"></span>
+<hr />
+<h2 id="interrupts">Interrupts</h2>
+<p>An interrupt is a signal that tells the microcontroller's processor to temporarily suspend execution of the current task and go to a special function called an <strong>interrupt handler</strong> (ISR). After the ISR completes, the processor returns to the point where the program was interrupted and continues executing it.</p>
+<ul>
+<li><strong>Real-time response</strong>: for example, a timer has expired, data has arrived via UART, or a button has been pressed.</li>
+<li><strong>Power saving</strong>: the MCU can "sleep" and wake up only on interrupt.</li>
+<li><strong>CPU offload</strong>: eliminates the need to check event flags in a loop.</li>
+</ul>
+<hr />
+<h2 id="interrupt-reasons">Interrupt reasons:</h2>
+<ul>
+<li><strong>Hardware events</strong>: for example, a GPIO pin state change, UART data transfer completion, or a timer expiration.</li>
+<li><strong>Software events</strong>: for example, errors like division by zero or access to inaccessible memory.</li>
+</ul>
+<hr />
+<h2 id="interrupt-types">Interrupt types</h2>
+<h3 id="by-source">By source</h3>
+<ul>
+<li><strong>External interrupts</strong>: caused by external events, such as pressing a button or changing the signal level on a pin.</li>
+<li><strong>Internal interrupts</strong>: initiated by peripheral modules inside the MCU, such as timers, ADC (analog-to-digital converter), UART, etc.</li>
+</ul>
+<h3 id="by-processing-method">By processing method</h3>
+<ul>
+<li><strong>Vector interrupts</strong>: each interrupt source has its own unique handler. This is typical for most modern MCUs, such as ARM Cortex-M.</li>
+<li><strong>Non-vector interrupts</strong>: all interrupts are handled by one common function, which then determines the source of the event.</li>
+</ul>
+<h3 id="by-priority">By priority</h3>
+<ul>
+<li><strong>Fixed priority</strong>: the processing order is set by hardware and cannot be changed.</li>
+<li><strong>Programmable Priority</strong>: The developer can configure interrupt priorities, which is especially useful in complex systems.</li>
+</ul>
+<hr />
+<h2 id="isr-and-ivt">ISR and IVT</h2>
+<p>Interrupts are handled by <code>Interrupt Service Routines</code>.</p>
+<ul>
+<li>These are just <code>functions</code>, but you may be wondering, "How does the hardware know which function to call for which interrupt?"
+These functions are defined in the <code>IVT</code> (interrupt vector table).</li>
+<li>The <code>IVT</code> is a data structure that maps each interrupt type to the address of the <strong>corresponding handler</strong>.<br />
+Here we see the vector table of our <code>Cortex-M3</code>. It shows each interrupt and its corresponding location in memory.<br />
+When the system starts, the initialization code specifies the necessary functions in the <code>IVT</code>.</li>
+</ul>
+
+
+
+    
+    
+
+
+
+    
+    
+
+
+
+<figure class="center">
+    <a href="https://maltsev-dev.github.io/processed_images/interrupt_vec_table.002e41c50347520b.png">
+        <img src="https://maltsev-dev.github.io/processed_images/interrupt_vec_table.2a42b2462d65fc0d.webp"   />
+    </a>
+    
+</figure>
+<hr />
+<h2 id="how-the-cpu-handles-interrupts">How the CPU handles interrupts</h2>
+<p>At a high level:
+
+
+
+    
+    
+
+
+
+    
+    
+
+
+
+<figure class="center">
+    <a href="https://maltsev-dev.github.io/processed_images/processing_an_interrupt.b5809b5113d66112.png">
+        <img src="https://maltsev-dev.github.io/processed_images/processing_an_interrupt.879d9824b759deec.webp"   />
+    </a>
+    
+</figure>
+</p>
+<ol>
+<li>When an interrupt is triggered, the CPU receives a signal to handle it. The CPU will probably be busy with some other work. However, we want it to continue where it left off after handling the interrupt.</li>
+<li>To do this, the CPU saves the current execution state, which includes the registers and the current address of the current instruction.</li>
+<li>It then looks up the <code>IVT</code> to find the memory address of the <code>ISR</code>, and then executes it.</li>
+<li>It then restores the interrupted execution state from <code>RAM</code> and continues.</li>
+</ol>
+<hr />
+<h2 id="interrupt-priorities">Interrupt Priorities</h2>
+<p>What happens if we have multiple interrupts firing at the same time? We handle them by priority.</p>
+<p>Interrupts have a priority associated with them. When multiple interrupts fire, the interrupt with the <code>highest priority</code> is handled first. Furthermore, a higher priority interrupt can even interrupt a lower priority interrupt.</p>
+<p>This ensures that critical interrupts are handled in a timely manner. This is especially useful in hard real-time systems where they are the upper bounds of worst-case performance.</p>
+<hr />
+<h2 id="how-to-set-up-an-interrupt-in-an-mcu">How to set up an interrupt in an MCU</h2>
+<p>There are several steps to using interrupts in an MCU:</p>
+<ol>
+<li><strong>Enabling interrupt</strong>: Enable the interrupt for the desired source (for example, in the timer or GPIO settings).</li>
+<li><strong>Setting priority</strong>: If the MCU supports programmable priorities, set the priority level for this interrupt.</li>
+<li><strong>Writing a handler</strong>: Create an <code>ISR</code> function that will be executed when an interrupt occurs.</li>
+<li><strong>Registering a handler</strong>: In some architectures (for example, <code>ARM Cortex-M</code>), specify the handler address in the vector table.</li>
+</ol>
+<hr />
+<h2 id="nvic-nested-vectored-interrupt-controller">NVIC (Nested Vectored Interrupt Controller)</h2>
+<p>Many modern MCUs are based on the <code>ARM Cortex-M</code> architecture, where interrupt management is performed via the <code>NVIC</code> (Nested Vectored Interrupt Controller). Let's consider its features:</p>
+<ul>
+<li>Vector table in memory</li>
+<li>Priorities from 0 (highest) to 255 (lowest)</li>
+<li><strong>Nested interrupts</strong> — high-priority ones can interrupt ISR</li>
+<li><strong>Tail-chaining</strong> — instant transition from one ISR to another without returning to the main code</li>
+</ul>
+<hr />
+<h2 id="test-tube-example-in-rust-stm32">🧪 Example in Rust (STM32)</h2>
+<pre data-lang="rust" style="background-color:#151515;color:#e8e8d3;" class="language-rust "><code class="language-rust" data-lang="rust"><span>use cortex_m_rt::interrupt;
+</span><span>
+</span><span>#[</span><span style="color:#ffb964;">interrupt</span><span>]
+</span><span style="color:#8fbfdc;">fn </span><span style="color:#fad07a;">TIM2</span><span>() {
+</span><span>    </span><span style="color:#888888;">// TIM2 timer interrupt handling logic
+</span><span>    </span><span style="color:#888888;">// For example, clearing the interrupt flag or performing an action
+</span><span>}
+</span></code></pre>
+<ul>
+<li><code>#[interrupt]</code> — ISR designation (indicates that the function is an interrupt handler.)</li>
+<li><code>TIM2</code> — interrupt name corresponding to TIM2 timer (according to the vector table)</li>
+</ul>
+<hr />
+<h2 id="safety-critical-sections">Safety: Critical Sections</h2>
+<p>Interrupts can interfere with the main code. To protect shared data:</p>
+<h3 id="a-simple-way-is-to-temporarily-disable-interrupts">A simple way is to temporarily disable interrupts</h3>
+<pre data-lang="rust" style="background-color:#151515;color:#e8e8d3;" class="language-rust "><code class="language-rust" data-lang="rust"><span>use cortex_m::interrupt;
+</span><span>
+</span><span>interrupt::free(|_| {
+</span><span>    </span><span style="color:#888888;">// Critical Section: Safe Access
+</span><span>});
+</span></code></pre>
+<h3 id="mutex-and-refcell"><code>Mutex</code> and <code>RefCell</code></h3>
+<pre data-lang="rust" style="background-color:#151515;color:#e8e8d3;" class="language-rust "><code class="language-rust" data-lang="rust"><span>use cortex_m::interrupt::Mutex;
+</span><span>use core::cell::RefCell;
+</span><span>
+</span><span style="color:#8fbfdc;">static </span><span style="color:#7697d6;">SHARED_DATA</span><span>: Mutex&lt;RefCell&lt;</span><span style="color:#8fbfdc;">u32</span><span>&gt;&gt; = Mutex::new(RefCell::new(</span><span style="color:#cf6a4c;">0</span><span>));
+</span><span>
+</span><span>#[</span><span style="color:#ffb964;">interrupt</span><span>]
+</span><span style="color:#8fbfdc;">fn </span><span style="color:#fad07a;">EXTI0</span><span>() {
+</span><span>    interrupt::free(|</span><span style="color:#ffb964;">cs</span><span>| {
+</span><span>        </span><span style="color:#8fbfdc;">let mut</span><span> data = </span><span style="color:#7697d6;">SHARED_DATA</span><span>.borrow(cs).borrow_mut();
+</span><span>        *data += </span><span style="color:#cf6a4c;">1</span><span>;
+</span><span>    });
+</span><span>}
+</span></code></pre>
+<hr />
+<h2 id="interrupt-handling-guidelines">Interrupt Handling Guidelines</h2>
+<ul>
+<li><strong>Minimize time in ISRs</strong>: Keep handlers short so as not to block other interrupts or the main program.</li>
+<li><strong>Avoid blocking</strong>: Do not use delays or other blocking operations in ISRs.</li>
+<li><strong>Use flags</strong>: Pass data from ISRs to the main program via flags or queues.</li>
+<li><strong>Clear flags</strong>: Make sure the interrupt flag is cleared in the ISR if required.</li>
+</ul>
+
+        </div>
+
+        
+        <div class="pagination">
+            <div class="pagination__title">
+                <span class="pagination__title-h">Read other posts?</span>
+                <hr />
+            </div>
+            <div class="pagination__buttons">
+                    <span class="button previous">
+                        <a href="https://maltsev-dev.github.io/emb-timers/">
+                            <span class="button__icon">←</span>&nbsp;
+                            <span class="button__text">Timers</span>
+                        </a>
+                    </span>
+                
+                
+                    <span class="button next">
+                        <a href="https://maltsev-dev.github.io/emb-clock/">
+                            <span class="button__text">MCU Clock System</span>&nbsp;
+                            <span class="button__icon">→</span>
+                        </a>
+                    </span>
+                </div>
+        </div>
+    
+    </div>
+
+    </div>
+
+
+<footer class="footer">
+    <div class="footer__inner">
+            <div class="copyright copyright--user"><div class="copyright">
+    <span>© 2026 A.Maltsev</span>
+    <span class="copyright-theme-sep"></span>
+    <span><img src="https://visitor-badge.laobi.icu/badge?page_id=maltsev-dev.github.io&right_color=orange" alt="Visitors"></span>
+</div>
+</div>
+        </div>
+</footer>
+
+
+</div>
+</body>
+
+</html>

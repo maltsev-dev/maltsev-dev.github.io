@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+    <title>dev_stories</title>
+    
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+    <meta name="robots" content="noodp"/>
+
+    <link rel="stylesheet" href="https://maltsev-dev.github.io/style.css">
+    <link rel="stylesheet" href="https://maltsev-dev.github.io/color/orange.css">
+
+        <link rel="stylesheet" href="https://maltsev-dev.github.io/color/background_blue.css">
+    
+    <link rel="stylesheet" href="https://maltsev-dev.github.io/font-quicksand.css">
+
+
+    
+        <link rel="shortcut icon" type="image/png" href="/favicon.png">
+    
+    <meta property="og:site_name" content="dev_stories"><meta property="og:type" content="article">
+    <meta property="og:title" content="SPI (Serial Peripheral Interface)"><meta property="og:url" content="https://maltsev-dev.github.io/emb-sp-spi/"><meta property="og:image" content="https://github.com/maltsev-dev/favicon.png">
+
+    </head>
+
+<body class="">
+<div class="container">
+    
+    <header class="header">
+        <div class="header__inner">
+            <div class="header__logo">
+                    
+                <a href="https://maltsev-dev.github.io" style="text-decoration: none;">
+                    <div class="logo">
+                      
+                            busy hands == happy heart
+                        
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        
+        <nav class="menu">
+            <ul class="menu__inner">
+                <li><a href="https://maltsev-dev.github.io/archive">archive</a></li>
+            
+                <li><a href="https://maltsev-dev.github.io/tags/project/">projects</a></li>
+            
+                <li><a href="https://maltsev-dev.github.io/about">about me</a></li>
+            </ul>
+        </nav>
+    
+    
+        
+    </header>
+    
+
+    <div class="content">
+        
+    <div class="post">
+        
+    <h1 class="post-title"><a href="https://maltsev-dev.github.io/emb-sp-spi/">SPI (Serial Peripheral Interface)</a></h1>
+    <div class="post-meta-inline">
+        
+    <span class="post-date">
+            2025-06-30
+        </span>
+
+    </div>
+
+    
+        <span class="post-tags-inline">
+                :: tags:&nbsp;
+                <a class="post-tag" href="https://maltsev-dev.github.io/tags/embedded/">#embedded</a>&nbsp;
+                <a class="post-tag" href="https://maltsev-dev.github.io/tags/basic/">#basic</a>&nbsp;
+                <a class="post-tag" href="https://maltsev-dev.github.io/tags/sp/">#sp</a></span>
+    
+
+        
+        <div class="post-content">
+            <p>A technical introduction to the <strong>SPI</strong> - low-speed four-wire master-slave full-duplex serial protocol.<br />
+<strong>SPI</strong> is widely used as a faster alternative to UART/I2C for transferring data between an intelligent controller and a less intelligent peripheral device.</p>
+
+
+
+    
+    
+
+
+
+    
+    
+
+
+
+<figure class="center">
+    <a href="https://maltsev-dev.github.io/processed_images/spi_header.b460307aef2f4dcd.png">
+        <img src="https://maltsev-dev.github.io/processed_images/spi_header.79143ef65628fb28.webp"   />
+    </a>
+    
+</figure>
+<span id="continue-reading"></span>
+<hr />
+<h2 id="spi">    SPI</h2>
+<p><code>SPI - Serial Peripheral Interface</code>
+A protocol in which there is one <code>leader</code> (master or controller) and one or more <code>slaves</code> (or peripheral device)<br />
+Usually operates in <code>full-duplex</code> (both nodes transmit data simultaneously)<br />
+Message exchange occurs in <code>frames</code>.
+<strong>SPI</strong> has no agreement on frame formats, number of transmitted bits and voltage levels</p>
+<h3 id="spi-design">    SPI Design</h3>
+
+
+
+    
+    
+
+
+
+    
+    
+
+
+
+<figure class="center">
+    <a href="https://maltsev-dev.github.io/processed_images/spi_design.97a0f80110081f86.png">
+        <img src="https://maltsev-dev.github.io/processed_images/spi_design.9b88327a195a8b61.webp"   />
+    </a>
+    
+</figure>
+<ul>
+<li>the <code>CS</code>(Chip Select)/<code>SS</code>(Slave Celect) channel is used to select the slave</li>
+<li>clock signals on the <code>SCLK</code> line are used for synchronization</li>
+<li><code>MOSI</code> (Master Out Slave In) data is transmitted from the master to the slave</li>
+<li><code>MISO</code> (Master In Slave Out) data is transmitted from the slave to the master</li>
+</ul>
+<ol>
+<li>switch the <strong>SC</strong> line <code>low(0)</code>, indicating that information will be transferred to this slave</li>
+<li>starts the <strong>SCLK</strong> signal</li>
+<li>transfer occurs on (<strong>MOSI</strong> / <strong>MISO</strong>)</li>
+<li>switch <strong>CS</strong> back to <code>high(1)</code></li>
+</ol>
+<h4 id="sclk">SCLK</h4>
+<ul>
+<li>after <strong>CS</strong> is set to <code>low(0)</code>, the master starts generating a clock signal - this allows the slave to not have a clock signal, and used master clock</li>
+<li>the clock is usually in <code>Mhz</code></li>
+<li>the clock in this case tells the slave at what moment to <code>start reading</code> the voltage level on the data line.</li>
+</ul>
+<p>The clock signal in <strong>SPI</strong> by default <code>idle</code> can be in a <code>low(0)</code> or <code>high(1)</code> state, and data can be read on the <strong>rising</strong> or <strong>falling edge</strong> of the signal.</p>
+<h4 id="mosi">MOSI</h4>
+<p>Used to send data from a master to a slave
+After <strong>CS</strong> is pulled <code>low(0)</code> and <strong>SCLK</strong> is enabled, <strong>MOSI</strong> is used to transfer data from the master to the slave as an <code>8-bit</code> bytes, where the first bit can be the least significant bit (LSB, MSB).<br />
+Multiple bytes can be transferred while <strong>CS</strong> is <code>low(0)</code>.</p>
+<h4 id="miso">MISO</h4>
+<p>Used to send data from a slave to a master</p>
+<ul>
+<li>Often used to respond to data received from <strong>MOSI</strong>.</li>
+<li>Since only the master can <strong>hold the clock</strong>, it must know exactly how many bytes the slave wanted to send over <strong>MISO</strong>.<br />
+This can be a <code>fixed number</code>, or a specified number that the master will respond to the slave's request with.</li>
+</ul>
+<h3 id="spi-adjustment">    SPI Adjustment</h3>
+<h4 id="clock-polarity">Clock Polarity</h4>
+<p><strong>CPOL</strong> - the clock signal generated by the master can be:</p>
+<ol>
+<li><code>low(0)</code> at idle, active at <code>high(1)</code> level (<code>CPOL = 0.</code> "non-inverted") (Leading (first edge)- <code>rising</code>)</li>
+<li><code>high(1)</code> at idle, active at <code>low(0)</code> level (<code>CPOL = 1.</code> "inverted") (Leading (first edge)- <code>falling</code>)
+CPOL indicates which of these options is used</li>
+</ol>
+
+
+
+    
+    
+
+
+
+    
+    
+
+
+
+<figure class="center">
+    <a href="https://maltsev-dev.github.io/processed_images/spi_cpol.3561e9ec9572fae7.png">
+        <img src="https://maltsev-dev.github.io/processed_images/spi_cpol.9a8524ab3281b7ef.webp"   />
+    </a>
+    
+</figure>
+<p>For both types of clock pulse polarity, you can focus on</p>
+<ol>
+<li>leading edge of the clock pulse (Leading (first edge))</li>
+<li>trailing edge of the pulse (Trailing (second)edge)</li>
+</ol>
+<h4 id="clock-phase">Clock Phase</h4>
+<p><strong>CPHA</strong> - determines on which edge the nodes will read data</p>
+<ol>
+<li><code>CPHA - 0</code> means that data will be read on the <code>rising</code> edge of each clock signal</li>
+<li><code>CPHA - 1</code> means that data will be read on the <code>falling</code> edge of each clock signal</li>
+</ol>
+
+
+
+    
+    
+
+
+
+    
+    
+
+
+
+<figure class="center">
+    <a href="https://maltsev-dev.github.io/processed_images/spi_cpha.a61d71b6677ba58b.png">
+        <img src="https://maltsev-dev.github.io/processed_images/spi_cpha.7352c8950c878c5e.webp"   />
+    </a>
+    
+</figure>
+<h4 id="spi-mode">SPI Mode</h4>
+<p>The operation of the master and slave must be coordinated via the <strong>SPI</strong> operating mode.<br />
+The mode is an integer combination of CPOL and CPHA</p>
+<table><thead><tr><th>Mode</th><th>CPOL</th><th>CPHA</th></tr></thead><tbody>
+<tr><td>0</td><td>0</td><td>0</td></tr>
+<tr><td>1</td><td>0</td><td>1</td></tr>
+<tr><td>2</td><td>1</td><td>0</td></tr>
+<tr><td>3</td><td>1</td><td>1</td></tr>
+<tr><td>
+
+
+    
+    
+
+
+
+    
+    
+
+
+
+<figure class="center">
+    <a href="https://maltsev-dev.github.io/processed_images/spi_mode.6b785b6f264f2534.png">
+        <img src="https://maltsev-dev.github.io/processed_images/spi_mode.60d110c456168579.webp"   />
+    </a>
+    
+</figure>
+</td><td></td><td></td></tr>
+</tbody></table>
+<h4 id="multi-slave-configuratuion">Multi-slave configuratuion</h4>
+<ol>
+<li><strong>Independent Slaves</strong>
+
+
+
+    
+    
+
+
+
+    
+    
+
+
+
+<figure class="center">
+    <a href="https://maltsev-dev.github.io/processed_images/spi_multislave_independent.7db441046b15e851.png">
+        <img src="https://maltsev-dev.github.io/processed_images/spi_multislave_independent.cc81c9632e030942.webp"   />
+    </a>
+    
+</figure>
+</li>
+</ol>
+<ul>
+<li>In this configuration, the master has a <code>separate CS</code> line for <strong>each slave</strong>.</li>
+<li>The remaining channels are shared on the bus.<br />
+The method is relatively simple until there are many slaves.</li>
+</ul>
+<ol start="2">
+<li><strong>Cooperative Slaves / Daisy Chain</strong>
+
+
+
+    
+    
+
+
+
+    
+    
+
+
+
+<figure class="center">
+    <a href="https://maltsev-dev.github.io/processed_images/spi_multislave_coop_slaves.dd522438bc2283f4.png">
+        <img src="https://maltsev-dev.github.io/processed_images/spi_multislave_coop_slaves.c5e120f1f7d201af.webp"   />
+    </a>
+    
+</figure>
+</li>
+</ol>
+<ul>
+<li>With this configuration, the master has <code>only one CS line</code>, which is used by all slave devices.</li>
+<li>With this configuration, data on <strong>MOSI</strong> is always sent to the <code>first slave</code>, and data transfer to another slave occurs through <strong>MISO</strong> of the first slave that received data on <strong>MOSI</strong>, and so on to transfer data to the next slave.</li>
+<li>If a slave wants to send data to the master through its <strong>MISO</strong> channel, it also sends it to the <code>next slave</code> in the chain, and so on until it reaches the <code>last one</code>, whose <strong>MISO</strong> channel is not connected to the next slave, but is connected to the <code>master</code>.<br />
+The cooperation mode reduces the required number of lines, but it is more complex and may not be supported by some devices.</li>
+</ul>
+
+        </div>
+
+        
+        <div class="pagination">
+            <div class="pagination__title">
+                <span class="pagination__title-h">Read other posts?</span>
+                <hr />
+            </div>
+            <div class="pagination__buttons">
+                    <span class="button previous">
+                        <a href="https://maltsev-dev.github.io/emb-sp-uart/">
+                            <span class="button__icon">←</span>&nbsp;
+                            <span class="button__text">UART (Universal Asynchronous Receiver &#x2F; Transmitter)</span>
+                        </a>
+                    </span>
+                
+                
+                    <span class="button next">
+                        <a href="https://maltsev-dev.github.io/emb-sp-i2c/">
+                            <span class="button__text">I2C (Inter-Integrated Circuit)</span>&nbsp;
+                            <span class="button__icon">→</span>
+                        </a>
+                    </span>
+                </div>
+        </div>
+    
+    </div>
+
+    </div>
+
+
+<footer class="footer">
+    <div class="footer__inner">
+            <div class="copyright copyright--user"><div class="copyright">
+    <span>© 2026 A.Maltsev</span>
+    <span class="copyright-theme-sep"></span>
+    <span><img src="https://visitor-badge.laobi.icu/badge?page_id=maltsev-dev.github.io&right_color=orange" alt="Visitors"></span>
+</div>
+</div>
+        </div>
+</footer>
+
+
+</div>
+</body>
+
+</html>

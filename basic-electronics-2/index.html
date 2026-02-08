@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+    <title>dev_stories</title>
+    
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+    <meta name="robots" content="noodp"/>
+
+    <link rel="stylesheet" href="https://maltsev-dev.github.io/style.css">
+    <link rel="stylesheet" href="https://maltsev-dev.github.io/color/orange.css">
+
+        <link rel="stylesheet" href="https://maltsev-dev.github.io/color/background_blue.css">
+    
+    <link rel="stylesheet" href="https://maltsev-dev.github.io/font-quicksand.css">
+
+
+    
+        <link rel="shortcut icon" type="image/png" href="/favicon.png">
+    
+    <meta property="og:site_name" content="dev_stories"><meta property="og:type" content="article">
+    <meta property="og:title" content="⚛️ The Aesthetics of Semiconductor Destruction: Understanding the PN Junction"><meta property="og:url" content="https://maltsev-dev.github.io/basic-electronics-2/"><meta property="og:image" content="https://github.com/maltsev-dev/favicon.png">
+
+    </head>
+
+<body class="">
+<div class="container">
+    
+    <header class="header">
+        <div class="header__inner">
+            <div class="header__logo">
+                    
+                <a href="https://maltsev-dev.github.io" style="text-decoration: none;">
+                    <div class="logo">
+                      
+                            busy hands == happy heart
+                        
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        
+        <nav class="menu">
+            <ul class="menu__inner">
+                <li><a href="https://maltsev-dev.github.io/archive">archive</a></li>
+            
+                <li><a href="https://maltsev-dev.github.io/tags/project/">projects</a></li>
+            
+                <li><a href="https://maltsev-dev.github.io/about">about me</a></li>
+            </ul>
+        </nav>
+    
+    
+        
+    </header>
+    
+
+    <div class="content">
+        
+    <div class="post">
+        
+    <h1 class="post-title"><a href="https://maltsev-dev.github.io/basic-electronics-2/">⚛️ The Aesthetics of Semiconductor Destruction: Understanding the PN Junction</a></h1>
+    <div class="post-meta-inline">
+        
+    <span class="post-date">
+            2025-06-01
+        </span>
+
+    </div>
+
+    
+        <span class="post-tags-inline">
+                :: tags:&nbsp;
+                <a class="post-tag" href="https://maltsev-dev.github.io/tags/basic-electronics/">#basic_electronics</a></span>
+    
+
+        
+        <div class="post-content">
+            <p>The PN junction is the fundamental building block of many semiconductor devices, from diodes to transistors and solar cells.<br />
+Understanding how this tiny boundary between p-type and n-type materials controls the flow of electrical current is key to grasping modern electronics.</p>
+<p>🟠 In this article, we’ll explore the structure, behavior, and biasing conditions of the PN junction — revealing the delicate balance that makes semiconductor devices work.</p>
+<span id="continue-reading"></span>
+<hr />
+<h2 id="the-pn-junction">    The PN Junction</h2>
+
+
+
+    
+    
+
+
+
+    
+    
+
+
+
+<figure class="center">
+    <a href="https://maltsev-dev.github.io/processed_images/pn_junction.16861325204f705f.png">
+        <img src="https://maltsev-dev.github.io/processed_images/pn_junction.ff502b2a142f244d.webp"   />
+    </a>
+    
+</figure>
+<ul>
+<li>for <strong>positive</strong> - the nucleus of each 3-valent atom produces one <strong>hole (+)</strong></li>
+<li>for <strong>negative</strong> - the nucleus of each 5-valent atom creates one <strong>free electron (-)</strong></li>
+</ul>
+<p>When a silicon crystal is created with a p-type material on one side and an n-type material on the other side - the boundary between them is called a <strong>PN junction</strong><br />
+A PN crystal is called a junction diode. The word diode is an abbreviation for <strong>two (di) electrodes</strong></p>
+<p>There are <strong>3 possible bias conditions for a PN junction:</strong></p>
+<ol>
+<li><strong>Equilibrium or Zero Bias</strong> - no external voltage is applied to the PN junction.</li>
+<li><strong>Reverse Bias</strong> - when the <code>positive</code> source terminal is connected to the <strong>n-type</strong>, and the <code>negative</code> source terminal is connected to the <strong>p-type</strong></li>
+<li><strong>Forward Bias</strong> - the <code>negative</code> source terminal is connected to the <strong>n-type</strong>, and the <code>positive</code> terminal is connected to the <strong>p-type</strong></li>
+</ol>
+<h3 id="equilibrium-zero-bias">    Equilibrium (zero bias)</h3>
+<p>Without external influence, balance is achieved.</p>
+<h4 id="the-depletion-region">    The Depletion Region</h4>
+<p>Because of the high concentration, the electrons in <code>N</code> repel each other and spread (<strong>diffuse</strong>) into the <code>P</code> region.<br />
+In the <code>P</code> region, this free electron coming from <code>N</code> - fills a hole.<br />
+Thus, each time an electron crosses the junction and <strong>recombines</strong> with a hole, it creates a pair of <strong>ions</strong>.</p>
+
+
+
+    
+    
+
+
+
+    
+    
+
+
+
+<figure class="center">
+    <a href="https://maltsev-dev.github.io/processed_images/the_depletion_region_1.d01edd121a50f961.png">
+        <img src="https://maltsev-dev.github.io/processed_images/the_depletion_region_1.3b23afb9ca3dfed8.webp"   />
+    </a>
+    
+</figure>
+<p>Each pair of negative and positive ions at the boundary is called a <strong>diopole</strong>
+When a diopole is created, the <strong>majority carriers</strong> on each side are <strong>extracted from the atom</strong>, so this zone is called a <strong>depletion region</strong>.</p>
+
+
+
+    
+    
+
+
+
+    
+    
+
+
+
+<figure class="center">
+    <a href="https://maltsev-dev.github.io/processed_images/the_depletion_region_2.c6ec57afe30e81e9.png">
+        <img src="https://maltsev-dev.github.io/processed_images/the_depletion_region_2.3e7acddbbbbab054.webp"   />
+    </a>
+    
+</figure>
+<h4 id="barrier-potential">    Barrier Potential</h4>
+<p>Each region (diopole) has an <strong>electric field</strong> between the <strong>positive</strong> and <strong>negative</strong> ions.<br />
+Whenever a free electron from <code>P</code> tries to enter the depletion region, the electric field pushes it back into the <code>N</code> region.<br />
+The strength of the electric field increases with each recombination of holes and electrons inside the depletion region.</p>
+<ul>
+<li>Therefore, the electric field eventually stops <strong>diffusion and equilibrium occurs</strong></li>
+</ul>
+
+
+
+    
+    
+
+
+
+    
+    
+
+
+
+<figure class="center">
+    <a href="https://maltsev-dev.github.io/processed_images/barrier_potential.2b92c35850dba171.png">
+        <img src="https://maltsev-dev.github.io/processed_images/barrier_potential.dde00f8a120921cf.webp"   />
+    </a>
+    
+</figure>
+<p>The electric field between the ions is equivalent to a potential difference called the <strong>barrier potential</strong>.<br />
+At room temperature, the <strong>barrier potential</strong> is approximately <code>0.3V</code> for germanium diodes and <code>0.7V</code> for silicon diodes.</p>
+<h3 id="forward-bias">    Forward Bias</h3>
+<p><strong>p-type</strong> is connected to the <code>positive</code> side of the source and the <strong>n-type</strong> to the <code>negative</code> side.</p>
+
+
+
+    
+    
+
+
+
+    
+    
+
+
+
+<figure class="center">
+    <a href="https://maltsev-dev.github.io/processed_images/forward_bias.b52bd8befbe3a6ae.png">
+        <img src="https://maltsev-dev.github.io/processed_images/forward_bias.2624ad3a5c123ddc.webp"   />
+    </a>
+    
+</figure>
+<p>With this connection, the holes in the <code>P</code> and the free electrons in the <code>N</code> are <strong>pushed toward the junction</strong><br />
+If the battery voltage is <code>less</code> than the barrier potential (<code>0.7V</code>), the free electrons have enough energy to pass through the depletion layer and recombine with the holes.</p>
+<ul>
+<li>Thus, the depletion region <strong>shrinks</strong>.</li>
+</ul>
+<p>When a free electron recombines with a hole, it becomes a <strong>valence electron</strong>. As a valence electron, it continues to move to the left, passing from one hole to another, until it reaches the left end of the diode.<br />
+When it leaves the left end of the diode, a hole is formed at that location and the process repeats.<br />
+Since billions of electrons are flowing at the same time, a <strong>continuous current</strong> is obtained.</p>
+
+
+
+    
+
+
+
+    
+
+
+
+<figure class="center">
+    <a href="/images/basic electronics/flow_of_free_electrons_and_holes.gif">
+        <img src="/images/basic electronics/flow_of_free_electrons_and_holes.gif"   />
+    </a>
+    
+</figure>
+<h3 id="reverse-bias">    Reverse Bias</h3>
+<p><strong>p-type</strong> is connected to the  <code>negative</code>side of the source and the <strong>n-type</strong> to <code>positive</code> side.</p>
+
+
+
+    
+    
+
+
+
+    
+    
+
+
+
+<figure class="center">
+    <a href="https://maltsev-dev.github.io/processed_images/reverse_bias.8b1230a7a27c0cf7.png">
+        <img src="https://maltsev-dev.github.io/processed_images/reverse_bias.63c60748bca44e9f.webp"   />
+    </a>
+    
+</figure>
+<p>The negative terminals of the battery <strong>attract holes</strong>, and the positive terminals <strong>attract free electrons</strong>.<br />
+This causes the free electrons to flow away from the junction, leaving positive and negative ions behind.</p>
+<ul>
+<li>Thus, the depletion region <strong>increases</strong>.<br />
+The width of the depletion region is proportional to the reverse voltage.<br />
+The depletion region stops growing when its potential difference becomes equal to the applied reverse voltage.</li>
+</ul>
+<h4 id="reverse-current">    Reverse Current</h4>
+<p>The reverse current in a diode consists of the minority carrier current and the <strong>surface leakage current</strong>.<br />
+This reverse current is so small that it is considered to be <code>almost zero</code>.</p>
+<h4 id="surface-leakage-current">    Surface-Leakage Current</h4>
+<p>In a <strong>reverse biased diode</strong>, there is another current.<br />
+A small current flows along the surface of the crystal, known as the surface leakage current.<br />
+The atoms on the top and bottom surfaces of the crystal <code>have no neighbors</code>, they have only 6 electrons in the valence orbit.<br />
+This means that each surface atom <strong>has 2 holes</strong>.</p>
+
+
+
+    
+    
+
+
+
+    
+    
+
+
+
+<figure class="center">
+    <a href="https://maltsev-dev.github.io/processed_images/surface_leakage_current.2a15e25079ba1ad8.png">
+        <img src="https://maltsev-dev.github.io/processed_images/surface_leakage_current.e19fd9ba3b29167f.webp"   />
+    </a>
+    
+</figure>
+<p>This causes electrons to move through the surface holes from the <code>negative</code> pole of the battery to the <code>positive</code> pole of the battery.<br />
+Thus, a small reverse current flows along the surface.</p>
+<h4 id="breakdown">    Breakdown</h4>
+<p>There is a limit to how much <code>reverse voltage</code> a diode can withstand before it reaches <strong>breakdown voltage</strong> and fails.<br />
+Once the breakdown voltage is reached, a large number of minority charge carriers are formed in the depletion region due to the <code>avalanche effect </code>and the diode begins to conduct current in <strong>the reverse direction.</strong></p>
+<h4 id="avalanche-effect">    Avalanche Effect</h4>
+<p>When the <code>reverse voltage</code> increases, it causes the minority carriers to move faster.<br />
+These minority carriers begin to move at a tremendous speed, colliding with the crystal atoms, knocking out valence electrons from them, creating more free electrons.<br />
+The number of free electrons increases in geometric progression 1, 2, 4, 8, 16....</p>
+
+
+
+    
+
+
+
+    
+
+
+
+<figure class="center">
+    <a href="/images/basic electronics/avalanche_effect.gif">
+        <img src="/images/basic electronics/avalanche_effect.gif"   />
+    </a>
+    
+</figure>
+<p>This produces a significant reverse current in the diode and continues until the reverse current becomes large enough to destroy the diode.</p>
+<h2 id="diode-schematic-symbol">    Diode Schematic Symbol</h2>
+<p>An arrow pointing from the <code>p-side</code> to the <code>n-side</code>.<br />
+The p-side is called the <strong>anode</strong> and the n-side is called the <strong>cathode</strong>.</p>
+
+
+
+    
+    
+
+
+
+    
+    
+
+
+
+<figure class="center">
+    <a href="https://maltsev-dev.github.io/processed_images/diode_schematic_symbol.2f29bb3d549bc5cb.png">
+        <img src="https://maltsev-dev.github.io/processed_images/diode_schematic_symbol.fdb7698a8923bbfa.webp"   />
+    </a>
+    
+</figure>
+<h3 id="diode-i-v-characteristics">    Diode I-V Characteristics</h3>
+<p>A basic diode circuit in which the diode is <strong>forward biased</strong>.
+A series resistor <code>RS</code> is typically used to limit the magnitude of the forward current <code>IF</code> .</p>
+
+
+
+    
+    
+
+
+
+    
+    
+
+
+
+<figure class="center">
+    <a href="https://maltsev-dev.github.io/processed_images/diode_basic_schema.9faa79cfedee3198.png">
+        <img src="https://maltsev-dev.github.io/processed_images/diode_basic_schema.df60321a65406590.webp"   />
+    </a>
+    
+</figure>
+<p>After connecting this circuit, if you measure the voltage and current of the diode for forward and reverse bias, and plot it, you will get a graph that looks like this:</p>
+
+
+
+    
+    
+
+
+
+    
+    
+
+
+
+<figure class="center">
+    <a href="https://maltsev-dev.github.io/processed_images/current_voltage_characteristics.19a6900e8a30b556.png">
+        <img src="https://maltsev-dev.github.io/processed_images/current_voltage_characteristics.3b1487643c497f3d.webp"   />
+    </a>
+    
+</figure>
+<p>This plot is called <code>Current-Voltage (I-V)</code> characteristics.<br />
+This is the most important diode characteristic because it defines how much current flows through the diode for a given voltage.</p>
+<p>A resistor is a linear device, its I-V characteristic is a straight line.
+A diode's IV characteristic is a curve - this is due to the <strong>barrier potential</strong>.
+Depending on the <code>voltage applied</code> to it, it will operate in one of 3 areas:</p>
+<ol>
+<li>forward bias</li>
+<li>reverse bias</li>
+<li>breakdown</li>
+</ol>
+<h3 id="forward-bias-region">    Forward Bias Region</h3>
+<p>When the diode voltage is <code>less</code> than the <code>barrier potential</code>, a small current flows through the diode.<br />
+When the diode voltage <code>exceeds</code> the <code>barrier potential</code>, the current flowing through the barrier increases rapidly.</p>
+
+
+
+    
+    
+
+
+
+    
+    
+
+
+
+<figure class="center">
+    <a href="https://maltsev-dev.github.io/processed_images/forward_bias_region.cdb21a9e6fb4bb9c.png">
+        <img src="https://maltsev-dev.github.io/processed_images/forward_bias_region.2d682c3fe0e7152c.webp"   />
+    </a>
+    
+</figure>
+<p>The voltage at which the current begins to increase rapidly is called the <strong>forward voltage</strong> (VF) of the diode.<br />
+It is also called <strong>cut-in voltage</strong> or <strong>knee voltage</strong>.</p>
+<h3 id="reverse-bias-region">    Reverse Bias Region</h3>
+<p>The reverse bias region exists between <code>zero current</code> and <code>breakdown</code>.
+In this region, a small reverse current flows through the diode.</p>
+
+
+
+    
+    
+
+
+
+    
+    
+
+
+
+<figure class="center">
+    <a href="https://maltsev-dev.github.io/processed_images/reverse_bias_region.4ec74f7e4e7ce226.png">
+        <img src="https://maltsev-dev.github.io/processed_images/reverse_bias_region.03f5d3640e3fcefa.webp"   />
+    </a>
+    
+</figure>
+<h3 id="breakdown-region">    Breakdown Region</h3>
+<p>If we continue to increase the reverse voltage, then eventually a <code>breakdown</code> state will be reached.<br />
+At this point, an avalanche breakdown occurs in the depleted layer of the semiconductor and the diode begins to actively break through the current in the reverse direction, which leads to its destruction.</p>
+
+
+
+    
+    
+
+
+
+    
+    
+
+
+
+<figure class="center">
+    <a href="https://maltsev-dev.github.io/processed_images/breakdown_region.d8bcd6c6ec3bb48a.png">
+        <img src="https://maltsev-dev.github.io/processed_images/breakdown_region.ee8cae1a18358359.webp"   />
+    </a>
+    
+</figure>
+<p>Image Source: <a href="https://lastminuteengineers.com/semiconductor-basics/">LME</a></p>
+
+        </div>
+
+        
+        <div class="pagination">
+            <div class="pagination__title">
+                <span class="pagination__title-h">Read other posts?</span>
+                <hr />
+            </div>
+            <div class="pagination__buttons">
+                    <span class="button previous">
+                        <a href="https://maltsev-dev.github.io/rust-firmware-size/">
+                            <span class="button__icon">←</span>&nbsp;
+                            <span class="button__text">Critical Compression of Embedded Firmware: Understanding cargo size and Linker Strategies in Rust</span>
+                        </a>
+                    </span>
+                
+                
+                    <span class="button next">
+                        <a href="https://maltsev-dev.github.io/rs-to-bin-emb/">
+                            <span class="button__text">From Rust Source to Embedded Executable: A Deep Dive into the Compilation Process for Embedded Systems</span>&nbsp;
+                            <span class="button__icon">→</span>
+                        </a>
+                    </span>
+                </div>
+        </div>
+    
+    </div>
+
+    </div>
+
+
+<footer class="footer">
+    <div class="footer__inner">
+            <div class="copyright copyright--user"><div class="copyright">
+    <span>© 2026 A.Maltsev</span>
+    <span class="copyright-theme-sep"></span>
+    <span><img src="https://visitor-badge.laobi.icu/badge?page_id=maltsev-dev.github.io&right_color=orange" alt="Visitors"></span>
+</div>
+</div>
+        </div>
+</footer>
+
+
+</div>
+</body>
+
+</html>

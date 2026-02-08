@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+    <title>dev_stories</title>
+    
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+    <meta name="robots" content="noodp"/>
+
+    <link rel="stylesheet" href="https://maltsev-dev.github.io/style.css">
+    <link rel="stylesheet" href="https://maltsev-dev.github.io/color/orange.css">
+
+        <link rel="stylesheet" href="https://maltsev-dev.github.io/color/background_blue.css">
+    
+    <link rel="stylesheet" href="https://maltsev-dev.github.io/font-quicksand.css">
+
+
+    
+        <link rel="shortcut icon" type="image/png" href="/favicon.png">
+    
+    <meta property="og:site_name" content="dev_stories"><meta property="og:type" content="article">
+    <meta property="og:title" content="Hardware and firmware organization: the foundation of an AI device on the ESP32-S3"><meta property="og:url" content="https://maltsev-dev.github.io/dev-nurse-project-2/"><meta property="og:image" content="https://github.com/maltsev-dev/favicon.png">
+
+    </head>
+
+<body class="">
+<div class="container">
+    
+    <header class="header">
+        <div class="header__inner">
+            <div class="header__logo">
+                    
+                <a href="https://maltsev-dev.github.io" style="text-decoration: none;">
+                    <div class="logo">
+                      
+                            busy hands == happy heart
+                        
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        
+        <nav class="menu">
+            <ul class="menu__inner">
+                <li><a href="https://maltsev-dev.github.io/archive">archive</a></li>
+            
+                <li><a href="https://maltsev-dev.github.io/tags/project/">projects</a></li>
+            
+                <li><a href="https://maltsev-dev.github.io/about">about me</a></li>
+            </ul>
+        </nav>
+    
+    
+        
+    </header>
+    
+
+    <div class="content">
+        
+    <div class="post">
+        
+    <h1 class="post-title"><a href="https://maltsev-dev.github.io/dev-nurse-project-2/">Hardware and firmware organization: the foundation of an AI device on the ESP32-S3</a></h1>
+    <div class="post-meta-inline">
+        
+    <span class="post-date">
+            2025-12-05
+        </span>
+
+    </div>
+
+    
+        <span class="post-tags-inline">
+                :: tags:&nbsp;
+                <a class="post-tag" href="https://maltsev-dev.github.io/tags/project/">#project</a>&nbsp;
+                <a class="post-tag" href="https://maltsev-dev.github.io/tags/rust/">#rust</a>&nbsp;
+                <a class="post-tag" href="https://maltsev-dev.github.io/tags/nurse/">#nurse</a>&nbsp;
+                <a class="post-tag" href="https://maltsev-dev.github.io/tags/product/">#product</a></span>
+    
+
+        
+        <div class="post-content">
+            <p>🟠 In this article, I'll explain the hardware I'm using in my AI device project, why I chose it, and how I structured the firmware in Rust.<br />
+This is the foundation of the entire project: the MCU, display, controls, and a minimal firmware skeleton that ensures modularity and expandability.</p>
+<span id="continue-reading"></span>
+<hr />
+<h2 id="what-i-m-building-and-why-hardware-matters">    What I'm building and why hardware matters</h2>
+<p>The project is an ESP32-S3-based AI device that determines the probability of a person being in front of a camera.
+It can:</p>
+<ul>
+<li>collect data from sensors (OV2640 camera);</li>
+<li>perform local AI inference (TinyML);</li>
+<li>display debug data (16x2 I2C OLED);</li>
+<li>accept user input via a button;</li>
+<li>send data to the backend (Actix Web);</li>
+</ul>
+<h2 id="choosing-an-mcu-why-the-esp32-s3-sense">    Choosing an MCU: Why the ESP32-S3 Sense</h2>
+<p>The main parameters influencing the choice of a microcontroller for this project were a powerful core, RAM and Flash memory capacity, and a Wi-Fi module.<br />
+I chose the XIAO ESP32-S3 Sense for three reasons:</p>
+<ol>
+<li>The Sense has a pluggable camera module that can be upgraded if needed.</li>
+<li>Improved AI performance based on the dual-core 32-bit Xtensa LX7 processor.</li>
+<li>2.4GHz Wi-Fi with multiple power consumption modes.<br />
+In addition to the chip, I needed a breadboard for easy prototyping, cables, an LCM1602 OLED 16x2 display (I²C), and a simple pull-up button with a resistor.</li>
+</ol>
+<h2 id="conceptual-connection-diagram">Conceptual connection diagram</h2>
+
+
+
+    
+    
+
+
+
+    
+    
+
+
+
+<figure class="center">
+    <a href="https://maltsev-dev.github.io/processed_images/nurse_high_level_design.dd74743723bf67a3.png">
+        <img src="https://maltsev-dev.github.io/processed_images/nurse_high_level_design.7efa762dde83f4ba.webp"   />
+    </a>
+    
+</figure>
+<h2 id="devjournal-the-journey-from-idea-to-working-prototype">    DevJournal: The Journey from Idea to Working Prototype</h2>
+<p>Development always begins with a simple impulse—an idea that catches your attention.<br />
+For me, this impulse was the desire to implement something complex yet interesting, something I hadn't encountered before.<br />
+But the path from "it would be cool to do" to the actual result is rarely straightforward.<br />
+In this section, I'll highlight quotes from my development journal, which I kept throughout my work on the system.<br />
+It reflects my natural, living process: experiments, setbacks, sudden insights, periods of chaos, and moments when everything came together as a system.<br />
+In a way, it's an honest record of how my thinking evolved, how a working approach is formed and reimagined, and why small steps are more important than big breakthroughs.</p>
+<ol>
+<li>The Exploration Period: <strong>Adaptation and Restructuring</strong><br />
+At first, chaos sets in: testing ideas, making small, hesitant edits, searching for reference points, and trying to understand what's going on.<br />
+While navigating this chaos, it's easy to find yourself overwhelmed by a good hundred lines of code from experiments and various hypotheses. It was at this stage that one of the key skills emerged: the ability to stop, look at the system's state, and roll back to a stable point.</li>
+</ol>
+<blockquote>
+<p>"Adapt, roll back to a stable point, and replan again. Repeat the controlled attempt one more time."</p>
+</blockquote>
+<ol start="2">
+<li>The Period of Internal Support: <strong>The Emotional Side of Engineering</strong><br />
+I've had periods when I spent weeks solving a single problem, approaching it from every possible angle, searching and asking questions on forms, taking everything apart and putting everything back together, becoming depressed, and more than once wanting to quit. I think this is a familiar feeling for any mature developer who challenges themselves.<br />
+Technical progress is impossible without emotional stability, because any developer burns out not from the complexity of the tasks, but from their attitude toward them.<br />
+At this stage, my "inner developer-mentor" is more deeply formed—one who carefully guides rather than criticizes.</li>
+</ol>
+<blockquote>
+<p><em>"I try to support myself, without pressure... gently return to the flow without destruction or self-recrimination."</em></p>
+</blockquote>
+<ol start="3">
+<li>Practice Period: <strong>Transition to Action</strong>
+Every non-trivial project developed alone turns into a "mountain of tasks."<br />
+I stopped waiting for the perfect moment of motivation and energy and simply started working with what I had. Work flows when there's no paralysis of choice.<br />
+Rejecting perfectionism accelerated my development without losing quality and turned the project into a series of small victories—and these are far more important than a fragile ideal, which is often unattainable and remains only in the mind.</li>
+</ol>
+<blockquote>
+<p>_"I try to simply try without perfection, but sometimes the amount of work ahead overwhelms me..."</p>
+</blockquote>
+<h2 id="devjournal-engineering-wilds">    DevJournal: Engineering Wilds</h2>
+<ul>
+<li><strong>Start: Basic Firmware</strong><br />
+Development began with the basic firmware: to get the ESP32-S3 up and running with its two coprocessors, I used the community-supported starter template 'esp-idf-template'. This allowed me to quickly assemble a minimal working project, flash an LED, and move on.</li>
+</ul>
+<blockquote>
+<p>When starting out, it's best to use <strong>tested templates</strong> – this saves a ton of time and allows you to focus on the logic rather than the basic setup.</p>
+</blockquote>
+<ul>
+<li>
+<p><strong>Camera and Dataset Collection</strong><br />
+The next big step was connecting the camera and receiving frames on the PC via UART. I ran a TCP server on the chip, and a client-side script that, upon connection, began receiving frames and saving them to disk. In addition to visually debugging the camera, I began collecting a dataset of frames in the target 160x120 grayscale format. UART limitations and the need for a USB connection pushed me to set up Wi-Fi.</p>
+</li>
+<li>
+<p><strong>Wi-Fi and Network Configuration</strong><br />
+To implement Wi-Fi, I used <code>esp_idf_svc::wifi</code>. Then I set up configuration storage in NVS and implemented a basic QR code procedure for entering settings. Over time, the project became overgrown with "spaghetti" code—the file structure became disorganized, making it difficult to navigate. Modules became confused, and warnings arose. This prompted me to consider refactoring, cleaning up the logic, and restoring modularity.</p>
+</li>
+</ul>
+<blockquote>
+<p>If the project grows, don't be afraid to <strong>refactor</strong>: moving modules, cleaning up the spaghetti, and creating a clear structure. It pays off handsomely.</p>
+</blockquote>
+<ul>
+<li><strong>Modeling: First Attempt</strong><br />
+Next, I started training a face recognition model using the CelebA dataset as a basis. The first model turned out to be undertrained, so I had to expand the data by adding the WIDER FACE and PASS datasets and my own samples, as well as strengthen the augmentations and prepare a processing pipeline.<br />
+However, the final model turned out to be too large – almost a megabyte.<br />
+After quantizing to int8, the model required allocating ~19 MB of arena space, which is unachievable for the ESP32.<br />
+I then redesigned the architecture and redesigned the model so that the final weight size would be around 100 KB – this provided a better balance between accuracy and size.</li>
+</ul>
+<blockquote>
+<p>Model weight is a critical parameter for an MCU. It's better to plan a compact model + aggressive preprocessing in advance.</p>
+</blockquote>
+<ul>
+<li>
+<p><strong>Optimization and Preprocessing</strong><br />
+During development, I had to solve many minor technical issues: time synchronization via SNTP, displaying custom characters on a 5x8 LCD, selecting the camera resolution for QR mode, and optimizing the frame rate.<br />
+After several iterations, I managed to implement a compact model (~37 KB): I updated the frame preprocessing, added antialiasing, a median filter, a dynamic brightness threshold, and a check for frame differences to avoid running inference if the frame hadn't changed. This improved stability and reduced power consumption.</p>
+</li>
+<li>
+<p><strong>Critical Bug: Freezing after a Power Cycle</strong><br />
+A serious problem arose: after a full power outage, the model would "freeze": the predictions would become identical, regardless of the input data.<br />
+Everything worked correctly on a clean firmware, but after a reboot, it crashed.<br />
+After errors like "Guru Meditation," suspected stack overflows, allocator errors, defragmentation, and DRAM/PSRAM conflicts, we were able to identify the issue as being in arena allocation.<br />
+The solution was to statically initialize the arena with hard alignment, move buffers from PSRAM to DRAM, use CAMERA_GRAB_WHEN_EMPTY, and avoid trying to handle "two cameras" with different modes. After that, the bug disappeared, and predictions became correct again.</p>
+</li>
+</ul>
+<blockquote>
+<p>Memory is a treasure trove of problems. Make sure you understand where static and dynamic memory is stored, what happens during a power cycle, peripheral deinitialization, and so on.</p>
+</blockquote>
+<ul>
+<li><strong>FreeRTOS, stability, MQTT and backend connectivity</strong><br />
+I moved FreeRTOS tasks to the first core and reduced the button stack size. This freed up resources for two cameras and stabilized the inference at 15 kHz.
+The resulting structure became MCU → MQTT → backend (Actix Web) → frontend.<br />
+I implemented minute-based throttling: predictions are sent only when the minute changes (without timers), simply based on the current time change. This reduced the load on the network and server and made updates more meaningful.</li>
+</ul>
+<h2 id="devjournal-principles-and-example">    DevJournal: Principles and Example</h2>
+<p>It's important to me that the hardware drivers, logic modules, and firmware (Rust + esp_idf_hal) are organized in a modular and extensible manner: each component is isolated, built on abstraction layers and the principle of loose coupling.<br />
+The code is structured so that commands and requests are separated, and the module code structure follows the logical flow of the device.<br />
+This architecture reduces the firmware size, improves its testability, ensures performance monitoring, and allows for easy integration of the AI ​​model into the overall processing pipeline.</p>
+<h3 id="project-file-structure">Project file structure:</h3>
+<pre style="background-color:#151515;color:#e8e8d3;"><code><span>components/
+</span><span> ├── esp-tflite-micro-wrapper/
+</span><span> │    ├── esp_tflite_micro_wrapper.cpp
+</span><span> │    ├── model_data.cpp
+</span><span> │    ├── model_data.h
+</span><span> └──  └── CMakeLists.txt
+</span><span>model/
+</span><span> └── model.tflite
+</span><span>src/
+</span><span> ├── app/
+</span><span> │    ├── mod.rs
+</span><span> │    ├── app.rs
+</span><span> │    ├── processing.rs
+</span><span> |    ├── qr_connection.rs
+</span><span> |    └── state.rs
+</span><span> ├── drivers/
+</span><span> │    ├── mod.rs
+</span><span> │    ├── camera.rs
+</span><span> │    ├── lcd.rs
+</span><span> │    └── tflite.rs
+</span><span> ├── services/
+</span><span> │    ├── mod.rs
+</span><span> │    ├── nvs_storage.rs
+</span><span> │    └── wifi.rs
+</span><span> ├── utils/
+</span><span> │    ├── mod.rs
+</span><span> │    └── time_utils.rs
+</span><span> ├── main.rs
+</span><span> └── config.rs
+</span><span> Cargo.toml
+</span><span> CMakeLists.txt
+</span><span> build.rs
+</span><span> rust-toolchain.toml
+</span><span> sdkconfig.defaults
+</span></code></pre>
+<h2 id="1-1-app-the-main-loop-and-device-operation-logic">1.1 <code>app/</code> - the main loop and device operation logic</h2>
+<p>The <code>app</code> folder contains the main firmware loop (<code>app.rs</code>). This is where the MCU peripherals are initialized, serial interfaces are launched, the Wi-Fi and MQTT modules are prepared, and the configuration is loaded.<br />
+This is also where the <code>.tflite</code> model is loaded into memory. After health checks, execution moves to the main closed loop, where the processing module is called and data is sent to the queue.<br />
+I separated the logic for connecting to the user's Wi-Fi network into a separate module: during NVS startup and initialization, if no settings are saved, the device prompts the user to show the network's QR code to the camera. After a successful connection, the data is saved in NVS and automatically loaded the next time the device is powered on.</p>
+<h2 id="1-2-drivers-hardware-drivers">1.2 <code>drivers/</code> - hardware drivers</h2>
+<p>This directory contains modules that enable the firmware to interact with external components. - <strong>lcd.rs</strong> - OLED display initialization and page-by-page text output.</p>
+<ul>
+<li><strong>camera.rs</strong> - Extended camera initialization in two modes: QVGA (320×240) for QR code reading and QQVGA (160×120) for ML processing.</li>
+<li><strong>tflite.rs</strong> - A bridge between the Rust and C++ components of the model via FFI. Unsafe wrappers call functions from <code>esp_tflite_micro_wrapper.cpp</code>, allowing you to initialize the model, allocate an arena, run inference, and obtain debug information about the model at runtime.</li>
+</ul>
+<h2 id="1-3-services-network-services">1.3 <code>services/</code> - network services</h2>
+<p>Modules in <code>services</code> are responsible for connecting to Wi-Fi and managing network data in the NVS: retrieving, rewriting, and validating the network configuration. The logic in this layer is completely separated from the main firmware loop.</p>
+<h2 id="1-4-utils-auxiliary-tools">1.4 <code>utils/</code> - auxiliary tools</h2>
+<ul>
+<li><strong>time_utils.rs</strong> - contains the <code>TimeUtils</code> structure with methods for waiting for time synchronization and retrieving the current time in UTC in the <code>"MM/DD HH:MM"</code> format.</li>
+</ul>
+<h2 id="1-5-config-rs-single-configuration-node">1.5 <code>config.rs</code> - single configuration node</h2>
+<p>This file contains three key structures with dynamic firmware settings:</p>
+<ul>
+<li><code>ModelConfig</code> - frame processing parameters: brightness thresholds, hysteresis, number of averaging frames, update intervals, delays, etc.</li>
+<li><code>WifiConfig</code> - network connection data.</li>
+<li><code>MqttConfig</code> - MQTT client endpoints and parameters.</li>
+</ul>
+<h2 id="1-6-main-rs-entry-point">1.6 <code>main.rs</code> - entry point</h2>
+<p>Minimal code that sets logging levels, allocates a thread with an increased stack, and transfers control to <code>app.rs</code>. The main logic has been moved out of <code>main.rs</code> to keep the file lightweight and clean.</p>
+<h2 id="1-7-build-rs-external-component-connections">1.7 <code>build.rs</code> - external component connections</h2>
+<p>This file contains paths to external dependencies of <code>build/esp-idf/esp-tflite-micro-wrapper</code>
+It ensures the building and linking of the C++ components of the model into the final binary.</p>
+<h2 id="1-8-sdkconfig-defaults-default-mcu-settings">1.8 <code>sdkconfig.defaults</code> - default MCU settings</h2>
+<p>Centralized override of ESP-IDF settings. This is a convenient alternative to manually editing <code>sdkconfig</code> or configuring via <code>idf.py menuconfig</code>.</p>
+<h2 id="1-9-app-processing-rs-the-core-of-the-processing-pipeline">1.9 <code>app/processing.rs</code> - the core of the processing pipeline</h2>
+<ul>
+<li>receives frames from the camera</li>
+<li>validates them</li>
+<li>performs preprocessing: <code>dynamic_brightness_threshold</code>, <code>normalize_frame</code>, <code>gaussian_blur_3x3</code>, <code>sharpen_frame</code></li>
+<li>passes the result to the model</li>
+<li>receives the prediction</li>
+<li>calculates statistics (averages, smoothing, hysteresis)</li>
+<li>updates <code>ModelConfig</code> parameters</li>
+<li>renders the UI</li>
+</ul>
+<pre data-lang="rust" style="background-color:#151515;color:#e8e8d3;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="color:#8fbfdc;">pub fn </span><span style="color:#fad07a;">process_cycle</span><span>(
+</span><span style="color:#ffb964;">i2c</span><span>: &amp;</span><span style="color:#8fbfdc;">mut</span><span> I2cDriver,
+</span><span style="color:#ffb964;">detector</span><span>: &amp;</span><span style="color:#8fbfdc;">mut</span><span> PersonDetector,
+</span><span style="color:#ffb964;">state</span><span>: &amp;</span><span style="color:#8fbfdc;">mut</span><span> AppState,
+</span><span style="color:#ffb964;">config</span><span>: &amp;ModelConfig,
+</span><span style="color:#ffb964;">time_str</span><span>: &amp;</span><span style="color:#8fbfdc;">str</span><span>,
+</span><span>) -&gt; Option&lt;(</span><span style="color:#8fbfdc;">f32</span><span>, &amp;</span><span style="color:#8fbfdc;">&#39;static str</span><span>)&gt;
+</span></code></pre>
+<p>The result of the function is An option that, when certain conditions are met, is published to the mqtt topic <code>device/{}/stats</code> in the format:<br />
+<code>device/UM001/stats Time: 12/03 12:24, AvgScore(5): 0.87, LastScore: 0.99, Label: human</code></p>
+<h2 id="what-s-next">     What's next</h2>
+<p>In the next article, I'll move on to ML organization.<br />
+I plan to briefly cover the entire ML life cycle, from basic concepts and data preparation to model conversion and deployment on the MCU.</p>
+
+        </div>
+
+        
+        <div class="pagination">
+            <div class="pagination__title">
+                <span class="pagination__title-h">Read other posts?</span>
+                <hr />
+            </div>
+            <div class="pagination__buttons">
+                    <span class="button previous">
+                        <a href="https://maltsev-dev.github.io/dev-nurse-project-1/">
+                            <span class="button__icon">←</span>&nbsp;
+                            <span class="button__text">Why overspecialization is over, and how I decided to create my own AI device on MCU</span>
+                        </a>
+                    </span>
+                
+                
+                    <span class="button next">
+                        <a href="https://maltsev-dev.github.io/dev-nurse-project-3/">
+                            <span class="button__text">TinyML on MCU: from dataset to real-time inference in Rust firmware</span>&nbsp;
+                            <span class="button__icon">→</span>
+                        </a>
+                    </span>
+                </div>
+        </div>
+    
+    </div>
+
+    </div>
+
+
+<footer class="footer">
+    <div class="footer__inner">
+            <div class="copyright copyright--user"><div class="copyright">
+    <span>© 2026 A.Maltsev</span>
+    <span class="copyright-theme-sep"></span>
+    <span><img src="https://visitor-badge.laobi.icu/badge?page_id=maltsev-dev.github.io&right_color=orange" alt="Visitors"></span>
+</div>
+</div>
+        </div>
+</footer>
+
+
+</div>
+</body>
+
+</html>

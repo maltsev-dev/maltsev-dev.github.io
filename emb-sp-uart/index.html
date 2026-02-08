@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+    <title>dev_stories</title>
+    
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+    <meta name="robots" content="noodp"/>
+
+    <link rel="stylesheet" href="https://maltsev-dev.github.io/style.css">
+    <link rel="stylesheet" href="https://maltsev-dev.github.io/color/orange.css">
+
+        <link rel="stylesheet" href="https://maltsev-dev.github.io/color/background_blue.css">
+    
+    <link rel="stylesheet" href="https://maltsev-dev.github.io/font-quicksand.css">
+
+
+    
+        <link rel="shortcut icon" type="image/png" href="/favicon.png">
+    
+    <meta property="og:site_name" content="dev_stories"><meta property="og:type" content="article">
+    <meta property="og:title" content="UART (Universal Asynchronous Receiver / Transmitter)"><meta property="og:url" content="https://maltsev-dev.github.io/emb-sp-uart/"><meta property="og:image" content="https://github.com/maltsev-dev/favicon.png">
+
+    </head>
+
+<body class="">
+<div class="container">
+    
+    <header class="header">
+        <div class="header__inner">
+            <div class="header__logo">
+                    
+                <a href="https://maltsev-dev.github.io" style="text-decoration: none;">
+                    <div class="logo">
+                      
+                            busy hands == happy heart
+                        
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        
+        <nav class="menu">
+            <ul class="menu__inner">
+                <li><a href="https://maltsev-dev.github.io/archive">archive</a></li>
+            
+                <li><a href="https://maltsev-dev.github.io/tags/project/">projects</a></li>
+            
+                <li><a href="https://maltsev-dev.github.io/about">about me</a></li>
+            </ul>
+        </nav>
+    
+    
+        
+    </header>
+    
+
+    <div class="content">
+        
+    <div class="post">
+        
+    <h1 class="post-title"><a href="https://maltsev-dev.github.io/emb-sp-uart/">UART (Universal Asynchronous Receiver &#x2F; Transmitter)</a></h1>
+    <div class="post-meta-inline">
+        
+    <span class="post-date">
+            2025-06-30
+        </span>
+
+    </div>
+
+    
+        <span class="post-tags-inline">
+                :: tags:&nbsp;
+                <a class="post-tag" href="https://maltsev-dev.github.io/tags/embedded/">#embedded</a>&nbsp;
+                <a class="post-tag" href="https://maltsev-dev.github.io/tags/basic/">#basic</a>&nbsp;
+                <a class="post-tag" href="https://maltsev-dev.github.io/tags/sp/">#sp</a></span>
+    
+
+        
+        <div class="post-content">
+            <p>A technical introduction to the <strong>UART</strong> - low-speed two-wire asynchronous multi-duplex serial protocol.<br />
+<strong>UART</strong> The earliest serial protocol. Still commonly used in modern electronics.</p>
+
+
+
+    
+    
+
+
+
+    
+    
+
+
+
+<figure class="center">
+    <a href="https://maltsev-dev.github.io/processed_images/uart_header.6dabd3219709da55.png">
+        <img src="https://maltsev-dev.github.io/processed_images/uart_header.a661c0b6540064d1.webp"   />
+    </a>
+    
+</figure>
+<span id="continue-reading"></span>
+<hr />
+<h2 id="uart">    UART</h2>
+<p><code>UART - Universal Asynchronous Receiver / Transmitter</code></p>
+<ul>
+<li>
+<p>Simple, inexpensive, and easy to implement</p>
+</li>
+<li>
+<p>UART works by transmitting and receiving data over two wires: <code>TX</code> (transmit) and <code>RX</code> (receive).</p>
+</li>
+<li>
+<p>Asynchronous means that the transmitter and receiver <code>do not share a common clock signal</code> - this simplifies the protocol due to the lack of a separate synchronization line.</p>
+<ul>
+<li>BUT this imposes its own requirements on the transmitter and receiver - <code>the speed must be the same</code></li>
+<li>Speed ​​is measured in bauds (bits per second).</li>
+<li>Baud rate must be configured the same on both sides. Common speeds include <code>4800</code>, <code>9600</code>, <code>19200</code>, <code>38400</code>, <code>57600</code>, <code>115200</code> baud and higher.</li>
+</ul>
+</li>
+<li>
+<p>In addition, both nodes must use a fixed message structure and know how many bits are in each frame and what they mean.</p>
+</li>
+<li>
+<p>Can connect <strong>only two nodes.</strong> For this, two data transmission wires are used, which connect the transmitter of one node to the receiver of the other and vice versa.<br />
+In this configuration, data exchange can be:</p>
+</li>
+</ul>
+<ol>
+<li><code>simplex</code> - only in one direction (TX -&gt; RX)</li>
+<li><code>half-duplex</code> - at the same time, either transmission or reception of data can occur. (Tx -&gt; RX, RX -&gt; TX)</li>
+<li><code>full-duplex</code> - both nodes transmit data simultaneously. (TX &lt;-&gt; RX)</li>
+</ol>
+<h3 id="uart-frame-format">    UART Frame Format</h3>
+<ul>
+<li><code>high(1)</code> level consists of
+<ul>
+<li><code>start</code> and <code>stop</code> bits</li>
+<li><code>data</code> bits</li>
+<li><code>parity</code> bit (optional)</li>
+</ul>
+</li>
+<li>When data is not transmitted (<code>idle</code>) the line is in <code>high(1)</code> state
+
+
+
+    
+    
+
+
+
+    
+    
+
+
+
+<figure class="center">
+    <a href="https://maltsev-dev.github.io/processed_images/uart_design.1a0b71624110d334.png">
+        <img src="https://maltsev-dev.github.io/processed_images/uart_design.1811d3ed56133272.webp"   />
+    </a>
+    
+</figure>
+</li>
+</ul>
+<h4 id="start-stop">Start / Stop</h4>
+<p>The transmitter must inform the receiver that the data is ready to be transmitted.<br />
+The <strong>start bit</strong> is a transition from idle <code>high(1)</code> to <code>low(0)</code> state.<br />
+After sending the data, there is a <strong>stop bit</strong> which means that the sending is complete.<br />
+The <strong>stop bit</strong> either transitions from <code>low(0)</code> to <code>high(1)</code> state, or simply leaves the state <code>high(1)</code>.</p>
+<h4 id="data-bit">Data bit</h4>
+<p>Useful information comes immediately after the start bit (there can be from <code>5</code> to <code>9</code>, but most often <code>7-8 bits</code>)</p>
+<ul>
+<li>These bits are usually transmitted with the least significant bit at the beginning (<code>LSB first</code>)
+<ul>
+<li>7-bit ASCII 'S' = 1010011</li>
+<li>LSB order = 1100101</li>
+</ul>
+</li>
+</ul>
+<h4 id="parity-bit">Parity bit</h4>
+<p>Used to detect any <code>errors</code> in the transmitted message<br />
+located between the <code>last data bit</code> and the <code>stop bit</code></p>
+<ul>
+<li>the value of the bit depends on the <strong>type of parity</strong> used</li>
+<li><strong>even parity</strong> - the number of <code>1</code> in the data frame must be even.<br />
+When sending <code>1100101</code> - the parity bit will be <code>0</code> because there is already an even number of <code>1</code>.</li>
+<li><strong>odd parity</strong> - the number of <code>1</code> must be odd.<br />
+When sending <code>1100101</code> - the parity bit will be <code>1</code> because there must be an odd number of <code>1</code> in the frame.</li>
+<li>can detect only <strong>one error</strong>, if there are more, then this bit will not detect them.</li>
+</ul>
+
+        </div>
+
+        
+        <div class="pagination">
+            <div class="pagination__title">
+                <span class="pagination__title-h">Read other posts?</span>
+                <hr />
+            </div>
+            <div class="pagination__buttons">
+                    <span class="button previous">
+                        <a href="https://maltsev-dev.github.io/emb-sp/">
+                            <span class="button__icon">←</span>&nbsp;
+                            <span class="button__text">Serial Protocols</span>
+                        </a>
+                    </span>
+                
+                
+                    <span class="button next">
+                        <a href="https://maltsev-dev.github.io/emb-sp-spi/">
+                            <span class="button__text">SPI (Serial Peripheral Interface)</span>&nbsp;
+                            <span class="button__icon">→</span>
+                        </a>
+                    </span>
+                </div>
+        </div>
+    
+    </div>
+
+    </div>
+
+
+<footer class="footer">
+    <div class="footer__inner">
+            <div class="copyright copyright--user"><div class="copyright">
+    <span>© 2026 A.Maltsev</span>
+    <span class="copyright-theme-sep"></span>
+    <span><img src="https://visitor-badge.laobi.icu/badge?page_id=maltsev-dev.github.io&right_color=orange" alt="Visitors"></span>
+</div>
+</div>
+        </div>
+</footer>
+
+
+</div>
+</body>
+
+</html>

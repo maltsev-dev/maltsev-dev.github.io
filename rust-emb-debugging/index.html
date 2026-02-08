@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+    <title>dev_stories</title>
+    
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+    <meta name="robots" content="noodp"/>
+
+    <link rel="stylesheet" href="https://maltsev-dev.github.io/style.css">
+    <link rel="stylesheet" href="https://maltsev-dev.github.io/color/orange.css">
+
+        <link rel="stylesheet" href="https://maltsev-dev.github.io/color/background_blue.css">
+    
+    <link rel="stylesheet" href="https://maltsev-dev.github.io/font-quicksand.css">
+
+
+    
+        <link rel="shortcut icon" type="image/png" href="/favicon.png">
+    
+    <meta property="og:site_name" content="dev_stories"><meta property="og:type" content="article">
+    <meta property="og:title" content="Debugging firmware"><meta property="og:url" content="https://maltsev-dev.github.io/rust-emb-debugging/"><meta property="og:image" content="https://github.com/maltsev-dev/favicon.png">
+
+    </head>
+
+<body class="">
+<div class="container">
+    
+    <header class="header">
+        <div class="header__inner">
+            <div class="header__logo">
+                    
+                <a href="https://maltsev-dev.github.io" style="text-decoration: none;">
+                    <div class="logo">
+                      
+                            busy hands == happy heart
+                        
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        
+        <nav class="menu">
+            <ul class="menu__inner">
+                <li><a href="https://maltsev-dev.github.io/archive">archive</a></li>
+            
+                <li><a href="https://maltsev-dev.github.io/tags/project/">projects</a></li>
+            
+                <li><a href="https://maltsev-dev.github.io/about">about me</a></li>
+            </ul>
+        </nav>
+    
+    
+        
+    </header>
+    
+
+    <div class="content">
+        
+    <div class="post">
+        
+    <h1 class="post-title"><a href="https://maltsev-dev.github.io/rust-emb-debugging/">Debugging firmware</a></h1>
+    <div class="post-meta-inline">
+        
+    <span class="post-date">
+            2025-07-01
+        </span>
+
+    </div>
+
+    
+        <span class="post-tags-inline">
+                :: tags:&nbsp;
+                <a class="post-tag" href="https://maltsev-dev.github.io/tags/rust/">#rust</a>&nbsp;
+                <a class="post-tag" href="https://maltsev-dev.github.io/tags/embedded/">#embedded</a>&nbsp;
+                <a class="post-tag" href="https://maltsev-dev.github.io/tags/basic/">#basic</a></span>
+    
+
+        
+        <div class="post-content">
+            <p>Classic software development is always inside the cycle of write - run - check - fix.<br />
+In classic systems, debugging is simplified by built-in logs, breakpoints and step-by-step code execution directly in the IDE.</p>
+<p>When developing programs for microcontrollers, debugging is significantly more complicated since the code is written on a PC and executed on a device with a completely different architecture.<br />
+Obtaining debug information, setting breakpoints, accessing registers and local variables require a special environment and integration of tools, and the process itself becomes much less obvious.<br />
+🟠 In this article I want to describe the standard process when debugging software running on a microcontroller and describe the tools that play a key role in this.</p>
+<span id="continue-reading"></span>
+<hr />
+<h1 id="construction-site-debug-interfaces">    🏗️ Debug Interfaces</h1>
+<h2 id="jtag-joint-test-action-group">JTAG (Joint Test Action Group)</h2>
+<ul>
+<li>standard serial port for testing and debugging (<a href="https://en.wikipedia.org/wiki/JTAG#:~:text=JTAG%20,testing%20%2078%20after%20manufacture">JTAG - Wikipedia</a>).<br />
+Since 1990, an industry standard (IEEE 1149.1) for testing electronics.<br />
+Can use 4 or 5 lines:</li>
+</ul>
+<ul>
+<li><code>TDI</code> (test data input )</li>
+<li><code>TDO</code> (test data output)</li>
+<li><code>TCK</code> (test clock)</li>
+<li><code>TMS</code> (test mode select )</li>
+<li><code>TRST</code> (test reset) line optional
+With these lines, you can write a program image to memory, receive debug messages, read the internal state, stop and step through the code.<br />
+Provides access to the internal registers and memory of the chip for debugging.</li>
+</ul>
+<h2 id="swd-serial-wire-debug">SWD (Serial Wire Debug)</h2>
+<ul>
+<li>alternative <strong>2-pin</strong> ARM debug interface (<a href="https://github.com/riscv/riscv-debug-spec/issues/785#:~:text=Serial%20Wire%20Debug%20,same%20JTAG%20protocol%20on%20top">Serial Wire Debug (SWD) Issue #785 riscv/riscv-debug-spec GitHub</a>).<br />
+Similar to JTAG, but uses only <code>SWDIO</code> and <code>SWCLK</code> lines, saving MCU pins.</li>
+</ul>
+<h1 id="hammer-pick-debugging-tools">    ⚒️ Debugging tools</h1>
+<h2 id="pager-hardware">📟 Hardware</h2>
+<ul>
+<li>Connect to the device via <strong>JTAG</strong> (4-5 lines) or <strong>SWD</strong> (2 lines).
+| <strong>Tool</strong> | <strong>Protocol</strong> | <strong>Target platforms</strong> |
+|----------------------|--------------|------------------------------|
+| <strong>Black Magic Probe</strong>| SWD/JTAG | General-purpose (ARM, RISC-V) |
+| <strong>ST-Link</strong> | SWD | STM32 |
+| <strong>J-Link</strong> | SWD/JTAG | Multi-platform |
+| <strong>Rusty Probe</strong> | SWD | Specialized for Rust |</li>
+</ul>
+<h2 id="minidisc-software">💽 Software</h2>
+<h3 id="desktop-servers">🖥️ Servers</h3>
+<h4 id="openocd-open-on-chip-debugger">OpenOCD (Open On Chip Debugger)</h4>
+<ul>
+<li><code>OpenOCD</code>: An open source tool for debugging, testing and programming embedded systems, providing an interface between the <strong>host</strong> and the <strong>hardware</strong>, often used with <code>GDB</code>.
+<ul>
+<li>Since 2005, Open Source supports almost every architecture.</li>
+<li>Until recently, <code>OpenOCD</code> paired with the <code>GDB</code> debugger was the way you developed your embedded project code.</li>
+</ul>
+</li>
+</ul>
+<h4 id="probe-rs">probe-rs</h4>
+<ul>
+<li><code>probe-rs</code>: Modern framework for flashing and debugging microcontrollers. Works as an alternative to OpenOCD (supports SWD/JTAG).
+<ul>
+<li><code>probe-rs-cli</code> — allows flashing a binary and reading memory via a USB debugger.</li>
+<li><code>cargo-embed</code> — Combines assembly, flashing via <code>probe-rs</code>, logging via <code>RTT</code> and connecting to <code>GDB</code>. (<code>cargo embed --chip STM32F103</code> will upload the program to the board and start outputting in the console.)</li>
+<li><code>probe-rs-tools</code></li>
+</ul>
+</li>
+</ul>
+<h3 id="microscope-debuggers">🔬 Debuggers</h3>
+<ul>
+<li><code>GDB</code>: General-purpose debugger for examining program state, setting breakpoints/checkpoints, and inspecting memory and registers.<br />
+Can connect to built-in targets via <code>OpenOCD</code> or <code>probe-rs</code>.<br />
+Supports Rust-specific debugging (pretty printing, IDE integration).</li>
+</ul>
+<h1 id="triangular-ruler-logging">    📐 Logging</h1>
+<h2 id="defmt">defmt</h2>
+<ul>
+<li>
+<p><code>[defmt]</code>(https://crates.io/crates/defmt) (deferred formatting): an efficient logging framework for embedded systems:</p>
+<ul>
+<li>Formats logs on the host, passing only indexes and values ​​from the device.</li>
+<li>Integrates with GDB, suitable for real-time debugging.</li>
+<li>Part of the Knurling-rs project.</li>
+</ul>
+</li>
+<li>
+<p><code>[defmt-rtt]</code>(https://crates.io/crates/defmt-rtt) — transport layer for <code>defmt</code>:</p>
+<ul>
+<li>Uses <strong>RTT</strong> (Real-Time Transfer) for fast log transfer.</li>
+<li>Uses macros (<code>defmt::info!</code>, <code>defmt::error!</code>) with lazy formatting.</li>
+<li>Minimizes the load on <strong>MCU</strong>, saving useful data for analysis on the <strong>host</strong> side.</li>
+<li>This approach provides compact and fast debug messages without performance losses.</li>
+</ul>
+</li>
+</ul>
+<pre data-lang="rust" style="background-color:#151515;color:#e8e8d3;" class="language-rust "><code class="language-rust" data-lang="rust"><span>use panic_probe as _;
+</span><span>use defmt_rtt as _;
+</span><span>
+</span><span>#[</span><span style="color:#ffb964;">panic_handler</span><span>]
+</span><span style="color:#8fbfdc;">fn </span><span style="color:#fad07a;">panic</span><span>(</span><span style="color:#ffb964;">info</span><span>: &amp;core::panic::PanicInfo) -&gt; ! {
+</span><span>    defmt::error!(</span><span style="color:#556633;">&quot;</span><span style="color:#99ad6a;">PANIC: {}</span><span style="color:#556633;">&quot;</span><span>, defmt::Display2Format(info));
+</span><span>    defmt::info!(</span><span style="color:#556633;">&quot;</span><span style="color:#99ad6a;">Hello from probe-rs!</span><span style="color:#556633;">&quot;</span><span>);
+</span><span>    </span><span style="color:#8fbfdc;">loop </span><span>{}
+</span><span>}
+</span></code></pre>
+<h2 id="rtt">rtt</h2>
+<ul>
+<li><a href="https://crates.io/crates/rtt-target">rtt-target</a></li>
+</ul>
+<p>Low-level library for direct RTT logging.
+Allows writing strings directly to the RTT buffer without additional logic.</p>
+<ul>
+<li>no built-in formatting on the host,</li>
+<li>higher load on the <strong>MCU</strong>,</li>
+<li>strings are transmitted as is - takes up more memory and traffic.</li>
+</ul>
+<pre data-lang="toml" style="background-color:#151515;color:#e8e8d3;" class="language-toml "><code class="language-toml" data-lang="toml"><span>[</span><span style="color:#ffb964;">dependencies</span><span>]
+</span><span style="color:#ffb964;">rtt-target </span><span>= </span><span style="color:#556633;">&quot;</span><span style="color:#99ad6a;">0.6.0</span><span style="color:#556633;">&quot;
+</span></code></pre>
+<pre data-lang="rust" style="background-color:#151515;color:#e8e8d3;" class="language-rust "><code class="language-rust" data-lang="rust"><span>use rtt_target::{rtt_init_print, rprintln};
+</span><span>
+</span><span>rtt_init_print!();
+</span><span>rprintln!(</span><span style="color:#556633;">&quot;</span><span style="color:#99ad6a;">\nREAD from address 0x1B</span><span style="color:#556633;">&quot;</span><span>);
+</span></code></pre>
+<p>In VS Code, you can install the <strong>“Debugger for probe-rs”</strong> extension.<br />
+Then open the project and start debugging by pressing <code>F5</code> – it uses <code>probe-rs</code> to flash and run the application.<br />
+This approach allows you to see the <code>defmt</code>/<code>RTT</code> output directly in the VSCode console.</p>
+<h1 id="debugging-memory-in-embedded-rust">Debugging memory in Embedded Rust</h1>
+<ul>
+<li><strong>Memory inspection</strong> via <code>GDB</code>: access to variables, registers and memory areas (print, <code>x/10x 0x...</code>). Memory is defined in memory.x.</li>
+<li><strong>Linker errors</strong>: check that <code>memory.x</code> matches the chip configuration.</li>
+<li><strong>Reading registers</strong>: include .svd to correctly display peripherals.</li>
+</ul>
+<p>Despite Rust's safety, <code>unsafe</code> blocks are often necessary for low-level work. They should be checked manually and supplemented with static analysis (<strong>Clippy</strong>, <strong>Miri</strong>) and profiling (high-water marks) for reliability and optimal memory usage.</p>
+<p>This approach combines Rust's compile-time safety with analysis tools, ensuring high stability of embedded software.</p>
+<h1 id="arrows-counterclockwise-typical-workflow">    🔄 Typical workflow</h1>
+<ol>
+<li>Write code → add <code>rprintln!()</code> for logs.</li>
+<li><code>cargo build</code> → <code>cargo flash --chip ...</code></li>
+<li>Run the server <code>probe-rs run --gdb</code> in the background.</li>
+<li>Connect VS Code/GDB → set breakpoints → run.</li>
+<li>Analyze variables/logs → fix error → repeat.</li>
+<li>In case of panic → look at call stack and RTT logs.</li>
+</ol>
+<style>
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+  }
+
+  th,
+  td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    vertical-align: top;
+  }
+
+  th {
+    font-weight: bold;
+    text-align: center;
+    color: white;
+  }
+
+  thead {
+    background-color: #f59140;
+  }
+
+  td:first-child {
+    white-space: nowrap;
+    width: 1%;
+  }
+</style>
+<table>
+  <thead>
+    <tr>
+      <th>Stage</th>
+      <th>Tools</th>
+      <th>Flow</th>
+      <th>Point</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>1️⃣ Development</strong></td>
+      <td>
+        - rustc + cargo<br>
+        - embedded-hal<br>
+        - rtt-target<br>
+        - panic-halt, etc
+      </td>
+      <td>
+        <code>#![no_std]</code><br>
+        <code>#![no_main]</code>
+      </td>
+      <td>
+        - <code>no_std</code> disables the standard library.<br>
+        - <code>panic_handler</code> is required.<br>
+        - RTT/defmt adds a logging channel.
+      </td>
+    </tr>
+    <tr>
+      <td><strong>2️⃣ Compilation</strong></td>
+      <td>
+        - cargo + target toolchain (e.g. <code>thumbv7em-none-eabihf</code>)<br>
+        - probe-rs / cargo-binutils
+      </td>
+      <td>
+        <code>cargo build --target thumbv7em-none-eabihf</code><br>
+        <code>cargo objcopy --bin app -- -O binary firmware.bin</code>
+      </td>
+      <td>
+        - Toolchain generates code for specific Cortex-M.<br>
+        - objcopy creates firmware image.
+      </td>
+    </tr>
+    <tr>
+      <td><strong>3️⃣ Flashing</strong></td>
+      <td>
+        - Hardware: ST-Link, J-Link, Black Magic Probe<br>
+        - Software: probe-rs, openocd, cargo-flash
+      </td>
+      <td>
+        <code>probe-rs download --chip STM32F411CEUx firmware.bin</code><br>
+        <code>cargo flash --chip STM32F411CEUx</code>
+      </td>
+      <td>
+        - probe-rs works without config files.<br>
+        - Use <code>--chip</code> to match the target MCU.
+      </td>
+    </tr>
+    <tr>
+      <td><strong>4️⃣ Debugging</strong></td>
+      <td>
+        - Server: probe-rs / openocd<br>
+        - Client: GDB, Cortex-Debug (VS Code)
+      </td>
+      <td>
+        1. Run the server <code>probe-rs run --gdb</code><br>
+        2. Connect GDB <code>gdb target/thumbv7em-none-eabihf/debug/app</code><br>
+        <code>(gdb) target extended-remote :1337</code><br>
+        <code>(gdb) break main</code><br>
+        <code>(gdb) continue</code><br>
+        <code>(gdb) print _x</code><br>
+        3. Or use VS Code.
+      </td>
+      <td>
+        - GDB enables stepping, variable inspection.<br>
+        - VS Code offers GUI for debugging.
+      </td>
+    </tr>
+    <tr>
+      <td><strong>5️⃣ Diagnostics</strong></td>
+      <td>
+        - RTT Viewer (J-Link)<br>
+        - defmt-print<br>
+        - GDB commands
+      </td>
+      <td>
+        1. RTT logs<code>probe-rs rtt --chip STM32F411CEUx</code><br>
+        2. GDB memory:<br>
+        &nbsp;&nbsp; - <code>x/16x 0x20000000</code><br>
+        &nbsp;&nbsp; - <code>p &_x</code><br>
+        3. View registers:<br>
+        &nbsp;&nbsp; - In VS Code via .svd<br>
+        &nbsp;&nbsp; - In GDB: <code>info registers</code>
+      </td>
+      <td>
+        - RTT provides real-time logs.<br>
+        - Memory view helps detect corruption.<br>
+        - Registers show peripheral states.
+      </td>
+    </tr>
+    <tr>
+      <td><strong>6️⃣ Panic Handling</strong></td>
+      <td>
+        - panic-probe + defmt<br>
+        - GDB backtrace
+      </td>
+      <td>
+        - Enable backtrace: set <code>debug = 2</code> in <code>Cargo.toml</code>
+      </td>
+      <td>
+        - Allows debugging panic location with full context.
+      </td>
+    </tr>
+  </tbody>
+</table>
+<ul>
+<li>Automate builds in VS through <code>tasks.json</code>.</li>
+</ul>
+<pre data-lang="json" style="background-color:#151515;color:#e8e8d3;" class="language-json "><code class="language-json" data-lang="json"><span style="color:#888888;">// .vscode/launch.json
+</span><span>{
+</span><span>  </span><span style="color:#556633;">&quot;</span><span style="color:#99ad6a;">type</span><span style="color:#556633;">&quot;</span><span>: </span><span style="color:#556633;">&quot;</span><span style="color:#99ad6a;">cortex-debug</span><span style="color:#556633;">&quot;</span><span>,
+</span><span>  </span><span style="color:#556633;">&quot;</span><span style="color:#99ad6a;">servertype</span><span style="color:#556633;">&quot;</span><span>: </span><span style="color:#556633;">&quot;</span><span style="color:#99ad6a;">probe-rs</span><span style="color:#556633;">&quot;</span><span>,
+</span><span>  </span><span style="color:#556633;">&quot;</span><span style="color:#99ad6a;">executable</span><span style="color:#556633;">&quot;</span><span>: </span><span style="color:#556633;">&quot;</span><span style="color:#99ad6a;">target/.../app</span><span style="color:#556633;">&quot;</span><span>,
+</span><span>  </span><span style="color:#556633;">&quot;</span><span style="color:#99ad6a;">request</span><span style="color:#556633;">&quot;</span><span>: </span><span style="color:#556633;">&quot;</span><span style="color:#99ad6a;">launch</span><span style="color:#556633;">&quot;</span><span>,
+</span><span>  </span><span style="color:#556633;">&quot;</span><span style="color:#99ad6a;">device</span><span style="color:#556633;">&quot;</span><span>: </span><span style="color:#556633;">&quot;</span><span style="color:#99ad6a;">STM32F411CEUx</span><span style="color:#556633;">&quot;
+</span><span>}
+</span></code></pre>
+<h2 id="key-points">Key Points</h2>
+<ul>
+<li><strong>RTT instead of UART:</strong> No extra pins needed, works at any speed.</li>
+<li><strong>probe-rs &gt; OpenOCD:</strong> Easier installation, better integration with Rust.</li>
+<li><strong>defmt for complex projects:</strong> Compressed logs, formatting structures.</li>
+<li><strong>SVD files:</strong> Automate register viewing in the IDE.</li>
+</ul>
+
+        </div>
+
+        
+        <div class="pagination">
+            <div class="pagination__title">
+                <span class="pagination__title-h">Read other posts?</span>
+                <hr />
+            </div>
+            <div class="pagination__buttons">
+                    <span class="button previous">
+                        <a href="https://maltsev-dev.github.io/emb-sp-i2c/">
+                            <span class="button__icon">←</span>&nbsp;
+                            <span class="button__text">I2C (Inter-Integrated Circuit)</span>
+                        </a>
+                    </span>
+                
+                
+                    <span class="button next">
+                        <a href="https://maltsev-dev.github.io/emb-mmio/">
+                            <span class="button__text">MMIO (Memory-Mapped I&#x2F;O)</span>&nbsp;
+                            <span class="button__icon">→</span>
+                        </a>
+                    </span>
+                </div>
+        </div>
+    
+    </div>
+
+    </div>
+
+
+<footer class="footer">
+    <div class="footer__inner">
+            <div class="copyright copyright--user"><div class="copyright">
+    <span>© 2026 A.Maltsev</span>
+    <span class="copyright-theme-sep"></span>
+    <span><img src="https://visitor-badge.laobi.icu/badge?page_id=maltsev-dev.github.io&right_color=orange" alt="Visitors"></span>
+</div>
+</div>
+        </div>
+</footer>
+
+
+</div>
+</body>
+
+</html>
