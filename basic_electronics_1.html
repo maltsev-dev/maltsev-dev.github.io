@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="dev_stories - Technical blog about embedded systems, Rust, and engineering">
+    <meta property="og:site_name" content="dev_stories">
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="⚛️ Diving into the World of Semiconductors: From Atoms to Crystals">
+    <meta property="og:url" content="https://maltsev-dev.github.io/basic_electronics_1">
+    <meta property="og:image" content="https://github.com/maltsev-dev/favicon.png">
+    <title>⚛️ Diving into the World of Semiconductors: From Atoms to Crystals - dev_stories</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="shortcut icon" type="image/png" href="/static/favicon.png">
+    
+    
+</head>
+<body class="">
+    <div class="site-wrapper">
+        <header class="header">
+    <div class="container header-inner">
+        <a href="/" class="logo-link">
+            <div class="logo">
+                <span class="logo-text">busy hands == happy heart</span>
+            </div>
+        </a>
+
+        <nav class="main-nav">
+            <ul class="nav-list">
+                <li class="nav-item">
+                    <a href="/" class="nav-link ">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a href="/archive" class="nav-link ">Archive</a>
+                </li>
+                <li class="nav-item">
+                    <a href="/tags/project/" class="nav-link">Projects</a>
+                </li>
+                <li class="nav-item">
+                    <a href="/about" class="nav-link ">About</a>
+                </li>
+            </ul>
+        </nav>
+
+        <button class="mobile-menu-toggle" aria-label="Toggle menu" id="mobileMenuToggle">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+    </div>
+</header>
+        
+        <main class="main-content">
+            
+<article class="post-container">
+    <div class="container">
+        <header class="post-header">
+            <h1 class="post-title">⚛️ Diving into the World of Semiconductors: From Atoms to Crystals</h1>
+            <div class="post-meta">
+                <time class="post-date" datetime="2025-05-28">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                        <line x1="16" y1="2" x2="16" y2="6"/>
+                        <line x1="8" y1="2" x2="8" y2="6"/>
+                        <line x1="3" y1="10" x2="21" y2="10"/>
+                    </svg>
+                    May 28, 2025
+                </time>
+
+                
+                <div class="post-tags">
+                    
+                    <a href="/tags/basic_electronics.html" class="tag">#basic_electronics</a>
+                    
+                </div>
+                
+            </div>
+        </header>
+
+        <div class="post-content">
+            <p>Semiconductors play a crucial role in modern electronics, bridging the gap between conductors and insulators.<br />
+Understanding their unique properties is essential to grasp how everyday devices like diodes and transistors function.  </p>
+<p>🟠 In this article, we’ll explore the fundamental concepts of semiconductors, from atomic structure to crystal formation, and explain how doping transforms their electrical behavior.</p>
+<!-- more -->
+<hr />
+<h2 id="conductor">&emsp;&emsp;&emsp; Conductor</h2>
+<p>{{ img(src = "/images/basic electronics/copper_atom.png") }}</p>
+<div class="code-highlight"><pre><span></span><code>- The nucleus of a copper atom has 29 protons(+) (positive charge).
+- There are 29 electrons(-) revolving around the nucleus (negative charge).
+</code></pre></div>
+
+<p>In electronics, only the last orbit is important - the <strong>valence orbit</strong> - it determines the conductivity of the atom.</p>
+<h3 id="net-charge">&emsp;&emsp;&emsp; Net Charge</h3>
+<p>To determine the total charge of an atom, it is necessary to subtract all electrons (except the last/valence orbit) from the charge of the nucleus.<br />
+Example for copper = +1 (+29 protons - 28 electrons)</p>
+<h3 id="free-electrons">&emsp;&emsp;&emsp; Free Electrons</h3>
+<p>Since the total charge of the nucleus is +1 (after subtraction), the attraction between the nucleus and the valence electron (in the last orbit) <strong>is very weak</strong>.<br />
+Even nominal voltage can easily knock this electron out of the copper atom and make it flow through the material.<br />
+That is why the valence electron is called a <strong>free electron.</strong><br />
+And the flow of these free electrons is called <strong>Current</strong><br />
+    * the conductivity of an atom depends on the number of valence electrons.<br />
+    * 1 valence electron - <strong>best conductor</strong><br />
+    * 8 valence electrons - <strong>best insulator</strong></p>
+<h2 id="insulators">&emsp;&emsp;&emsp; Insulators</h2>
+<p>{{ img(src = "/images/basic electronics/neon_atom.png") }}</p>
+<p>The atomic structure of neon is a good insulator.
+The net charge of the nucleus is +8, so the <strong>external attraction</strong> felt by the valence electrons is <strong>very large.</strong><br />
+Therefore, due to the lack of free electrons, insulators <strong>do not conduct current.</strong></p>
+<p><code>If a high enough voltage is applied to an insulator, the force will be so great that the valence electrons will literally be torn from their atoms.  
+This will cause conduction.
+In air, you will see this as an arc or flash.
+In solid materials, the heat generated will char the material.</code></p>
+<h2 id="semiconductors">&emsp;&emsp;&emsp; Semiconductors</h2>
+<p>{{ img(src = "/images/basic electronics/silicon_atom.png") }}</p>
+<p>A semiconductor is an element that <strong>is neither a good conductor nor a good insulator.</strong><br />
+The <strong>best semiconductors</strong> have 4 valence electrons.  </p>
+<p>Atomic structure of <strong>silicon</strong> - an example of a semiconductor.<br />
+There are 4 electrons in the valence orbit, so the net charge of the silicon nucleus is +4</p>
+<p>Since the number of valence electrons of silicon is 4, this makes it in the middle of a conductor and an insulator - <strong>semiconductor</strong></p>
+<h2 id="silicon-crystals">&emsp;&emsp;&emsp; Silicon crystals</h2>
+<p>{{ img(src = "/images/basic electronics/silicon_crystals.png") }}</p>
+<p>When silicon atoms combine to form a crystal, they arrange themselves into a <strong>systematic structure</strong><br />
+In this case, each silicon atom <strong>begins to share its valence electrons with the 4</strong> valence orbits of the neighboring 4 atoms.<br />
+<strong>Each atom now has 8 electrons</strong> in its orbit (4 of its own + 4 (1 from each neighbor))</p>
+<h2 id="covalent-bonds">&emsp;&emsp;&emsp; Covalent Bonds</h2>
+<p>Because of the sharing, the <strong>valence electrons are now not owned by any one atom</strong><br />
+These shared valence electrons are <strong>attracted by neighboring atoms</strong> with equal and opposite forces, causing them to form a connection.<br />
+The following figure illustrates the concept of covalent bonds, with each straight line representing one shared electron.</p>
+<p>{{ img(src = "/images/basic electronics/covalent_bonds.png) }}</p>
+<p>This opposite attraction holds the silicon atoms together and gives them strength.</p>
+<h2 id="holes">&emsp;&emsp;&emsp; Holes</h2>
+<p>At room temperature, the thermal energy in the air causes the atoms in a silicon crystal to <strong>vibrate</strong>.<br />
+These vibrations <strong>remove an electron from its valence orbit</strong>, causing it to float freely throughout the crystal.<br />
+The loss of an electron creates a vacancy in the valence orbit called a <strong>Hole</strong><br />
+This <strong>hole acts as a positive charge</strong>, since the loss of an electron produces a <strong>positive ion</strong>.</p>
+<p>{{ img(src = "/images/basic electronics/electron_holes.png") }}</p>
+<p>When a free electron comes close to a hole, <strong>it is attracted to it and falls into it</strong>.<br />
+The process of merging a free electron and a hole is called <strong>Recombination.</strong></p>
+<h2 id="flow-of-free-electrons-and-holes">&emsp;&emsp;&emsp; Flow of free electrons and holes</h2>
+<p>If you connect a battery across a clean silicon crystal, the thermal energy will produce a free electron and a hole.</p>
+<p>{{ img(src = "/images/basic electronics/flow_of_free_electrons_and_holes.gif") }}</p>
+<p>The applied voltage causes the free <strong>electrons to move to the left</strong> and the <strong>holes to the right.</strong><br />
+When the free electrons reach the <strong>left end of the crystal</strong>, they enter the outer wire and <strong>flow toward the positive terminal of the battery.</strong></p>
+<ul>
+<li>On the other hand, free electrons at the negative terminal of the battery <strong>flow to the right</strong> end of the crystal.  </li>
+<li>They enter the crystal and <strong>recombine with the holes</strong> that have reached the <strong>right end of the crystal.</strong>  </li>
+<li>Thus, a constant flow of free electrons and holes is established inside the semiconductor.  </li>
+<li>Free electrons and holes are often called <strong>carriers</strong> because they carry charge from one place to another.</li>
+</ul>
+<h2 id="doping-a-semiconductor">&emsp;&emsp;&emsp; Doping a Semiconductor</h2>
+<p>In a pure silicon crystal, each atom uses <strong>4 valence electrons</strong> to connect with the valence orbits of neighboring atoms.<br />
+This reduces the number of electrons available for conduction, so the crystal acts as an insulator.<br />
+To increase the number of holes and, therefore, free electrons, thereby <strong>increasing the conductivity of the crystal</strong>, it must be doped.<br />
+<strong>Doping</strong> is the process of adding impurities to a pure silicon crystal to change its electrical conductivity.<br />
+The more dopant added, the more free electrons and holes there are, which leads to an increase in conductivity.<br />
+This means that a <strong>lightly sealed semiconductor has a high resistance</strong>, while a <strong>heavily doped semiconductor has a low resistance.</strong></p>
+<p><code>How ​​is silicon crystal doped?  
+First, pure silicon crystal is melted. This breaks the covalent bonds and turns the silicon from a solid to a liquid state.  
+To increase the number of free electrons, pentavalent atoms are added to the molten silicon.  
+And to increase the number of holes, tritant atoms are added. After it cools, it turns into a solid crystalline structure.</code></p>
+<h2 id="n-type-semiconductor">&emsp;&emsp;&emsp; n-type semiconductor</h2>
+<p>Silicon doped to increase the number of free electrons is called an <strong>n-type semiconductor</strong> (n- means negative)<br />
+<strong>pentavalent impurities</strong> (phosphorus, antimony, arsenic) are added to silicon. To increase the number of free electrons.</p>
+<p>Phosphorus atom diagram-</p>
+<p>{{ img(src = "/images/basic electronics/phosphorus_atom.png") }}</p>
+<p>In an n-type semiconductor, the pentavalent atom is in the middle, and 4 silicon atoms surround it.<br />
+A 5-valence orbital can hold <strong>no more than 8 electrons.</strong><br />
+When the valence orbits intersect, the silicon atoms share 1 electron with the phosphorus orbital, thereby releasing <strong>1 free electron</strong> from the phosphorus valence orbital
+{{ img(src = "/images/basic electronics/semiconductor_n_type.png") }}</p>
+<p>Each 5-valence atom in a silicon crystal releases 1 free electron, such impurities are called <strong>donor impurities</strong><br />
+In an n-semiconductor, there are more free electrons than holes, so free electrons are called <strong>major carriers</strong>, and holes <strong>minor</strong>.</p>
+<h2 id="p-type-semiconductor">&emsp;&emsp;&emsp; p-type semiconductor</h2>
+<p>Silicon doped to increase the number of holes is called a <strong>p-type conductor</strong> (p- means positive)<br />
+For this, <strong>3-valent impurities</strong> (aluminum, boron, gallium) are added  </p>
+<p>Boron atom diagram -</p>
+<p>{{ img(src = "/images/basic electronics/boron_atom.png") }}</p>
+<p>In a p-type doped crystal, the 3-valent atom is in the middle, on its valence orbit there will be <strong>only 7 electrons</strong> (3 of its own + 1 from each silicon atom).<br />
+Consequently, on the valence orbit of each 3-valent atom there appears a <strong>hole</strong>.</p>
+<p>{{ img(src = "/images/basic electronics/semiconductor_p_type.png") }}</p>
+<p>In these types of semiconductors, holes are now called majority <strong>carriers</strong>, and electrons are called <strong>minor</strong>.<br />
+A 3-valent atom is also called an <strong>acceptor atom</strong>, since each hole it contributes can accept a free electron during recombination.</p>
+<p>Image Source: <a href="https://lastminuteengineers.com/semiconductor-basics/">LME</a></p>
+        </div>
+
+        
+        <nav class="post-navigation">
+            <div class="nav-inner">
+                
+                <a href="/rs_to_bin.html" class="nav-link nav-prev">
+                    <span class="nav-label">Earlier</span>
+                    <span class="nav-title">From Rust Source Code to Optimized Executable: Inside the Rust Compiler Pipeline</span>
+                </a>
+                
+
+                
+                <a href="/rust_firmware_size.html" class="nav-link nav-next">
+                    <span class="nav-label">Later</span>
+                    <span class="nav-title">Critical Compression of Embedded Firmware: Understanding cargo size and Linker Strategies in Rust</span>
+                </a>
+                
+            </div>
+        </nav>
+        
+    </div>
+</article>
+
+        </main>
+        
+        <footer class="footer">
+    <div class="container footer-inner">
+        <div class="copyright">
+            <span>© A.Maltsev 2026</span>
+            <span class="copyright-sep">|</span>
+            <span>Visitors: <img src="https://visitor-badge.laobi.icu/badge?page_id=maltsev-dev.github.io" alt="Visitors"></span>
+        </div>
+        
+        <div class="social-links">
+            <a href="https://github.com/maltsev-dev" class="social-link" target="_blank" rel="noopener" aria-label="GitHub">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+            </a>
+            <a href="https://www.linkedin.com/in/a-maltsev" class="social-link" target="_blank" rel="noopener" aria-label="LinkedIn">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+            </a>
+            <a href="mailto:mr.a.maltsev@gmail.com" class="social-link" aria-label="Email">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            </a>
+        </div>
+    </div>
+</footer>
+    </div>
+    
+    <button class="theme-toggle" aria-label="Toggle dark mode" id="themeToggle">
+        <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="5"/>
+            <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+        </svg>
+        <svg class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+        </svg>
+    </button>
+    
+    <script src="/static/js/theme.js"></script>
+    
+<script>
+    // Add copy buttons to code blocks
+    document.querySelectorAll('pre').forEach(pre => {
+        const btn = document.createElement('button');
+        btn.className = 'copy-code-btn';
+        btn.textContent = 'Copy';
+        pre.appendChild(btn);
+
+        btn.addEventListener('click', () => {
+            const code = pre.querySelector('code');
+            navigator.clipboard.writeText(code.textContent);
+            btn.textContent = 'Copied!';
+            setTimeout(() => btn.textContent = 'Copy', 2000);
+        });
+    });
+</script>
+
+</body>
+</html>

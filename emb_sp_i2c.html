@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="dev_stories - Technical blog about embedded systems, Rust, and engineering">
+    <meta property="og:site_name" content="dev_stories">
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="I2C (Inter-Integrated Circuit)">
+    <meta property="og:url" content="https://maltsev-dev.github.io/emb_sp_i2c">
+    <meta property="og:image" content="https://github.com/maltsev-dev/favicon.png">
+    <title>I2C (Inter-Integrated Circuit) - dev_stories</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="shortcut icon" type="image/png" href="/static/favicon.png">
+    
+    
+</head>
+<body class="">
+    <div class="site-wrapper">
+        <header class="header">
+    <div class="container header-inner">
+        <a href="/" class="logo-link">
+            <div class="logo">
+                <span class="logo-text">busy hands == happy heart</span>
+            </div>
+        </a>
+
+        <nav class="main-nav">
+            <ul class="nav-list">
+                <li class="nav-item">
+                    <a href="/" class="nav-link ">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a href="/archive" class="nav-link ">Archive</a>
+                </li>
+                <li class="nav-item">
+                    <a href="/tags/project/" class="nav-link">Projects</a>
+                </li>
+                <li class="nav-item">
+                    <a href="/about" class="nav-link ">About</a>
+                </li>
+            </ul>
+        </nav>
+
+        <button class="mobile-menu-toggle" aria-label="Toggle menu" id="mobileMenuToggle">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+    </div>
+</header>
+        
+        <main class="main-content">
+            
+<article class="post-container">
+    <div class="container">
+        <header class="post-header">
+            <h1 class="post-title">I2C (Inter-Integrated Circuit)</h1>
+            <div class="post-meta">
+                <time class="post-date" datetime="2025-06-30">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                        <line x1="16" y1="2" x2="16" y2="6"/>
+                        <line x1="8" y1="2" x2="8" y2="6"/>
+                        <line x1="3" y1="10" x2="21" y2="10"/>
+                    </svg>
+                    June 30, 2025
+                </time>
+
+                
+                <div class="post-tags">
+                    
+                    <a href="/tags/embedded.html" class="tag">#embedded</a>
+                    
+                    <a href="/tags/basic.html" class="tag">#basic</a>
+                    
+                    <a href="/tags/sp.html" class="tag">#sp</a>
+                    
+                </div>
+                
+            </div>
+        </header>
+
+        <div class="post-content">
+            <p>A technical introduction to the <strong>I2C</strong> - low-speed two-wire master-slave serial protocol.<br />
+<strong>I2C</strong> is widely used for short-distance data transmission over a data bus (<code>SDA</code>) with a clock synchronization line (<code>SCL</code>).  </p>
+<p>{{ img(src = "/images/emb/i2c_header.png") }}</p>
+<!-- more -->
+<hr />
+<h2 id="i2c">&emsp;&emsp;&emsp; I2C</h2>
+<p><code>I2C - Inter-Integrated Circuit</code>
+The most common protocol for transmitting data over <code>short distances</code>.<br />
+Synchronous <code>master-slave</code> protocol.<br />
+Both the master and slave can transmit data.<br />
+Usually operates in <code>half-duplex</code> (at any given moment, only send or receive data can occur) mode at different clock frequencies.<br />
+Message exchange occurs in <code>frames</code>.</p>
+<p>{{ img(src = "/images/emb/i2c_design.png") }}</p>
+<p>Two wires are used -
+* <strong>SCL</strong> - serial clock signal
+* <strong>SDA</strong> - data bus</p>
+<p>In addition, the wires are connected to the <code>Vcc</code> supply using one <code>pull-up</code> resistor.</p>
+<h3 id="sda-frame-format">&emsp;&emsp;&emsp; SDA Frame Format</h3>
+<p>{{ img(src = "/images/emb/i2c_message_frame.png") }}</p>
+<ol>
+<li>master capture <strong>SDA</strong> bus with <code>start condition</code></li>
+<li>via <strong>SDA</strong> is sent <code>slave address</code> which master wants to communicate</li>
+<li>after address is specified operation bit <code>R/W</code>. master wants to read or write data</li>
+<li>after operation bit slave sends <code>Arc</code>, indicating its presence</li>
+<li>if <code>Arc</code> is received from slave then master sends <code>useful data</code></li>
+<li>after data slave sends <code>Arc</code>, thus indicating that data is received</li>
+<li>communication is stopped by <code>stop condition</code></li>
+</ol>
+<h4 id="start-condition">Start Condition</h4>
+<p>As in <a href="https://maltsev-dev.github.io/emb-sp-uart/">UART</a>, the <code>idle</code> state - for <strong>SDA</strong> and <strong>SCL</strong> - is <code>high(1)</code>
+* the <code>start condition</code> occurs when the node first pulls <code>low(0)</code> <strong>SDA</strong>, and then pulls <code>low(0)</code> <strong>SCL</strong>. Pulling down in this order occurs to capture the data bus.
+* after the data bus is captured - the node becomes the <strong>master</strong>. This prevents other nodes from capturing the bus and reduces the risk of conflicts.</p>
+<h4 id="slave-address">Slave Address</h4>
+<ul>
+<li>specifies which slave-node the master wants to communicate with.</li>
+<li>each node on the bus has a <code>unique fixed address</code> usually <code>7 bits</code> with <strong>MSB</strong> first (most significant bit is one)</li>
+<li>addresses can be hardcoded but sometimes they can be configured via wires</li>
+</ul>
+<h4 id="rw-bit">R/W bit</h4>
+<p>Immediately after the slave address comes the <code>read</code> or <code>write</code> bit and is set by the master.
+* <code>0</code> - the master wants to <strong>write</strong> data to the slave
+* <code>1</code> - the master wants to <strong>receive</strong> data from the slave</p>
+<h4 id="ack-bit">Ack bit</h4>
+<p>An acknowledge bit is sent by the receiver each time a byte of data is received
+* <code>0</code> - acknowledgement (ACK)
+* <code>1</code> - negation (NACK)<br />
+The <strong>I2C</strong> is <code>high(1)</code> in <code>idle</code>, so if the receiver does not respond by actively switching the line to <code>low(0)</code> level, it will be perceived as a <strong>failure</strong>.<br />
+After the address and each byte of data received (<code>8-bit</code>), there is an acknowledgement Arc.  </p>
+<h4 id="data-bits">Data bits</h4>
+<p>After the address bit come the <strong>data bits</strong> that are exchanged between the master and slave.<br />
+* often this data is a memory or register address in the slave
+* data is always transmitted <code>8-bit</code> wide and MSB first<br />
+In most cases, multiple data transfers occur, with each <code>8-bit</code> having to be acknowledged separately</p>
+<h4 id="stop-condition">Stop Condition</h4>
+<p>Mechanism to say that the last byte of data has been sent.
+Stop condition -
+* the <strong>SCL</strong> line goes <code>high(1)</code> and stays there
+* then <strong>SDA</strong> goes <code>high(1)</code> and stays there too</p>
+<ul>
+<li>to transmit data bytes, the <strong>SDA</strong> line goes <code>low(0)</code> only when <strong>SCL</strong> is <code>low(0)</code> level</li>
+<li>if the <strong>SDA</strong> line goes <code>low(0)</code> when <strong>SCL</strong> is <code>high(1)</code> - this is the <code>stop condition.</code></li>
+</ul>
+<p>After the stop condition - the bus becomes inactive and there is no clock signal.<br />
+And any node on the bus can use the start condition to take over the bus and start a new communication.  </p>
+<h3 id="synchronization-of-data-and-clock-pulses">&emsp;&emsp;&emsp; Synchronization of data and clock pulses</h3>
+<p>{{ img(src = "/images/emb/i2c_sync.png") }}</p>
+<ul>
+<li>data is always read in the <code>middle</code> of the clock pulse and never in the intervals between them.<br />
+This is necessary, because switching <strong>SDA</strong> at a <code>high(1)</code> level of the <strong>SCL</strong> signal would mean the <code>beginning</code> or <code>end</code> of the data transfer. (start / stop condition)</li>
+<li>it turns out that <strong>SDA</strong> switches (0-1) only at a <code>low(0)</code> level  on <strong>SCL</strong></li>
+</ul>
+<h3 id="open-drain">&emsp;&emsp;&emsp; Open Drain</h3>
+<ul>
+<li>
+<p>usually <strong>SDA</strong> and <strong>SDA</strong> are <code>high(1)</code> because each of them is connected to the power supply (<code>+Vcc</code>) via a <strong>pull-up</strong> resistor, with one resistor per line, not one node.</p>
+</li>
+<li>
+<p>Each <strong>I2C</strong> device contains a logic device inside that can open and close the drain</p>
+</li>
+<li>When the drain is <code>closed</code>, the <strong>SDA</strong> or <strong>SCL</strong> lines are in a <code>low(0)</code> state because now it is connected to ground (<code>GND</code>)</li>
+<li>When the drain is <code>opened</code>, the line goes <code>high(1)</code> because now its connected to the power supply (<code>+Vcc</code>)</li>
+</ul>
+<p>When the lines are not in use, they are <code>high(1)</code> voltage, that is why <strong>I2C</strong> is called an open drain system
+{{ img(src = "/images/emb/i2c_open_drain.png") }}</p>
+<h3 id="pull-up-resistor">&emsp;&emsp;&emsp; Pull- Up resistor</h3>
+<ul>
+<li>Pulling down to <strong>low(0)</strong> faster than pull up to <code>idle</code> <strong>high(1)</strong></li>
+<li>the <code>higher</code> the resistor resistance, the more time is needed to raise the line, and this in turn limits the <code>speed of the bus.</code></li>
+<li>the <code>lower</code> the resistor resistance, the faster the communication occurs, but at the same time <code>more energy</code> is required</li>
+<li>usually the values ​​of pull-up resistors for <strong>I2C</strong> are in the range of <code>1kOm</code> - <code>10kOm</code></li>
+</ul>
+<h3 id="modes-speed">&emsp;&emsp;&emsp; Modes \ Speed</h3>
+<p>pull-up resistor values ​​are one of the factors limiting the maximum bus speed.<br />
+<strong>I2C</strong> speeds are usually called modes<br />
+<strong>I2C</strong> supports several speeds:
+* standard (100 kbps), 
+* fast (400 kbps), 
+* fast+ (1 Mbps). 
+There are also experimental implementations with even higher speeds, but they are usually rarely used.</p>
+        </div>
+
+        
+        <nav class="post-navigation">
+            <div class="nav-inner">
+                
+                <a href="/emb_sp.html" class="nav-link nav-prev">
+                    <span class="nav-label">Earlier</span>
+                    <span class="nav-title">Serial Protocols</span>
+                </a>
+                
+
+                
+                <a href="/emb_sp_spi.html" class="nav-link nav-next">
+                    <span class="nav-label">Later</span>
+                    <span class="nav-title">SPI (Serial Peripheral Interface)</span>
+                </a>
+                
+            </div>
+        </nav>
+        
+    </div>
+</article>
+
+        </main>
+        
+        <footer class="footer">
+    <div class="container footer-inner">
+        <div class="copyright">
+            <span>© A.Maltsev 2026</span>
+            <span class="copyright-sep">|</span>
+            <span>Visitors: <img src="https://visitor-badge.laobi.icu/badge?page_id=maltsev-dev.github.io" alt="Visitors"></span>
+        </div>
+        
+        <div class="social-links">
+            <a href="https://github.com/maltsev-dev" class="social-link" target="_blank" rel="noopener" aria-label="GitHub">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+            </a>
+            <a href="https://www.linkedin.com/in/a-maltsev" class="social-link" target="_blank" rel="noopener" aria-label="LinkedIn">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+            </a>
+            <a href="mailto:mr.a.maltsev@gmail.com" class="social-link" aria-label="Email">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            </a>
+        </div>
+    </div>
+</footer>
+    </div>
+    
+    <button class="theme-toggle" aria-label="Toggle dark mode" id="themeToggle">
+        <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="5"/>
+            <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+        </svg>
+        <svg class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+        </svg>
+    </button>
+    
+    <script src="/static/js/theme.js"></script>
+    
+<script>
+    // Add copy buttons to code blocks
+    document.querySelectorAll('pre').forEach(pre => {
+        const btn = document.createElement('button');
+        btn.className = 'copy-code-btn';
+        btn.textContent = 'Copy';
+        pre.appendChild(btn);
+
+        btn.addEventListener('click', () => {
+            const code = pre.querySelector('code');
+            navigator.clipboard.writeText(code.textContent);
+            btn.textContent = 'Copied!';
+            setTimeout(() => btn.textContent = 'Copy', 2000);
+        });
+    });
+</script>
+
+</body>
+</html>

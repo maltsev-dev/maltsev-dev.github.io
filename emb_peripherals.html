@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="dev_stories - Technical blog about embedded systems, Rust, and engineering">
+    <meta property="og:site_name" content="dev_stories">
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="MCU Peripherals">
+    <meta property="og:url" content="https://maltsev-dev.github.io/emb_peripherals">
+    <meta property="og:image" content="https://github.com/maltsev-dev/favicon.png">
+    <title>MCU Peripherals - dev_stories</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="shortcut icon" type="image/png" href="/static/favicon.png">
+    
+    
+</head>
+<body class="">
+    <div class="site-wrapper">
+        <header class="header">
+    <div class="container header-inner">
+        <a href="/" class="logo-link">
+            <div class="logo">
+                <span class="logo-text">busy hands == happy heart</span>
+            </div>
+        </a>
+
+        <nav class="main-nav">
+            <ul class="nav-list">
+                <li class="nav-item">
+                    <a href="/" class="nav-link ">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a href="/archive" class="nav-link ">Archive</a>
+                </li>
+                <li class="nav-item">
+                    <a href="/tags/project/" class="nav-link">Projects</a>
+                </li>
+                <li class="nav-item">
+                    <a href="/about" class="nav-link ">About</a>
+                </li>
+            </ul>
+        </nav>
+
+        <button class="mobile-menu-toggle" aria-label="Toggle menu" id="mobileMenuToggle">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+    </div>
+</header>
+        
+        <main class="main-content">
+            
+<article class="post-container">
+    <div class="container">
+        <header class="post-header">
+            <h1 class="post-title">MCU Peripherals</h1>
+            <div class="post-meta">
+                <time class="post-date" datetime="2025-07-11">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                        <line x1="16" y1="2" x2="16" y2="6"/>
+                        <line x1="8" y1="2" x2="8" y2="6"/>
+                        <line x1="3" y1="10" x2="21" y2="10"/>
+                    </svg>
+                    July 11, 2025
+                </time>
+
+                
+                <div class="post-tags">
+                    
+                    <a href="/tags/embedded.html" class="tag">#embedded</a>
+                    
+                    <a href="/tags/basic.html" class="tag">#basic</a>
+                    
+                    <a href="/tags/peripherals.html" class="tag">#peripherals</a>
+                    
+                </div>
+                
+            </div>
+        </header>
+
+        <div class="post-content">
+            <p>Microcontroller peripherals are functional blocks integrated into the chip that enable it to interact with the outside world or carry out specific tasks — often without involving the processor core.</p>
+<p>🟠 When selecting a microcontroller, your choice should depend on the required peripherals, not the other way around.</p>
+<!-- more -->
+<hr />
+<p>The <strong>peripherals of a microcontroller</strong> act like its <strong>senses</strong>, enabling it to interact with the outside world, process analog signals, manage time, communicate with other devices, and perform various application-specific tasks.</p>
+<p>Each microcontroller includes a different set of <strong>peripheral modules</strong>, depends on its architecture, manufacturer, specific model etc, and which determine its capabilities and cost.<br />
+Typical peripherals include:
+* <strong>ADC</strong> (Analog-to-Digital Converter)
+* <strong>Timers</strong> and <strong>PWM Generators</strong>
+* <strong>Analog Comparators</strong>
+* <strong>Communication interfaces</strong> such as UART (serial port), SPI, I2C, USB, and CAN  </p>
+<p>Most microcontrollers, regardless of brand or architecture, include a core set of these essential peripherals.</p>
+<p>{{ img(src = "/images/emb/mcu_peripherals.png") }}</p>
+<hr />
+<style> 
+table { 
+width: 100%; 
+border-collapse: collapse; 
+margin-bottom: 20px; 
+} 
+
+th, 
+td { 
+border: 1px solid #ddd; 
+padding: 8px; 
+vertical-align: top; 
+} 
+
+th { 
+background-color: #f59140; 
+color: white; 
+text-align: center; 
+} 
+
+td:first-child { 
+width: auto; 
+}
+</style>
+
+<table>
+<thead>
+<tr>
+<th>Category</th>
+<th>How it can be different</th>
+<th>MCU examples</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>GPIO</strong></td>
+<td>Number of pins, alt-functions, open-drain/push-pull, switching speed, pull-up resistors.</td>
+<td>
+<code>STM32F103</code> – basic set, alt-functions via AFIO<br/>
+<code>ESP32S3</code> – up to 45 pins, flexible routing via GPIO matrix<br/>
+<code>RP2040</code> – 30 GPIO, PIO support
+</td>
+</tr>
+<tr>
+<td><strong>TIMER / PWM</strong></td>
+<td>Bit depth (8/16/32 bit), number of timers, modes (OneShot, PWM, Capture), channels, dead-time.</td>
+<td>
+<code>STM32H7</code> – advanced timers with dead-time, synchronization<br/>
+<code>RP2040</code> – 8 PWM blocks with independent channels<br/>
+<code>ATmega328P</code> – 3 timers (2×8 bit, 1×16 bit)
+</td>
+</tr>
+<tr>
+<td><strong>UART / USART</strong></td>
+<td>Number of ports, DMA support, auto-detection of speed, support for IrDA, LIN, RS-485.</td>
+<td>
+<code>STM32F4</code> – up to 6 USARTs, IrDA and SmartCard support<br/>
+<code>ESP32</code> – 3 UARTs, all with DMA<br/>
+<code>RP2040</code> – 2 UARTs, software implementation via PIO
+</td>
+</tr>
+<tr>
+<td><strong>SPI / I2C</strong></td>
+<td>Number of modules, speed (up to 80+ MHz), master/slave modes, DMA support, multi-master.</td>
+<td>
+<code>STM32L4</code> – SPI with CRC and NSS support<br/>
+<code>ESP32S3</code> – up to 4 SPI/I2C, with DMA and master/slave modes<br/>
+<code>AVR ATmega328P</code> – I2C (TWI) and SPI with basic functionality
+</td>
+</tr>
+<tr>
+<td><strong>ADC / DAC</strong></td>
+<td>Bit depth (8-16 bit), number of channels, speed, built-in buffers, calibration.</td>
+<td>
+<code>STM32G4</code> – 16-bit ADC, 2 MSPS<br/>
+<code>ESP32</code> – 12-bit ADC (low quality), 2 DAC<br/>
+<code>RP2040</code> – 12-bit ADC, no DAC
+</td>
+</tr>
+<tr>
+<td><strong>DMA</strong></td>
+<td>Number of channels, peripheral support, linked list, circular mode, prio levels.</td>
+<td>
+<code>STM32F4</code> – up to 16 DMA channels, peripherals + memory<br/>
+<code>RP2040</code> – 12 channels, programmable transfers<br/>
+<code>ESP32</code> – built-in DMA controller with SPI/UART
+</td>
+</tr>
+<tr>
+<td><strong>USB</strong></td>
+<td>Support for host/device/OTG mode, protocols (CDC, HID, MSC), built-in or external PHY.</td>
+<td>
+<code>STM32F103</code> – USB FS device<br/>
+<code>STM32H7</code> – HS + FS, OTG<br/>
+<code>ESP32S3</code> – USB OTG (host + device)
+</td>
+</tr>
+<tr>
+<td><strong>Wi-Fi / BLE</strong></td>
+<td>Version support (BLE 4.2/5.0), co-existence, built-in stack or external module.</td>
+<td>
+<code>ESP32S3</code> – Wi-Fi 2.4 GHz, BLE 5.0<br/>
+<code>nRF52840</code> – BLE 5.3, Thread/Zigbee<br/>
+<code>STM32WB</code> – STM32 + BLE on a single chip
+</td>
+</tr>
+<tr>
+<td><strong>RTC / WDT / Power</strong></td>
+<td>External quartz support, wakeup from sleep, low power, independence from system clock.</td>
+<td>
+<code>STM32L4</code> – RTC + deep sleep<br/>
+<code>ESP32</code> – ULP core, wake-on-touch<br/>
+<code>AVR</code> – the simplest WDT, deep sleep with interrupts
+</td>
+</tr>
+<tr>
+<td><strong>Specialized</strong></td>
+<td>PIO, machine vision, crypto modules, LED drivers, graphic accelerators, LCD controllers.</td>
+<td>
+<code>RP2040</code> – 2 PIO blocks<br/>
+<code>ESP32S3</code> – AI acceleration + LCD controller<br/>
+<code>STM32H7</code> – ChromART GPU, JPEG decoder
+</td>
+</tr>
+</tbody>
+</table>
+
+<h2 id="usage-examples">💡 Usage examples</h2>
+<table>
+<thead>
+<tr>
+<th>Device</th>
+<th>Peripherals involved</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Smart lamp</td>
+<td>GPIO, PWM, UART (for BLE), ADC (for light sensor)</td>
+</tr>
+<tr>
+<td>Weather station</td>
+<td>I2C (sensors), ADC (analog sensors), UART (screen), RTC</td>
+</tr>
+<tr>
+<td>Robot on wheels</td>
+<td>PWM (motors), UART (Bluetooth), SPI (IMU), GPIO</td>
+</tr>
+<tr>
+<td>Oscilloscope on MCU</td>
+<td>ADC, DMA, SPI display, USB</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="tips-for-working-with-peripherals">🚀 Tips for working with peripherals</h2>
+<ul>
+<li>Use <strong>HAL libraries</strong> or <strong>register access</strong> depending on the task.</li>
+<li>Always <strong>initialize peripherals correctly</strong>: setting up pins, frequencies, interrupts.</li>
+<li><strong>Handle errors</strong>: buffer overflows, loss of synchronization, etc.</li>
+<li><strong>Use the datasheet</strong> of the microcontroller - everything is described there in detail.</li>
+</ul>
+        </div>
+
+        
+        <nav class="post-navigation">
+            <div class="nav-inner">
+                
+                <a href="/emb_registers.html" class="nav-link nav-prev">
+                    <span class="nav-label">Earlier</span>
+                    <span class="nav-title">MCU Registers</span>
+                </a>
+                
+
+                
+                <a href="/emb_rust_flow.html" class="nav-link nav-next">
+                    <span class="nav-label">Later</span>
+                    <span class="nav-title">Basic Embedded Rust Flow (Cortex-M)</span>
+                </a>
+                
+            </div>
+        </nav>
+        
+    </div>
+</article>
+
+        </main>
+        
+        <footer class="footer">
+    <div class="container footer-inner">
+        <div class="copyright">
+            <span>© A.Maltsev 2026</span>
+            <span class="copyright-sep">|</span>
+            <span>Visitors: <img src="https://visitor-badge.laobi.icu/badge?page_id=maltsev-dev.github.io" alt="Visitors"></span>
+        </div>
+        
+        <div class="social-links">
+            <a href="https://github.com/maltsev-dev" class="social-link" target="_blank" rel="noopener" aria-label="GitHub">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+            </a>
+            <a href="https://www.linkedin.com/in/a-maltsev" class="social-link" target="_blank" rel="noopener" aria-label="LinkedIn">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+            </a>
+            <a href="mailto:mr.a.maltsev@gmail.com" class="social-link" aria-label="Email">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            </a>
+        </div>
+    </div>
+</footer>
+    </div>
+    
+    <button class="theme-toggle" aria-label="Toggle dark mode" id="themeToggle">
+        <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="5"/>
+            <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+        </svg>
+        <svg class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+        </svg>
+    </button>
+    
+    <script src="/static/js/theme.js"></script>
+    
+<script>
+    // Add copy buttons to code blocks
+    document.querySelectorAll('pre').forEach(pre => {
+        const btn = document.createElement('button');
+        btn.className = 'copy-code-btn';
+        btn.textContent = 'Copy';
+        pre.appendChild(btn);
+
+        btn.addEventListener('click', () => {
+            const code = pre.querySelector('code');
+            navigator.clipboard.writeText(code.textContent);
+            btn.textContent = 'Copied!';
+            setTimeout(() => btn.textContent = 'Copy', 2000);
+        });
+    });
+</script>
+
+</body>
+</html>

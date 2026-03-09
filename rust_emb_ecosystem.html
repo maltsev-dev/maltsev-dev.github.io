@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="dev_stories - Technical blog about embedded systems, Rust, and engineering">
+    <meta property="og:site_name" content="dev_stories">
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="Embedded 📦 crates ecosystem">
+    <meta property="og:url" content="https://maltsev-dev.github.io/rust_emb_ecosystem">
+    <meta property="og:image" content="https://github.com/maltsev-dev/favicon.png">
+    <title>Embedded 📦 crates ecosystem - dev_stories</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="shortcut icon" type="image/png" href="/static/favicon.png">
+    
+    
+</head>
+<body class="">
+    <div class="site-wrapper">
+        <header class="header">
+    <div class="container header-inner">
+        <a href="/" class="logo-link">
+            <div class="logo">
+                <span class="logo-text">busy hands == happy heart</span>
+            </div>
+        </a>
+
+        <nav class="main-nav">
+            <ul class="nav-list">
+                <li class="nav-item">
+                    <a href="/" class="nav-link ">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a href="/archive" class="nav-link ">Archive</a>
+                </li>
+                <li class="nav-item">
+                    <a href="/tags/project/" class="nav-link">Projects</a>
+                </li>
+                <li class="nav-item">
+                    <a href="/about" class="nav-link ">About</a>
+                </li>
+            </ul>
+        </nav>
+
+        <button class="mobile-menu-toggle" aria-label="Toggle menu" id="mobileMenuToggle">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+    </div>
+</header>
+        
+        <main class="main-content">
+            
+<article class="post-container">
+    <div class="container">
+        <header class="post-header">
+            <h1 class="post-title">Embedded 📦 crates ecosystem</h1>
+            <div class="post-meta">
+                <time class="post-date" datetime="2025-06-25">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                        <line x1="16" y1="2" x2="16" y2="6"/>
+                        <line x1="8" y1="2" x2="8" y2="6"/>
+                        <line x1="3" y1="10" x2="21" y2="10"/>
+                    </svg>
+                    June 25, 2025
+                </time>
+
+                
+                <div class="post-tags">
+                    
+                    <a href="/tags/rust.html" class="tag">#rust</a>
+                    
+                    <a href="/tags/embedded.html" class="tag">#embedded</a>
+                    
+                </div>
+                
+            </div>
+        </header>
+
+        <div class="post-content">
+            <p><strong>Review of the ecosystem of crates used for programming microcontrollers in Rust</strong></p>
+<p>In general, developing programs for <strong>MCU</strong> is aimed at obtaining some information from the surrounding world, performing necessary calculations with this data and interacting back.  Using Rust gives a huge freedom in choosing the level of abstraction at which the developer can interact with the <strong>MCU</strong>.    </p>
+<p>🟠 In this article I'll take a closer look at these abstraction levels and some other useful crates.</p>
+<!-- more -->
+<hr />
+<h2 id="levels-of-abstraction">Levels of Abstraction</h2>
+<h2 id="1-low-level">&emsp;&emsp;&emsp; 1. Low Level</h2>
+<p>To program an <strong>MCU</strong>, at the <strong>lowest level</strong>, you need to control a special set of <code>registers</code> available inside the <strong>MCU</strong>.<br />
+<a href="https://maltsev-dev.github.io/emb-registers/">Registers</a> are special memory locations that you can interact with: write data to, read, modify, and store values.<br />
+To write or read a value from a register, you need to manipulate individual <strong>bits</strong> at specific memory addresses reserved for those registers.<br />
+Once the control bits are set in the right registers, at some point the write will be interpreted and passed to a <strong>peripheral device</strong> connected to one of the <strong>MCU</strong> pins to interact with the outside world.  </p>
+<ul>
+<li>This approach can be unsafe, as it requires the use of <strong>unsafe blocks</strong> and <strong>pointer dereferencing</strong> to access register addresses - this can lead to undefined behavior (UB) and memory errors.  </li>
+<li>Directly manipulating registers to control the <strong>MCU</strong> is powerful, but not the most intuitive or safe way to interact with the hardware.  </li>
+</ul>
+<h2 id="2-svd-system-view-description-level">&emsp;&emsp;&emsp; 2. SVD (System View Description) Level</h2>
+<p>In addition to the datasheet describing the register structure, <strong>MCU</strong> manufacturers sometimes provide standardized <strong>SVD</strong> (System View Description) files in <code>xml</code> format.<br />
+These files contain information about the functions and location of registers in a format <code>convenient for machine processing.</code><br />
+<em> The <a href="https://crates.io/crates/svd2rust">svd2rust</a> tool allows you to automatically generate safe Rust crates with type-safe access to </em><em>MCU</em><em> peripheral registers based on such </em><em>SVD</em>* files.</p>
+<h2 id="3-pac-peripheral-access-crate-level">&emsp;&emsp;&emsp; 3. PAC (Peripheral Access Crate) Level</h2>
+<p>After patching the <strong>SVD</strong> files and generating code through <code>svd2rust</code>, we get a safe and structured <strong>PAC</strong> - interface for working with the <strong>MCU</strong> peripherals.  </p>
+<p><strong>PAC</strong> is a <code>type-safe access</code> to each register of the peripherals.<br />
+A struct is created for each register. These structs are implemented using zero-cost abstractions (in release mode).  </p>
+<p>Thanks to the ownership system in Rust, <strong>PAC</strong> eliminates race conditions when accessing the peripherals.<br />
+For example, if a struct representing a certain register has already been passed to another part of the code, it cannot be reused without explicitly sharing or returning ownership - this prevents unsafe concurrent access.  </p>
+<p><strong>PAC</strong> limitations:
+* No initialization check: not guaranteed that you have set up all necessary registers correctly.
+* No automatic checking of dependencies between peripherals (e.g. when working with <code>Timers</code>, <code>DMA</code>, etc.)</p>
+<h2 id="4-hal-hardware-abstraction-layer-level">&emsp;&emsp;&emsp; 4. HAL (Hardware Abstraction Layer) Level</h2>
+<p><strong>HAL</strong> is a high-level abstraction layer built on top of PAC that provides a convenient and safe interface for controlling the <strong>MCU</strong> peripherals.<br />
+These interfaces use clear structures and high-level abstractions: <code>GPIO</code>, <code>RCC</code>, <code>I2C</code>, <code>SPI</code>, <code>Timers</code>, <code>Pins</code>, etc.<br />
+This allows implementing safety checks at the type system level and checking the initialization of components before they are used.<br />
+<strong>HAL</strong> significantly reduces the complexity of interacting with hardware and makes the code more readable, reusable within the MCUs family, and more maintainable.  </p>
+<h3 id="driver">Driver</h3>
+<p>Basically, it's any crate written for an <strong>MCU</strong> that allows it to interact with the outside world via sensors or peripherals.</p>
+<p>🧩 Creating a driver for an external ultrasonic distance sensor <strong>HY-SRF05</strong>
+The sensor has only 5 pins, 2 of them:
+- <code>TRIG</code> — for sending a signal (<strong>output</strong>)
+- <code>ECHO</code> — for receiving a reflected signal (<strong>input</strong>)</p>
+<p>The measurement procedure is as follows:
+1. Send a short pulse to <code>TRIG</code> (e.g. 10 microseconds)
+2. Wait for <code>ECHO</code> to go high <code>is_high()</code> and start timing
+3. When <code>ECHO</code> goes low again <code>is_low()</code>, end the measurement
+4. Create a driver function, e.g. <code>fn measure_distance() -&gt; f32</code></p>
+<p>When creating the driver function, structures defined in a specific <strong>HAL</strong> for a specific <strong>MCU</strong> were used.<br />
+The problem is that these types and structures <strong>may not exist</strong> in the same form in another <strong>HAL</strong> - in order to use this driver on another <strong>MCU</strong>, it must be rewritten.  </p>
+<h2 id="5-embedded-hal">&emsp;&emsp;&emsp; 5. Embedded HAL</h2>
+<p><a href="https://crates.io/crates/embedded-hal">embedded-hal</a> is a project that provides a unified set of <strong>traits</strong> to abstract common <strong>MCU</strong> peripherals: <code>GPIO</code>, <code>Timers</code>, <code>SPI</code>, <code>UART</code>, <code>I2C</code>, etc.  </p>
+<ul>
+<li>A <strong>HAL</strong> implemented for a specific <strong>MCU</strong> (e.g. <a href="https://crates.io/crates/stm32f4xx-hal">stm32f4xx-hal</a> or <a href="https://crates.io/crates/rp2040-hal">rp2040-hal</a>), implements the traits from <code>embedded-hal</code>, usually relying on low-level <strong>PAC</strong> interfaces.</li>
+</ul>
+<p>This ensures compatibility of drivers with any chip that supports <code>embedded-hal</code>
+* <code>modularity</code> (driver logic is separated from hardware)
+* code <code>reusability</code> and portability (the same driver can be used with any <strong>HAL</strong> that implements <code>embedded-hal</code>)
+* universal approach that allows <code>testing</code> the driver on multiple <strong>MCU</strong> in simulation.</p>
+<p>🛠 Driver with Embedded <strong>HAL</strong>
+To create driver that will be compatible with any platform based on <code>embedded-hal</code>, you need to:
+1. Import traits from <code>embedded_hal</code>:</p>
+<div class="code-highlight"><pre><span></span><code><span class="k">use</span><span class="w"> </span><span class="n">embedded_hal</span><span class="p">::{</span>
+<span class="w">    </span><span class="n">digital</span><span class="p">::</span><span class="n">v2</span><span class="p">::{</span><span class="n">InputPin</span><span class="p">,</span><span class="w"> </span><span class="n">OutputPin</span><span class="p">},</span>
+<span class="w">    </span><span class="n">timer</span><span class="p">::</span><span class="n">CountDown</span><span class="p">,</span>
+<span class="p">};</span>
+</code></pre></div>
+
+<ol>
+<li>Define a driver function with <strong>generic traits</strong> and implement the functionality with them:</li>
+</ol>
+<div class="code-highlight"><pre><span></span><code><span class="k">fn</span><span class="w"> </span><span class="nf">measure_distance</span><span class="o">&lt;</span><span class="n">Trig</span><span class="p">,</span><span class="w"> </span><span class="n">Echo</span><span class="p">,</span><span class="w"> </span><span class="n">Timer</span><span class="o">&gt;</span><span class="p">(</span>
+<span class="w">    </span><span class="k">mut</span><span class="w"> </span><span class="n">trig</span><span class="p">:</span><span class="w"> </span><span class="nc">Trig</span><span class="p">,</span>
+<span class="w">    </span><span class="n">echo</span><span class="p">:</span><span class="w"> </span><span class="nc">Echo</span><span class="p">,</span>
+<span class="w">    </span><span class="k">mut</span><span class="w"> </span><span class="n">timer</span><span class="p">:</span><span class="w"> </span><span class="nc">Timer</span><span class="p">,</span>
+<span class="p">)</span><span class="w"> </span><span class="p">-&gt;</span><span class="w"> </span><span class="nb">Result</span><span class="o">&lt;</span><span class="kt">f32</span><span class="p">,</span><span class="w"> </span><span class="n">Error</span><span class="o">&gt;</span>
+<span class="k">where</span>
+<span class="w">    </span><span class="n">Trig</span><span class="p">:</span><span class="w"> </span><span class="nc">OutputPin</span><span class="p">,</span>
+<span class="w">    </span><span class="n">Echo</span><span class="p">:</span><span class="w"> </span><span class="nc">InputPin</span><span class="p">,</span>
+<span class="w">    </span><span class="n">Timer</span><span class="p">:</span><span class="w"> </span><span class="nc">CountDown</span><span class="o">&lt;</span><span class="n">Time</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Duration</span><span class="o">&gt;</span><span class="p">,</span>
+<span class="w">    </span><span class="o">..</span><span class="p">.</span>
+</code></pre></div>
+
+<h2 id="6-bsp-board-support-package-level">&emsp;&emsp;&emsp; 6. BSP (Board Support Package) Level</h2>
+<p><code>BSP</code> crates provide abstractions and utilities specific to a particular board (not just an <strong>MCU</strong>).</p>
+<p>While <code>PAC</code> and <code>HAL</code> correspond to <strong>MCU families</strong>, a <code>BSP</code> corresponds to a <strong>specific board model</strong> - with its layout, pinout, onboard components and peripherals.<br />
+BSPs are most often compatible with <code>embedded-hal</code> and speed up prototyping
+* <a href="https://crates.io/crates/rp-pico">rp-pico</a> — BSP for Raspberry Pi Pico (based on <code>rp2040-hal</code>)
+* <a href="https://crates.io/crates/nucleo-f401re">nucleo-f401re</a> - BSP for STM32 Nucleo F401RE
+* <a href="https://crates.io/crates/microbit">microbit</a> - BSP for BBC micro:bit</p>
+<ul>
+<li>Pin names that match the markings on the board</li>
+<li>For example, instead of <code>PA9</code> you can write <code>usb_dm</code>, <code>led_blue</code>, <code>button_user</code>, etc.</li>
+<li>Simplified initialization of peripherals specific to a particular board</li>
+<li>Ready-made drivers or wrappers over peripheral devices built into the board:<ul>
+<li>SD cards</li>
+<li>Displays</li>
+<li>LEDs, buttons, accelerometers</li>
+<li>USB, Wi-Fi, BLE, etc.</li>
+</ul>
+</li>
+<li>Clock and power settings optimal for a given board</li>
+</ul>
+<h2 id="7-cortex-crates">7. Cortex crates</h2>
+<p>In the Rust ecosystem for <strong>ARM based MCU</strong>, a set of key crates is allocated, designed to work with the <strong>Cortex-M</strong> design:
+| crate | purpose |
+|:--------|:-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| <a href="https://crates.io/crates/cortex-m">cortex-m</a> | Used as a foundation in most <strong>HAL</strong> and <strong>BSP</strong> crates for <strong>MCU</strong> based on Cortex-M (<code>STM32</code>, <code>nRF</code>, <code>RP2040</code>, etc.). |
+| <a href="https://crates.io/crates/cortex-m-rt">cortex-m-rt</a> | Minimal runtime (execution environment) for Rust programs under no_std.<br/>Necessary for most bare-metal projects. |
+| <a href="cortex-m-semihosting">cortex-m-semihosting</a> | Utilities for interacting with the debugger via semihosting.<br/>Suitable for outputting debug information without <code>UART</code> and without additional hardware. |
+| <a href="https://crates.io/crates/cortex-a">cortex-a</a> | for <strong>ARM Cortex-A</strong> cores (eg Raspberry Pi in bare metal mode)</p>
+<p>Often these crates are not imported directly because the target <strong>HAL</strong>, for example crate <code>rp2040-hal</code> itself already depends on <code>cortex-m</code>, <code>cortex-m-rt</code> and uses them under the hood.</p>
+        </div>
+
+        
+        <nav class="post-navigation">
+            <div class="nav-inner">
+                
+                <a href="/rp2040_projects.html" class="nav-link nav-prev">
+                    <span class="nav-label">Earlier</span>
+                    <span class="nav-title">🧪 RP2040 Pico W Lab</span>
+                </a>
+                
+
+                
+                <a href="/emb_sp.html" class="nav-link nav-next">
+                    <span class="nav-label">Later</span>
+                    <span class="nav-title">Serial Protocols</span>
+                </a>
+                
+            </div>
+        </nav>
+        
+    </div>
+</article>
+
+        </main>
+        
+        <footer class="footer">
+    <div class="container footer-inner">
+        <div class="copyright">
+            <span>© A.Maltsev 2026</span>
+            <span class="copyright-sep">|</span>
+            <span>Visitors: <img src="https://visitor-badge.laobi.icu/badge?page_id=maltsev-dev.github.io" alt="Visitors"></span>
+        </div>
+        
+        <div class="social-links">
+            <a href="https://github.com/maltsev-dev" class="social-link" target="_blank" rel="noopener" aria-label="GitHub">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+            </a>
+            <a href="https://www.linkedin.com/in/a-maltsev" class="social-link" target="_blank" rel="noopener" aria-label="LinkedIn">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+            </a>
+            <a href="mailto:mr.a.maltsev@gmail.com" class="social-link" aria-label="Email">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            </a>
+        </div>
+    </div>
+</footer>
+    </div>
+    
+    <button class="theme-toggle" aria-label="Toggle dark mode" id="themeToggle">
+        <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="5"/>
+            <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+        </svg>
+        <svg class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+        </svg>
+    </button>
+    
+    <script src="/static/js/theme.js"></script>
+    
+<script>
+    // Add copy buttons to code blocks
+    document.querySelectorAll('pre').forEach(pre => {
+        const btn = document.createElement('button');
+        btn.className = 'copy-code-btn';
+        btn.textContent = 'Copy';
+        pre.appendChild(btn);
+
+        btn.addEventListener('click', () => {
+            const code = pre.querySelector('code');
+            navigator.clipboard.writeText(code.textContent);
+            btn.textContent = 'Copied!';
+            setTimeout(() => btn.textContent = 'Copy', 2000);
+        });
+    });
+</script>
+
+</body>
+</html>

@@ -1,455 +1,501 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
-    <title>dev_stories</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="dev_stories - Technical blog about embedded systems, Rust, and engineering">
+    <meta property="og:site_name" content="dev_stories">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="dev_stories">
+    <meta property="og:url" content="https://maltsev-dev.github.io/">
+    <meta property="og:image" content="https://github.com/maltsev-dev/favicon.png">
+    <title>dev_stories - Technical Blog</title>
     
-    <meta http-equiv="content-type" content="text/html; charset=utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
-    <meta name="robots" content="noodp"/>
-
-    <link rel="stylesheet" href="https://maltsev-dev.github.io/style.css">
-    <link rel="stylesheet" href="https://maltsev-dev.github.io/color/orange.css">
-
-        <link rel="stylesheet" href="https://maltsev-dev.github.io/color/background_blue.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="shortcut icon" type="image/png" href="/static/favicon.png">
     
-    <link rel="stylesheet" href="https://maltsev-dev.github.io/font-quicksand.css">
-
-
     
-        <link rel="shortcut icon" type="image/png" href="/favicon.png">
-    
-    <meta property="og:site_name" content="dev_stories"><meta property="og:type" content="website">
-    <meta property="og:title" content="dev_stories"><meta property="og:url" content="https://maltsev-dev.github.io/"><meta property="og:image" content="https://github.com/maltsev-dev/favicon.png">
-
-    </head>
-
+</head>
 <body class="">
-<div class="container">
-    
-    <header class="header">
-        <div class="header__inner">
-            <div class="header__logo">
-                    
-                <a href="https://maltsev-dev.github.io" style="text-decoration: none;">
-                    <div class="logo">
-                      
-                            busy hands == happy heart
-                        
-                    </div>
-                </a>
+    <div class="site-wrapper">
+        <header class="header">
+    <div class="container header-inner">
+        <a href="/" class="logo-link">
+            <div class="logo">
+                <span class="logo-text">busy hands == happy heart</span>
             </div>
-        </div>
+        </a>
 
-        
-        <nav class="menu">
-            <ul class="menu__inner">
-                <li><a href="https://maltsev-dev.github.io/archive">archive</a></li>
-            
-                <li><a href="https://maltsev-dev.github.io/tags/project/">projects</a></li>
-            
-                <li><a href="https://maltsev-dev.github.io/about">about me</a></li>
+        <nav class="main-nav">
+            <ul class="nav-list">
+                <li class="nav-item">
+                    <a href="/" class="nav-link active">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a href="/archive" class="nav-link ">Archive</a>
+                </li>
+                <li class="nav-item">
+                    <a href="/tags/project/" class="nav-link">Projects</a>
+                </li>
+                <li class="nav-item">
+                    <a href="/about" class="nav-link ">About</a>
+                </li>
             </ul>
         </nav>
-    
-    
-        
-    </header>
-    
 
-    <div class="content">
-        
-        <div class="posts">
-                <div class="post on-list">
-                    
-    <h1 class="post-title"><a href="https://maltsev-dev.github.io/dev-nurse-project-4/">From device to system: communication, backend, and dashboard for an embedded AI product</a></h1>
-    <div class="post-meta-inline">
-        
-    <span class="post-date">
-            2026-01-07
-        </span>
-
+        <button class="mobile-menu-toggle" aria-label="Toggle menu" id="mobileMenuToggle">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
     </div>
-
-    
-        <span class="post-tags-inline">
-                :: tags:&nbsp;
-                <a class="post-tag" href="https://maltsev-dev.github.io/tags/project/">#project</a>&nbsp;
-                <a class="post-tag" href="https://maltsev-dev.github.io/tags/rust/">#rust</a>&nbsp;
-                <a class="post-tag" href="https://maltsev-dev.github.io/tags/nurse/">#nurse</a>&nbsp;
-                <a class="post-tag" href="https://maltsev-dev.github.io/tags/product/">#product</a></span>
-    
-
-                    
-        <div class="post-content">
-            <p>🟠 In this final article, I connect the embedded AI device to the real world.
-I describe how inference results leave the MCU, travel through MQTT and HTTP, land in a Rust backend, and become visible through a web dashboard.</p>
-<p>This is the layer where a TinyML prototype turns into an actual <strong>end-to-end product</strong>.</p>
-        </div>
-        <div>
-            <!-- &#xFE0E; -- force text style - some devices render this as emoji -->
-            <a class="read-more button" href="https://maltsev-dev.github.io/dev-nurse-project-4/">
-                <span class="button__text">Read more</span>&nbsp;
-                <span class="button__icon">&#8617;&#xFE0E;</span>
-            </a>
-        </div>
-    
-
-                </div>
+</header>
+        
+        <main class="main-content">
             
-                <div class="post on-list">
-                    
-    <h1 class="post-title"><a href="https://maltsev-dev.github.io/dev-nurse-project-3/">TinyML on MCU: from dataset to real-time inference in Rust firmware</a></h1>
-    <div class="post-meta-inline">
-        
-    <span class="post-date">
-            2025-12-26
-        </span>
+<div class="container">
+    <section class="hero">
+        <h1 class="hero-title">Welcome to <span class="accent">dev_stories</span></h1>
+        <p class="hero-subtitle">Documenting the journey through embedded systems, Rust, and engineering</p>
+    </section>
 
-    </div>
-
-    
-        <span class="post-tags-inline">
-                :: tags:&nbsp;
-                <a class="post-tag" href="https://maltsev-dev.github.io/tags/project/">#project</a>&nbsp;
-                <a class="post-tag" href="https://maltsev-dev.github.io/tags/rust/">#rust</a>&nbsp;
-                <a class="post-tag" href="https://maltsev-dev.github.io/tags/nurse/">#nurse</a>&nbsp;
-                <a class="post-tag" href="https://maltsev-dev.github.io/tags/product/">#product</a></span>
-    
-
-                    
-        <div class="post-content">
-            <p>🟠 In this article, I walk through the complete TinyML lifecycle on a microcontroller —
-from dataset preparation and model training to running TensorFlow Lite Micro on bare metal and integrating the model into a Rust firmware via a custom FFI wrapper.</p>
-<p>This project intentionally spans multiple domains: embedded systems, machine learning, data engineering, and low-level systems programming in Rust.</p>
-        </div>
-        <div>
-            <!-- &#xFE0E; -- force text style - some devices render this as emoji -->
-            <a class="read-more button" href="https://maltsev-dev.github.io/dev-nurse-project-3/">
-                <span class="button__text">Read more</span>&nbsp;
-                <span class="button__icon">&#8617;&#xFE0E;</span>
-            </a>
-        </div>
-    
-
-                </div>
+    <section class="posts-section">
+        <div class="posts-list">
             
-                <div class="post on-list">
-                    
-    <h1 class="post-title"><a href="https://maltsev-dev.github.io/dev-nurse-project-2/">Hardware and firmware organization: the foundation of an AI device on the ESP32-S3</a></h1>
-    <div class="post-meta-inline">
-        
-    <span class="post-date">
-            2025-12-05
-        </span>
-
-    </div>
-
-    
-        <span class="post-tags-inline">
-                :: tags:&nbsp;
-                <a class="post-tag" href="https://maltsev-dev.github.io/tags/project/">#project</a>&nbsp;
-                <a class="post-tag" href="https://maltsev-dev.github.io/tags/rust/">#rust</a>&nbsp;
-                <a class="post-tag" href="https://maltsev-dev.github.io/tags/nurse/">#nurse</a>&nbsp;
-                <a class="post-tag" href="https://maltsev-dev.github.io/tags/product/">#product</a></span>
-    
-
-                    
-        <div class="post-content">
-            <p>🟠 In this article, I'll explain the hardware I'm using in my AI device project, why I chose it, and how I structured the firmware in Rust.<br />
-This is the foundation of the entire project: the MCU, display, controls, and a minimal firmware skeleton that ensures modularity and expandability.</p>
-        </div>
-        <div>
-            <!-- &#xFE0E; -- force text style - some devices render this as emoji -->
-            <a class="read-more button" href="https://maltsev-dev.github.io/dev-nurse-project-2/">
-                <span class="button__text">Read more</span>&nbsp;
-                <span class="button__icon">&#8617;&#xFE0E;</span>
-            </a>
-        </div>
-    
-
+            <article class="post-card">
+                <div class="post-card-header">
+                    <h2 class="post-card-title">
+                        <a href="/dev_nurse_project_4.html">From device to system: communication, backend, and dashboard for an embedded AI product</a>
+                    </h2>
+                    <time class="post-card-date" datetime="2026-01-07">
+                        2026-01-07
+                    </time>
                 </div>
+
+                
+                <div class="post-card-tags">
+                    
+                    <a href="/tags/project.html" class="tag">#project</a>
+                    
+                    <a href="/tags/rust.html" class="tag">#rust</a>
+                    
+                    <a href="/tags/nurse.html" class="tag">#nurse</a>
+                    
+                    <a href="/tags/product.html" class="tag">#product</a>
+                    
+                </div>
+                
+
+                <div class="post-card-excerpt">
+                    🟠 In this final article, I connect the embedded AI device to the real world.
+I describe how inference results leave the MCU, travel through MQTT and HTTP, land in a Rust backend, and become visible through a web dashboard.
+
+This is the layer where a TinyML prototype turns into an actual **end-to-end product**....
+                </div>
+
+                <a href="/dev_nurse_project_4.html" class="read-more-link">
+                    Read more
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                </a>
+            </article>
             
-                <div class="post on-list">
-                    
-    <h1 class="post-title"><a href="https://maltsev-dev.github.io/dev-nurse-project-1/">Why overspecialization is over, and how I decided to create my own AI device on MCU</a></h1>
-    <div class="post-meta-inline">
-        
-    <span class="post-date">
-            2025-12-02
-        </span>
-
-    </div>
-
-    
-        <span class="post-tags-inline">
-                :: tags:&nbsp;
-                <a class="post-tag" href="https://maltsev-dev.github.io/tags/project/">#project</a>&nbsp;
-                <a class="post-tag" href="https://maltsev-dev.github.io/tags/rust/">#rust</a>&nbsp;
-                <a class="post-tag" href="https://maltsev-dev.github.io/tags/nurse/">#nurse</a>&nbsp;
-                <a class="post-tag" href="https://maltsev-dev.github.io/tags/product/">#product</a></span>
-    
-
-                    
-        <div class="post-content">
-            <p>In this series of articles, I'd like to show you how to create your own <strong>ESP32-S3</strong>-based device with <strong>ML</strong> built right into the firmware.
-🟠 I'll try to describe not only what I'm doing, but also how I got there—all the decisions, compromises, and challenges that arose along the way.</p>
-        </div>
-        <div>
-            <!-- &#xFE0E; -- force text style - some devices render this as emoji -->
-            <a class="read-more button" href="https://maltsev-dev.github.io/dev-nurse-project-1/">
-                <span class="button__text">Read more</span>&nbsp;
-                <span class="button__icon">&#8617;&#xFE0E;</span>
-            </a>
-        </div>
-    
-
+            <article class="post-card">
+                <div class="post-card-header">
+                    <h2 class="post-card-title">
+                        <a href="/dev_nurse_project_3.html">TinyML on MCU: from dataset to real-time inference in Rust firmware</a>
+                    </h2>
+                    <time class="post-card-date" datetime="2025-12-26">
+                        2025-12-26
+                    </time>
                 </div>
+
+                
+                <div class="post-card-tags">
+                    
+                    <a href="/tags/project.html" class="tag">#project</a>
+                    
+                    <a href="/tags/rust.html" class="tag">#rust</a>
+                    
+                    <a href="/tags/nurse.html" class="tag">#nurse</a>
+                    
+                    <a href="/tags/product.html" class="tag">#product</a>
+                    
+                </div>
+                
+
+                <div class="post-card-excerpt">
+                    🟠 In this article, I walk through the complete TinyML lifecycle on a microcontroller —
+from dataset preparation and model training to running TensorFlow Lite Micro on bare metal and integrating the model into a Rust firmware via a custom FFI wrapper.   
+
+This project intentionally spans multiple domains: embedded systems, machine learning, data engineering, and low-level systems programming in Rust....
+                </div>
+
+                <a href="/dev_nurse_project_3.html" class="read-more-link">
+                    Read more
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                </a>
+            </article>
             
-                <div class="post on-list">
-                    
-    <h1 class="post-title"><a href="https://maltsev-dev.github.io/needle-core/">From image to pattern: building a cross-stitch generator as a CLI tool</a></h1>
-    <div class="post-meta-inline">
-        
-    <span class="post-date">
-            2025-11-30
-        </span>
-
-    </div>
-
-    
-        <span class="post-tags-inline">
-                :: tags:&nbsp;
-                <a class="post-tag" href="https://maltsev-dev.github.io/tags/project/">#project</a>&nbsp;
-                <a class="post-tag" href="https://maltsev-dev.github.io/tags/rust/">#rust</a>&nbsp;
-                <a class="post-tag" href="https://maltsev-dev.github.io/tags/cli/">#cli</a>&nbsp;
-                <a class="post-tag" href="https://maltsev-dev.github.io/tags/graphics/">#graphics</a>&nbsp;
-                <a class="post-tag" href="https://maltsev-dev.github.io/tags/svg/">#svg</a></span>
-    
-
-                    
-        <div class="post-content">
-            <p>🟠 In this article, I describe a small but complete system that converts raster images into <strong>cross-stitch / needlepoint patterns</strong>.</p>
-<p>The project focuses on turning an image into a <strong>structured, printable, and editable SVG pattern</strong>, with full control over size and color palette.<br />
-It sits at the intersection of image processing, CLI tooling, and practical craft-oriented output.</p>
-        </div>
-        <div>
-            <!-- &#xFE0E; -- force text style - some devices render this as emoji -->
-            <a class="read-more button" href="https://maltsev-dev.github.io/needle-core/">
-                <span class="button__text">Read more</span>&nbsp;
-                <span class="button__icon">&#8617;&#xFE0E;</span>
-            </a>
-        </div>
-    
-
+            <article class="post-card">
+                <div class="post-card-header">
+                    <h2 class="post-card-title">
+                        <a href="/dev_nurse_project_2.html">Hardware and firmware organization: the foundation of an AI device on the ESP32-S3</a>
+                    </h2>
+                    <time class="post-card-date" datetime="2025-12-05">
+                        2025-12-05
+                    </time>
                 </div>
+
+                
+                <div class="post-card-tags">
+                    
+                    <a href="/tags/project.html" class="tag">#project</a>
+                    
+                    <a href="/tags/rust.html" class="tag">#rust</a>
+                    
+                    <a href="/tags/nurse.html" class="tag">#nurse</a>
+                    
+                    <a href="/tags/product.html" class="tag">#product</a>
+                    
+                </div>
+                
+
+                <div class="post-card-excerpt">
+                    🟠 In this article, I&#39;ll explain the hardware I&#39;m using in my AI device project, why I chose it, and how I structured the firmware in Rust.  
+This is the foundation of the entire project: the MCU, display, controls, and a minimal firmware skeleton that ensures modularity and expandability....
+                </div>
+
+                <a href="/dev_nurse_project_2.html" class="read-more-link">
+                    Read more
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                </a>
+            </article>
             
-                <div class="post on-list">
-                    
-    <h1 class="post-title"><a href="https://maltsev-dev.github.io/nrf52833-projects/">🧪 nrf52833 BBC micro:bit</a></h1>
-    <div class="post-meta-inline">
-        
-    <span class="post-date">
-            2025-07-24
-        </span>
-
-    </div>
-
-    
-        <span class="post-tags-inline">
-                :: tags:&nbsp;
-                <a class="post-tag" href="https://maltsev-dev.github.io/tags/rust/">#rust</a>&nbsp;
-                <a class="post-tag" href="https://maltsev-dev.github.io/tags/nrf52833/">#nrf52833</a>&nbsp;
-                <a class="post-tag" href="https://maltsev-dev.github.io/tags/embedded/">#embedded</a>&nbsp;
-                <a class="post-tag" href="https://maltsev-dev.github.io/tags/project/">#project</a></span>
-    
-
-                    
-        <div class="post-content">
-            <p><strong>Experiments, Prototypes &amp; Notes with the micro:bit v2.21</strong></p>
-<p>This repository contains my projects, experiments, and notes using the <strong>micro:bit v2.21</strong>, built on the <strong>nrf52833</strong> microcontroller.<br />
-It serves as a playground for testing ideas, learning embedded concepts, and building small prototypes.</p>
-        </div>
-        <div>
-            <!-- &#xFE0E; -- force text style - some devices render this as emoji -->
-            <a class="read-more button" href="https://maltsev-dev.github.io/nrf52833-projects/">
-                <span class="button__text">Read more</span>&nbsp;
-                <span class="button__icon">&#8617;&#xFE0E;</span>
-            </a>
-        </div>
-    
-
+            <article class="post-card">
+                <div class="post-card-header">
+                    <h2 class="post-card-title">
+                        <a href="/dev_nurse_project_1.html">Why overspecialization is over, and how I decided to create my own AI device on MCU</a>
+                    </h2>
+                    <time class="post-card-date" datetime="2025-12-02">
+                        2025-12-02
+                    </time>
                 </div>
+
+                
+                <div class="post-card-tags">
+                    
+                    <a href="/tags/project.html" class="tag">#project</a>
+                    
+                    <a href="/tags/rust.html" class="tag">#rust</a>
+                    
+                    <a href="/tags/nurse.html" class="tag">#nurse</a>
+                    
+                    <a href="/tags/product.html" class="tag">#product</a>
+                    
+                </div>
+                
+
+                <div class="post-card-excerpt">
+                    In this series of articles, I&#39;d like to show you how to create your own **ESP32-S3**-based device with **ML** built right into the firmware. 
+🟠 I&#39;ll try to describe not only what I&#39;m doing, but also how I got there—all the decisions, compromises, and challenges that arose along the way....
+                </div>
+
+                <a href="/dev_nurse_project_1.html" class="read-more-link">
+                    Read more
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                </a>
+            </article>
             
-                <div class="post on-list">
-                    
-    <h1 class="post-title"><a href="https://maltsev-dev.github.io/emb-sync/">MCU Synchronization</a></h1>
-    <div class="post-meta-inline">
-        
-    <span class="post-date">
-            2025-07-16
-        </span>
-
-    </div>
-
-    
-        <span class="post-tags-inline">
-                :: tags:&nbsp;
-                <a class="post-tag" href="https://maltsev-dev.github.io/tags/embedded/">#embedded</a>&nbsp;
-                <a class="post-tag" href="https://maltsev-dev.github.io/tags/basic/">#basic</a>&nbsp;
-                <a class="post-tag" href="https://maltsev-dev.github.io/tags/clock/">#clock</a>&nbsp;
-                <a class="post-tag" href="https://maltsev-dev.github.io/tags/timers/">#timers</a>&nbsp;
-                <a class="post-tag" href="https://maltsev-dev.github.io/tags/interrupts/">#interrupts</a></span>
-    
-
-                    
-        <div class="post-content">
-            <p>🟠 <strong>Synchronization</strong> is a fundamental concept that ensures that the processor, peripherals, timers, and interrupts operate in a consistent and accurate manner based on a common clock source.</p>
-        </div>
-        <div>
-            <!-- &#xFE0E; -- force text style - some devices render this as emoji -->
-            <a class="read-more button" href="https://maltsev-dev.github.io/emb-sync/">
-                <span class="button__text">Read more</span>&nbsp;
-                <span class="button__icon">&#8617;&#xFE0E;</span>
-            </a>
-        </div>
-    
-
+            <article class="post-card">
+                <div class="post-card-header">
+                    <h2 class="post-card-title">
+                        <a href="/needle_core.html">From image to pattern: building a cross-stitch generator as a CLI tool</a>
+                    </h2>
+                    <time class="post-card-date" datetime="2025-11-30">
+                        2025-11-30
+                    </time>
                 </div>
+
+                
+                <div class="post-card-tags">
+                    
+                    <a href="/tags/project.html" class="tag">#project</a>
+                    
+                    <a href="/tags/rust.html" class="tag">#rust</a>
+                    
+                    <a href="/tags/cli.html" class="tag">#cli</a>
+                    
+                    <a href="/tags/graphics.html" class="tag">#graphics</a>
+                    
+                    <a href="/tags/svg.html" class="tag">#svg</a>
+                    
+                </div>
+                
+
+                <div class="post-card-excerpt">
+                    🟠 In this article, I describe a small but complete system that converts raster images into **cross-stitch / needlepoint patterns**.
+
+The project focuses on turning an image into a **structured, printable, and editable SVG pattern**, with full control over size and color palette.  
+It sits at the intersection of image processing, CLI tooling, and practical craft-oriented output....
+                </div>
+
+                <a href="/needle_core.html" class="read-more-link">
+                    Read more
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                </a>
+            </article>
             
-                <div class="post on-list">
-                    
-    <h1 class="post-title"><a href="https://maltsev-dev.github.io/emb-clock/">MCU Clock System</a></h1>
-    <div class="post-meta-inline">
-        
-    <span class="post-date">
-            2025-07-15
-        </span>
-
-    </div>
-
-    
-        <span class="post-tags-inline">
-                :: tags:&nbsp;
-                <a class="post-tag" href="https://maltsev-dev.github.io/tags/embedded/">#embedded</a>&nbsp;
-                <a class="post-tag" href="https://maltsev-dev.github.io/tags/basic/">#basic</a>&nbsp;
-                <a class="post-tag" href="https://maltsev-dev.github.io/tags/clock/">#clock</a></span>
-    
-
-                    
-        <div class="post-content">
-            <p>🟠 <strong>Clock is the basis for timers and interrupts</strong>
-The clock system sets the pace of all digital components of the microcontroller. Timers use its signals to generate interrupts and perform tasks with precise time control.</p>
-        </div>
-        <div>
-            <!-- &#xFE0E; -- force text style - some devices render this as emoji -->
-            <a class="read-more button" href="https://maltsev-dev.github.io/emb-clock/">
-                <span class="button__text">Read more</span>&nbsp;
-                <span class="button__icon">&#8617;&#xFE0E;</span>
-            </a>
-        </div>
-    
-
+            <article class="post-card">
+                <div class="post-card-header">
+                    <h2 class="post-card-title">
+                        <a href="/nrf52833_projects.html">🧪 nrf52833 BBC micro:bit</a>
+                    </h2>
+                    <time class="post-card-date" datetime="2025-07-24">
+                        2025-07-24
+                    </time>
                 </div>
+
+                
+                <div class="post-card-tags">
+                    
+                    <a href="/tags/rust.html" class="tag">#rust</a>
+                    
+                    <a href="/tags/nrf52833.html" class="tag">#nrf52833</a>
+                    
+                    <a href="/tags/embedded.html" class="tag">#embedded</a>
+                    
+                    <a href="/tags/project.html" class="tag">#project</a>
+                    
+                </div>
+                
+
+                <div class="post-card-excerpt">
+                    **Experiments, Prototypes &amp; Notes with the micro:bit v2.21**
+
+This repository contains my projects, experiments, and notes using the **micro:bit v2.21**, built on the **nrf52833** microcontroller.  
+It serves as a playground for testing ideas, learning embedded concepts, and building small prototypes....
+                </div>
+
+                <a href="/nrf52833_projects.html" class="read-more-link">
+                    Read more
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                </a>
+            </article>
             
-                <div class="post on-list">
-                    
-    <h1 class="post-title"><a href="https://maltsev-dev.github.io/emb-interrupt/">Interrupts (ISR, IVT, NVIC)</a></h1>
-    <div class="post-meta-inline">
-        
-    <span class="post-date">
-            2025-07-15
-        </span>
-
-    </div>
-
-    
-        <span class="post-tags-inline">
-                :: tags:&nbsp;
-                <a class="post-tag" href="https://maltsev-dev.github.io/tags/embedded/">#embedded</a>&nbsp;
-                <a class="post-tag" href="https://maltsev-dev.github.io/tags/basic/">#basic</a>&nbsp;
-                <a class="post-tag" href="https://maltsev-dev.github.io/tags/interrupts/">#interrupts</a></span>
-    
-
-                    
-        <div class="post-content">
-            <p>🟠 Interrupts allow the microcontroller to <strong>instantly respond to important events</strong> without wasting resources on constantly polling the peripherals.</p>
-<p>When an interrupt occurs, the <strong>CPU suspends the current task</strong>, goes to the <strong>Interrupt Service Routine (ISR)</strong>, performs the required action, and returns back.</p>
-        </div>
-        <div>
-            <!-- &#xFE0E; -- force text style - some devices render this as emoji -->
-            <a class="read-more button" href="https://maltsev-dev.github.io/emb-interrupt/">
-                <span class="button__text">Read more</span>&nbsp;
-                <span class="button__icon">&#8617;&#xFE0E;</span>
-            </a>
-        </div>
-    
-
+            <article class="post-card">
+                <div class="post-card-header">
+                    <h2 class="post-card-title">
+                        <a href="/emb_sync.html">MCU Synchronization</a>
+                    </h2>
+                    <time class="post-card-date" datetime="2025-07-16">
+                        2025-07-16
+                    </time>
                 </div>
+
+                
+                <div class="post-card-tags">
+                    
+                    <a href="/tags/embedded.html" class="tag">#embedded</a>
+                    
+                    <a href="/tags/basic.html" class="tag">#basic</a>
+                    
+                    <a href="/tags/clock.html" class="tag">#clock</a>
+                    
+                    <a href="/tags/timers.html" class="tag">#timers</a>
+                    
+                    <a href="/tags/interrupts.html" class="tag">#interrupts</a>
+                    
+                </div>
+                
+
+                <div class="post-card-excerpt">
+                    🟠 **Synchronization** is a fundamental concept that ensures that the processor, peripherals, timers, and interrupts operate in a consistent and accurate manner based on a common clock source....
+                </div>
+
+                <a href="/emb_sync.html" class="read-more-link">
+                    Read more
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                </a>
+            </article>
             
-                <div class="post on-list">
+            <article class="post-card">
+                <div class="post-card-header">
+                    <h2 class="post-card-title">
+                        <a href="/emb_clock.html">MCU Clock System</a>
+                    </h2>
+                    <time class="post-card-date" datetime="2025-07-15">
+                        2025-07-15
+                    </time>
+                </div>
+
+                
+                <div class="post-card-tags">
                     
-    <h1 class="post-title"><a href="https://maltsev-dev.github.io/emb-timers/">Timers</a></h1>
-    <div class="post-meta-inline">
-        
-    <span class="post-date">
-            2025-07-14
-        </span>
-
-    </div>
-
-    
-        <span class="post-tags-inline">
-                :: tags:&nbsp;
-                <a class="post-tag" href="https://maltsev-dev.github.io/tags/embedded/">#embedded</a>&nbsp;
-                <a class="post-tag" href="https://maltsev-dev.github.io/tags/basic/">#basic</a>&nbsp;
-                <a class="post-tag" href="https://maltsev-dev.github.io/tags/timers/">#timers</a></span>
-    
-
+                    <a href="/tags/embedded.html" class="tag">#embedded</a>
                     
-        <div class="post-content">
-            <p>🟠 Timers are hardware modules of the microcontroller for actions with time counting and event generation <strong>without the participation of the main code</strong>.<br />
-The accuracy of the timer and its maximum time range depends on its <code>bit depth</code>, the clock <code>frequency</code> to which it is connected and the value of the <code>divider</code>.</p>
+                    <a href="/tags/basic.html" class="tag">#basic</a>
+                    
+                    <a href="/tags/clock.html" class="tag">#clock</a>
+                    
+                </div>
+                
+
+                <div class="post-card-excerpt">
+                    🟠 **Clock is the basis for timers and interrupts**
+The clock system sets the pace of all digital components of the microcontroller. Timers use its signals to generate interrupts and perform tasks with precise time control....
+                </div>
+
+                <a href="/emb_clock.html" class="read-more-link">
+                    Read more
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                </a>
+            </article>
+            
+            <article class="post-card">
+                <div class="post-card-header">
+                    <h2 class="post-card-title">
+                        <a href="/emb_timers.html">Timers</a>
+                    </h2>
+                    <time class="post-card-date" datetime="2025-07-14">
+                        2025-07-14
+                    </time>
+                </div>
+
+                
+                <div class="post-card-tags">
+                    
+                    <a href="/tags/embedded.html" class="tag">#embedded</a>
+                    
+                    <a href="/tags/basic.html" class="tag">#basic</a>
+                    
+                    <a href="/tags/timers.html" class="tag">#timers</a>
+                    
+                </div>
+                
+
+                <div class="post-card-excerpt">
+                    🟠 Timers are hardware modules of the microcontroller for actions with time counting and event generation **without the participation of the main code**.  
+ The accuracy of the timer and its maximum time range depends on its `bit depth`, the clock `frequency` to which it is connected and the value of the `divider`....
+                </div>
+
+                <a href="/emb_timers.html" class="read-more-link">
+                    Read more
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                </a>
+            </article>
+            
+            <article class="post-card">
+                <div class="post-card-header">
+                    <h2 class="post-card-title">
+                        <a href="/emb_pwm.html">PWM (Pulse Width Modulation)</a>
+                    </h2>
+                    <time class="post-card-date" datetime="2025-07-13">
+                        2025-07-13
+                    </time>
+                </div>
+
+                
+                <div class="post-card-tags">
+                    
+                    <a href="/tags/embedded.html" class="tag">#embedded</a>
+                    
+                    <a href="/tags/basic.html" class="tag">#basic</a>
+                    
+                    <a href="/tags/pwm.html" class="tag">#pwm</a>
+                    
+                </div>
+                
+
+                <div class="post-card-excerpt">
+                    🟠 How to handle pulse width modulation...
+                </div>
+
+                <a href="/emb_pwm.html" class="read-more-link">
+                    Read more
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                </a>
+            </article>
+            
         </div>
-        <div>
-            <!-- &#xFE0E; -- force text style - some devices render this as emoji -->
-            <a class="read-more button" href="https://maltsev-dev.github.io/emb-timers/">
-                <span class="button__text">Read more</span>&nbsp;
-                <span class="button__icon">&#8617;&#xFE0E;</span>
+
+        
+        <nav class="pagination">
+            
+
+            <span class="pagination-info">Page 1 of 5</span>
+
+            
+            <a href="/page/2/" class="pagination-btn next">
+                Older
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
             </a>
-        </div>
-    
-
-                </div>
-            <div class="pagination">
-                <div class="pagination__buttons">
-                    <span class="button next">
-                        <a href="https://maltsev-dev.github.io/page/2/">
-                            <span class="button__text">Older posts</span>&nbsp;
-                            <span class="button__icon">→</span>
-                        </a>
-                    </span>
-                </div>
-            </div>
-        </div>
+            
+        </nav>
         
-    </div>
-
-
-<footer class="footer">
-    <div class="footer__inner">
-            <div class="copyright copyright--user"><div class="copyright">
-    <span>© 2026 A.Maltsev</span>
-    <span class="copyright-theme-sep"></span>
-    <span><img src="https://visitor-badge.laobi.icu/badge?page_id=maltsev-dev.github.io&right_color=orange" alt="Visitors"></span>
+    </section>
 </div>
-</div>
+
+        </main>
+        
+        <footer class="footer">
+    <div class="container footer-inner">
+        <div class="copyright">
+            <span>© A.Maltsev 2026</span>
+            <span class="copyright-sep">|</span>
+            <span>Visitors: <img src="https://visitor-badge.laobi.icu/badge?page_id=maltsev-dev.github.io" alt="Visitors"></span>
         </div>
+        
+        <div class="social-links">
+            <a href="https://github.com/maltsev-dev" class="social-link" target="_blank" rel="noopener" aria-label="GitHub">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+            </a>
+            <a href="https://www.linkedin.com/in/a-maltsev" class="social-link" target="_blank" rel="noopener" aria-label="LinkedIn">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+            </a>
+            <a href="mailto:mr.a.maltsev@gmail.com" class="social-link" aria-label="Email">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            </a>
+        </div>
+    </div>
 </footer>
-
-
-</div>
+    </div>
+    
+    <button class="theme-toggle" aria-label="Toggle dark mode" id="themeToggle">
+        <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="5"/>
+            <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+        </svg>
+        <svg class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+        </svg>
+    </button>
+    
+    <script src="/static/js/theme.js"></script>
+    
 </body>
-
 </html>

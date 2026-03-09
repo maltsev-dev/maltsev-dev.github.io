@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="dev_stories - Technical blog about embedded systems, Rust, and engineering">
+    <meta property="og:site_name" content="dev_stories">
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="CPU–Peripheral I/O Communication: Approaches and Trade-offs">
+    <meta property="og:url" content="https://maltsev-dev.github.io/emb_cpu_data_flow">
+    <meta property="og:image" content="https://github.com/maltsev-dev/favicon.png">
+    <title>CPU–Peripheral I/O Communication: Approaches and Trade-offs - dev_stories</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="shortcut icon" type="image/png" href="/static/favicon.png">
+    
+    
+</head>
+<body class="">
+    <div class="site-wrapper">
+        <header class="header">
+    <div class="container header-inner">
+        <a href="/" class="logo-link">
+            <div class="logo">
+                <span class="logo-text">busy hands == happy heart</span>
+            </div>
+        </a>
+
+        <nav class="main-nav">
+            <ul class="nav-list">
+                <li class="nav-item">
+                    <a href="/" class="nav-link ">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a href="/archive" class="nav-link ">Archive</a>
+                </li>
+                <li class="nav-item">
+                    <a href="/tags/project/" class="nav-link">Projects</a>
+                </li>
+                <li class="nav-item">
+                    <a href="/about" class="nav-link ">About</a>
+                </li>
+            </ul>
+        </nav>
+
+        <button class="mobile-menu-toggle" aria-label="Toggle menu" id="mobileMenuToggle">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+    </div>
+</header>
+        
+        <main class="main-content">
+            
+<article class="post-container">
+    <div class="container">
+        <header class="post-header">
+            <h1 class="post-title">CPU–Peripheral I/O Communication: Approaches and Trade-offs</h1>
+            <div class="post-meta">
+                <time class="post-date" datetime="2025-07-02">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                        <line x1="16" y1="2" x2="16" y2="6"/>
+                        <line x1="8" y1="2" x2="8" y2="6"/>
+                        <line x1="3" y1="10" x2="21" y2="10"/>
+                    </svg>
+                    July 02, 2025
+                </time>
+
+                
+                <div class="post-tags">
+                    
+                    <a href="/tags/embedded.html" class="tag">#embedded</a>
+                    
+                    <a href="/tags/basic.html" class="tag">#basic</a>
+                    
+                    <a href="/tags/cpu.html" class="tag">#cpu</a>
+                    
+                </div>
+                
+            </div>
+        </header>
+
+        <div class="post-content">
+            <p>🟠 Data Transmission Between CPU and Peripheral Devices via I/O Methods</p>
+<!-- more -->
+
+<style>
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+  }
+
+  th,
+  td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    vertical-align: top;
+  }
+
+  th {
+    background-color: #f59140;
+    color: white;
+    text-align: center;
+  }
+
+  td:first-child {
+    width: auto;
+  }
+</style>
+
+<table>
+  <thead>
+    <tr>
+      <th>Method</th>
+      <th>Description</th>
+      <th>Usage Frequency</th>
+      <th>✅ Advantages</th>
+      <th>❌ Disadvantages</th>
+      <th>🛠️ Tools / Crates</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>MMIO (Memory-Mapped I/O)</strong></td>
+      <td>Peripherals are mapped into the memory space; accessed via standard load/store instructions.</td>
+      <td>~90% in microcontrollers (`ARM`, `RISC-V`, etc.)</td>
+      <td>
+        - Simple programming model<br>
+        - Works on most architectures (`ARM`, `RISC-V`, `x86`, `MIPS`)<br>
+        - High performance<br>
+        - Unified memory and peripheral addressing<br>
+        - Easy access via standard Rust code (`unsafe` with `volatile`)
+      </td>
+      <td>
+        - CPU can be busy polling<br>
+        - Requires memory protection (`MPU`/`MMU`) in complex systems<br>
+        - Needs care with caching (often regions marked as `non-cacheable`)<br>
+        - Address layout can get complex in large SoCs
+      </td>
+      <td>
+        <code>cortex-m</code>, <code>riscv</code>, <code>volatile-register</code>, <code>peripheral</code>
+      </td>
+    </tr>
+    <tr>
+      <td><strong>PMIO (Port-Mapped I/O)</strong></td>
+      <td>Uses a separate `I/O` address space and dedicated instructions like <code>in</code> / <code>out</code>.</td>
+      <td>Primarily x86</td>
+      <td>
+        - Strict separation of memory and I/O<br>
+        - Supported by legacy PC hardware
+      </td>
+      <td>
+        - Non-portable (requires special instructions)<br>
+        - Not supported on modern microcontrollers
+      </td>
+      <td>
+        Not **applicable in Rust** embedded; mostly C/ASM for x86
+      </td>
+    </tr>
+    <tr>
+      <td><strong>PIO (Programmed I/O)</strong></td>
+      <td>CPU directly polls the peripheral registers status (via `MMIO` or `PMIO`) in a loop.</td>
+      <td>Very common in simple or early-stage systems</td>
+      <td>
+        - Easy to implement<br>
+        - Works without `interrupts` or `DMA`
+      </td>
+      <td>
+        - Very inefficient (CPU is fully occupied)<br>
+        - Poor scalability and power consumption
+      </td>
+      <td>
+        Any HAL (e.g. <code>embedded-hal</code>) with polling read/write
+      </td>
+    </tr>
+    <tr>
+      <td><strong>DMA (Direct Memory Access)</strong></td>
+      <td>Data transfer between peripheral and memory handled by a dedicated DMA controller, not CPU.</td>
+      <td>Widely used in **high-throughput** peripherals</td>
+      <td>
+        - Offloads CPU<br>
+        - High-speed data transfer (e.g. `SPI`, `SDIO`, `Ethernet`)<br>
+        - Enables low-power, autonomous operation
+      </td>
+      <td>
+        - Setup complexity<br>
+        - Requires compatible hardware<br>
+        - Needs careful buffer and interrupt handling
+      </td>
+      <td>
+        <code>stm32-dma</code>, <code>esp-hal</code>, <code>nrf-dma</code>, manual register config
+      </td>
+    </tr>
+    <tr>
+      <td><strong>Interrupt-driven I/O</strong></td>
+      <td>Peripherals signal the CPU via hardware interrupts to trigger event-driven processing.</td>
+      <td>Very common in `RTOS` and multitasking environments</td>
+      <td>
+        - Reactive and efficient<br>
+        - Good for low-latency responses (e.g. buttons, timers)<br>
+        - Frees CPU from busy-waiting<br>
+        - Integrates with task scheduling / `RTOS`
+      </td>
+      <td>
+        - Requires careful handling of race conditions and priority<br>
+        - May introduce complexity in shared-state management
+      </td>
+      <td>
+        <code>#[interrupt]</code>, <code>cortex-m-rt</code>, <code>riscv-rt</code><br>
+        <code>RTIC</code>, <code>embassy</code>, <code>freertos-rust</code>, <code>tock</code>
+      </td>
+    </tr>
+    <tr>
+      <td><strong>Message-based I/O (mailbox, queues)</strong></td>
+      <td>Communication via message passing (mailboxes, channels) typically in multicore `SoCs` or `OS-based systems`.</td>
+      <td>Used in SMP systems, OS kernels, Linux SoCs</td>
+      <td>
+        - Decouples processing from hardware<br>
+        - Highly scalable<br>
+        - Enables safe inter-core or inter-process communication
+      </td>
+      <td>
+        - Requires advanced OS or firmware<br>
+        - Increased system complexity
+      </td>
+      <td>
+        <code>heapless::spsc</code>, <code>embassy-channel</code>, <code>tock</code> IPC, RTOS queues
+      </td>
+    </tr>
+  </tbody>
+</table>
+        </div>
+
+        
+        <nav class="post-navigation">
+            <div class="nav-inner">
+                
+                <a href="/rust_emb_debugging.html" class="nav-link nav-prev">
+                    <span class="nav-label">Earlier</span>
+                    <span class="nav-title">Debugging firmware</span>
+                </a>
+                
+
+                
+                <a href="/emb_mmio.html" class="nav-link nav-next">
+                    <span class="nav-label">Later</span>
+                    <span class="nav-title">MMIO (Memory-Mapped I/O)</span>
+                </a>
+                
+            </div>
+        </nav>
+        
+    </div>
+</article>
+
+        </main>
+        
+        <footer class="footer">
+    <div class="container footer-inner">
+        <div class="copyright">
+            <span>© A.Maltsev 2026</span>
+            <span class="copyright-sep">|</span>
+            <span>Visitors: <img src="https://visitor-badge.laobi.icu/badge?page_id=maltsev-dev.github.io" alt="Visitors"></span>
+        </div>
+        
+        <div class="social-links">
+            <a href="https://github.com/maltsev-dev" class="social-link" target="_blank" rel="noopener" aria-label="GitHub">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+            </a>
+            <a href="https://www.linkedin.com/in/a-maltsev" class="social-link" target="_blank" rel="noopener" aria-label="LinkedIn">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+            </a>
+            <a href="mailto:mr.a.maltsev@gmail.com" class="social-link" aria-label="Email">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            </a>
+        </div>
+    </div>
+</footer>
+    </div>
+    
+    <button class="theme-toggle" aria-label="Toggle dark mode" id="themeToggle">
+        <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="5"/>
+            <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+        </svg>
+        <svg class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+        </svg>
+    </button>
+    
+    <script src="/static/js/theme.js"></script>
+    
+<script>
+    // Add copy buttons to code blocks
+    document.querySelectorAll('pre').forEach(pre => {
+        const btn = document.createElement('button');
+        btn.className = 'copy-code-btn';
+        btn.textContent = 'Copy';
+        pre.appendChild(btn);
+
+        btn.addEventListener('click', () => {
+            const code = pre.querySelector('code');
+            navigator.clipboard.writeText(code.textContent);
+            btn.textContent = 'Copied!';
+            setTimeout(() => btn.textContent = 'Copy', 2000);
+        });
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="dev_stories - Technical blog about embedded systems, Rust, and engineering">
+    <meta property="og:site_name" content="dev_stories">
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="From Rust Source to Embedded Executable: A Deep Dive into the Compilation Process for Embedded Systems">
+    <meta property="og:url" content="https://maltsev-dev.github.io/rs_to_bin_emb">
+    <meta property="og:image" content="https://github.com/maltsev-dev/favicon.png">
+    <title>From Rust Source to Embedded Executable: A Deep Dive into the Compilation Process for Embedded Systems - dev_stories</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="shortcut icon" type="image/png" href="/static/favicon.png">
+    
+    
+</head>
+<body class="">
+    <div class="site-wrapper">
+        <header class="header">
+    <div class="container header-inner">
+        <a href="/" class="logo-link">
+            <div class="logo">
+                <span class="logo-text">busy hands == happy heart</span>
+            </div>
+        </a>
+
+        <nav class="main-nav">
+            <ul class="nav-list">
+                <li class="nav-item">
+                    <a href="/" class="nav-link ">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a href="/archive" class="nav-link ">Archive</a>
+                </li>
+                <li class="nav-item">
+                    <a href="/tags/project/" class="nav-link">Projects</a>
+                </li>
+                <li class="nav-item">
+                    <a href="/about" class="nav-link ">About</a>
+                </li>
+            </ul>
+        </nav>
+
+        <button class="mobile-menu-toggle" aria-label="Toggle menu" id="mobileMenuToggle">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+    </div>
+</header>
+        
+        <main class="main-content">
+            
+<article class="post-container">
+    <div class="container">
+        <header class="post-header">
+            <h1 class="post-title">From Rust Source to Embedded Executable: A Deep Dive into the Compilation Process for Embedded Systems</h1>
+            <div class="post-meta">
+                <time class="post-date" datetime="2025-06-05">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                        <line x1="16" y1="2" x2="16" y2="6"/>
+                        <line x1="8" y1="2" x2="8" y2="6"/>
+                        <line x1="3" y1="10" x2="21" y2="10"/>
+                    </svg>
+                    June 05, 2025
+                </time>
+
+                
+                <div class="post-tags">
+                    
+                    <a href="/tags/rust.html" class="tag">#rust</a>
+                    
+                    <a href="/tags/compilers.html" class="tag">#compilers</a>
+                    
+                    <a href="/tags/embedded.html" class="tag">#embedded</a>
+                    
+                </div>
+                
+            </div>
+        </header>
+
+        <div class="post-content">
+            <p>This article is the second part of my exploration into the stages and optimizations of <a href="(https://maltsev-dev.github.io/rs-to-bin/)">Rust compilation</a>, focusing now on embedded systems development.<br />
+Embedded environments impose unique constraints such as limited memory, lack of an operating system, and strict real-time requirements.<br />
+Consequently, compiling Rust code for these systems demands special considerations — from the removal of the standard library to precise target specifications and custom linker scripts.  </p>
+<p>🟠 Here, we’ll walk through the Rust compilation pipeline with a focus on how it adapts for bare-metal, resource-constrained embedded platforms.</p>
+<!-- more -->
+<hr />
+<h3 id="i-initial-code-processing-and-abstract-representation">&emsp;&emsp;&emsp; I. Initial code processing and abstract representation</h3>
+<p>The initial stages of Rust compilation, including lexical analysis, parsing, and building an abstract syntax tree (AST), remain largely unchanged for embedded systems.</p>
+<p>A. <code>Lexing</code>: Tokenizing the source code
+* As with regular applications, the first step is lexical analysis, where the Rust source code (Unicode <strong>UTF-8</strong> text) is converted into a <strong>stream of tokens.</strong></p>
+<p>B. <code>Parsing</code>: Building an abstract syntax tree (AST)
+* The stream of tokens is then passed to the parser, which builds an Abstract Syntax Tree (AST) — a hierarchical, tree-like representation of the program.</p>
+<p>C. Early Semantic Passes: <code>Macro Expansion</code> and <code>Name Resolution</code>
+* Macro expansion and name resolution occur early in the process, often iteratively with parsing.
+* Name resolution is the process of associating all symbolic references (variables, types, functions) with their declarations.<br />
+It is a two-phase process: the collection phase builds a CrateDefMap for each crate by iteratively expanding macros and resolving imports.<br />
+The resolution phase then traverses the AST, establishing links from each name to its definition.
+* For embedded systems, these phases work the same as for regular applications. However, since embedded systems often have strict code size constraints, the use of macros (especially those that generate a lot of code) must be carefully considered to avoid "code bloat" in later phases.</p>
+<h3 id="ii-hir-and-semantic-analysis">&emsp;&emsp;&emsp; II. HIR and semantic analysis</h3>
+<p>This stage focuses on desugaring syntactic constructs and performing basic semantic analyses, including <strong>type checking</strong>, <strong>type inference</strong>, and <strong>trait resolution</strong>.</p>
+<p>A. <code>Transformation to HIR</code>: desugaring Syntactic Constructs
+* For embedded systems, this transformation is critical because it simplifies subsequent analyses. HIR uses more stable identifiers (DefId, LocalDefId, HirId) that help in incremental compilation, which is useful when code changes frequently in embedded development.</p>
+<p>B. <code>Enforcing Types</code>: Type Inference, Type Checking, and Trait Resolution
+* In the HIR stage, the rustc compiler performs basic semantic analyses to ensure Rust is type safe.</p>
+<p>C. Special considerations for embedded systems: no_std
+One of the most significant differences in embedded development in Rust is the use of the #![no_std] attribute.</p>
+<ul>
+<li>
+<p>No standard library: #![no_std] specifies that the program will not use the <a href="https://doc.rust-lang.org/std/">Rust standard library</a>, which depends on the OS.  <br />
+Instead, the <a href="https://doc.rust-lang.org/core/">core</a> library is used, which is a subset of std and is <strong>OS-independent</strong>.<br />
+This means that OS-dependent functions (e.g. <code>println!</code>, <code>File::open</code>, <code>Vec::new</code> without an explicit allocator) are not available.<br />
+Therefore, alternatives such as <code>core::fmt</code> for formatting or specialized crates for working with hardware must be used. <a href="https://crates.io/crates/embedded-hal">embedded-hal</a></p>
+</li>
+<li>
+<p>Dependencies: If the core crate uses <code>no_std</code>, then all its transitive dependencies must also be <code>no_std</code> or explicitly support no_std environments.</p>
+</li>
+<li>Benefits: Using <code>no_std</code> is critical for embedded systems because it allows for minimal binaries to be created without OS overhead, allowing direct control over the hardware and meeting stringent real-time requirements. <a href="https://github.com/rust-embedded/awesome-embedded-rust?tab=readme-ov-file#tools">embedded-rust tools</a></li>
+</ul>
+<h3 id="iii-mir-and-basic-security-checks">&emsp;&emsp;&emsp; III. MIR and Basic Security Checks</h3>
+<p>A. <code>MIR Conversion</code>: Control Flow Graph Generation
+* MIR is a radically simplified and explicit form of Rust code, specifically designed to perform flow-sensitive safety checks (in particular, borrow checking), as well as various compiler optimizations and constant computation.</p>
+<p>B. <code>Borrow Checker</code>: Memory Safety Enforcement
+* Borrow checking, implemented in the <code>rustc_borrowck</code> crate, is a distinctive feature of Rust that provides memory safety without a garbage collector. It works directly with MIR.<br />
+For embedded systems, borrow checking is a huge benefit. It allows Rust to provide memory safety (e.g. data races, dangling pointers, use-after-free) at compile time, eliminating the need for a garbage collector or manual memory management, which is critical for resource-constrained systems with strong deterministic requirements.</p>
+<p>C. <code>MIR Optimizations</code>
+* After MIR borrow checking, a series of optimization passes are performed.<br />
+* For embedded systems, these optimizations are critical to minimizing code size and improving performance. Smaller code size means the program fits into the limited Flash/ROM memory of the microcontroller, and higher performance allows real-time tasks.</p>
+<h3 id="iv-code-generation-and-machine-specific-optimizations">&emsp;&emsp;&emsp; IV. Code generation and machine-specific optimizations</h3>
+<p>This final major stage of the rustc compiler involves translating the highly optimized MIR into executable machine code, using LLVM for architecture-specific transformations and extensive optimizations.</p>
+<p>A. Monomorphization and <code>LLVM IR Generation</code></p>
+<ul>
+<li>For embedded systems: <strong>Target Triples</strong>
+For embedded systems, choosing the right "target triple" is fundamental.<br />
+A target triple (e.g. <code>thumbv7em-none-eabihf</code> for ARM Cortex-M) tells the compiler the <code>architecture</code>, <code>vendor</code>, <code>OS type / runtime type</code> for which the binary will be generated.<br />
+For bare-metal systems, the OS type is often specified as <code>none</code> or <code>unknown</code>.  </li>
+</ul>
+<p>This allows rustc to generate code specific to the target microcontroller, including the correct calling conventions and instruction set.<br />
+Size optimization: Monomorphization, while beneficial for performance, can lead to <code>code bloat</code>, which is a serious problem for memory-constrained embedded systems. You should be careful about using <code>generics</code> and consider using size optimization flags.</p>
+<p>B. <code>LLVM Optimizations</code>
+These optimizations are designed to improve the performance and efficiency of the generated code, including dead code removal, constant propagation, function inlining, and loop optimizations.</p>
+<ul>
+<li>For embedded systems, where binary file size is a critical constraint, special optimization levels are used:</li>
+<li>opt-level = "s" (optimize for size)</li>
+<li>opt-level = "z" (optimize for smallest size)<br />
+These layers significantly reduce LLVM's inlining threshold, which can help reduce code size by potentially inlining fewer functions.
+Developers can use <code>profile-overrides</code> in Cargo.toml to optimize dependencies for size while keeping the core crate more debuggable.
+  
+<code>rustc_codegen_gcc</code> is an alternative backend that may be useful for platforms not supported by LLVM, or to take advantage of GCC optimizations.</li>
+</ul>
+<p>C. Generating <code>Machine Code and Object Files</code>
+The output of this stage is platform-specific assembly code, which is then assembled into object files (.o or .obj). The object files contain machine code, data, relocation information, and symbol tables.</p>
+<h3 id="v-linking-building-the-final-executable-file">&emsp;&emsp;&emsp; V. Linking: Building the final executable file</h3>
+<p>The final step of the compilation process involves <strong>combining all the compiled object</strong> files and required libraries into a single executable binary or shared library. This is done by the linker.</p>
+<p>A. Static vs. Dynamic Linking
+Embedded systems <code>almost always use static linking</code>(Resolution occurs during compilation. All required library code is built directly into the final executable). This is because most embedded systems do not have an operating system capable of managing dynamic libraries and require the binary to be completely self-contained. Static linking ensures that all required dependencies are included in a single executable, simplifying deployment to the target hardware.</p>
+<p>B. The Role of the Linker</p>
+<p>Merging Artifacts: The primary role of the linker is to combine the generated object files, static libraries, and dynamic libraries into the final executable.<br />
+It resolves any remaining symbol references and performs relocations.
+<a href="https://blog.rust-lang.org/2024/05/17/enabling-rust-lld-on-linux/">rust-lld</a> is the Rust-shipped copy of lld (the LLVM linker), used by default for bare-metal and WebAssembly targets.</p>
+<ul>
+<li>For embedded systems: For bare-metal embedded systems, a <strong>custom linker script</strong> (usually a <code>.ld</code> file) must be provided.</li>
+</ul>
+<p>```linker script
+MEMORY {
+    BOOT2 : ORIGIN = 0x10000000, LENGTH = 0x100
+    FLASH : ORIGIN = 0x10000100, LENGTH = 2048K - 0x100
+    RAM : ORIGIN = 0x20000000, LENGTH = 256K
+    SRAM4 : ORIGIN = 0x20040000, LENGTH = 4k
+    SRAM5 : ORIGIN = 0x20041000, LENGTH = 4k
+}</p>
+<p>EXTERN(BOOT2_FIRMWARE)</p>
+<p>SECTIONS {
+    .boot2 ORIGIN(BOOT2) :
+    {
+        KEEP(*(.boot2));
+    } &gt; BOOT2
+} INSERT BEFORE .text;</p>
+<p>SECTIONS {
+    .boot_info : ALIGN(4)
+    {
+        KEEP(*(.boot_info));
+    } &gt; FLASH</p>
+<p>} INSERT AFTER .vector_table;
+_stext = ADDR(.boot_info) + SIZEOF(.boot_info);</p>
+<p>SECTIONS {
+    .bi_entries : ALIGN(4)
+    {
+        __bi_entries_start = .;
+        KEEP(*(.bi_entries));
+        . = ALIGN(4);
+        __bi_entries_end = .;
+    } &gt; FLASH
+} INSERT AFTER .text;
+```</p>
+<p>This script defines the memory map of the target microcontroller (e.g. Flash, RAM, stack, heap locations) and tells the linker <strong>where to place the various code</strong> and data sections (e.g.
+<code>.text</code>, <code>.data</code>, <code>.bss</code>).<br />
+Without such a script, the linker will not be able to correctly place the program in the device's memory.  </p>
+<p><strong>Custom entry point</strong> (#![no_main], #[entry]): Embedded Rust programs do not use the standard main function as an entry point, since it depends on the OS runtime.<br />
+Instead, the #![no_main] attribute is used to disable the standard entry point.<br />
+The developer then defines a custom entry point, often using the #[entry] macro from an architecture-specific crate (e.g. <a href="https://crates.io/crates/cortex-m-rt">cortex-m-rt</a>).<br />
+This startup code is responsible for initializing the stack, data sections, and jumping to the main logic of the program.</p>
+<p>C. Final executable file</p>
+<p>Output format: By default, rustc generates an ELF file, which contains a lot of useful debugging information.<br />
+However, most microcontrollers require a very minimal binary (<code>.bin</code>) or hexadecimal (<code>.hex</code>) file consisting only of the program instructions.
+Tools such as <a href="https://crates.io/crates/cargo-binutils">cargo-binutils</a> (which provides objcopy) are used to <strong>convert the ELF file</strong> to these formats.</p>
+<h3 id="sticker">&emsp;&emsp;&emsp; Sticker</h3>
+<div class="code-highlight"><pre><span></span><code>Compiling a Rust program for embedded systems follows the same fundamental multi-step process as for regular applications, but with critical adaptations.  
+1. removal of the standard library (no_std)
+2. target-specific triplets,
+3. careful optimization of code size,
+4. custom linker scripts
+5. custom entry points.
+</code></pre></div>
+        </div>
+
+        
+        <nav class="post-navigation">
+            <div class="nav-inner">
+                
+                <a href="/basic_electronics_2.html" class="nav-link nav-prev">
+                    <span class="nav-label">Earlier</span>
+                    <span class="nav-title">⚛️ The Aesthetics of Semiconductor Destruction: Understanding the PN Junction</span>
+                </a>
+                
+
+                
+                <a href="/rust_memory_layout.html" class="nav-link nav-next">
+                    <span class="nav-label">Later</span>
+                    <span class="nav-title">Understanding Memory Management in Rust: From Dynamically Sized Types to Fat Pointers</span>
+                </a>
+                
+            </div>
+        </nav>
+        
+    </div>
+</article>
+
+        </main>
+        
+        <footer class="footer">
+    <div class="container footer-inner">
+        <div class="copyright">
+            <span>© A.Maltsev 2026</span>
+            <span class="copyright-sep">|</span>
+            <span>Visitors: <img src="https://visitor-badge.laobi.icu/badge?page_id=maltsev-dev.github.io" alt="Visitors"></span>
+        </div>
+        
+        <div class="social-links">
+            <a href="https://github.com/maltsev-dev" class="social-link" target="_blank" rel="noopener" aria-label="GitHub">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+            </a>
+            <a href="https://www.linkedin.com/in/a-maltsev" class="social-link" target="_blank" rel="noopener" aria-label="LinkedIn">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+            </a>
+            <a href="mailto:mr.a.maltsev@gmail.com" class="social-link" aria-label="Email">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            </a>
+        </div>
+    </div>
+</footer>
+    </div>
+    
+    <button class="theme-toggle" aria-label="Toggle dark mode" id="themeToggle">
+        <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="5"/>
+            <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+        </svg>
+        <svg class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+        </svg>
+    </button>
+    
+    <script src="/static/js/theme.js"></script>
+    
+<script>
+    // Add copy buttons to code blocks
+    document.querySelectorAll('pre').forEach(pre => {
+        const btn = document.createElement('button');
+        btn.className = 'copy-code-btn';
+        btn.textContent = 'Copy';
+        pre.appendChild(btn);
+
+        btn.addEventListener('click', () => {
+            const code = pre.querySelector('code');
+            navigator.clipboard.writeText(code.textContent);
+            btn.textContent = 'Copied!';
+            setTimeout(() => btn.textContent = 'Copy', 2000);
+        });
+    });
+</script>
+
+</body>
+</html>

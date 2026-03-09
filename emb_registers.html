@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="dev_stories - Technical blog about embedded systems, Rust, and engineering">
+    <meta property="og:site_name" content="dev_stories">
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="MCU Registers">
+    <meta property="og:url" content="https://maltsev-dev.github.io/emb_registers">
+    <meta property="og:image" content="https://github.com/maltsev-dev/favicon.png">
+    <title>MCU Registers - dev_stories</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="shortcut icon" type="image/png" href="/static/favicon.png">
+    
+    
+</head>
+<body class="">
+    <div class="site-wrapper">
+        <header class="header">
+    <div class="container header-inner">
+        <a href="/" class="logo-link">
+            <div class="logo">
+                <span class="logo-text">busy hands == happy heart</span>
+            </div>
+        </a>
+
+        <nav class="main-nav">
+            <ul class="nav-list">
+                <li class="nav-item">
+                    <a href="/" class="nav-link ">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a href="/archive" class="nav-link ">Archive</a>
+                </li>
+                <li class="nav-item">
+                    <a href="/tags/project/" class="nav-link">Projects</a>
+                </li>
+                <li class="nav-item">
+                    <a href="/about" class="nav-link ">About</a>
+                </li>
+            </ul>
+        </nav>
+
+        <button class="mobile-menu-toggle" aria-label="Toggle menu" id="mobileMenuToggle">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+    </div>
+</header>
+        
+        <main class="main-content">
+            
+<article class="post-container">
+    <div class="container">
+        <header class="post-header">
+            <h1 class="post-title">MCU Registers</h1>
+            <div class="post-meta">
+                <time class="post-date" datetime="2025-07-11">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                        <line x1="16" y1="2" x2="16" y2="6"/>
+                        <line x1="8" y1="2" x2="8" y2="6"/>
+                        <line x1="3" y1="10" x2="21" y2="10"/>
+                    </svg>
+                    July 11, 2025
+                </time>
+
+                
+                <div class="post-tags">
+                    
+                    <a href="/tags/embedded.html" class="tag">#embedded</a>
+                    
+                    <a href="/tags/basic.html" class="tag">#basic</a>
+                    
+                    <a href="/tags/registers.html" class="tag">#registers</a>
+                    
+                </div>
+                
+            </div>
+        </header>
+
+        <div class="post-content">
+            <p>A <code>processor register</code> is a quickly accessible location available to a computer's processor.
+Registers usually consist of a small amount of fast storage, although some registers have specific hardware functions, and may be read-only or write-only.<br />
+Its used to store <strong>data</strong>, <strong>operands</strong>, <strong>calculation</strong> results, <strong>memory addressing</strong>, <strong>peripheral control</strong>, and <strong>microcontroller operation</strong> during instruction execution. </p>
+<p>Each register has a specific function and bit capacity.<br />
+🟠 When performing an arithmetic operation, the processor may load the operands into general-purpose registers, perform the operation, and then store the result in another register or in memory.</p>
+<!-- more -->
+<hr />
+<h2 id="why-registers-are-important">📌 Why registers are important</h2>
+<ul>
+<li>They are the fastest way to access information and allow operations to be performed without accessing external <code>RAM</code> memory.  </li>
+<li>Almost every microprocessor <code>command</code> relies on the use of registers.</li>
+<li>Setting up the microcontroller <code>peripherals</code> directly depends on writing to <strong>control registers</strong>.</li>
+</ul>
+<hr />
+<h2 id="basic-types-of-registers">🧩 Basic types of registers</h2>
+<style>
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+  }
+
+  th,
+  td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    vertical-align: top;
+  }
+
+  th {
+    background-color: #f59140;
+    color: white;
+    text-align: center;
+  }
+
+  td:first-child {
+    width: 25%;
+    font-weight: bold;
+  }
+</style>
+
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Purpose</th>
+<th>Examples</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>General-purpose registers (GPR) </td>
+<td>* Stores data and intermediate values and adresses</br> * When adding numbers, the processor loads the values ​​from `RAM` into registers, performs the operation and stores the result back. </td>
+<td><code>R0–R31</code> (AVR), <code>EAX–EDX</code> (x86), <code>R0–R12</code> (ARM)</td>
+</tr>
+<tr>
+<td>Special-purpose registers (SFR)</td>
+<td>* Hold some elements of the program state </br> * Each SFR has a **fixed address** in memory and is controlled by software </br>* They usually include the program counter, also called the instruction pointer </br> * Microcontrollers, can also have special function registers corresponding to specialized hardware elements.(timers, UART, ADC, etc.)</td>
+<td><code>TCCR0</code>, <code>ADCSRA</code>, <code>USART_CR</code></td>
+</tr>
+<tr>
+<td>Address Registers</td>
+<td>* Hold addresses and are used by instructions that indirectly access primary memory. </td>
+<td><code>SP</code>, <code>BP</code>, <code>SI</code>, <code>DI</code>, <code>X</code>, <code>Y</code>, <code>Z</code></td>
+</tr>
+<tr>
+<td>Data Registers</td>
+<td>* Can hold numeric data values such as `integers` and, (in some architectures `floating-point` numbers), as well as `characters`, small `bit arrays` and other data for I/O</td>
+<td><code>PORTx</code>, <code>PINx</code>, <code>DDRx</code></td>
+</tr>
+<tr>
+<td>Status (Flag) Registers </br> Condition code register (CCR)</td>
+<td>* Contain bits of the flags of the operation result </br>* Hold truth values often used to determine whether some instruction should or should not be executed.</td>
+<td><code>SREG</code>, <code>CPSR</code>, <code>FLAGS</code></td>
+</tr>
+<tr>
+<td>Hardware registers</td>
+<td>* Used in the interface between software and peripherals</td>
+<td>* Input/output (I/O) of different kinds </br> * Configuration and start-up of certain features, especially during initialization </br> * Used to interact with physical pins of the microcontroller: reading/writing levels, configuring directions, etc.</td>
+</tr>
+<tr>
+<td>Command registers (IP/PC) </br> * not accessible by instructions and are used internally for processor operations </td>
+<td>Point to the currently executing instruction</td>
+<td><code>PC</code>, <code>EIP</code>, <code>R15</code></td>
+</tr>
+<tr>
+<td>Segment registers </br> * not accessible by instructions and are used internally for processor operations </td>
+<td>Point to memory segments (x86)</td>
+<td><code>CS</code>, <code>DS</code>, <code>SS</code>, <code>ES</code></td>
+</tr>
+</tbody>
+</table>
+
+<hr />
+<h2 id="example-setting-up-systick-arm-cortex-m">🛠 Example: Setting up SysTick (ARM Cortex-M)</h2>
+<p>To manually set up the system timer (<a href="https://developer.arm.com/documentation/dui0552/a/cortex-m3-peripherals/system-timer--systick">SysTick</a>) three registers are used:</p>
+<table>
+<thead>
+<tr>
+<th>Register Name</th>
+<th>Purpose</th>
+<th>Address</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>SYST_CSR</code></td>
+<td>Control and Status</td>
+<td><code>0xE000E010</code></td>
+</tr>
+<tr>
+<td><code>SYST_RVR</code></td>
+<td>Reset Value</td>
+<td><code>0xE000E014</code></td>
+</tr>
+<tr>
+<td><code>SYST_CVR</code></td>
+<td>Current Value</td>
+<td><code>0xE000E018</code></td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>
+<p>The <code>SYST_CSR</code> register enables the SysTick features. It has <strong>three parameters</strong> that we are interested in: </p>
+<ul>
+<li><code>clock source</code> (which specifies what clock rates the timer should support), </li>
+<li><code>tick interrupt enable</code> (which allows an interrupt to fire when the timer reaches zero) and</li>
+<li><code>enabling the timer itself</code><br />
+The parameters are controlled by the three least significant bits in our <code>32-bit</code> register.<br />
+So for example, if you wanted to set all values ​​to one, our 32 bits would look like this. (<code>00000000_00000000_00000000_000000111</code>) The last three bits are set to one.</li>
+</ul>
+</li>
+<li>
+<p>The <code>SYST_RVR</code> register specifies the start value to load into the <code>SYST_CVR</code> register.<br />
+It counts down from that value to <code>zero</code>.<br />
+It's a 24-bit register, so the total number of values ​​we have is about <code>16.7 million.</code></p>
+</li>
+<li>
+<p>The <code>SYST_CVR</code> register contains the current value of the counter.<br />
+If the timer restarted with a reset value of <code>250</code> and <code>100</code> ticks have passed, the current value will be <code>150</code>.<br />
+You can go to this register to clear the value.<br />
+It is good practice to clear this register before enabling the timer so that its value makes sense when you read it.</p>
+</li>
+</ul>
+<h3 id="rust-example">Rust example:</h3>
+<div class="code-highlight"><pre><span></span><code><span class="k">const</span><span class="w"> </span><span class="n">SYST_CSR</span><span class="p">:</span><span class="w"> </span><span class="kt">u32</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0xE000E010</span><span class="p">;</span>
+<span class="k">const</span><span class="w"> </span><span class="n">SYST_RVR</span><span class="p">:</span><span class="w"> </span><span class="kt">u32</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0xE000E014</span><span class="p">;</span>
+<span class="k">const</span><span class="w"> </span><span class="n">SYST_CVR</span><span class="p">:</span><span class="w"> </span><span class="kt">u32</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0xE000E018</span><span class="p">;</span>
+
+<span class="kd">let</span><span class="w"> </span><span class="n">sleep_dur</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">CPU_FREQ</span><span class="p">;</span><span class="w"> </span><span class="c1">// duration = 1 second</span>
+
+<span class="k">unsafe</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="o">*</span><span class="p">(</span><span class="n">SYST_RVR</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="o">*</span><span class="k">mut</span><span class="w"> </span><span class="kt">u32</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sleep_dur</span><span class="p">;</span><span class="w">    </span><span class="c1">// set timer duration</span>
+<span class="w">    </span><span class="o">*</span><span class="p">(</span><span class="n">SYST_CVR</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="o">*</span><span class="k">mut</span><span class="w"> </span><span class="kt">u32</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w">            </span><span class="c1">// set current value to 0</span>
+<span class="w">    </span><span class="o">*</span><span class="p">(</span><span class="n">SYST_CSR</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="o">*</span><span class="k">mut</span><span class="w"> </span><span class="kt">u32</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mb">0b111</span><span class="p">;</span><span class="w">        </span><span class="c1">// set source, enable timer and interrupts</span>
+<span class="p">}</span>
+</code></pre></div>
+        </div>
+
+        
+        <nav class="post-navigation">
+            <div class="nav-inner">
+                
+                <a href="/emb_mmio.html" class="nav-link nav-prev">
+                    <span class="nav-label">Earlier</span>
+                    <span class="nav-title">MMIO (Memory-Mapped I/O)</span>
+                </a>
+                
+
+                
+                <a href="/emb_peripherals.html" class="nav-link nav-next">
+                    <span class="nav-label">Later</span>
+                    <span class="nav-title">MCU Peripherals</span>
+                </a>
+                
+            </div>
+        </nav>
+        
+    </div>
+</article>
+
+        </main>
+        
+        <footer class="footer">
+    <div class="container footer-inner">
+        <div class="copyright">
+            <span>© A.Maltsev 2026</span>
+            <span class="copyright-sep">|</span>
+            <span>Visitors: <img src="https://visitor-badge.laobi.icu/badge?page_id=maltsev-dev.github.io" alt="Visitors"></span>
+        </div>
+        
+        <div class="social-links">
+            <a href="https://github.com/maltsev-dev" class="social-link" target="_blank" rel="noopener" aria-label="GitHub">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+            </a>
+            <a href="https://www.linkedin.com/in/a-maltsev" class="social-link" target="_blank" rel="noopener" aria-label="LinkedIn">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+            </a>
+            <a href="mailto:mr.a.maltsev@gmail.com" class="social-link" aria-label="Email">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            </a>
+        </div>
+    </div>
+</footer>
+    </div>
+    
+    <button class="theme-toggle" aria-label="Toggle dark mode" id="themeToggle">
+        <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="5"/>
+            <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+        </svg>
+        <svg class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+        </svg>
+    </button>
+    
+    <script src="/static/js/theme.js"></script>
+    
+<script>
+    // Add copy buttons to code blocks
+    document.querySelectorAll('pre').forEach(pre => {
+        const btn = document.createElement('button');
+        btn.className = 'copy-code-btn';
+        btn.textContent = 'Copy';
+        pre.appendChild(btn);
+
+        btn.addEventListener('click', () => {
+            const code = pre.querySelector('code');
+            navigator.clipboard.writeText(code.textContent);
+            btn.textContent = 'Copied!';
+            setTimeout(() => btn.textContent = 'Copy', 2000);
+        });
+    });
+</script>
+
+</body>
+</html>

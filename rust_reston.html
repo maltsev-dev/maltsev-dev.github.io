@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="dev_stories - Technical blog about embedded systems, Rust, and engineering">
+    <meta property="og:site_name" content="dev_stories">
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="🤖 Actix-web AI Agent">
+    <meta property="og:url" content="https://maltsev-dev.github.io/rust_reston">
+    <meta property="og:image" content="https://github.com/maltsev-dev/favicon.png">
+    <title>🤖 Actix-web AI Agent - dev_stories</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="shortcut icon" type="image/png" href="/static/favicon.png">
+    
+    
+</head>
+<body class="">
+    <div class="site-wrapper">
+        <header class="header">
+    <div class="container header-inner">
+        <a href="/" class="logo-link">
+            <div class="logo">
+                <span class="logo-text">busy hands == happy heart</span>
+            </div>
+        </a>
+
+        <nav class="main-nav">
+            <ul class="nav-list">
+                <li class="nav-item">
+                    <a href="/" class="nav-link ">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a href="/archive" class="nav-link ">Archive</a>
+                </li>
+                <li class="nav-item">
+                    <a href="/tags/project/" class="nav-link">Projects</a>
+                </li>
+                <li class="nav-item">
+                    <a href="/about" class="nav-link ">About</a>
+                </li>
+            </ul>
+        </nav>
+
+        <button class="mobile-menu-toggle" aria-label="Toggle menu" id="mobileMenuToggle">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+    </div>
+</header>
+        
+        <main class="main-content">
+            
+<article class="post-container">
+    <div class="container">
+        <header class="post-header">
+            <h1 class="post-title">🤖 Actix-web AI Agent</h1>
+            <div class="post-meta">
+                <time class="post-date" datetime="2025-01-26">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                        <line x1="16" y1="2" x2="16" y2="6"/>
+                        <line x1="8" y1="2" x2="8" y2="6"/>
+                        <line x1="3" y1="10" x2="21" y2="10"/>
+                    </svg>
+                    January 26, 2025
+                </time>
+
+                
+                <div class="post-tags">
+                    
+                    <a href="/tags/rust.html" class="tag">#rust</a>
+                    
+                    <a href="/tags/actix_web.html" class="tag">#actix_web</a>
+                    
+                    <a href="/tags/open_ai.html" class="tag">#open_ai</a>
+                    
+                    <a href="/tags/project.html" class="tag">#project</a>
+                    
+                </div>
+                
+            </div>
+        </header>
+
+        <div class="post-content">
+            <p>Actix-web AI Agent. Built with 🤎 in Rust<br />
+<a href="https://www.linkedin.com/pulse/effortless-backend-prototyping-rust-anatolii-maltsev-hvvce/?trackingId=lGXFeD6ET%2ByFSocPHYS9qg%3D%3D">Effortless Backend Prototyping with Rust</a><br />
+<a href="https://maltsev-dev.github.io/rest_on/"><img alt="Documentation" src="https://img.shields.io/badge/Documentation-Click_here-blue" /></a></p>
+<!-- more -->
+<hr />
+<h1 id="reston">&emsp;&emsp;&emsp; <strong>RestOn</strong></h1>
+<p><a href="https://github.com/maltsev-dev/rest_on">📚 rest_on</a></p>
+<p>RestOn is an advanced tool that leverages the power of OpenAI's GPT to automate the generation of backend code for your projects and prototypes.
+It aims to streamline your development process, enabling the automatic creation of full-stack web applications and more complex systems.
+Whether you need a simple <code>CRUD app</code> or a sophisticated <code>SAAS platform</code>, Auto GPT Agent has you covered.</p>
+<h2 id="features">&emsp;&emsp;&emsp; <strong>Features</strong></h2>
+<ul>
+<li><strong>🌟 Automatic Code Generation</strong>: Use GPT API to generate backend code for services built with <code>actix-web</code> and other popular Rust libraries.</li>
+<li><strong>🔥 CRUD Operations</strong>: Generate standard operations for data manipulation (Create, Read, Update, Delete).</li>
+<li><strong>🛠️ Template Flexibility</strong>: Easily adapt web server templates to different requirements.</li>
+<li><strong>🌍 Ease of Use</strong>: Simple interface to interact with the project.</li>
+</ul>
+<h2 id="tools">&emsp;&emsp;&emsp; <strong>Tools</strong></h2>
+<p align="center" style="margin:0; padding:0;">
+  <img style="display:inline-block; vertical-align:middle;"
+       src="https://img.shields.io/badge/rust-1.83.0%20-green" alt="Rust Version"/>
+  <img style="display:inline-block; vertical-align:middle;"
+       src="https://img.shields.io/badge/actix_web-4.9.0%20-yellow" alt="Actix-web Version"/>
+  <img style="display:inline-block; vertical-align:middle;"
+       src="https://img.shields.io/badge/tokio-1.28.0%20-blue" alt="Tokio Version"/>
+  <img style="display:inline-block; vertical-align:middle;"
+       src="https://img.shields.io/badge/reqwest-0.12.10%20-red" alt="reqwest Version"/>
+  <img style="display:inline-block; vertical-align:middle;"
+       src="https://img.shields.io/badge/serde-1.0.160%20-gray" alt="Serde Version"/>
+  <img style="display:inline-block; vertical-align:middle;"
+       src="https://img.shields.io/badge/actix_cors-0.7.0%20-cyan" alt="Actix-cors Version"/>
+  <img style="display:inline-block; vertical-align:middle;"
+       src="https://img.shields.io/badge/dotenv-0.15.0%20-purple" alt="dotenv Version"/>
+  <img style="display:inline-block; vertical-align:middle;"
+       src="https://img.shields.io/badge/crossterm-0.28.1%20-green" alt="Crossterm Version"/>
+  <img style="display:inline-block; vertical-align:middle;"
+       src="https://img.shields.io/badge/async--trait-0.1.83%20-blue" alt="async-trait Version"/>
+  <img style="display:inline-block; vertical-align:middle;"
+       src="https://img.shields.io/badge/webbrowser-1.0.3%20-yellow" alt="Webbrowser Version"/>
+  <img style="display:inline-block; vertical-align:middle;"
+       src="https://img.shields.io/badge/ai_functions-0.1.1%20-green" alt="AI_functions Version"/>
+</p>
+
+<ul>
+<li><strong>Rust</strong>: The primary programming language for building fast, secure, and concurrent services.</li>
+<li><strong>Actix-web</strong>: A powerful and fast web framework for building web applications on Rust.</li>
+<li><strong>Tokio</strong>: An asynchronous framework for Rust used for parallel task handling and async calls.</li>
+<li><strong>Reqwest</strong>: An HTTP client for interacting with external APIs.</li>
+<li><strong>GPT API</strong>: Used for generating code and executing tasks based on text-based queries.</li>
+</ul>
+<h2 id="installation">&emsp;&emsp;&emsp; <strong>Installation</strong></h2>
+<h3 id="1-clone-the-repository">&emsp;&emsp;&emsp; 1. Clone the Repository</h3>
+<div class="code-highlight"><pre><span></span><code>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/chemyl/auto_gpt_agent.git
+<span class="nb">cd</span><span class="w"> </span>auto_gpt_agent
+</code></pre></div>
+
+<h3 id="2-install-rust-if-not-already-installed">&emsp;&emsp;&emsp; 2. Install Rust (if not already installed)</h3>
+<p>To install Rust, use the following command:</p>
+<div class="code-highlight"><pre><span></span><code>curl<span class="w"> </span>--proto<span class="w"> </span><span class="s1">&#39;=https&#39;</span><span class="w"> </span>--tlsv1.2<span class="w"> </span>-sSf<span class="w"> </span>https://sh.rustup.rs<span class="w"> </span><span class="p">|</span><span class="w"> </span>sh
+</code></pre></div>
+
+<h3 id="3-install-dependencies">&emsp;&emsp;&emsp; 3. Install Dependencies</h3>
+<p>Run the following command to install project dependencies:</p>
+<div class="code-highlight"><pre><span></span><code>cargo<span class="w"> </span>build
+</code></pre></div>
+
+<h3 id="4add-open_ai-keys">&emsp;&emsp;&emsp; 4.Add OPEN_AI Keys</h3>
+<div class="code-highlight"><pre><span></span><code>    OPEN_AI_ORG
+    OPEN_AI_KEY
+.env
+</code></pre></div>
+
+<h3 id="5-run-the-project">&emsp;&emsp;&emsp; 5. Run the Project</h3>
+<p>Start the project with:</p>
+<div class="code-highlight"><pre><span></span><code>cargo<span class="w"> </span>run
+</code></pre></div>
+
+<h2 id="usage">&emsp;&emsp;&emsp; <strong>Usage</strong></h2>
+<h3 id="1-generate-backend-code">&emsp;&emsp;&emsp; 1. <strong>Generate Backend Code</strong></h3>
+<p>Simply send a text query to the system, and it will generate backend code for you.</p>
+<p>Example query:</p>
+<div class="code-highlight"><pre><span></span><code>Create a webserver that shows today viral news in the US
+</code></pre></div>
+
+<h3 id="3-confirmation">&emsp;&emsp;&emsp; 3. <strong>Confirmation</strong></h3>
+<p>After generating the backend code, you can</p>
+<h2 id="example-usage">&emsp;&emsp;&emsp; <strong>Example Usage</strong></h2>
+<h3 id="1-console-output">&emsp;&emsp;&emsp; 1. <strong>Console Output</strong></h3>
+<p>{{ img(src = "/images/console_output.png") }}</p>
+<h3 id="2-generated-main-example">&emsp;&emsp;&emsp; 2. <strong>Generated [main] Example</strong></h3>
+<div class="code-highlight"><pre><span></span><code><span class="cp">#[actix_web::main]</span>
+<span class="k">async</span><span class="w"> </span><span class="k">fn</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">-&gt;</span><span class="w"> </span><span class="nc">std</span><span class="p">::</span><span class="n">io</span><span class="p">::</span><span class="nb">Result</span><span class="o">&lt;</span><span class="p">()</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">db</span><span class="p">:</span><span class="w"> </span><span class="nc">Database</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Database</span><span class="p">::</span><span class="n">load_from_file</span><span class="p">().</span><span class="n">unwrap_or_else</span><span class="p">(</span><span class="o">|</span><span class="n">_</span><span class="o">|</span><span class="w"> </span><span class="n">Database</span><span class="p">::</span><span class="n">new</span><span class="p">());</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">data</span><span class="p">:</span><span class="w"> </span><span class="nc">web</span><span class="p">::</span><span class="n">Data</span><span class="o">&lt;</span><span class="n">AppState</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">web</span><span class="p">::</span><span class="n">Data</span><span class="p">::</span><span class="n">new</span><span class="p">(</span><span class="n">AppState</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">db</span><span class="p">:</span><span class="w"> </span><span class="nc">Mutex</span><span class="p">::</span><span class="n">new</span><span class="p">(</span><span class="n">db</span><span class="p">)</span>
+<span class="w">    </span><span class="p">});</span>
+
+<span class="w">    </span><span class="n">HttpServer</span><span class="p">::</span><span class="n">new</span><span class="p">(</span><span class="k">move</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">App</span><span class="p">::</span><span class="n">new</span><span class="p">()</span>
+<span class="w">            </span><span class="p">.</span><span class="n">wrap</span><span class="p">(</span>
+<span class="w">                </span><span class="n">Cors</span><span class="p">::</span><span class="n">permissive</span><span class="p">()</span>
+<span class="w">                    </span><span class="p">.</span><span class="n">allowed_origin_fn</span><span class="p">(</span><span class="o">|</span><span class="n">origin</span><span class="p">,</span><span class="w"> </span><span class="n">_req_head</span><span class="o">|</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                        </span><span class="n">origin</span><span class="p">.</span><span class="n">as_bytes</span><span class="p">().</span><span class="n">starts_with</span><span class="p">(</span><span class="s">b&quot;http://localhost&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">origin</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s">&quot;null&quot;</span>
+<span class="w">                    </span><span class="p">})</span>
+<span class="w">                    </span><span class="p">.</span><span class="n">allowed_methods</span><span class="p">(</span><span class="fm">vec!</span><span class="p">[</span><span class="s">&quot;GET&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;POST&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;PUT&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;DELETE&quot;</span><span class="p">])</span>
+<span class="w">                    </span><span class="p">.</span><span class="n">allowed_headers</span><span class="p">(</span><span class="fm">vec!</span><span class="p">[</span><span class="n">header</span><span class="p">::</span><span class="n">AUTHORIZATION</span><span class="p">,</span><span class="w"> </span><span class="n">header</span><span class="p">::</span><span class="n">ACCEPT</span><span class="p">])</span>
+<span class="w">                    </span><span class="p">.</span><span class="n">allowed_header</span><span class="p">(</span><span class="n">header</span><span class="p">::</span><span class="n">CONTENT_TYPE</span><span class="p">)</span>
+<span class="w">                    </span><span class="p">.</span><span class="n">supports_credentials</span><span class="p">()</span>
+<span class="w">                    </span><span class="p">.</span><span class="n">max_age</span><span class="p">(</span><span class="mi">3600</span><span class="p">)</span>
+<span class="w">            </span><span class="p">)</span>
+<span class="w">            </span><span class="p">.</span><span class="n">app_data</span><span class="p">(</span><span class="n">data</span><span class="p">.</span><span class="n">clone</span><span class="p">())</span>
+<span class="w">            </span><span class="p">.</span><span class="n">route</span><span class="p">(</span><span class="s">&quot;/news&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">web</span><span class="p">::</span><span class="n">post</span><span class="p">().</span><span class="n">to</span><span class="p">(</span><span class="n">create_news</span><span class="p">))</span>
+<span class="w">            </span><span class="p">.</span><span class="n">route</span><span class="p">(</span><span class="s">&quot;/news&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">web</span><span class="p">::</span><span class="n">get</span><span class="p">().</span><span class="n">to</span><span class="p">(</span><span class="n">read_all_news</span><span class="p">))</span>
+<span class="w">            </span><span class="p">.</span><span class="n">route</span><span class="p">(</span><span class="s">&quot;/news&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">web</span><span class="p">::</span><span class="n">put</span><span class="p">().</span><span class="n">to</span><span class="p">(</span><span class="n">update_news</span><span class="p">))</span>
+<span class="w">            </span><span class="p">.</span><span class="n">route</span><span class="p">(</span><span class="s">&quot;/news/{id}&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">web</span><span class="p">::</span><span class="n">get</span><span class="p">().</span><span class="n">to</span><span class="p">(</span><span class="n">read_news</span><span class="p">))</span>
+<span class="w">            </span><span class="p">.</span><span class="n">route</span><span class="p">(</span><span class="s">&quot;/news/{id}&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">web</span><span class="p">::</span><span class="n">delete</span><span class="p">().</span><span class="n">to</span><span class="p">(</span><span class="n">delete_news</span><span class="p">))</span>
+<span class="w">    </span><span class="p">})</span>
+<span class="w">        </span><span class="p">.</span><span class="n">bind</span><span class="p">(</span><span class="s">&quot;127.0.0.1:8080&quot;</span><span class="p">)</span><span class="o">?</span>
+<span class="w">        </span><span class="p">.</span><span class="n">run</span><span class="p">()</span>
+<span class="w">        </span><span class="p">.</span><span class="k">await</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h2 id="how-it-works">&emsp;&emsp;&emsp; <strong>How It Works</strong></h2>
+<ol>
+<li>The project uses GPT API to process text queries and generate code.</li>
+<li>Queries are sent to the system, which then generates backend code based on the input.</li>
+<li>The code generation includes:<ul>
+<li>Creating new HTTP server.</li>
+<li>Route creation for handling requests.</li>
+<li>Json Database setup.</li>
+</ul>
+</li>
+<li>The generated code can be directly run on your server or further customized to fit your needs.</li>
+</ol>
+<h2 id="future-plans">&emsp;&emsp;&emsp; <strong>Future Plans</strong></h2>
+<ul>
+<li><strong>Support for More Complex Templates</strong>: Allow generation of more specialized services based on detailed templates.</li>
+<li><strong>Command-Line Interface (CLI)</strong>: A more advanced CLI for managing the project.</li>
+<li><strong>Support for Additional Databases</strong>: Integration with more databases like MongoDB, MySQL, SQLite, and others.</li>
+<li><strong>CI/CD Integration</strong>: Automate deployment pipelines.</li>
+<li><strong>Project requirements</strong>: Perform in-depth client onboarding.</li>
+<li><strong>Extend testing</strong>: Test all dynamic routes.</li>
+<li><strong>Frontend development</strong>: Develop frontend Automation Agent based on Yew.</li>
+<li><strong>Local LLM</strong>: Introduced local open source LLMs.</li>
+</ul>
+<h2 id="contributing">&emsp;&emsp;&emsp; <strong>Contributing</strong></h2>
+<p>Welcome contributions! If you have ideas to improve the project, please create an <a href="https://github.com/chemyl/auto_gpt_agent/issues">issue</a> or submit a pull request.</p>
+<h3 id="how-to-contribute">&emsp;&emsp;&emsp; How to Contribute</h3>
+<ol>
+<li>Fork the repository.</li>
+<li>Create your feature branch (<code>git checkout -b feature-branch</code>).</li>
+<li>Commit your changes (<code>git commit -am 'Add new feature'</code>).</li>
+<li>Push to your branch (<code>git push origin feature-branch</code>).</li>
+<li>Open a Pull Request.</li>
+</ol>
+<h2 id="license">&emsp;&emsp;&emsp; <strong>License</strong></h2>
+<p>This project is licensed under the MIT License - see the <a href="https://github.com/chemyl/auto_gpt_agent/blob/master/LICENSE">LICENSE</a> file for details.</p>
+        </div>
+
+        
+        <nav class="post-navigation">
+            <div class="nav-inner">
+                
+                <a href="/rust_toolchain.html" class="nav-link nav-prev">
+                    <span class="nav-label">Earlier</span>
+                    <span class="nav-title">Rust Toolchain: A Complete Guide to Managing and Configuring Your Rust Environment</span>
+                </a>
+                
+
+                
+                <a href="/rust_solana_counter.html" class="nav-link nav-next">
+                    <span class="nav-label">Later</span>
+                    <span class="nav-title">🧮 Simple Solana Counter Program</span>
+                </a>
+                
+            </div>
+        </nav>
+        
+    </div>
+</article>
+
+        </main>
+        
+        <footer class="footer">
+    <div class="container footer-inner">
+        <div class="copyright">
+            <span>© A.Maltsev 2026</span>
+            <span class="copyright-sep">|</span>
+            <span>Visitors: <img src="https://visitor-badge.laobi.icu/badge?page_id=maltsev-dev.github.io" alt="Visitors"></span>
+        </div>
+        
+        <div class="social-links">
+            <a href="https://github.com/maltsev-dev" class="social-link" target="_blank" rel="noopener" aria-label="GitHub">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+            </a>
+            <a href="https://www.linkedin.com/in/a-maltsev" class="social-link" target="_blank" rel="noopener" aria-label="LinkedIn">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+            </a>
+            <a href="mailto:mr.a.maltsev@gmail.com" class="social-link" aria-label="Email">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            </a>
+        </div>
+    </div>
+</footer>
+    </div>
+    
+    <button class="theme-toggle" aria-label="Toggle dark mode" id="themeToggle">
+        <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="5"/>
+            <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+        </svg>
+        <svg class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+        </svg>
+    </button>
+    
+    <script src="/static/js/theme.js"></script>
+    
+<script>
+    // Add copy buttons to code blocks
+    document.querySelectorAll('pre').forEach(pre => {
+        const btn = document.createElement('button');
+        btn.className = 'copy-code-btn';
+        btn.textContent = 'Copy';
+        pre.appendChild(btn);
+
+        btn.addEventListener('click', () => {
+            const code = pre.querySelector('code');
+            navigator.clipboard.writeText(code.textContent);
+            btn.textContent = 'Copied!';
+            setTimeout(() => btn.textContent = 'Copy', 2000);
+        });
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="dev_stories - Technical blog about embedded systems, Rust, and engineering">
+    <meta property="og:site_name" content="dev_stories">
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="Understanding Memory Management in Rust: From Dynamically Sized Types to Fat Pointers">
+    <meta property="og:url" content="https://maltsev-dev.github.io/rust_memory_layout">
+    <meta property="og:image" content="https://github.com/maltsev-dev/favicon.png">
+    <title>Understanding Memory Management in Rust: From Dynamically Sized Types to Fat Pointers - dev_stories</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="shortcut icon" type="image/png" href="/static/favicon.png">
+    
+    
+</head>
+<body class="">
+    <div class="site-wrapper">
+        <header class="header">
+    <div class="container header-inner">
+        <a href="/" class="logo-link">
+            <div class="logo">
+                <span class="logo-text">busy hands == happy heart</span>
+            </div>
+        </a>
+
+        <nav class="main-nav">
+            <ul class="nav-list">
+                <li class="nav-item">
+                    <a href="/" class="nav-link ">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a href="/archive" class="nav-link ">Archive</a>
+                </li>
+                <li class="nav-item">
+                    <a href="/tags/project/" class="nav-link">Projects</a>
+                </li>
+                <li class="nav-item">
+                    <a href="/about" class="nav-link ">About</a>
+                </li>
+            </ul>
+        </nav>
+
+        <button class="mobile-menu-toggle" aria-label="Toggle menu" id="mobileMenuToggle">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+    </div>
+</header>
+        
+        <main class="main-content">
+            
+<article class="post-container">
+    <div class="container">
+        <header class="post-header">
+            <h1 class="post-title">Understanding Memory Management in Rust: From Dynamically Sized Types to Fat Pointers</h1>
+            <div class="post-meta">
+                <time class="post-date" datetime="2025-06-09">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                        <line x1="16" y1="2" x2="16" y2="6"/>
+                        <line x1="8" y1="2" x2="8" y2="6"/>
+                        <line x1="3" y1="10" x2="21" y2="10"/>
+                    </svg>
+                    June 09, 2025
+                </time>
+
+                
+                <div class="post-tags">
+                    
+                    <a href="/tags/rust.html" class="tag">#rust</a>
+                    
+                    <a href="/tags/memory.html" class="tag">#memory</a>
+                    
+                    <a href="/tags/basic.html" class="tag">#basic</a>
+                    
+                </div>
+                
+            </div>
+        </header>
+
+        <div class="post-content">
+            <p>Rust's approach to memory management is both powerful and complex.<br />
+🟠 In this article, I want to take a deep dive into how Rust handles memory for the type system under the hood, and try to answer questions like:
+* Why can't we create purely dynamic types?
+* How does the Rust compiler decide where and how to allocate memory for variables?
+* What exactly does a pointer inside a fat pointer refer to, especially for string literals?
+* And what role does libc play in this?</p>
+<!-- more -->
+<hr />
+<h2 id="some-definitions">&emsp;&emsp;&emsp; Some Definitions</h2>
+<p><strong>ZST</strong> (Zero Sized Types) - the entire size of this type is collapsed to zero at compile time. (always <code>impl Sized</code>)</p>
+<p><strong>DST</strong> (Dynamically Sized Types) - is a <strong>non-sized</strong> (<code>!Sized</code>) type that does not contain information <strong>about its length</strong> in the type itself, but <strong>the length is stored at runtime</strong> as metadata associated with the slice pointer.<br />
+At compile time, Rust <strong>does not know</strong> how much memory needs to be allocated for this type (<code>str</code>, <code>[T]</code>, <code>Arc</code>.. ).<br />
+Variables of these types can only be used <strong>behind references</strong> that include metadata about the length. (<code>&amp;str</code>, <code>&amp;[T]</code>, <code>Box&lt;[T]&gt;</code>...)  </p>
+<p><strong>Machine Word</strong> (word) - is the amount of data that the <em>CPU</em> can process per unit of time.<br />
+The memory address range is determined by the size of the <code>machine word</code> in the current <em>CPU</em>, for a <code>64 bit</code> processor it is <code>64 bits</code>respectively (or <code>8 bytes</code>).<br />
+The size of the reference (<code>usize</code>) is equal to a machine word. (<code>ptr</code>, <code>cap</code>, <code>len</code>).  </p>
+<hr />
+<h2 id="1-basic-concepts-of-memory-management">&emsp;&emsp;&emsp; 1. Basic concepts of memory management</h2>
+<p>After compiling the executable file. <a href="https://maltsev-dev.github.io/rs-to-bin/">Read more</a> about Rust compiling pipeline in my article.
+This file stores <code>data</code>, <code>metadata</code>, and <code>machine instructions</code> for the <em>CPU</em> in specific platform-dependent formats. (<strong>ELF</strong> on Linux, <strong>PE</strong> on Windows,<strong>Mach-O</strong> on macOS). No matter what formats, the way they are executed is <em>almost</em> the same.  </p>
+<p>When a program (<strong>process</strong>) is started on the target platform, the kernel allocates the necessary amount of memory based on the <strong>segment metadata</strong> (<code>.text,</code> <code>.data</code>, <code>.bss</code>, etc) from the ELF headers. This memory is a solid range of addresses to use, called the <code>virtual address space</code> of the program.<br />
+The kernel will map segments to the allocated memory at startup, the number of segments required depends on the <strong>compiler</strong>.<br />
+Since memory is allocated <code>lazily</code>, the kernel and hardware will do the mapping to physical addresses in RAM <code>only on the first access</code>.<br />
+From the point of view of the <strong>process</strong>, it sees a solid range of memory from <code>0</code> to the maximum value.  </p>
+<p>{{ img(src = "/images/rust_memory/rust_memory_1.png") }}</p>
+<ul>
+<li>Some <strong>segment metadata</strong> of executable file:   </li>
+</ul>
+<div class="code-highlight"><pre><span></span><code>section               size        addr
+.vector_table          192  0x10000100
+.text                33044  0x100001d4
+.rodata               4904  0x100082e8
+.data                    0  0x20000000
+.bss                     4  0x20000000
+...
+</code></pre></div>
+
+<ul>
+<li><strong>text</strong><br />
+This section contains the compiled <code>machine instructions</code> of your program (<strong>executable code</strong>).<br />
+Loaded into memory with <code>Read + Execute</code> rights. The running program cannot change it.<br />
+These instructions depend on the architecture of the processor for which the code was compiled and cannot be automatically ported to another platform.  </li>
+<li><strong>data</strong><br />
+This section contains<code>initialized global and static</code> variables.  </li>
+<li><strong>bss</strong><br />
+BSS <strong>Block started by symbol</strong> segment.<br />
+This section stores <code>uninitialized global and static</code> variables. These variables are <strong>guaranteed to be zero</strong> before main is called.  </li>
+</ul>
+<h3 id="stack">&emsp; Stack</h3>
+<p>Located at the top of the user space and grows <strong>downwards</strong>⬇️.  </p>
+<p>The <em>stack</em> is <strong>unique to each individual thread</strong> of the process. On 64-bit Linux Systems, Rust programs use an <code>8Mb</code> <em>stack</em> for the <strong>main</strong> thread.<br />
+The <a href="https://doc.rust-lang.org/std/thread/struct.Builder.html#method.stack_size">Rust std</a> supports specifying the <em>stack</em> size for any thread that the program creates. The default value is <code>2Mb</code>.</p>
+<p>Although the size of the <em>stack</em> for the main thread is <code>8Mb</code>, this memory is not allocated immediately, it is allocated by the kernel only on the first access.<br />
+The <em>stack</em> grows <strong>downwards</strong> - to a lower memory area.<br />
+It can only grow until total <em>stack</em> size for that particular thread (if it is the main thread - up to <code>8Mb</code>)<br />
+If a program thread uses more <em>stack</em> space than it is allocated, the kernel will terminate the execution of that program with an error - <strong>stack overflow</strong>  </p>
+<h3 id="heap">&emsp; Heap</h3>
+<p>All threads share <strong>one common heap</strong>.<br />
+The <em>heap</em> memory address starts close to zero (after code and data) and <strong>grows upwards</strong>⬆️.<br />
+The <em>heap</em> can grow to huge sizes (theoretically up to <code>128 TB</code>).  </p>
+<p>{{ img(src = "/images/rust_memory/rust_memory_stack_vs_heap.png") }}</p>
+<hr />
+<h2 id="rust-on-stack">&emsp;&emsp;&emsp; Rust on Stack</h2>
+<p>The main purpose of the <em>stack</em> memory is to store the data of the <strong>currently executing function</strong> (all parameter of the function, its local variables and the return address).<br />
+Only variables with a <code>fixed size</code> and whose <code>size is known at compile</code> time can be placed on the <em>stack</em>.  </p>
+<ul>
+<li><code>stack frame</code> - the total amount of memory allocated for the execution of <strong>one function</strong>.  </li>
+<li><code>stack pointer</code> - track the <strong>current top level</strong> of the <em>stack</em>.  </li>
+</ul>
+<p>Allocation and deallocation on the <em>stack</em> requires only increasing or decreasing the hight of the <code>stack pointer</code> and is fast, since <strong>no system calls are required</strong>.  </p>
+<p>{{ img(src = "/images/rust_memory/rust_memory_stack.png") }}</p>
+<ol>
+<li>First, a <code>stack frame</code> is created for the main function, all local variables with known sizes are placed in it.  </li>
+<li>The <code>main()</code> calls another function, for which its own <code>stack frame</code> is created with enough memory to store its data.</li>
+<li>The <strong>return address</strong> (<code>0x23f</code>) is the next instruction in the <code>stack frame</code> of the <code>main()</code> (the assignment operator <code>let b =</code> ...), to which execution should return after the <code>add_one()</code> function is finished.</li>
+<li>At this point, the <code>stack pointer</code> will be raised, but the <code>stack frame</code> allocated memory for the <code>add_one()</code> function will not be fully deallocated, these addresses will be overwritten when another function is called.  </li>
+</ol>
+<hr />
+<h2 id="rust-on-heap">&emsp;&emsp;&emsp; Rust on Heap</h2>
+<p>In Rust, <strong>Heap Allocator</strong> is described through the <code>GlobalAlloc</code> trait - it defines the functions that the <strong>allocator</strong> must provide.<br />
+Rust uses <code>malloc</code> from the standard <code>C</code> library, <code>libc</code>, to work with memory. Under the hood, Rust assumes that the running platform has <code>libc</code>.<br />
+Allocating and working with memory on the <em>heap</em> is <strong>slow</strong> primarily because of <strong>system calls</strong> to <code>libc</code> and the allocator searching for a suitable place for the data.<br />
+To reduce the number of system calls, <code>memory allocator</code> requests memory in blocks.  </p>
+<p>{{ img(src = "/images/rust_memory/rust_memory_heap.png") }}</p>
+<ol>
+<li>The main <code>stack frame</code> is created for the <code>main()</code> function</li>
+<li>A nested <code>stack frame</code> is created for the <code>heap()</code> function</li>
+<li><code>Box</code> - allocates space on the <em>heap</em> for the number 23 (<code>i32 = 4 bytes</code>), and a <strong>pointer</strong> (<code>0x5f21</code>) to this space is written to the <code>b</code> variable on the <em>stack</em>, since the pointer has a fixed size. Therefore, the size of <code>b</code> in the <em>stack</em> is <code>usize = 8 bytes</code>.</li>
+<li>Through the return address from <code>heap()</code>, the pointer to <code>Box</code> is written to the <code>result</code> variable in the <code>main()</code> function.</li>
+<li>Now, even if the <em>stack</em> frame of the <code>heap()</code> function is deallocated, the <code>result</code> variable contains the address of the data in the <em>heap</em>.</li>
+</ol>
+<hr />
+<h2 id="rust-data-types">&emsp;&emsp;&emsp; Rust Data Types</h2>
+<h3 id="integer">&emsp; Integer</h3>
+<p>{{ img(src = "/images/rust_memory/rust_memory_integers.png") }}
+Stored entirely on <em>stack</em>.
+Signed and unsigned numbers indicate how many <code>bit</code> they can store.<br />
+| i8 / u8 | i16 / u16 | i32 / u32 | i64 / u64 | i128 / u128 | f32 / f64 | isize / usize      |
+|:--------|:----------|:----------|:----------|:---------|:-------------|:-------------------|
+| 1 byte  | 2 bytes   | 4 bytes   | 8 bytes   | 16 bytes    | 4 / 8 bytes   | 4 / 8 bytes    |</p>
+<h3 id="char">&emsp; Char</h3>
+<p>The char type in Rust is a primitive type that takes up a fixed amount of memory (<code>4 bytes</code>).<br />
+Like other primitives (i32, bool, etc.), it is stored on the <code>stack</code> by default.<br />
+The char type in Rust represents a single <code>Unicode Scalar Value</code>.<br />
+Regardless of the specific character (whether it's a, €, or 🦀), the char type in Rust always takes up exactly <code>4 bytes</code> (32-bit).  </p>
+<h3 id="tuple">&emsp; Tuple</h3>
+<p>A type consists of a <strong>fixed set</strong> of values ​​of <strong>diffrent types</strong>.<br />
+If all composite types are stored on a <em>stack</em>, then the entire tuple is stored on a <em>stack</em>.<br />
+The size of all composite types is in order, but with alignment taken into account.<br />
+<code>Alignment</code> is performed by the compiler so that <em>CPUs</em> can read data more efficiently.<br />
+{{ img(src = "/images/rust_memory/rust_memory_tuple.png") }}</p>
+<ul>
+<li>sum of sizes of types = <code>9</code></li>
+<li>sum of size including alignment = 12</li>
+<li>denominator of alignment = <code>4</code></li>
+<li>9\4 = 2.25 to the upper integer = <code>3</code></li>
+<li>aligned size = 4 * 3 = <code>12</code></li>
+</ul>
+<div class="code-highlight"><pre><span></span><code><span class="n">size_of</span><span class="p">::</span><span class="o">&lt;</span><span class="p">(</span><span class="kt">char</span><span class="p">,</span><span class="w"> </span><span class="kt">u8</span><span class="p">,</span><span class="w"> </span><span class="kt">i32</span><span class="p">)</span><span class="o">&gt;</span><span class="p">();</span><span class="w">   </span><span class="c1">// 12</span>
+<span class="n">align_of</span><span class="p">::</span><span class="o">&lt;</span><span class="p">(</span><span class="kt">char</span><span class="p">,</span><span class="w"> </span><span class="kt">u8</span><span class="p">,</span><span class="w"> </span><span class="kt">i32</span><span class="p">)</span><span class="o">&gt;</span><span class="p">();</span><span class="w">  </span><span class="c1">// 4</span>
+</code></pre></div>
+
+<h3 id="reference">&emsp; Reference</h3>
+<ul>
+<li><code>&amp;T</code> <strong>shared</strong> references are stored in the <em>stack</em> and contain the <strong>address of the original variable</strong> it points to.  </li>
+<li><code>&amp;&amp;T</code> <strong>shared</strong> reference to reference and also takes 1 machine word.  </li>
+<li><code>&amp;mut T</code> <strong>unique</strong> references have the same layout in memory.  </li>
+</ul>
+<p>{{ img(src = "/images/rust_memory/rust_memory_references.png") }}</p>
+<h3 id="array">&emsp; Array</h3>
+<div class="code-highlight"><pre><span></span><code><span class="kd">let</span><span class="w"> </span><span class="n">a</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="kt">i32</span><span class="p">;</span><span class="w"> </span><span class="mi">3</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mi">55</span><span class="p">,</span><span class="w"> </span><span class="mi">66</span><span class="p">,</span><span class="w"> </span><span class="mi">77</span><span class="p">];</span>
+</code></pre></div>
+
+<p>An array has a <strong>fixed size</strong> (constant after creation), and this size <strong>is part of the type</strong>.<br />
+Values ​​of an array type are strictly of the <strong>same type</strong> and are placed one after another on the <em>stack</em>.  </p>
+<h3 id="vector">&emsp; Vector</h3>
+<div class="code-highlight"><pre><span></span><code><span class="kd">let</span><span class="w"> </span><span class="n">v</span><span class="p">:</span><span class="w"> </span><span class="nb">Vec</span><span class="o">&lt;</span><span class="kt">i32</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="fm">vec!</span><span class="p">[</span><span class="mi">55</span><span class="p">,</span><span class="w"> </span><span class="mi">66</span><span class="p">,</span><span class="w"> </span><span class="mi">77</span><span class="p">];</span>
+</code></pre></div>
+
+<p>An alternative to a constant array that <strong>can change its size</strong> while keeping the data types inside the same.
+Vector will store 3 pointers <code>(ptr, len, cap)</code> in <em>stack</em>.
+* <code>ptr</code> - point to the beginning of the memory <strong>area in the <em>heap</em></strong> where the values ​​stored in this vector are written.
+* <code>cap</code> - shows how much data <strong>is allocated</strong> on the <em>heap</em> for this vector.
+* when <code>cap</code> and <code>len</code> become the same, if more elements need to be added - reallocation occurs (allocating new memory in a larger <em>heap</em>, copying elements from the current location to the new array and updating the pointer).</p>
+<h3 id="slice">&emsp; Slice</h3>
+<p><code>[T]</code> - similar to a fixed size array, except that we don't have to specify the size and data type.</p>
+<div class="code-highlight"><pre><span></span><code><span class="kd">let</span><span class="w"> </span><span class="n">s1</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="kt">i32</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="o">..</span><span class="mi">2</span><span class="p">];</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">s2</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="kt">i32</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="o">..</span><span class="mi">2</span><span class="p">];</span>
+</code></pre></div>
+
+<p>Usually a <strong>slice reference</strong> is used - which can be placed on the <em>stack</em>.<br />
+<code>&amp;[T]</code> - <strong>fat pointer</strong> 2 pointers - <code>ptr</code> + <code>len</code></p>
+<p>{{ img(src = "/images/rust_memory/rust_memory_slices.png") }}</p>
+<div class="code-highlight"><pre><span></span><code><span class="kd">let</span><span class="w"> </span><span class="n">a</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="kt">i32</span><span class="p">;</span><span class="w"> </span><span class="mi">3</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mi">55</span><span class="p">,</span><span class="w"> </span><span class="mi">66</span><span class="p">,</span><span class="w"> </span><span class="mi">77</span><span class="p">];</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">v</span><span class="p">:</span><span class="w"> </span><span class="nb">Vec</span><span class="o">&lt;</span><span class="kt">i32</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="fm">vec!</span><span class="p">[</span><span class="mi">55</span><span class="p">,</span><span class="w"> </span><span class="mi">66</span><span class="p">,</span><span class="w"> </span><span class="mi">77</span><span class="p">];</span>
+
+<span class="kd">let</span><span class="w"> </span><span class="n">s1</span><span class="p">:</span><span class="w"> </span><span class="kp">&amp;</span><span class="p">[</span><span class="kt">i32</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&amp;</span><span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="o">..</span><span class="mi">2</span><span class="p">];</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">s2</span><span class="p">:</span><span class="w"> </span><span class="kp">&amp;</span><span class="p">[</span><span class="kt">i32</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&amp;</span><span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="o">..</span><span class="mi">2</span><span class="p">];</span>
+</code></pre></div>
+
+<p>Here <code>s1</code> and <code>s2</code> are a slices that contains <code>ptr</code> и <code>len</code>.
+This information is stored in a <strong>fat pointer</strong>, which consists of:
+- A pointer to the data (<code>*const T</code>)
+- A length (<code>usize</code>)<br />
+Thus, although the <code>[T]</code> type itself does not contain length information, this information is available through the <code>&amp;</code> pointers to the slice.</p>
+<h3 id="string-str-str">&emsp; String, str, &amp;str</h3>
+<p>String is a <code>Vec&lt;u8&gt;</code> where each value is a separate <strong>Unicode</strong> character in <code>UTF-8</code> encoding.<br />
+Like a vector, String stores 3 pointers to <em>stack</em> (<code>ptr</code>, <code>cap</code>, <code>len</code>)</p>
+<p>{{ img(src = "/images/rust_memory/rust_memory_strings.png") }}</p>
+<div class="code-highlight"><pre><span></span><code><span class="kd">let</span><span class="w"> </span><span class="n">s</span><span class="p">:</span><span class="w"> </span><span class="nb">String</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">String</span><span class="p">::</span><span class="n">from</span><span class="p">(</span><span class="s">&quot;hello&quot;</span><span class="p">);</span>
+</code></pre></div>
+
+<hr />
+<p>If you store a <strong>string literal</strong> directly into a variable, the data type of that variable will be a reference to a slice of the string with a <code>static lifetime</code>.<br />
+These strings are stored in <code>.rodata</code> (read-only data) directly in the binary code.<br />
+In this case, <code>s2</code> on the <em>stack</em> will be represented by a <strong>fat pointer</strong> (<code>ptr</code> + <code>len</code>).<br />
+<code>ptr</code> will point to a specific range in static memory.  </p>
+<div class="code-highlight"><pre><span></span><code><span class="kd">let</span><span class="w"> </span><span class="n">s2</span><span class="p">:</span><span class="w"> </span><span class="kp">&amp;</span><span class="o">&#39;</span><span class="nb">static</span><span class="w"> </span><span class="kt">str</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;hello&quot;</span><span class="p">;</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">ptr</span><span class="p">:</span><span class="w"> </span><span class="o">*</span><span class="k">const</span><span class="w"> </span><span class="kt">u8</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">s2</span><span class="p">.</span><span class="n">as_ptr</span><span class="p">();</span>
+</code></pre></div>
+
+<hr />
+<p>The <code>str</code> type in Rust is a DST.<br />
+Therefore, you cannot create a variable of type <code>str</code> without using a pointer or reference.</p>
+<ul>
+<li>Instead, you use a <strong>reference</strong> to <code>str</code>, i.e. <code>&amp;str</code>, which is a <strong>fat pointer</strong>(<code>ptr</code> + <code>len</code>).<br />
+Thus, <code>&amp;str</code> has a known size at compile time and can be safely allocated on the <em>stack</em>.  </li>
+</ul>
+<p>It is possible to get a part of the String using <strong>ranges</strong>, but this will return a slice of the String.<br />
+<em> Since the size of the String is not known at <code>compile-time</code>, it cannot be pushed onto the function </em>stack<em>, and Rust does not allow you to assign it to a variable.<br />
+Therefore, you must use a </em><em>reference</em>* here as well.  </p>
+<p>This slice does not copy the data, but only <strong>references it</strong>, and includes information about the length of the slice.  </p>
+<div class="code-highlight"><pre><span></span><code><span class="kd">let</span><span class="w"> </span><span class="n">s1</span><span class="p">:</span><span class="w"> </span><span class="kp">&amp;</span><span class="kt">str</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&amp;</span><span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="mi">3</span><span class="p">];;</span>
+</code></pre></div>
+
+<h3 id="struct">&emsp; Struct</h3>
+<p>There are <strong>3 types</strong> of structs in Rust<br />
+<em> Struct with named fields.<br />
+</em> Tuple - Struct without named fields.<br />
+<em> Unit-like Struct - </em><em>ZST</em><em>.
+</em><em>Struct</em><em> have a memory representation similar to </em><em>tuple</em><em><br />
+A struct with named fields puts <code>pointers</code> and <code>copy types</code> next to each other on the </em>stack<em>.<br />
+If the vector inside the nums field has elements, they will be allocated on the </em>heap*.<br />
+{{ img(src = "/images/rust_memory/rust_memory_struct.png") }}</p>
+<h3 id="enum">&emsp; Enum</h3>
+<p>Rust has several different syntaxes for enums.<br />
+* C-style Enum
+In memory, they are stored as integers starting with <code>tag 0</code>.<br />
+The compiler will choose the smallest integer type that can fit the largest of the tags.   </p>
+<div class="code-highlight"><pre><span></span><code><span class="k">enum</span><span class="w"> </span><span class="nc">HTTPStatuses</span><span class="p">{</span>
+<span class="w">    </span><span class="n">OK</span><span class="p">,</span>
+<span class="w">    </span><span class="n">NoFound</span><span class="p">,</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<ul>
+<li>An enum with <strong>similar</strong> variant values type.<br />
+The maximum integer value <strong>404</strong> would require <code>2 bytes</code> to store, so each variant of the enumeration would weigh <code>2 bytes</code> due to alignment.  </li>
+</ul>
+<div class="code-highlight"><pre><span></span><code><span class="k">enum</span><span class="w"> </span><span class="nc">HTTPStatuses</span><span class="p">{</span>
+<span class="w">    </span><span class="n">OK</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">200</span><span class="p">,</span>
+<span class="w">    </span><span class="n">NoFound</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">404</span><span class="p">,</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<ul>
+<li>An enum with <strong>different</strong> variant values type. 
+A variant integer tag (0, 1, 2...) must also be stored in memory<br />
+All variants must be the same size, so alignment will be by the <strong>largest</strong> variant.  </li>
+</ul>
+<div class="code-highlight"><pre><span></span><code><span class="k">enum</span><span class="w"> </span><span class="nc">Data</span><span class="p">{</span>
+<span class="w">    </span><span class="n">Empty</span><span class="p">,</span>
+<span class="w">    </span><span class="n">Number</span><span class="p">(</span><span class="kt">i32</span><span class="p">),</span>
+<span class="w">    </span><span class="n">Array</span><span class="p">(</span><span class="nb">Vec</span><span class="o">&lt;</span><span class="kt">i32</span><span class="o">&gt;</span><span class="p">),</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>{{ img(src = "/images/rust_memory/rust_memory_enum.png") }}</p>
+<h3 id="enum-with-box">&emsp; Enum with Box</h3>
+<p><code>Box</code> is a pointer to some memory allocated on the <em>heap</em>.<br />
+The most obvious way to optimize the memory of the entire enum is to limit the size of its maximum variant, instead of storing the vector directly in Array, you can store a <code>pointer to vector</code>.  </p>
+<div class="code-highlight"><pre><span></span><code><span class="k">enum</span><span class="w"> </span><span class="nc">Data</span><span class="p">{</span>
+<span class="w">    </span><span class="n">Empty</span><span class="p">,</span>
+<span class="w">    </span><span class="n">Number</span><span class="p">(</span><span class="kt">i32</span><span class="p">),</span>
+<span class="w">    </span><span class="n">Array</span><span class="p">(</span><span class="nb">Box</span><span class="o">&lt;</span><span class="nb">Vec</span><span class="o">&lt;</span><span class="kt">i32</span><span class="o">&gt;&gt;</span><span class="p">),</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>In this case, the amount of memory required for this option is halved.<br />
+{{ img(src = "/images/rust_memory/rust_memory_enum_with_box.png") }}</p>
+<p>In the <em>stack</em> of the function call, memory will be allocated for <code>ptr</code>, to store the memory address to which the vector points.<br />
+The Heap will store (<code>ptr</code>, <code>cap</code>, <code>len</code>), necessary for representing the vector. At the same time, if the vector contains values, they will also be stored in the <em>heap</em>.  </p>
+<h3 id="option-enum">&emsp; Option Enum</h3>
+<p><code>None</code> variant does <strong>not store any values</strong>, only the integer tag <code>0</code><br />
+<code>Some</code> variant <strong>stores the actual data</strong> along with the integer tag <code>1</code>  </p>
+<ul>
+<li>If the value stored in <code>Some</code> is a <code>Box</code> or other similar smart pointer.<br />
+Assuming that Smart Pointers can't be null (<strong>a null pointer is forbidden</strong> - it would point to nowhere) - <code>Some(Box::new(42))</code> can be represented as a single <code>ptr</code>, without the need to store an integer tag. The compiler reserves the value <code>0</code> as the code for <code>Option::None</code> in <code>Option&lt;Box&lt;T&gt;&gt;</code>, and treats all non-null pointers as <code>Option::Some(boxed_value)</code></li>
+</ul>
+<p>Rust uses the <strong>null pointer optimization</strong> for pointer types that can never represent the value 0 (null).<br />
+This allows <code>Option&lt;Box&lt;T&gt;&gt;</code> to take up exactly the same amount of memory as <code>Box&lt;T&gt;</code>, because the value <code>None</code> is encoded in a null pointer, while <code>Some(ptr)</code> is encoded in a non-null pointer to data.  </p>
+<h3 id="copy-vs-move">&emsp; Copy vs Move</h3>
+<p>For <code>primitive types</code>, assigning one variable a value to another variable makes a <code>bit-by-bit</code> copies of those values.<br />
+This is possible because the values ​​of those variables can be represented using only bytes on the <em>stack</em>.  </p>
+<p>For values ​​that require <em>heap</em> allocation. For example, a vector of heap-allocated strings.  </p>
+<ul>
+<li>each string is represented by 3 <code>usize</code> (<code>ptr</code>, <code>cap</code>, <code>len</code>)</li>
+<li>in the memory allocated for the vector on the <em>heap</em>, these <strong>string headers</strong> will be placed one after another.</li>
+<li>the actual bytes used to store the string values ​​will be allocated somewhere else in the <em>heap</em>, and pointers to this memory will be stored in the <strong>string headers</strong>.</li>
+<li>in the <code>stack-frame</code>, will be allocated 3 <code>usize</code> for the variable <code>v</code> to store the vector header. This variable is responsible for clearing the memory on the <em>heap</em>, this happens in the <code>drop()</code> function at the end of the scope.</li>
+</ul>
+<p>{{ img(src = "/images/rust_memory/rust_memory_vec_string.png") }}</p>
+<p>In the case where it is necessary to assign the value of the vector <code>v</code> to another variable, the ownership is transferred to the new variable and it is now responsible for clearing the allocated memory on the <em>heap</em>. It is written 3 machine words, which represented <code>v</code><br />
+If it is necessary to create a variable that will own a <strong>full copy of the vector data</strong> with a new allocation of data on the <em>heap</em>, it is necessary to explicitly call the <code>clone()</code> method.<br />
+In this case, each variable owns its <strong>own memory area</strong> with the <strong>same data</strong>.  </p>
+<h3 id="reference-counter-rc">&emsp; Reference Counter (Rc)</h3>
+<p>When you want a <strong>single value</strong> to have <strong>multiple owners</strong>.<br />
+In most cases, you can use regular references to share values, but the problem is that when an owner goes out of scope, you can't use those references anymore.<br />
+Instead, you want <strong>each value</strong> to have a <code>common owner</code> and remove value from memory only when all owners go out of scope.  </p>
+<div class="code-highlight"><pre><span></span><code><span class="k">use</span><span class="w"> </span><span class="n">std</span><span class="p">::</span><span class="n">rc</span><span class="p">::</span><span class="n">Rc</span><span class="p">;</span>
+
+<span class="kd">let</span><span class="w"> </span><span class="n">v</span><span class="p">:</span><span class="w"> </span><span class="nc">Rc</span><span class="o">&lt;</span><span class="nb">Vec</span><span class="o">&lt;</span><span class="nb">String</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Rc</span><span class="p">::</span><span class="n">new</span><span class="p">(</span><span class="fm">vec!</span><span class="p">[</span>
+<span class="w">    </span><span class="s">&quot;Odin&quot;</span><span class="p">.</span><span class="n">to_string</span><span class="p">,</span>
+<span class="w">    </span><span class="s">&quot;Thor&quot;</span><span class="p">.</span><span class="n">to_string</span><span class="p">,</span>
+<span class="w">    </span><span class="s">&quot;Loki&quot;</span><span class="p">.</span><span class="n">to_string</span><span class="p">,</span>
+<span class="p">]);</span>
+
+<span class="kd">let</span><span class="w"> </span><span class="n">v2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">v</span><span class="p">.</span><span class="n">clone</span><span class="p">();</span>
+</code></pre></div>
+
+<p>{{ img(src = "/images/rust_memory/rust_memory_rc.png") }}</p>
+<ul>
+<li>when a vector is wrapped in <code>Rc</code>, the 3 <code>usize</code> that represent the vector headers are allocated on the <em>heap</em> along with extra memory to hold the <code>reference counter</code> to that value.</li>
+<li>on the <em>stack</em> function, the variable <code>v</code> will consist of 1 <code>usize</code>, which will hold the memory allocation address for <code>Rc</code>.</li>
+<li>after that, a new variable <code>v2</code> can be created using the <code>clone()</code> built-in method. This will <strong>increment</strong> the reference counter by <code>1</code>.</li>
+<li>now <code>v</code> and <code>v2</code> are owners of the same data.</li>
+<li>when each owner goes out of scope, the reference counter is decremented, and when it reaches <code>0</code>, all data on the <em>heap</em> is deallocated.</li>
+<li>the value that <code>Rc</code> points to <strong>cannot be changed</strong>.</li>
+</ul>
+<h3 id="send-and-sync">&emsp;Send and Sync</h3>
+<p><code>Send</code> marks a type as safe to <strong>share ownership</strong> between threads (i.e. &amp;T is Send)
+<code>Sync</code> marks a type as safe to <strong>share by reference</strong> between threads (i.e. T is Sync)
+<code>Rc</code> - is not send\sync because if multiple threads have <code>Rc</code> - an attempt to increment a shared counter may result in a <code>data race</code>.  </p>
+<p>{{ img(src = "/images/rust_memory/rust_memory_rc_multithread.png") }}</p>
+<h3 id="arc">&emsp; Arc</h3>
+<p>If you need <code>shared data between threads</code> - you need to use <code>Atomic Reference Counter (Arc)</code>.<br />
+It works the same way as <code>Rc</code>, but changing the counter is an <strong>atomic operation</strong>, which can be safely performed from multiple threads.<br />
+However, you have to pay a little performance for atomicity.<br />
+By default, <code>Arc</code> is immutable, even if multiple threads have a pointer to the same data - they are <strong>not allowed to change it</strong>.<br />
+{{ img(src = "/images/rust_memory/rust_memory_arc_multithread.png") }}</p>
+<h3 id="mutex">&emsp; Mutex</h3>
+<p>If you need <code>mutable access</code> to shared data between multiple threads - you can wrap <code>Mutex</code> inside <code>Arc</code>.<br />
+Now, if two threads try to access the same data, they will first need to get a <code>lock on that data.</code><br />
+And only one thread will be able to access the data to modify it.  </p>
+<div class="code-highlight"><pre><span></span><code><span class="kd">let</span><span class="w"> </span><span class="n">data</span><span class="p">:</span><span class="w"> </span><span class="nc">Arc</span><span class="o">&lt;</span><span class="n">Mutex</span><span class="o">&lt;</span><span class="kt">i32</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Arc</span><span class="p">::</span><span class="n">new</span><span class="p">(</span><span class="n">Mutex</span><span class="p">::</span><span class="n">new</span><span class="p">(</span><span class="mi">0</span><span class="p">));</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="k">mut</span><span class="w"> </span><span class="n">locked_data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">data</span><span class="p">.</span><span class="n">lock</span><span class="p">().</span><span class="n">unwrap</span><span class="p">();</span>
+<span class="w">    </span><span class="o">*</span><span class="n">locked_data</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="p">}</span><span class="w"> </span>
+</code></pre></div>
+
+<h3 id="trait-object">&emsp; Trait Object</h3>
+<p>A pointer to a trait type is called a <code>Trait Object</code><br />
+There are several ways to convert a concrete type to a <code>Trait Object</code>, both of which convert a <code>Vec&lt;u8&gt;</code> to an object that implements trait <code>Write</code>.  </p>
+<ul>
+<li>Assigning a variable to a variable <code>w</code></li>
+</ul>
+<div class="code-highlight"><pre><span></span><code><span class="k">use</span><span class="w"> </span><span class="n">std</span><span class="p">::</span><span class="n">io</span><span class="p">::</span><span class="n">Write</span><span class="p">;</span>
+
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="k">mut</span><span class="w"> </span><span class="n">buffer</span><span class="p">:</span><span class="w"> </span><span class="nb">Vec</span><span class="o">&lt;</span><span class="kt">u8</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="fm">vec!</span><span class="p">[];</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">w</span><span class="p">:</span><span class="w"> </span><span class="kp">&amp;</span><span class="nc">mut</span><span class="w"> </span><span class="k">dyn</span><span class="w"> </span><span class="n">Write</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&amp;</span><span class="k">mut</span><span class="w"> </span><span class="n">buffer</span><span class="p">;</span>
+</code></pre></div>
+
+<ul>
+<li>Conversion occurs when passing a concrete type to a function that takes a <code>Trait Object</code></li>
+</ul>
+<div class="code-highlight"><pre><span></span><code><span class="w">    </span><span class="k">fn</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="kd">let</span><span class="w"> </span><span class="k">mut</span><span class="w"> </span><span class="n">buffer</span><span class="p">:</span><span class="w"> </span><span class="nb">Vec</span><span class="o">&lt;</span><span class="kt">u8</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="fm">vec!</span><span class="p">[];</span>
+<span class="w">        </span><span class="n">writer</span><span class="p">(</span><span class="o">&amp;</span><span class="k">mut</span><span class="w"> </span><span class="n">buffer</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="k">fn</span><span class="w"> </span><span class="nf">writer</span><span class="p">(</span><span class="n">w</span><span class="p">:</span><span class="w"> </span><span class="kp">&amp;</span><span class="nc">mut</span><span class="w"> </span><span class="k">dyn</span><span class="w"> </span><span class="n">Write</span><span class="p">){</span><span class="w"> </span><span class="o">..</span><span class="p">.</span><span class="w"> </span><span class="p">}</span>
+</code></pre></div>
+
+<p>In memory, <code>Trait Object</code> is a <strong>fat pointer</strong> of two pointers (<code>data pointer</code> + <code>vtable pointer</code>)  </p>
+<p>{{ img(src = "/images/rust_memory/rust_memory_fat_pointer.png") }}</p>
+<ul>
+<li><code>data pointer</code> - a pointer to the actual values, in this case, a pointer to a <code>Vec&lt;u8&gt;</code>.  </li>
+<li><code>vtable pointer</code> - a pointer to a table representing the value type. The table is generated once at compile time and is shared by <strong>all objects of that type</strong>.  </li>
+<li>Table points to machine code of functions that must be present for the type to be <code>Writer</code>.  </li>
+<li>Rust automatically calls the table when calling a method on <code>Trait Object</code>.  </li>
+</ul>
+<p>Rust can convert normal references to <code>Trait Object</code><br />
+The same can be done with smart pointers <code>Box</code>, <code>Rc</code>, <code>Arc</code> ...<br />
+In these cases - they also become <strong>fat pointer</strong> - type <code>Box&lt;dyn Write&gt;</code> means that the value has a Writer on the <em>heap</em>.</p>
+        </div>
+
+        
+        <nav class="post-navigation">
+            <div class="nav-inner">
+                
+                <a href="/rs_to_bin_emb.html" class="nav-link nav-prev">
+                    <span class="nav-label">Earlier</span>
+                    <span class="nav-title">From Rust Source to Embedded Executable: A Deep Dive into the Compilation Process for Embedded Systems</span>
+                </a>
+                
+
+                
+                <a href="/emb_gpio.html" class="nav-link nav-next">
+                    <span class="nav-label">Later</span>
+                    <span class="nav-title">GPIO (General Purpose Input / Output)</span>
+                </a>
+                
+            </div>
+        </nav>
+        
+    </div>
+</article>
+
+        </main>
+        
+        <footer class="footer">
+    <div class="container footer-inner">
+        <div class="copyright">
+            <span>© A.Maltsev 2026</span>
+            <span class="copyright-sep">|</span>
+            <span>Visitors: <img src="https://visitor-badge.laobi.icu/badge?page_id=maltsev-dev.github.io" alt="Visitors"></span>
+        </div>
+        
+        <div class="social-links">
+            <a href="https://github.com/maltsev-dev" class="social-link" target="_blank" rel="noopener" aria-label="GitHub">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+            </a>
+            <a href="https://www.linkedin.com/in/a-maltsev" class="social-link" target="_blank" rel="noopener" aria-label="LinkedIn">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+            </a>
+            <a href="mailto:mr.a.maltsev@gmail.com" class="social-link" aria-label="Email">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            </a>
+        </div>
+    </div>
+</footer>
+    </div>
+    
+    <button class="theme-toggle" aria-label="Toggle dark mode" id="themeToggle">
+        <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="5"/>
+            <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+        </svg>
+        <svg class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+        </svg>
+    </button>
+    
+    <script src="/static/js/theme.js"></script>
+    
+<script>
+    // Add copy buttons to code blocks
+    document.querySelectorAll('pre').forEach(pre => {
+        const btn = document.createElement('button');
+        btn.className = 'copy-code-btn';
+        btn.textContent = 'Copy';
+        pre.appendChild(btn);
+
+        btn.addEventListener('click', () => {
+            const code = pre.querySelector('code');
+            navigator.clipboard.writeText(code.textContent);
+            btn.textContent = 'Copied!';
+            setTimeout(() => btn.textContent = 'Copy', 2000);
+        });
+    });
+</script>
+
+</body>
+</html>

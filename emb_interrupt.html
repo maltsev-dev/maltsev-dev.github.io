@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="dev_stories - Technical blog about embedded systems, Rust, and engineering">
+    <meta property="og:site_name" content="dev_stories">
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="Untitled">
+    <meta property="og:url" content="https://maltsev-dev.github.io/emb_interrupt">
+    <meta property="og:image" content="https://github.com/maltsev-dev/favicon.png">
+    <title>Untitled - dev_stories</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="shortcut icon" type="image/png" href="/static/favicon.png">
+    
+    
+</head>
+<body class="">
+    <div class="site-wrapper">
+        <header class="header">
+    <div class="container header-inner">
+        <a href="/" class="logo-link">
+            <div class="logo">
+                <span class="logo-text">busy hands == happy heart</span>
+            </div>
+        </a>
+
+        <nav class="main-nav">
+            <ul class="nav-list">
+                <li class="nav-item">
+                    <a href="/" class="nav-link ">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a href="/archive" class="nav-link ">Archive</a>
+                </li>
+                <li class="nav-item">
+                    <a href="/tags/project/" class="nav-link">Projects</a>
+                </li>
+                <li class="nav-item">
+                    <a href="/about" class="nav-link ">About</a>
+                </li>
+            </ul>
+        </nav>
+
+        <button class="mobile-menu-toggle" aria-label="Toggle menu" id="mobileMenuToggle">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+    </div>
+</header>
+        
+        <main class="main-content">
+            
+<article class="post-container">
+    <div class="container">
+        <header class="post-header">
+            <h1 class="post-title">Untitled</h1>
+            <div class="post-meta">
+                <time class="post-date" datetime="">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                        <line x1="16" y1="2" x2="16" y2="6"/>
+                        <line x1="8" y1="2" x2="8" y2="6"/>
+                        <line x1="3" y1="10" x2="21" y2="10"/>
+                    </svg>
+                    
+                </time>
+
+                
+            </div>
+        </header>
+
+        <div class="post-content">
+            <p>+++
+title = "Interrupts (ISR, IVT, NVIC)"
+date = "2025-07-15"</p>
+<p>[taxonomies]
+tags = ["embedded", "basic", "interrupts"]
++++</p>
+<p>🟠 Interrupts allow the microcontroller to <strong>instantly respond to important events</strong> without wasting resources on constantly polling the peripherals.  </p>
+<p>When an interrupt occurs, the <strong>CPU suspends the current task</strong>, goes to the <strong>Interrupt Service Routine (ISR)</strong>, performs the required action, and returns back.</p>
+<!-- more -->
+<hr />
+<h2 id="interrupts">Interrupts</h2>
+<p>An interrupt is a signal that tells the microcontroller's processor to temporarily suspend execution of the current task and go to a special function called an <strong>interrupt handler</strong> (ISR). After the ISR completes, the processor returns to the point where the program was interrupted and continues executing it.</p>
+<ul>
+<li><strong>Real-time response</strong>: for example, a timer has expired, data has arrived via UART, or a button has been pressed.</li>
+<li><strong>Power saving</strong>: the MCU can "sleep" and wake up only on interrupt.</li>
+<li><strong>CPU offload</strong>: eliminates the need to check event flags in a loop.</li>
+</ul>
+<hr />
+<h2 id="interrupt-reasons">Interrupt reasons:</h2>
+<ul>
+<li><strong>Hardware events</strong>: for example, a GPIO pin state change, UART data transfer completion, or a timer expiration.</li>
+<li><strong>Software events</strong>: for example, errors like division by zero or access to inaccessible memory.</li>
+</ul>
+<hr />
+<h2 id="interrupt-types">Interrupt types</h2>
+<h3 id="by-source">By source</h3>
+<ul>
+<li><strong>External interrupts</strong>: caused by external events, such as pressing a button or changing the signal level on a pin.</li>
+<li><strong>Internal interrupts</strong>: initiated by peripheral modules inside the MCU, such as timers, ADC (analog-to-digital converter), UART, etc.</li>
+</ul>
+<h3 id="by-processing-method">By processing method</h3>
+<ul>
+<li><strong>Vector interrupts</strong>: each interrupt source has its own unique handler. This is typical for most modern MCUs, such as ARM Cortex-M.</li>
+<li><strong>Non-vector interrupts</strong>: all interrupts are handled by one common function, which then determines the source of the event.</li>
+</ul>
+<h3 id="by-priority">By priority</h3>
+<ul>
+<li><strong>Fixed priority</strong>: the processing order is set by hardware and cannot be changed.</li>
+<li><strong>Programmable Priority</strong>: The developer can configure interrupt priorities, which is especially useful in complex systems.</li>
+</ul>
+<hr />
+<h2 id="isr-and-ivt">ISR and IVT</h2>
+<p>Interrupts are handled by <code>Interrupt Service Routines</code>.
+* These are just <code>functions</code>, but you may be wondering, "How does the hardware know which function to call for which interrupt?"
+These functions are defined in the <code>IVT</code> (interrupt vector table).<br />
+<em> The <code>IVT</code> is a data structure that maps each interrupt type to the address of the </em><em>corresponding handler</em>*.<br />
+Here we see the vector table of our <code>Cortex-M3</code>. It shows each interrupt and its corresponding location in memory.<br />
+When the system starts, the initialization code specifies the necessary functions in the <code>IVT</code>.  </p>
+<p>{{ img(src = "/images/emb/interrupt_vec_table.png") }}</p>
+<hr />
+<h2 id="how-the-cpu-handles-interrupts">How the CPU handles interrupts</h2>
+<p>At a high level:
+{{ img(src = "/images/emb/processing_an_interrupt.png") }}</p>
+<ol>
+<li>When an interrupt is triggered, the CPU receives a signal to handle it. The CPU will probably be busy with some other work. However, we want it to continue where it left off after handling the interrupt.</li>
+<li>To do this, the CPU saves the current execution state, which includes the registers and the current address of the current instruction.</li>
+<li>It then looks up the <code>IVT</code> to find the memory address of the <code>ISR</code>, and then executes it.</li>
+<li>It then restores the interrupted execution state from <code>RAM</code> and continues.</li>
+</ol>
+<hr />
+<h2 id="interrupt-priorities">Interrupt Priorities</h2>
+<p>What happens if we have multiple interrupts firing at the same time? We handle them by priority.  </p>
+<p>Interrupts have a priority associated with them. When multiple interrupts fire, the interrupt with the <code>highest priority</code> is handled first. Furthermore, a higher priority interrupt can even interrupt a lower priority interrupt.  </p>
+<p>This ensures that critical interrupts are handled in a timely manner. This is especially useful in hard real-time systems where they are the upper bounds of worst-case performance.  </p>
+<hr />
+<h2 id="how-to-set-up-an-interrupt-in-an-mcu">How to set up an interrupt in an MCU</h2>
+<p>There are several steps to using interrupts in an MCU:</p>
+<ol>
+<li><strong>Enabling interrupt</strong>: Enable the interrupt for the desired source (for example, in the timer or GPIO settings).</li>
+<li><strong>Setting priority</strong>: If the MCU supports programmable priorities, set the priority level for this interrupt.</li>
+<li><strong>Writing a handler</strong>: Create an <code>ISR</code> function that will be executed when an interrupt occurs.</li>
+<li><strong>Registering a handler</strong>: In some architectures (for example, <code>ARM Cortex-M</code>), specify the handler address in the vector table.</li>
+</ol>
+<hr />
+<h2 id="nvic-nested-vectored-interrupt-controller">NVIC (Nested Vectored Interrupt Controller)</h2>
+<p>Many modern MCUs are based on the <code>ARM Cortex-M</code> architecture, where interrupt management is performed via the <code>NVIC</code> (Nested Vectored Interrupt Controller). Let's consider its features:</p>
+<ul>
+<li>Vector table in memory</li>
+<li>Priorities from 0 (highest) to 255 (lowest)</li>
+<li><strong>Nested interrupts</strong> — high-priority ones can interrupt ISR</li>
+<li><strong>Tail-chaining</strong> — instant transition from one ISR to another without returning to the main code</li>
+</ul>
+<hr />
+<h2 id="example-in-rust-stm32">🧪 Example in Rust (STM32)</h2>
+<div class="code-highlight"><pre><span></span><code><span class="k">use</span><span class="w"> </span><span class="n">cortex_m_rt</span><span class="p">::</span><span class="n">interrupt</span><span class="p">;</span>
+
+<span class="cp">#[interrupt]</span>
+<span class="k">fn</span><span class="w"> </span><span class="nf">TIM2</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// TIM2 timer interrupt handling logic</span>
+<span class="w">    </span><span class="c1">// For example, clearing the interrupt flag or performing an action</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<ul>
+<li><code>#[interrupt]</code> — ISR designation (indicates that the function is an interrupt handler.)</li>
+<li><code>TIM2</code> — interrupt name corresponding to TIM2 timer (according to the vector table)</li>
+</ul>
+<hr />
+<h2 id="safety-critical-sections">Safety: Critical Sections</h2>
+<p>Interrupts can interfere with the main code. To protect shared data:</p>
+<h3 id="a-simple-way-is-to-temporarily-disable-interrupts">A simple way is to temporarily disable interrupts</h3>
+<div class="code-highlight"><pre><span></span><code><span class="k">use</span><span class="w"> </span><span class="n">cortex_m</span><span class="p">::</span><span class="n">interrupt</span><span class="p">;</span>
+
+<span class="n">interrupt</span><span class="p">::</span><span class="n">free</span><span class="p">(</span><span class="o">|</span><span class="n">_</span><span class="o">|</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// Critical Section: Safe Access</span>
+<span class="p">});</span>
+</code></pre></div>
+
+<h3 id="mutex-and-refcell"><code>Mutex</code> and <code>RefCell</code></h3>
+<div class="code-highlight"><pre><span></span><code><span class="k">use</span><span class="w"> </span><span class="n">cortex_m</span><span class="p">::</span><span class="n">interrupt</span><span class="p">::</span><span class="n">Mutex</span><span class="p">;</span>
+<span class="k">use</span><span class="w"> </span><span class="n">core</span><span class="p">::</span><span class="n">cell</span><span class="p">::</span><span class="n">RefCell</span><span class="p">;</span>
+
+<span class="k">static</span><span class="w"> </span><span class="n">SHARED_DATA</span><span class="p">:</span><span class="w"> </span><span class="nc">Mutex</span><span class="o">&lt;</span><span class="n">RefCell</span><span class="o">&lt;</span><span class="kt">u32</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Mutex</span><span class="p">::</span><span class="n">new</span><span class="p">(</span><span class="n">RefCell</span><span class="p">::</span><span class="n">new</span><span class="p">(</span><span class="mi">0</span><span class="p">));</span>
+
+<span class="cp">#[interrupt]</span>
+<span class="k">fn</span><span class="w"> </span><span class="nf">EXTI0</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">interrupt</span><span class="p">::</span><span class="n">free</span><span class="p">(</span><span class="o">|</span><span class="n">cs</span><span class="o">|</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="kd">let</span><span class="w"> </span><span class="k">mut</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">SHARED_DATA</span><span class="p">.</span><span class="n">borrow</span><span class="p">(</span><span class="n">cs</span><span class="p">).</span><span class="n">borrow_mut</span><span class="p">();</span>
+<span class="w">        </span><span class="o">*</span><span class="n">data</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="w">    </span><span class="p">});</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<hr />
+<h2 id="interrupt-handling-guidelines">Interrupt Handling Guidelines</h2>
+<ul>
+<li><strong>Minimize time in ISRs</strong>: Keep handlers short so as not to block other interrupts or the main program.</li>
+<li><strong>Avoid blocking</strong>: Do not use delays or other blocking operations in ISRs.</li>
+<li><strong>Use flags</strong>: Pass data from ISRs to the main program via flags or queues.</li>
+<li><strong>Clear flags</strong>: Make sure the interrupt flag is cleared in the ISR if required.</li>
+</ul>
+        </div>
+
+        
+        <nav class="post-navigation">
+            <div class="nav-inner">
+                
+
+                
+                <a href="/html_scrapper.html" class="nav-link nav-next">
+                    <span class="nav-label">Later</span>
+                    <span class="nav-title">📄 HTML Scraper</span>
+                </a>
+                
+            </div>
+        </nav>
+        
+    </div>
+</article>
+
+        </main>
+        
+        <footer class="footer">
+    <div class="container footer-inner">
+        <div class="copyright">
+            <span>© A.Maltsev 2026</span>
+            <span class="copyright-sep">|</span>
+            <span>Visitors: <img src="https://visitor-badge.laobi.icu/badge?page_id=maltsev-dev.github.io" alt="Visitors"></span>
+        </div>
+        
+        <div class="social-links">
+            <a href="https://github.com/maltsev-dev" class="social-link" target="_blank" rel="noopener" aria-label="GitHub">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+            </a>
+            <a href="https://www.linkedin.com/in/a-maltsev" class="social-link" target="_blank" rel="noopener" aria-label="LinkedIn">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+            </a>
+            <a href="mailto:mr.a.maltsev@gmail.com" class="social-link" aria-label="Email">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            </a>
+        </div>
+    </div>
+</footer>
+    </div>
+    
+    <button class="theme-toggle" aria-label="Toggle dark mode" id="themeToggle">
+        <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="5"/>
+            <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+        </svg>
+        <svg class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+        </svg>
+    </button>
+    
+    <script src="/static/js/theme.js"></script>
+    
+<script>
+    // Add copy buttons to code blocks
+    document.querySelectorAll('pre').forEach(pre => {
+        const btn = document.createElement('button');
+        btn.className = 'copy-code-btn';
+        btn.textContent = 'Copy';
+        pre.appendChild(btn);
+
+        btn.addEventListener('click', () => {
+            const code = pre.querySelector('code');
+            navigator.clipboard.writeText(code.textContent);
+            btn.textContent = 'Copied!';
+            setTimeout(() => btn.textContent = 'Copy', 2000);
+        });
+    });
+</script>
+
+</body>
+</html>
