@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}#{{ tag }} - {{ site.title }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <header class="tag-header">
+        <h1 class="tag-title">#{{ tag }}</h1>
+        <p class="tag-subtitle">{{ posts|length }} post{% if posts|length != 1 %}s{% endif %}</p>
+    </header>
+
+    <div class="posts-list">
+        {% for post in posts %}
+        <article class="post-card">
+            <div class="post-card-header">
+                <h2 class="post-card-title">
+                    <a href="/{{ post.url_path }}.html">{{ post.title }}</a>
+                </h2>
+                <time class="post-card-date" datetime="{{ post.date }}">
+                    {{ post.date | format_date_short }}
+                </time>
+            </div>
+
+            <div class="post-card-excerpt">
+                {{ post.content[:200] | striptags }}...
+            </div>
+
+            <a href="/{{ post.url_path }}.html" class="read-more-link">
+                Read more
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+            </a>
+        </article>
+        {% endfor %}
+    </div>
+
+    <div class="back-to-home">
+        <a href="/" class="back-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M19 12H5M12 19l-7-7 7-7"/>
+            </svg>
+            Back to all posts
+        </a>
+    </div>
+</div>
+{% endblock %}
