@@ -32,7 +32,7 @@ The size of the reference (`usize`) is equal to a machine word. (`ptr`, `cap`, `
 
 ## &emsp;&emsp;&emsp; 1. Basic concepts of memory management 
 
-After compiling the executable file. [Read more](https://maltsev-dev.github.io/rs-to-bin/) about Rust compiling pipeline in my article.
+After compiling the executable file. [Read more](/rs_to_bin.html) about Rust compiling pipeline in my article.
 This file stores `data`, `metadata`, and `machine instructions` for the *CPU* in specific platform-dependent formats. (**ELF** on Linux, **PE** on Windows,**Mach-O** on macOS). No matter what formats, the way they are executed is *almost* the same.  
 
 When a program (**process**) is started on the target platform, the kernel allocates the necessary amount of memory based on the **segment metadata** (`.text,` `.data`, `.bss`, etc) from the ELF headers. This memory is a solid range of addresses to use, called the `virtual address space` of the program.  

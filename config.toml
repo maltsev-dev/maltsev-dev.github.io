@@ -13,7 +13,7 @@ highlight_theme = "boron"
 
 [extra]
 accent_color = "orange"
-logo_text = "busy hands == happy heart"
+logo_text = "Research. Build. Evolve."
 
 # The logo link - defaults to base_url.
 #logo_home_link = "/take/me/away!"

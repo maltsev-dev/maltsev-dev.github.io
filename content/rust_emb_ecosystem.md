@@ -19,7 +19,7 @@ In general, developing programs for **MCU** is aimed at obtaining some informati
 
 ## &emsp;&emsp;&emsp; 1. Low Level
 To program an **MCU**, at the **lowest level**, you need to control a special set of `registers` available inside the **MCU**.  
-[Registers](https://maltsev-dev.github.io/emb-registers/) are special memory locations that you can interact with: write data to, read, modify, and store values.  
+[Registers](/emb_registers.html) are special memory locations that you can interact with: write data to, read, modify, and store values.  
 To write or read a value from a register, you need to manipulate individual **bits** at specific memory addresses reserved for those registers.  
 Once the control bits are set in the right registers, at some point the write will be interpreted and passed to a **peripheral device** connected to one of the **MCU** pins to interact with the outside world.  
 

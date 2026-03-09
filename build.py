@@ -33,7 +33,7 @@ SITE_CONFIG = {
     "title": "dev_stories",
     "base_url": "https://maltsev-dev.github.io",
     "author": "A.Maltsev",
-    "logo_text": "busy hands == happy heart",
+    "logo_text": "Research. Build. Evolve.",
     "accent_color": "orange",
     "posts_per_page": 10,
 }
@@ -329,13 +329,33 @@ def generate_tag_page(tag: str, tag_posts: List[Post], env: Environment) -> str:
 
 def generate_static_page_html(post: Post, env: Environment) -> str:
     """Generate static page HTML"""
-    template = env.get_template("page.html")
+    # Use custom template for about page (renders template directly without markdown content)
+    if post.url_path == "about" and env.get_template("about.html"):
+        template = env.get_template("about.html")
+        return template.render(
+            site=SITE_CONFIG,
+            page=post,
+            content="",  # about.html has its own content
+            current_path=post.url_path
+        )
     
+    template = env.get_template("page.html")
+
     return template.render(
         site=SITE_CONFIG,
         page=post,
         content=post.render_content(),
         current_path=post.url_path
+    )
+
+
+def generate_projects_showcase_html(env: Environment) -> str:
+    """Generate projects showcase page HTML"""
+    template = env.get_template("projects_showcase.html")
+    
+    return template.render(
+        site=SITE_CONFIG,
+        current_path="projects"
     )
 
 
@@ -399,17 +419,20 @@ def build_site():
 
     print(f"[OK] Generated {len(posts)} post pages")
 
-    # Generate archive page
-    archive_file = OUTPUT_DIR / "archive.html"
+    # Generate archive page as /archive/index.html
+    archive_dir = OUTPUT_DIR / "archive"
+    archive_dir.mkdir(parents=True, exist_ok=True)
+    archive_file = archive_dir / "index.html"
     html = generate_archive_html(posts, env)
     archive_file.write_text(html, encoding='utf-8')
     print("[OK] Generated archive page")
 
-    # Generate tag pages
+    # Generate tag pages as /tags/{tag}/index.html
     tags_dir = OUTPUT_DIR / "tags"
     for tag, tag_posts in tags.items():
-        tag_file = tags_dir / f"{tag}.html"
-        tag_file.parent.mkdir(parents=True, exist_ok=True)
+        tag_output_dir = tags_dir / tag
+        tag_output_dir.mkdir(parents=True, exist_ok=True)
+        tag_file = tag_output_dir / "index.html"
         html = generate_tag_page(tag, tag_posts, env)
         tag_file.write_text(html, encoding='utf-8')
 
@@ -419,11 +442,22 @@ def build_site():
     for path, page_post in pages.items():
         if path == "archive":
             continue  # Already handled
-        output_file = OUTPUT_DIR / f"{path}.html"
+        # Create folder/index.html for clean URLs (e.g., /about/index.html)
+        output_dir = OUTPUT_DIR / path
+        output_dir.mkdir(parents=True, exist_ok=True)
+        output_file = output_dir / "index.html"
         html = generate_static_page_html(page_post, env)
         output_file.write_text(html, encoding='utf-8')
 
     print(f"[OK] Generated {len(pages) - 1} static pages")
+
+    # Generate projects showcase page
+    projects_dir = OUTPUT_DIR / "projects"
+    projects_dir.mkdir(parents=True, exist_ok=True)
+    projects_file = projects_dir / "index.html"
+    html = generate_projects_showcase_html(env)
+    projects_file.write_text(html, encoding='utf-8')
+    print("[OK] Generated projects showcase page")
 
     print("\n[BUILD] Build complete!")
     print(f"[INFO] Output: {OUTPUT_DIR.absolute()}")

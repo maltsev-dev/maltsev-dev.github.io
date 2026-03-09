@@ -70,9 +70,9 @@ Most modern serial data transmission protocols use multiple channels (buses, wir
   <tbody>
     <tr>
       <td>
-        <a href="https://maltsev-dev.github.io/emb-sp-uart/">UART</a><br/>
-        <a href="https://maltsev-dev.github.io/emb-sp-i2c/">I2C</a><br/>
-        <a href="https://maltsev-dev.github.io/emb-sp-spi/">SPI</a>
+        <a href="/emb_sp_uart.html">UART</a><br/>
+        <a href="/emb_sp_i2c.html">I2C</a><br/>
+        <a href="/emb_sp_spi.html">SPI</a>
       </td>
       <td>
         <code>CAN</code> – high speed application, often used with sensors<br/>

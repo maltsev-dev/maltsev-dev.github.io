@@ -42,7 +42,7 @@ In addition, the wires are connected to the `Vcc` supply using one `pull-up` res
 7. communication is stopped by `stop condition`
 
 #### Start Condition
-As in [UART](https://maltsev-dev.github.io/emb-sp-uart/), the `idle` state - for **SDA** and **SCL** - is `high(1)`
+As in [UART](/emb_sp_uart.html), the `idle` state - for **SDA** and **SCL** - is `high(1)`
 * the `start condition` occurs when the node first pulls `low(0)` **SDA**, and then pulls `low(0)` **SCL**. Pulling down in this order occurs to capture the data bus.
 * after the data bus is captured - the node becomes the **master**. This prevents other nodes from capturing the bus and reduces the risk of conflicts.
 

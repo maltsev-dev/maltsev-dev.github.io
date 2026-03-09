@@ -158,7 +158,7 @@ In the absence of OS, `linker` dictates where code and data segments are located
 
 With `#[export_name]`, `#[no_mangle]`, and `#[link_section]`, you literally control how the compiled Rust code fits into memory, and what becomes the **entry point** for the hardware. Without this, the firmware won't work.  
 
-*You can 📖 [read more](https://maltsev-dev.github.io/rust-firmware-size/) about the role of the linker and the distribution of data across memory sections in my recent article.*  
+*You can 📖 [read more](/rust_firmware_size.html) about the role of the linker and the distribution of data across memory sections in my recent article.*  
 
 #### 4.3 Memory Protection Units (MPUs) and Memory Management Units (MMUs)
 

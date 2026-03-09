@@ -12,7 +12,7 @@ tags = ["embedded", "basic", "clock", "timers", "interrupts"]
 ---
 
 ## 🔁 How to achieve synchronization
-[Clocks](https://maltsev-dev.github.io/emb-clock/) provide the basis for [timers](https://maltsev-dev.github.io/emb-timers/) to work, and timers, in turn, generate [interrupts](https://maltsev-dev.github.io/emb-interrupt/) to perform tasks with precise timing control.
+[Clocks](/emb_clock.html) provide the basis for [timers](/emb_timers.html) to work, and timers, in turn, generate [interrupts](/emb_interrupt.html) to perform tasks with precise timing control.
 
 ### 1. **Clock System**
 
