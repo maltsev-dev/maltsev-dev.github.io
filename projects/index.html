@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="dev_stories - Technical blog about embedded systems, Rust, and engineering">
+    <meta property="og:site_name" content="dev_stories">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="dev_stories">
+    <meta property="og:url" content="https://maltsev-dev.github.io/projects">
+    <meta property="og:image" content="https://github.com/maltsev-dev/favicon.png">
+    <title>Projects Showcase - dev_stories</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="shortcut icon" type="image/png" href="/static/favicon.png">
+    
+    
+</head>
+<body class="">
+    <div class="site-wrapper">
+        <header class="header">
+    <div class="container header-inner">
+        <a href="/" class="logo-link">
+            <div class="logo">
+                <span class="logo-text">Research. Build. Evolve.</span>
+            </div>
+        </a>
+
+        <nav class="main-nav">
+            <ul class="nav-list">
+                <li class="nav-item">
+                    <a href="/" class="nav-link ">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a href="/archive/" class="nav-link ">Archive</a>
+                </li>
+                <li class="nav-item">
+                    <a href="/projects/" class="nav-link active">AI Solutions</a>
+                </li>
+                <li class="nav-item">
+                    <a href="/about/" class="nav-link ">About</a>
+                </li>
+            </ul>
+        </nav>
+
+        <button class="mobile-menu-toggle" aria-label="Toggle menu" id="mobileMenuToggle">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+    </div>
+</header>
+        
+        <main class="main-content">
+            
+<div class="projects-showcase">
+    <!-- Hero Section -->
+    <section class="showcase-hero">
+        <div class="container">
+            <h1 class="showcase-title">Transform Your Business with <span class="accent">AI Solutions</span></h1>
+            <p class="showcase-subtitle">Enterprise-grade multi-agent systems that automate complex workflows, reduce costs, and accelerate decision-making</p>
+            
+            <div class="hero-stats">
+                <div class="stat-item">
+                    <span class="stat-number">8+</span>
+                    <span class="stat-label">AI Solutions</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">3</span>
+                    <span class="stat-label">Pricing Tiers</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">4-12</span>
+                    <span class="stat-label">Weeks Delivery</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">100%</span>
+                    <span class="stat-label">Custom Built</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Projects Grid -->
+    <section class="projects-section">
+        <div class="width-container">
+            <h2 class="section-title">Available Solutions</h2>
+            <p class="section-subtitle">Choose from our proven AI automation systems, each available in three deployment tiers</p>
+
+            <div class="projects-grid">
+                <!-- Project Card 1 -->
+                <article class="project-card">
+                    <div class="project-card-header">
+                        <div class="project-icon">📄</div>
+                        <h3 class="project-title">AI Document Analysis</h3>
+                        <p class="project-tagline">Automated report generation from documents</p>
+                    </div>
+                    
+                    <div class="project-description">
+                        <p>Transform PDF, DOCX, and Excel files into structured reports automatically. Perfect for compliance teams, analysts, and legal departments.</p>
+                    </div>
+                    
+                    <div class="project-features">
+                        <h4>Key Capabilities</h4>
+                        <ul>
+                            <li>Multi-format parsing (PDF, DOCX, XLSX, PPTX)</li>
+                            <li>Entity extraction & data validation</li>
+                            <li>Automated summarization</li>
+                            <li>Compliance checking</li>
+                            <li>Multi-document comparison</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="project-use-cases">
+                        <h4>Ideal For</h4>
+                        <div class="use-case-tags">
+                            <span class="use-case-tag">Compliance</span>
+                            <span class="use-case-tag">Legal</span>
+                            <span class="use-case-tag">Finance</span>
+                            <span class="use-case-tag">Research</span>
+                        </div>
+                    </div>
+                    
+                    <div class="project-pricing">
+                        <div class="pricing-tier">
+                            <span class="tier-name">Start</span>
+                            <span class="tier-price">$18,500</span>
+                            <span class="tier-timeline">4-6 weeks</span>
+                        </div>
+                        <div class="pricing-tier">
+                            <span class="tier-name">Standard</span>
+                            <span class="tier-price">$32,000</span>
+                            <span class="tier-timeline">8-10 weeks</span>
+                        </div>
+                        <div class="pricing-tier">
+                            <span class="tier-name">Advanced</span>
+                            <span class="tier-price">$55,000</span>
+                            <span class="tier-timeline">12-14 weeks</span>
+                        </div>
+                    </div>
+                    
+                    <a href="#contact" class="project-cta">Request Proposal</a>
+                </article>
+
+                <!-- Project Card 2 -->
+                <article class="project-card">
+                    <div class="project-card-header">
+                        <div class="project-icon">💬</div>
+                        <h3 class="project-title">Slack + Confluence Agent</h3>
+                        <p class="project-tagline">Instant answers from your knowledge base</p>
+                    </div>
+                    
+                    <div class="project-description">
+                        <p>AI-powered assistant that answers employee questions using your Slack threads and Confluence pages. Eliminate knowledge silos and reduce repetitive questions.</p>
+                    </div>
+                    
+                    <div class="project-features">
+                        <h4>Key Capabilities</h4>
+                        <ul>
+                            <li>Slack bot with slash commands</li>
+                            <li>Confluence integration</li>
+                            <li>Source citations</li>
+                            <li>Knowledge gap detection</li>
+                            <li>Thread summarization</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="project-use-cases">
+                        <h4>Ideal For</h4>
+                        <div class="use-case-tags">
+                            <span class="use-case-tag">HR</span>
+                            <span class="use-case-tag">Support</span>
+                            <span class="use-case-tag">Engineering</span>
+                            <span class="use-case-tag">Onboarding</span>
+                        </div>
+                    </div>
+                    
+                    <div class="project-pricing">
+                        <div class="pricing-tier">
+                            <span class="tier-name">Start</span>
+                            <span class="tier-price">$22,000</span>
+                            <span class="tier-timeline">5-7 weeks</span>
+                        </div>
+                        <div class="pricing-tier">
+                            <span class="tier-name">Standard</span>
+                            <span class="tier-price">$38,000</span>
+                            <span class="tier-timeline">9-11 weeks</span>
+                        </div>
+                        <div class="pricing-tier">
+                            <span class="tier-name">Advanced</span>
+                            <span class="tier-price">$62,000</span>
+                            <span class="tier-timeline">13-15 weeks</span>
+                        </div>
+                    </div>
+                    
+                    <a href="#contact" class="project-cta">Request Proposal</a>
+                </article>
+
+                <!-- Project Card 3 -->
+                <article class="project-card">
+                    <div class="project-card-header">
+                        <div class="project-icon">📊</div>
+                        <h3 class="project-title">Competitor Analysis Agent</h3>
+                        <p class="project-tagline">Automated market intelligence</p>
+                    </div>
+                    
+                    <div class="project-description">
+                        <p>Continuously monitor competitor websites, pricing, and product changes. Get structured reports and alerts about market movements.</p>
+                    </div>
+                    
+                    <div class="project-features">
+                        <h4>Key Capabilities</h4>
+                        <ul>
+                            <li>Automated web scraping</li>
+                            <li>Price tracking & alerts</li>
+                            <li>Feature comparison matrices</li>
+                            <li>Trend analysis</li>
+                            <li>Custom report generation</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="project-use-cases">
+                        <h4>Ideal For</h4>
+                        <div class="use-case-tags">
+                            <span class="use-case-tag">Product</span>
+                            <span class="use-case-tag">Marketing</span>
+                            <span class="use-case-tag">Strategy</span>
+                            <span class="use-case-tag">Sales</span>
+                        </div>
+                    </div>
+                    
+                    <div class="project-pricing">
+                        <div class="pricing-tier">
+                            <span class="tier-name">Start</span>
+                            <span class="tier-price">$24,000</span>
+                            <span class="tier-timeline">6-8 weeks</span>
+                        </div>
+                        <div class="pricing-tier">
+                            <span class="tier-name">Standard</span>
+                            <span class="tier-price">$42,000</span>
+                            <span class="tier-timeline">10-12 weeks</span>
+                        </div>
+                        <div class="pricing-tier">
+                            <span class="tier-name">Advanced</span>
+                            <span class="tier-price">$68,000</span>
+                            <span class="tier-timeline">14-16 weeks</span>
+                        </div>
+                    </div>
+                    
+                    <a href="#contact" class="project-cta">Request Proposal</a>
+                </article>
+
+                <!-- Project Card 4 -->
+                <article class="project-card">
+                    <div class="project-card-header">
+                        <div class="project-icon">🌐</div>
+                        <h3 class="project-title">Market Intelligence Platform</h3>
+                        <p class="project-tagline">Comprehensive industry monitoring</p>
+                    </div>
+                    
+                    <div class="project-description">
+                        <p>Aggregate and analyze data from news, social media, regulatory filings, and industry reports. Get actionable insights delivered daily.</p>
+                    </div>
+                    
+                    <div class="project-features">
+                        <h4>Key Capabilities</h4>
+                        <ul>
+                            <li>Multi-source aggregation</li>
+                            <li>Sentiment analysis</li>
+                            <li>Regulatory change tracking</li>
+                            <li>Custom dashboards</li>
+                            <li>Automated briefings</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="project-use-cases">
+                        <h4>Ideal For</h4>
+                        <div class="use-case-tags">
+                            <span class="use-case-tag">Executive</span>
+                            <span class="use-case-tag">Strategy</span>
+                            <span class="use-case-tag">Investment</span>
+                            <span class="use-case-tag">Risk</span>
+                        </div>
+                    </div>
+                    
+                    <div class="project-pricing">
+                        <div class="pricing-tier">
+                            <span class="tier-name">Start</span>
+                            <span class="tier-price">$28,000</span>
+                            <span class="tier-timeline">7-9 weeks</span>
+                        </div>
+                        <div class="pricing-tier">
+                            <span class="tier-name">Standard</span>
+                            <span class="tier-price">$48,000</span>
+                            <span class="tier-timeline">11-13 weeks</span>
+                        </div>
+                        <div class="pricing-tier">
+                            <span class="tier-name">Advanced</span>
+                            <span class="tier-price">$75,000</span>
+                            <span class="tier-timeline">15-18 weeks</span>
+                        </div>
+                    </div>
+                    
+                    <a href="#contact" class="project-cta">Request Proposal</a>
+                </article>
+
+                <!-- Project Card 5 -->
+                <article class="project-card">
+                    <div class="project-card-header">
+                        <div class="project-icon">🎧</div>
+                        <h3 class="project-title">Customer Support Agent</h3>
+                        <p class="project-tagline">Intelligent ticket automation</p>
+                    </div>
+                    
+                    <div class="project-description">
+                        <p>AI-powered customer support that handles routine inquiries, routes complex issues, and maintains consistent response quality.</p>
+                    </div>
+                    
+                    <div class="project-features">
+                        <h4>Key Capabilities</h4>
+                        <ul>
+                            <li>Multi-channel support (email, chat, ticket)</li>
+                            <li>Intent classification</li>
+                            <li>Auto-response generation</li>
+                            <li>Escalation routing</li>
+                            <li>Quality monitoring</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="project-use-cases">
+                        <h4>Ideal For</h4>
+                        <div class="use-case-tags">
+                            <span class="use-case-tag">Support</span>
+                            <span class="use-case-tag">Sales</span>
+                            <span class="use-case-tag">SaaS</span>
+                            <span class="use-case-tag">E-commerce</span>
+                        </div>
+                    </div>
+                    
+                    <div class="project-pricing">
+                        <div class="pricing-tier">
+                            <span class="tier-name">Start</span>
+                            <span class="tier-price">$26,000</span>
+                            <span class="tier-timeline">6-8 weeks</span>
+                        </div>
+                        <div class="pricing-tier">
+                            <span class="tier-name">Standard</span>
+                            <span class="tier-price">$45,000</span>
+                            <span class="tier-timeline">10-12 weeks</span>
+                        </div>
+                        <div class="pricing-tier">
+                            <span class="tier-name">Advanced</span>
+                            <span class="tier-price">$72,000</span>
+                            <span class="tier-timeline">14-17 weeks</span>
+                        </div>
+                    </div>
+                    
+                    <a href="#contact" class="project-cta">Request Proposal</a>
+                </article>
+
+                <!-- Project Card 6 -->
+                <article class="project-card">
+                    <div class="project-card-header">
+                        <div class="project-icon">📝</div>
+                        <h3 class="project-title">Invoice & Contract Processor</h3>
+                        <p class="project-tagline">Automated document workflows</p>
+                    </div>
+                    
+                    <div class="project-description">
+                        <p>Extract data from invoices and contracts, validate against purchase orders, and route for approval. Reduce manual processing by 80%.</p>
+                    </div>
+                    
+                    <div class="project-features">
+                        <h4>Key Capabilities</h4>
+                        <ul>
+                            <li>OCR for scanned documents</li>
+                            <li>Data extraction & validation</li>
+                            <li>PO matching</li>
+                            <li>Approval workflow</li>
+                            <li>ERP integration</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="project-use-cases">
+                        <h4>Ideal For</h4>
+                        <div class="use-case-tags">
+                            <span class="use-case-tag">Finance</span>
+                            <span class="use-case-tag">Procurement</span>
+                            <span class="use-case-tag">Legal</span>
+                            <span class="use-case-tag">Operations</span>
+                        </div>
+                    </div>
+                    
+                    <div class="project-pricing">
+                        <div class="pricing-tier">
+                            <span class="tier-name">Start</span>
+                            <span class="tier-price">$30,000</span>
+                            <span class="tier-timeline">7-9 weeks</span>
+                        </div>
+                        <div class="pricing-tier">
+                            <span class="tier-name">Standard</span>
+                            <span class="tier-price">$52,000</span>
+                            <span class="tier-timeline">11-14 weeks</span>
+                        </div>
+                        <div class="pricing-tier">
+                            <span class="tier-name">Advanced</span>
+                            <span class="tier-price">$82,000</span>
+                            <span class="tier-timeline">16-20 weeks</span>
+                        </div>
+                    </div>
+                    
+                    <a href="#contact" class="project-cta">Request Proposal</a>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <!-- Process Section -->
+    <section class="process-section">
+        <div class="width-container">
+            <h2 class="section-title">How It Works</h2>
+            <p class="section-subtitle">Transparent process from requirements to deployment</p>
+
+            <div class="process-timeline">
+                <div class="process-step">
+                    <div class="step-number">1</div>
+                    <h3>Discovery</h3>
+                    <p>Requirements workshop, use case analysis, success metrics definition</p>
+                </div>
+                <div class="process-step">
+                    <div class="step-number">2</div>
+                    <h3>Design</h3>
+                    <p>Architecture planning, agent model design, RAG configuration</p>
+                </div>
+                <div class="process-step">
+                    <div class="step-number">3</div>
+                    <h3>Development</h3>
+                    <p>Iterative implementation with regular demos and feedback cycles</p>
+                </div>
+                <div class="process-step">
+                    <div class="step-number">4</div>
+                    <h3>Deployment</h3>
+                    <p>Docker containerization, infrastructure setup, user training</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section" id="contact">
+        <div class="container">
+            <div class="cta-content">
+                <h2>Ready to Automate?</h2>
+                <p>Let's discuss which solution fits your needs and create a custom proposal</p>
+                
+                <div class="cta-actions">
+                    <a href="mailto:mr.a.maltsev@gmail.com" class="cta-button primary">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                            <polyline points="22,6 12,13 2,6"/>
+                        </svg>
+                        Email Me
+                    </a>
+                    <a href="https://www.linkedin.com/in/a-maltsev" class="cta-button secondary" target="_blank" rel="noopener">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                        </svg>
+                        LinkedIn
+                    </a>
+                    <a href="/about/" class="cta-button outline">
+                        About Me
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+        </main>
+        
+        <footer class="footer">
+    <div class="container footer-inner">
+        <div class="copyright">
+            <span>© A.Maltsev 2026</span>
+            <span class="copyright-sep">|</span>
+            <span><img src="https://visitor-badge.laobi.icu/badge?page_id=maltsev-dev.github.io" alt="Visitors"></span>
+        </div>
+        
+        <div class="social-links">
+            <a href="https://github.com/maltsev-dev" class="social-link" target="_blank" rel="noopener" aria-label="GitHub">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+            </a>
+            <a href="https://www.linkedin.com/in/a-maltsev" class="social-link" target="_blank" rel="noopener" aria-label="LinkedIn">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+            </a>
+            <a href="mailto:mr.a.maltsev@gmail.com" class="social-link" aria-label="Email">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            </a>
+        </div>
+    </div>
+</footer>
+    </div>
+    
+    <button class="theme-toggle" aria-label="Toggle dark mode" id="themeToggle">
+        <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="5"/>
+            <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+        </svg>
+        <svg class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+        </svg>
+    </button>
+    
+    <script src="/static/js/theme.js"></script>
+    
+</body>
+</html>

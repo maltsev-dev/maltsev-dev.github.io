@@ -25,7 +25,7 @@
     <div class="container header-inner">
         <a href="/" class="logo-link">
             <div class="logo">
-                <span class="logo-text">busy hands == happy heart</span>
+                <span class="logo-text">Research. Build. Evolve.</span>
             </div>
         </a>
 
@@ -35,13 +35,13 @@
                     <a href="/" class="nav-link ">Home</a>
                 </li>
                 <li class="nav-item">
-                    <a href="/archive" class="nav-link ">Archive</a>
+                    <a href="/archive/" class="nav-link ">Archive</a>
                 </li>
                 <li class="nav-item">
-                    <a href="/tags/project/" class="nav-link">Projects</a>
+                    <a href="/projects/" class="nav-link ">AI Solutions</a>
                 </li>
                 <li class="nav-item">
-                    <a href="/about" class="nav-link ">About</a>
+                    <a href="/about/" class="nav-link ">About</a>
                 </li>
             </ul>
         </nav>
@@ -74,11 +74,11 @@
                 
                 <div class="post-tags">
                     
-                    <a href="/tags/rust.html" class="tag">#rust</a>
+                    <a href="/tags/rust/" class="tag">#rust</a>
                     
-                    <a href="/tags/memory.html" class="tag">#memory</a>
+                    <a href="/tags/memory/" class="tag">#memory</a>
                     
-                    <a href="/tags/basic.html" class="tag">#basic</a>
+                    <a href="/tags/basic/" class="tag">#basic</a>
                     
                 </div>
                 
@@ -104,7 +104,7 @@ The memory address range is determined by the size of the <code>machine word</co
 The size of the reference (<code>usize</code>) is equal to a machine word. (<code>ptr</code>, <code>cap</code>, <code>len</code>).  </p>
 <hr />
 <h2 id="1-basic-concepts-of-memory-management">&emsp;&emsp;&emsp; 1. Basic concepts of memory management</h2>
-<p>After compiling the executable file. <a href="https://maltsev-dev.github.io/rs-to-bin/">Read more</a> about Rust compiling pipeline in my article.
+<p>After compiling the executable file. <a href="/rs_to_bin.html">Read more</a> about Rust compiling pipeline in my article.
 This file stores <code>data</code>, <code>metadata</code>, and <code>machine instructions</code> for the <em>CPU</em> in specific platform-dependent formats. (<strong>ELF</strong> on Linux, <strong>PE</strong> on Windows,<strong>Mach-O</strong> on macOS). No matter what formats, the way they are executed is <em>almost</em> the same.  </p>
 <p>When a program (<strong>process</strong>) is started on the target platform, the kernel allocates the necessary amount of memory based on the <strong>segment metadata</strong> (<code>.text,</code> <code>.data</code>, <code>.bss</code>, etc) from the ELF headers. This memory is a solid range of addresses to use, called the <code>virtual address space</code> of the program.<br />
 The kernel will map segments to the allocated memory at startup, the number of segments required depends on the <strong>compiler</strong>.<br />
@@ -472,7 +472,7 @@ In these cases - they also become <strong>fat pointer</strong> - type <code>Box&
         <div class="copyright">
             <span>© A.Maltsev 2026</span>
             <span class="copyright-sep">|</span>
-            <span>Visitors: <img src="https://visitor-badge.laobi.icu/badge?page_id=maltsev-dev.github.io" alt="Visitors"></span>
+            <span><img src="https://visitor-badge.laobi.icu/badge?page_id=maltsev-dev.github.io" alt="Visitors"></span>
         </div>
         
         <div class="social-links">
