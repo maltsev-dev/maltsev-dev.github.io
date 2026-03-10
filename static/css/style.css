@@ -1502,7 +1502,7 @@ flex-wrap:wrap;
 }
 
 .cta-content {
-    max-width: 600px;
+    max-width: 800px;
     margin: 0 auto;
 }
 
@@ -1571,6 +1571,423 @@ flex-wrap:wrap;
 .cta-button.outline:hover {
     border-color: var(--accent);
     color: var(--accent);
+}
+
+.cta-button.upwork {
+    background: #14a800;
+    color: white;
+}
+
+.cta-button.upwork:hover {
+    background: #0f8a00;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+/* --- Pricing & Timeline Explanation Section --- */
+.explanation-section {
+    padding: 30px 24px;
+    background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
+    border-top: 1px solid var(--border-color);
+}
+
+.explanation-section .section-title {
+    font-size: 2.25rem;
+    margin-bottom: 12px;
+}
+
+.explanation-section .section-subtitle {
+    color: var(--text-secondary);
+    margin-bottom: 48px;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.explanation-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 32px;
+    max-width: 1200px;
+    margin: 0 auto 48px;
+}
+
+.explanation-card {
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 32px;
+    box-shadow: var(--shadow-md);
+    transition: var(--transition);
+}
+
+.explanation-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--accent);
+}
+
+.explanation-icon {
+    font-size: 2.5rem;
+    margin-bottom: 16px;
+    display: block;
+}
+
+.explanation-card h3 {
+    font-size: 1.5rem;
+    margin-bottom: 12px;
+    color: var(--text-primary);
+}
+
+.explanation-intro {
+    color: var(--text-secondary);
+    font-size: 1rem;
+    margin-bottom: 24px;
+    line-height: 1.6;
+}
+
+/* Tier Breakdown */
+.tier-breakdown {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.tier-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    background: var(--bg-secondary);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-color);
+    transition: var(--transition);
+}
+
+.tier-row:hover {
+    border-color: var(--accent);
+    background: var(--accent-alpha);
+}
+
+.tier-label {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.tier-label strong {
+    font-size: 1.125rem;
+    color: var(--text-primary);
+}
+
+.tier-label span {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.tier-details {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+}
+
+.tier-range {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--accent);
+}
+
+.tier-desc {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+/* Pricing Components */
+.pricing-components h4 {
+    font-size: 1rem;
+    margin-bottom: 16px;
+    color: var(--text-primary);
+}
+
+.pricing-components ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.pricing-components li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px dashed var(--border-color);
+    margin: 0;
+}
+
+.pricing-components li:last-child {
+    border-bottom: none;
+}
+
+.component-name {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+}
+
+.component-pct {
+    font-weight: 700;
+    color: var(--accent);
+    font-size: 0.9rem;
+    background: var(--accent-alpha);
+    padding: 4px 10px;
+    border-radius: 20px;
+}
+
+/* Phase Breakdown */
+.phase-breakdown {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.phase-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 14px 18px;
+    background: var(--bg-secondary);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-color);
+    transition: var(--transition);
+}
+
+.phase-item:hover {
+    border-color: var(--accent);
+    background: var(--accent-alpha);
+}
+
+.phase-number {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    background: var(--accent);
+    color: var(--bg-primary);
+    border-radius: 50%;
+    font-weight: 700;
+    font-size: 1rem;
+    flex-shrink: 0;
+}
+
+.phase-content {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.phase-content strong {
+    color: var(--text-primary);
+    font-size: 1rem;
+}
+
+.phase-content span {
+    color: var(--text-muted);
+    font-size: 0.875rem;
+}
+
+/* Timeline Factors */
+.timeline-factors h4 {
+    font-size: 1rem;
+    margin-bottom: 16px;
+    color: var(--text-primary);
+}
+
+.factors-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+}
+
+.factor-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px;
+    background: var(--bg-secondary);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-color);
+    transition: var(--transition);
+}
+
+.factor-item:hover {
+    border-color: var(--accent);
+    background: var(--accent-alpha);
+}
+
+.factor-icon {
+    font-size: 1.25rem;
+    flex-shrink: 0;
+}
+
+.factor-text {
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    line-height: 1.4;
+}
+
+/* Conservative Estimates Info Box */
+.conservative-estimates {
+    max-width: 900px;
+    margin: 0 auto 48px;
+}
+
+.info-box {
+    display: flex;
+    gap: 20px;
+    padding: 28px;
+    background: linear-gradient(135deg, var(--accent-alpha) 0%, var(--bg-secondary) 100%);
+    border: 2px solid var(--accent);
+    border-radius: var(--radius-lg);
+}
+
+.info-icon {
+    font-size: 2.5rem;
+    flex-shrink: 0;
+}
+
+.info-content h4 {
+    font-size: 1.25rem;
+    margin-bottom: 12px;
+    color: var(--text-primary);
+}
+
+.info-content p {
+    color: var(--text-secondary);
+    margin-bottom: 16px;
+    line-height: 1.6;
+}
+
+.info-content ul {
+    margin: 0;
+    padding-left: 20px;
+}
+
+.info-content li {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    margin-bottom: 8px;
+    line-height: 1.5;
+}
+
+/* Market Positioning */
+.market-positioning {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.positioning-title {
+    text-align: center;
+    font-size: 1.75rem;
+    margin-bottom: 32px;
+    color: var(--text-primary);
+}
+
+.positioning-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px;
+}
+
+.positioning-card {
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 18px;
+    text-align: center;
+    transition: var(--transition);
+    box-shadow: var(--shadow-sm);
+}
+
+.positioning-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-md);
+    border-color: var(--accent);
+}
+
+.positioning-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.positioning-icon {
+    font-size: 2.5rem;
+}
+
+.positioning-header h4 {
+    font-size: 1.125rem;
+    margin: 0;
+    color: var(--text-primary);
+}
+
+.positioning-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--accent);
+    margin-bottom: 12px;
+}
+
+.positioning-reason {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    line-height: 1.6;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .explanation-section {
+        padding: 60px 20px;
+    }
+
+    .explanation-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .explanation-card {
+        padding: 24px;
+    }
+
+    .tier-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .tier-details {
+        align-items: flex-start;
+    }
+
+    .factors-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .info-box {
+        flex-direction: column;
+        padding: 24px;
+    }
+
+    .positioning-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .positioning-value {
+        font-size: 1.5rem;
+    }
 }
 
 /* --- Print Styles --- */
