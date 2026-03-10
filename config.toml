@@ -1,6 +1,5 @@
 base_url = "https://maltsev-dev.github.io"
 title = "dev_stories"
-theme = "terminimal"
 compile_sass = true
 
 taxonomies = [{ name = "tags" }]
