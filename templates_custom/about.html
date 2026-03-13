@@ -4,219 +4,224 @@
 
 {% block content %}
 <div class="about-page">
+    <div class="about-layout">
+        <!-- Left Sidebar -->
+        <aside class="about-sidebar">
+            <div class="sidebar-content">
+                <!-- Profile Image -->
+                <div class="profile-image-wrapper">
+                    <img src="/static/images/profile_image.jpg" alt="Anatoly Maltsev" class="profile-image">
+                </div>
 
-<!-- HERO -->
-<section class="about-hero">
-    <div class="container">
-        <h1 class="about-title">
-            Hello, I'm <span class="accent">Anatoly Maltsev</span>
-        </h1>
+                <!-- Name & Title -->
+                <h1 class="sidebar-name">Anatoly Maltsev</h1>
+                <p class="sidebar-title">AI Engineer & Automation Specialist</p>
+                <p class="sidebar-location">📍 Tbilisi, Georgia</p>
 
-        <p class="about-subtitle">
-            Research-Oriented Engineer · AI-Enhanced Developer · Embedded Systems Specialist
-        </p>
+                <!-- Contact Info -->
+                <div class="contact-section">
+                    <h3 class="contact-heading">Contact</h3>
+                    <ul class="contact-list">
+                        <li>
+                            <a href="https://t.me/replicantDuke" target="_blank" rel="noopener" class="contact-link">
+                                <span class="contact-icon">✈️</span>
+                                <span>Telegram</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="mailto:mr.a.maltsev@gmail.com" class="contact-link">
+                                <span class="contact-icon">📧</span>
+                                <span>mr.a.maltsev@gmail.com</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://github.com/maltsev-dev" target="_blank" rel="noopener" class="contact-link">
+                                <span class="contact-icon">🐙</span>
+                                <span>GitHub</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://www.linkedin.com/in/a-maltsev" target="_blank" rel="noopener" class="contact-link">
+                                <span class="contact-icon">💼</span>
+                                <span>LinkedIn</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://instagram.com" target="_blank" rel="noopener" class="contact-link">
+                                <span class="contact-icon">📷</span>
+                                <span>Instagram</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
 
-        <p class="about-intro">
-            I build bridges between modern technologies and real-world applications —
-            transforming research into practical systems and advocating for code that lasts.
-        </p>
+                <!-- Technology Stack -->
+                <div class="tech-section">
+                    <h3 class="tech-heading">Technologies</h3>
+                    <div class="tech-badges">
+                        <span class="tech-badge">Agentic AI</span>
+                        <span class="tech-badge">LangGraph</span>
+                        <span class="tech-badge">Multi-Agent Systems</span>
+                        <span class="tech-badge">RAG</span>
+                        <span class="tech-badge">Python</span>
+                        <span class="tech-badge">FastAPI</span>
+                        <span class="tech-badge">Docker</span>
+                        <span class="tech-badge">Kubernetes</span>
+                        <span class="tech-badge">PostgreSQL</span>
+                        <span class="tech-badge">Redis</span>
+                        <span class="tech-badge">Shopify</span>
+                        <span class="tech-badge">ERP Integration</span>
+                        <span class="tech-badge">OCR</span>
+                        <span class="tech-badge">NLP</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
 
-        <div class="hero-tags">
-            <span>Agentic AI</span>
-            <span>LangGraph</span>
-            <span>Automation</span>
-            <span>SDET</span>
-            <span>TinyML</span>
-            <span>Embedded Rust</span>
-            <span>IoT Systems</span>
-        </div>
+        <!-- Main Content -->
+        <main class="about-main">
+            <div class="main-content">
+                <!-- Philosophy Section -->
+                <section class="about-section">
+                    <h2 class="main-section-title">Philosophy</h2>
+                    
+                    <div class="philosophy-content">
+                        <blockquote class="philosophy-quote">
+                            Engineering is not about writing code — it's about designing systems that remain reliable,
+                            adaptable, and understandable as complexity inevitably grows.
+                        </blockquote>
+
+                        <p class="philosophy-text">
+                            My approach focuses on building resilient architectures rather than short-lived solutions.
+                            Technology evolves quickly, but systems designed with strong fundamentals can evolve with it.
+                            The goal is not just to ship software — it is to create systems that engineers can confidently
+                            extend, operate, and reason about years later.
+                        </p>
+
+                        <div class="philosophy-principles">
+                            <div class="principle-card">
+                                <div class="principle-icon">🎯</div>
+                                <h3>Clarity of Systems</h3>
+                                <p>Software should communicate its intent. Clear architecture, well-defined boundaries, and explicit data flow make complex systems understandable to both humans and machines.</p>
+                            </div>
+
+                            <div class="principle-card">
+                                <div class="principle-icon">🏗️</div>
+                                <h3>Resilient Architecture</h3>
+                                <p>Good systems are designed to evolve. By reducing hidden dependencies and controlling complexity, architecture becomes a foundation for growth instead of a barrier to change.</p>
+                            </div>
+
+                            <div class="principle-card">
+                                <div class="principle-icon">🔧</div>
+                                <h3>Intentional Abstractions</h3>
+                                <p>Abstractions should remove complexity, not hide it. Every layer in a system must exist for a clear reason and contribute to the overall integrity of the design.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Mission & Goal Section -->
+                <section class="about-section mission-section">
+                    <h2 class="main-section-title">Mission & Goal</h2>
+                    
+                    <div class="mission-content">
+                        <div class="mission-statement">
+                            <div class="mission-icon">🚀</div>
+                            <h3>My Mission</h3>
+                            <p class="mission-text">
+                                I help small and medium businesses transform traditional processes and workflows into 
+                                <strong>AI-oriented automated systems</strong> that reduce operational costs, eliminate 
+                                repetitive manual work, and enable teams to focus on high-value strategic tasks.
+                            </p>
+                        </div>
+
+                        <div class="goal-cards">
+                            <div class="goal-card">
+                                <div class="goal-number">01</div>
+                                <h4>Automate Routine Operations</h4>
+                                <p>Replace manual, error-prone processes with intelligent agents that work 24/7</p>
+                            </div>
+
+                            <div class="goal-card">
+                                <div class="goal-number">02</div>
+                                <h4>Enable Data-Driven Decisions</h4>
+                                <p>Transform raw business data into actionable insights and recommendations</p>
+                            </div>
+
+                            <div class="goal-card">
+                                <div class="goal-number">03</div>
+                                <h4>Scale Without Overhead</h4>
+                                <p>Grow your business capacity without linearly increasing headcount</p>
+                            </div>
+
+                            <div class="goal-card">
+                                <div class="goal-number">04</div>
+                                <h4>Future-Proof Operations</h4>
+                                <p>Build AI-native systems that adapt and improve over time</p>
+                            </div>
+                        </div>
+
+                        <div class="value-prop">
+                            <h4>Why This Matters</h4>
+                            <p>
+                                In today's competitive landscape, businesses that leverage AI automation gain a significant 
+                                advantage: faster response times, lower operational costs, and the ability to scale rapidly. 
+                                My goal is to make these capabilities accessible to SMBs, not just enterprise corporations.
+                            </p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Approach Section -->
+                <section class="about-section approach-section">
+                    <h2 class="main-section-title">How I Work</h2>
+                    
+                    <div class="approach-grid">
+                        <div class="approach-item">
+                            <div class="approach-step">1</div>
+                            <h4>Discovery</h4>
+                            <p>Deep dive into your current workflows, pain points, and business objectives</p>
+                        </div>
+
+                        <div class="approach-item">
+                            <div class="approach-step">2</div>
+                            <h4>Design</h4>
+                            <p>Architect AI solutions that integrate seamlessly with your existing systems</p>
+                        </div>
+
+                        <div class="approach-item">
+                            <div class="approach-step">3</div>
+                            <h4>Implement</h4>
+                            <p>Build, test, and deploy with iterative feedback and transparent communication</p>
+                        </div>
+
+                        <div class="approach-item">
+                            <div class="approach-step">4</div>
+                            <h4>Empower</h4>
+                            <p>Train your team and provide documentation for long-term success</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- CTA Section -->
+                <section class="about-cta">
+                    <h2>Let's Build Something Interesting</h2>
+                    <p>Interested in transforming your business with AI automation? Let's talk.</p>
+                    
+                    <div class="cta-buttons">
+                        <a href="https://t.me/replicantDuke" target="_blank" rel="noopener" class="cta-button primary">
+                            <span>✈️</span> Contact on Telegram
+                        </a>
+                        <a href="mailto:mr.a.maltsev@gmail.com" class="cta-button outline">
+                            <span>📧</span> Send Email
+                        </a>
+                        <a href="/projects/" class="cta-button outline">
+                            <span>📋</span> View Projects
+                        </a>
+                    </div>
+                </section>
+            </div>
+        </main>
     </div>
-</section>
-
-<!-- PHILOSOPHY -->
-<section class="about-section">
-    <div class="container">
-
-        <h2 class="section-title">Philosophy</h2>
-
-<div class="philosophy-card">
-
-    <blockquote>
-        Engineering is not about writing code — it's about designing systems that remain reliable,
-        adaptable, and understandable as complexity inevitably grows.
-    </blockquote>
-
-    <p>
-        My approach focuses on building resilient architectures rather than short-lived solutions.
-        Technology evolves quickly, but systems designed with strong fundamentals can evolve with it.
-        The goal is not just to ship software — it is to create systems that engineers can confidently
-        extend, operate, and reason about years later.
-    </p>
-
-    <div class="philosophy-grid">
-
-        <div class="philosophy-item">
-            <h3>Clarity of Systems</h3>
-            <p>
-                Software should communicate its intent. Clear architecture,
-                well-defined boundaries, and explicit data flow make complex
-                systems understandable to both humans and machines.
-            </p>
-        </div>
-
-        <div class="philosophy-item">
-            <h3>Resilient Architecture</h3>
-            <p>
-                Good systems are designed to evolve. By reducing hidden
-                dependencies and controlling complexity, architecture becomes
-                a foundation for growth instead of a barrier to change.
-            </p>
-        </div>
-
-        <div class="philosophy-item">
-            <h3>Intentional Abstractions</h3>
-            <p>
-                Abstractions should remove complexity, not hide it.
-                Every layer in a system must exist for a clear reason
-                and contribute to the overall integrity of the design.
-            </p>
-        </div>
-
-    </div>
-
-</div>
-
-    </div>
-</section>
-
-<!-- SKILLS -->
-<section class="about-section alt">
-<div class="container">
-
-<h2 class="section-title">What I Work On</h2>
-
-<div class="skills-grid">
-
-
-<div class="skill-card">
-<h3>Agentic AI Systems</h3>
-<p>
-Designing autonomous AI systems that orchestrate tools, process data,
-and automate complex workflows.
-</p>
-</div>
-
-<div class="skill-card">
-<h3>Automation Engineering</h3>
-<p>
-Building pipelines and systems that reduce repetitive work
-and increase operational efficiency.
-</p>
-</div>
-
-<div class="skill-card">
-<h3>TinyML</h3>
-<p>
-Running machine learning directly on microcontrollers
-for sensor processing and edge intelligence.
-</p>
-</div>
-
-<div class="skill-card">
-<h3>Embedded Systems</h3>
-<p>
-Firmware development for ESP32, STM32, RP2040 and other microcontrollers.
-Focused on reliability, performance and hardware-level control using Rust.
-</p>
-</div>
-
-<div class="skill-card">
-<h3>Rust Development</h3>
-<p>
-System programming, embedded firmware, async backends and smart contracts
-with strong focus on safety and performance.
-</p>
-</div>
-
-<div class="skill-card">
-<h3>Full-Stack IoT</h3>
-<p>
-Complete systems from firmware and communication layers
-to backend APIs and monitoring dashboards.
-</p>
-</div>
-
-</div>
-</div>
-</section>
-
-<!-- BLOG -->
-<section class="about-section">
-<div class="container">
-
-<h2 class="section-title">This Blog</h2>
-
-<p class="blog-description">
-This site documents my research and experiments with modern technologies.
-It serves as a public engineering notebook — exploring ideas,
-sharing solutions, and reflecting on the learning process.
-</p>
-
-<div class="blog-grid">
-
-<div class="blog-card">
-<h3>Deep Dives</h3>
-<p>Detailed technical articles on embedded systems, AI agents and software architecture.</p>
-</div>
-
-<div class="blog-card">
-<h3>Project Breakdowns</h3>
-<p>From concept to deployment — real systems explained step by step.</p>
-</div>
-
-<div class="blog-card">
-<h3>Learning Notes</h3>
-<p>Insights while studying electronics, low-level programming and system design.</p>
-</div>
-
-<div class="blog-card">
-<h3>Tools & Guides</h3>
-<p>Practical tutorials for debugging, automation and AI-assisted development.</p>
-</div>
-
-</div>
-
-</div>
-</section>
-
-<!-- CONTACT -->
-<section class="about-contact">
-<div class="container">
-
-<h2>Let's Build Something Interesting</h2>
-
-<p>
-Interested in collaboration, research or engineering projects?
-</p>
-
-<div class="contact-actions">
-
-<a href="mailto:mr.a.maltsev@gmail.com" class="cta-button outline">
-Email
-</a>
-
-<a href="https://github.com/maltsev-dev" target="_blank" class="cta-button outline">
-GitHub
-</a>
-
-<a href="https://www.linkedin.com/in/a-maltsev" target="_blank" class="cta-button outline">
-LinkedIn
-</a>
-
-</div>
-
-</div>
-</section>
-
 </div>
 {% endblock %}
