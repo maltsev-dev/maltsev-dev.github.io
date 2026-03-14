@@ -100,12 +100,12 @@
             <div class="blog-grid">
                 {% for post in all_posts[:3] %}
                 <article class="blog-card">
-                    <h3><a href="/{{ post.slug }}/">{{ post.title }}</a></h3>
+                    <h3><a href="/{{ post.url_path }}.html">{{ post.title }}</a></h3>
                     <p class="blog-meta">
                         <time>{{ post.date }}</time>
                     </p>
                     <p class="blog-excerpt">{{ post.summary[:150] if post.summary else post.content[:200] | striptags }}...</p>
-                    <a href="/{{ post.slug }}/" class="read-more">Read more →</a>
+                    <a href="/{{ post.url_path }}.html" class="read-more">Read more →</a>
                 </article>
                 {% endfor %}
             </div>
