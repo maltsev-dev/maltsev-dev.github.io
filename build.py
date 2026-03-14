@@ -289,15 +289,16 @@ def generate_post_html(post: Post, env: Environment, all_posts: List[Post]) -> s
 
 def generate_index_html(posts: List[Post], env: Environment, page: int = 1, total_pages: int = 1) -> str:
     """Generate homepage HTML with pagination"""
-    template = env.get_template("index.html")
-    
+    template = env.get_template("home.html")
+
     start = (page - 1) * SITE_CONFIG["posts_per_page"]
     end = start + SITE_CONFIG["posts_per_page"]
     page_posts = posts[start:end]
-    
+
     return template.render(
         site=SITE_CONFIG,
         posts=page_posts,
+        all_posts=posts,
         current_page=page,
         total_pages=total_pages,
         current_path=""

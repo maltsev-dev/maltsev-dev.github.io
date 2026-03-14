@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+
+{% block title %}{{ site.title }} - AI Automation for SMBs{% endblock %}
+
+{% block content %}
+<div class="home-page">
+    <!-- Hero Section -->
+        <section class="home-hero">
+        <div class="container">
+            <h1 class="hero-title">Transform Your Business with <br> <span class="accent">AI Automation</span></h1>
+            <p class="hero-subtitle">
+                I help small and medium businesses replace manual workflows with intelligent AI agents that work 24/7 — reducing costs, eliminating errors, and enabling teams to focus on what matters.
+            </p>       
+         </div>
+    </section>
+
+
+
+     <!-- Why AI Automation -->
+    <section class="home-why">
+        <div class="container">
+            <h2 class="section-title">Why AI Automation Now?</h2>
+            
+            <div class="why-grid">
+                <div class="why-card">
+                    <div class="why-icon">⏱️</div>
+                    <h3>Save Time</h3>
+                    <p>Replace 500+ hours/month of manual work with autonomous agents</p>
+                </div>
+                
+                <div class="why-card">
+                    <div class="why-icon">💰</div>
+                    <h3>Reduce Costs</h3>
+                    <p>Cut operational expenses by 60-80% without sacrificing quality</p>
+                </div>
+                
+                <div class="why-card">
+                    <div class="why-icon">📈</div>
+                    <h3>Scale Faster</h3>
+                    <p>Grow capacity without linearly increasing headcount</p>
+                </div>
+                
+                <div class="why-card">
+                    <div class="why-icon">🎯</div>
+                    <h3>Improve Accuracy</h3>
+                    <p>Eliminate human errors with 99%+ accurate automated processes</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Agents -->
+    <section class="home-agents">
+        <div class="container">
+            <h2 class="section-title">AI Solutions</h2>
+            <p class="section-subtitle">Specialized agents that automate your most labor-intensive operations</p>
+            
+            <div class="agents-grid">
+                <a href="/projects/#customer-support" class="agent-card">
+                    <div class="agent-icon">💬</div>
+                    <h3>Customer Support Agent</h3>
+                    <p>Resolve 60-80% of tickets automatically across all channels</p>
+                    <span class="agent-link">Learn more →</span>
+                </a>
+                
+                <a href="/projects/#competitor" class="agent-card">
+                    <div class="agent-icon">📊</div>
+                    <h3>Competitor Agent</h3>
+                    <p>Monitor pricing and get optimal recommendations daily</p>
+                    <span class="agent-link">Learn more →</span>
+                </a>
+                
+                <a href="/projects/#insight" class="agent-card">
+                    <div class="agent-icon">📈</div>
+                    <h3>Insight Agent</h3>
+                    <p>Forecast demand and predict stockouts before they happen</p>
+                    <span class="agent-link">Learn more →</span>
+                </a>
+                
+                <a href="/projects/#invoice" class="agent-card">
+                    <div class="agent-icon">📝</div>
+                    <h3>Invoice Agent</h3>
+                    <p>Process supplier invoices with 80-90% automation</p>
+                    <span class="agent-link">Learn more →</span>
+                </a>
+            </div>
+            
+            <div class="agents-cta">
+                <a href="/projects/" class="cta-button outline">View All 6 Agents</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Latest from Blog -->
+    {% if all_posts %}
+    <section class="home-blog">
+        <div class="container">
+            <h2 class="section-title">Latest Blog Posts</h2>
+            
+            <div class="blog-grid">
+                {% for post in all_posts[:3] %}
+                <article class="blog-card">
+                    <h3><a href="/{{ post.slug }}/">{{ post.title }}</a></h3>
+                    <p class="blog-meta">
+                        <time>{{ post.date }}</time>
+                    </p>
+                    <p class="blog-excerpt">{{ post.summary[:150] if post.summary else post.content[:200] | striptags }}...</p>
+                    <a href="/{{ post.slug }}/" class="read-more">Read more →</a>
+                </article>
+                {% endfor %}
+            </div>
+            
+            <div class="blog-cta">
+                <a href="/archive/" class="cta-button outline">View All Posts</a>
+            </div>
+        </div>
+    </section>
+    {% endif %}
+</div>
+{% endblock %}

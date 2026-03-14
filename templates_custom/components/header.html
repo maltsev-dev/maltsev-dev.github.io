@@ -9,16 +9,16 @@
         <nav class="main-nav">
             <ul class="nav-list">
                 <li class="nav-item">
-                    <a href="/" class="nav-link {% if current_path == '' %}active{% endif %}">Home</a>
+                    <a href="/" class="nav-link {% if current_path == '/' or current_path == '' %}active{% endif %}">Home</a>
                 </li>
                 <li class="nav-item">
-                    <a href="/archive/" class="nav-link {% if current_path == 'archive' %}active{% endif %}">Blog</a>
+                    <a href="/projects/" class="nav-link {% if current_path == '/projects/' %}active{% endif %}">AI Solutions</a>
                 </li>
                 <li class="nav-item">
-                    <a href="/projects/" class="nav-link {% if current_path == 'projects' %}active{% endif %}">AI Solutions</a>
+                    <a href="/about/" class="nav-link {% if current_path == '/about/' %}active{% endif %}">About</a>
                 </li>
                 <li class="nav-item">
-                    <a href="/about/" class="nav-link {% if current_path == 'about' %}active{% endif %}">About</a>
+                    <a href="/archive/" class="nav-link {% if current_path == '/archive/' %}active{% endif %}">Blog</a>
                 </li>
             </ul>
         </nav>
