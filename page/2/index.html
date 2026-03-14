@@ -9,7 +9,7 @@
     <meta property="og:title" content="dev_stories">
     <meta property="og:url" content="https://maltsev-dev.github.io/">
     <meta property="og:image" content="https://github.com/maltsev-dev/favicon.png">
-    <title>dev_stories - Technical Blog</title>
+    <title>dev_stories - AI Automation for SMBs</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -35,13 +35,13 @@
                     <a href="/" class="nav-link active">Home</a>
                 </li>
                 <li class="nav-item">
-                    <a href="/archive/" class="nav-link ">Blog</a>
-                </li>
-                <li class="nav-item">
                     <a href="/projects/" class="nav-link ">AI Solutions</a>
                 </li>
                 <li class="nav-item">
                     <a href="/about/" class="nav-link ">About</a>
+                </li>
+                <li class="nav-item">
+                    <a href="/archive/" class="nav-link ">Blog</a>
                 </li>
             </ul>
         </nav>
@@ -56,405 +56,140 @@
         
         <main class="main-content">
             
-<div class="container">
-    <section class="hero">
-        <h1 class="hero-title">Welcome to <span class="accent">dev_stories</span></h1>
-        <p class="hero-subtitle">Documenting the journey through research and development of modern technologies</p>
+<div class="home-page">
+    <!-- Hero Section -->
+        <section class="home-hero">
+        <div class="container">
+            <h1 class="hero-title">Transform Your Business with <br> <span class="accent">AI Automation</span></h1>
+            <p class="hero-subtitle">
+                I help small and medium businesses replace manual workflows with intelligent AI agents that work 24/7 — reducing costs, eliminating errors, and enabling teams to focus on what matters.
+            </p>       
+         </div>
     </section>
 
-    <section class="posts-section">
-        <div class="posts-list">
+
+
+     <!-- Why AI Automation -->
+    <section class="home-why">
+        <div class="container">
+            <h2 class="section-title">Why AI Automation Now?</h2>
             
-            <article class="post-card">
-                <div class="post-card-header">
-                    <h2 class="post-card-title">
-                        <a href="/emb_rust_flow.html">Basic Embedded Rust Flow (Cortex-M)</a>
-                    </h2>
-                    <time class="post-card-date" datetime="2025-07-11">
-                        2025-07-11
-                    </time>
-                </div>
-
-                
-                <div class="post-card-tags">
-                    
-                    <a href="/tags/rust/" class="tag">#rust</a>
-                    
-                    <a href="/tags/embedded/" class="tag">#embedded</a>
-                    
-                    <a href="/tags/basic/" class="tag">#basic</a>
-                    
+            <div class="why-grid">
+                <div class="why-card">
+                    <div class="why-icon">⏱️</div>
+                    <h3>Save Time</h3>
+                    <p>Replace 500+ hours/month of manual work with autonomous agents</p>
                 </div>
                 
-
-                <div class="post-card-excerpt">
-                    🟠 A must-have template for creating a Rust project for microcontrollers....
-                </div>
-
-                <a href="/emb_rust_flow.html" class="read-more-link">
-                    Read more
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M5 12h14M12 5l7 7-7 7"/>
-                    </svg>
-                </a>
-            </article>
-            
-            <article class="post-card">
-                <div class="post-card-header">
-                    <h2 class="post-card-title">
-                        <a href="/emb_peripherals.html">MCU Peripherals</a>
-                    </h2>
-                    <time class="post-card-date" datetime="2025-07-11">
-                        2025-07-11
-                    </time>
-                </div>
-
-                
-                <div class="post-card-tags">
-                    
-                    <a href="/tags/embedded/" class="tag">#embedded</a>
-                    
-                    <a href="/tags/basic/" class="tag">#basic</a>
-                    
-                    <a href="/tags/peripherals/" class="tag">#peripherals</a>
-                    
+                <div class="why-card">
+                    <div class="why-icon">💰</div>
+                    <h3>Reduce Costs</h3>
+                    <p>Cut operational expenses by 60-80% without sacrificing quality</p>
                 </div>
                 
-
-                <div class="post-card-excerpt">
-                    Microcontroller peripherals are functional blocks integrated into the chip that enable it to interact with the outside world or carry out specific tasks — often without involving the processor core.
-
-🟠 When selecting a microcontroller, your choice should depend on the required peripherals, not the other way around....
-                </div>
-
-                <a href="/emb_peripherals.html" class="read-more-link">
-                    Read more
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M5 12h14M12 5l7 7-7 7"/>
-                    </svg>
-                </a>
-            </article>
-            
-            <article class="post-card">
-                <div class="post-card-header">
-                    <h2 class="post-card-title">
-                        <a href="/emb_registers.html">MCU Registers</a>
-                    </h2>
-                    <time class="post-card-date" datetime="2025-07-11">
-                        2025-07-11
-                    </time>
-                </div>
-
-                
-                <div class="post-card-tags">
-                    
-                    <a href="/tags/embedded/" class="tag">#embedded</a>
-                    
-                    <a href="/tags/basic/" class="tag">#basic</a>
-                    
-                    <a href="/tags/registers/" class="tag">#registers</a>
-                    
+                <div class="why-card">
+                    <div class="why-icon">📈</div>
+                    <h3>Scale Faster</h3>
+                    <p>Grow capacity without linearly increasing headcount</p>
                 </div>
                 
-
-                <div class="post-card-excerpt">
-                    A `processor register` is a quickly accessible location available to a computer&#39;s processor.
-Registers usually consist of a small amount of fast storage, although some registers have specific hardware functions, and may be read-only or write-only.  
-Its used to store **data**, **operands**, **calculation** results, **memory addressing**, **peripheral control**, and **microcontroller operation** during instruction execution. 
-
-Each register has a specific function and bit capacity.  
-🟠 When performing an arithmetic operation, the processor may load the operands into general-purpose registers, perform the operation, and then store the result in another register or in memory....
+                <div class="why-card">
+                    <div class="why-icon">🎯</div>
+                    <h3>Improve Accuracy</h3>
+                    <p>Eliminate human errors with 99%+ accurate automated processes</p>
                 </div>
-
-                <a href="/emb_registers.html" class="read-more-link">
-                    Read more
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M5 12h14M12 5l7 7-7 7"/>
-                    </svg>
-                </a>
-            </article>
-            
-            <article class="post-card">
-                <div class="post-card-header">
-                    <h2 class="post-card-title">
-                        <a href="/emb_mmio.html">MMIO (Memory-Mapped I/O)</a>
-                    </h2>
-                    <time class="post-card-date" datetime="2025-07-02">
-                        2025-07-02
-                    </time>
-                </div>
-
-                
-                <div class="post-card-tags">
-                    
-                    <a href="/tags/embedded/" class="tag">#embedded</a>
-                    
-                    <a href="/tags/basic/" class="tag">#basic</a>
-                    
-                    <a href="/tags/mmio/" class="tag">#mmio</a>
-                    
-                </div>
-                
-
-                <div class="post-card-excerpt">
-                    **MMIO (Memory-Mapped I/O)** is a way for the central processing unit (CPU) to interact with peripheral hardware devices (e.g. `UART`, `timers`, `GPIO`, `SPI`, etc.) by &#34;sticking&#34; the registers of these devices to specific addresses in the CPU memory.  
-These addresses in the CPU do not store regular data, but allow reading and writing to the device control registers.  
-This means that the peripheral device can be accessed in the same way as regular memory - via regular memory read/write instructions (`LDR`, `STR`, `MOV`, etc.). at specific addresses....
-                </div>
-
-                <a href="/emb_mmio.html" class="read-more-link">
-                    Read more
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M5 12h14M12 5l7 7-7 7"/>
-                    </svg>
-                </a>
-            </article>
-            
-            <article class="post-card">
-                <div class="post-card-header">
-                    <h2 class="post-card-title">
-                        <a href="/emb_cpu_data_flow.html">CPU–Peripheral I/O Communication: Approaches and Trade-offs</a>
-                    </h2>
-                    <time class="post-card-date" datetime="2025-07-02">
-                        2025-07-02
-                    </time>
-                </div>
-
-                
-                <div class="post-card-tags">
-                    
-                    <a href="/tags/embedded/" class="tag">#embedded</a>
-                    
-                    <a href="/tags/basic/" class="tag">#basic</a>
-                    
-                    <a href="/tags/cpu/" class="tag">#cpu</a>
-                    
-                </div>
-                
-
-                <div class="post-card-excerpt">
-                    🟠 Data Transmission Between CPU and Peripheral Devices via I/O Methods...
-                </div>
-
-                <a href="/emb_cpu_data_flow.html" class="read-more-link">
-                    Read more
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M5 12h14M12 5l7 7-7 7"/>
-                    </svg>
-                </a>
-            </article>
-            
-            <article class="post-card">
-                <div class="post-card-header">
-                    <h2 class="post-card-title">
-                        <a href="/rust_emb_debugging.html">Debugging firmware</a>
-                    </h2>
-                    <time class="post-card-date" datetime="2025-07-01">
-                        2025-07-01
-                    </time>
-                </div>
-
-                
-                <div class="post-card-tags">
-                    
-                    <a href="/tags/rust/" class="tag">#rust</a>
-                    
-                    <a href="/tags/embedded/" class="tag">#embedded</a>
-                    
-                    <a href="/tags/basic/" class="tag">#basic</a>
-                    
-                </div>
-                
-
-                <div class="post-card-excerpt">
-                    Classic software development is always inside the cycle of write - run - check - fix.  
-In classic systems, debugging is simplified by built-in logs, breakpoints and step-by-step code execution directly in the IDE.  
-
-When developing programs for microcontrollers, debugging is significantly more complicated since the code is written on a PC and executed on a device with a completely different architecture.  
-Obtaining debug information, setting breakpoints, accessing registers and local variables require a special environment and integration of tools, and the process itself becomes much less obvious.  
-🟠 In this article I want to describe the standard process when debugging software running on a microcontroller and describe the tools that play a key role in this....
-                </div>
-
-                <a href="/rust_emb_debugging.html" class="read-more-link">
-                    Read more
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M5 12h14M12 5l7 7-7 7"/>
-                    </svg>
-                </a>
-            </article>
-            
-            <article class="post-card">
-                <div class="post-card-header">
-                    <h2 class="post-card-title">
-                        <a href="/emb_sp_uart.html">UART (Universal Asynchronous Receiver / Transmitter)</a>
-                    </h2>
-                    <time class="post-card-date" datetime="2025-06-30">
-                        2025-06-30
-                    </time>
-                </div>
-
-                
-                <div class="post-card-tags">
-                    
-                    <a href="/tags/embedded/" class="tag">#embedded</a>
-                    
-                    <a href="/tags/basic/" class="tag">#basic</a>
-                    
-                    <a href="/tags/sp/" class="tag">#sp</a>
-                    
-                </div>
-                
-
-                <div class="post-card-excerpt">
-                    A technical introduction to the **UART** - low-speed two-wire asynchronous multi-duplex serial protocol.  
-**UART** The earliest serial protocol. Still commonly used in modern electronics.
-
-{{ img(src = &#34;/images/emb/uart_header.png&#34;) }}...
-                </div>
-
-                <a href="/emb_sp_uart.html" class="read-more-link">
-                    Read more
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M5 12h14M12 5l7 7-7 7"/>
-                    </svg>
-                </a>
-            </article>
-            
-            <article class="post-card">
-                <div class="post-card-header">
-                    <h2 class="post-card-title">
-                        <a href="/emb_sp_spi.html">SPI (Serial Peripheral Interface)</a>
-                    </h2>
-                    <time class="post-card-date" datetime="2025-06-30">
-                        2025-06-30
-                    </time>
-                </div>
-
-                
-                <div class="post-card-tags">
-                    
-                    <a href="/tags/embedded/" class="tag">#embedded</a>
-                    
-                    <a href="/tags/basic/" class="tag">#basic</a>
-                    
-                    <a href="/tags/sp/" class="tag">#sp</a>
-                    
-                </div>
-                
-
-                <div class="post-card-excerpt">
-                    A technical introduction to the **SPI** - low-speed four-wire master-slave full-duplex serial protocol.  
-**SPI** is widely used as a faster alternative to UART/I2C for transferring data between an intelligent controller and a less intelligent peripheral device.
-
-{{ img(src = &#34;/images/emb/spi_header.png&#34;) }}...
-                </div>
-
-                <a href="/emb_sp_spi.html" class="read-more-link">
-                    Read more
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M5 12h14M12 5l7 7-7 7"/>
-                    </svg>
-                </a>
-            </article>
-            
-            <article class="post-card">
-                <div class="post-card-header">
-                    <h2 class="post-card-title">
-                        <a href="/emb_sp_i2c.html">I2C (Inter-Integrated Circuit)</a>
-                    </h2>
-                    <time class="post-card-date" datetime="2025-06-30">
-                        2025-06-30
-                    </time>
-                </div>
-
-                
-                <div class="post-card-tags">
-                    
-                    <a href="/tags/embedded/" class="tag">#embedded</a>
-                    
-                    <a href="/tags/basic/" class="tag">#basic</a>
-                    
-                    <a href="/tags/sp/" class="tag">#sp</a>
-                    
-                </div>
-                
-
-                <div class="post-card-excerpt">
-                    A technical introduction to the **I2C** - low-speed two-wire master-slave serial protocol.  
-**I2C** is widely used for short-distance data transmission over a data bus (`SDA`) with a clock synchronization line (`SCL`).  
-
-{{ img(src = &#34;/images/emb/i2c_header.png&#34;) }}...
-                </div>
-
-                <a href="/emb_sp_i2c.html" class="read-more-link">
-                    Read more
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M5 12h14M12 5l7 7-7 7"/>
-                    </svg>
-                </a>
-            </article>
-            
-            <article class="post-card">
-                <div class="post-card-header">
-                    <h2 class="post-card-title">
-                        <a href="/emb_sp.html">Serial Protocols</a>
-                    </h2>
-                    <time class="post-card-date" datetime="2025-06-28">
-                        2025-06-28
-                    </time>
-                </div>
-
-                
-                <div class="post-card-tags">
-                    
-                    <a href="/tags/embedded/" class="tag">#embedded</a>
-                    
-                    <a href="/tags/basic/" class="tag">#basic</a>
-                    
-                    <a href="/tags/sp/" class="tag">#sp</a>
-                    
-                </div>
-                
-
-                <div class="post-card-excerpt">
-                    Digital systems are based on the concept of **bits**, in addition to using bits they often have to transfer them back and forth usually between two components (MCU and Sensor, LCD etc).  
-🟠 All the different methods of bit transfer can be divided into 2 categories - `Parallel` and `Serial` transfer...
-                </div>
-
-                <a href="/emb_sp.html" class="read-more-link">
-                    Read more
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M5 12h14M12 5l7 7-7 7"/>
-                    </svg>
-                </a>
-            </article>
-            
+            </div>
         </div>
-
-        
-        <nav class="pagination">
-            
-            <a href="/" class="pagination-btn prev">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M19 12H5M12 19l-7-7 7-7"/>
-                </svg>
-                Newer
-            </a>
-            
-
-            <span class="pagination-info">Page 2 of 5</span>
-
-            
-            <a href="/page/3/" class="pagination-btn next">
-                Older
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M5 12h14M12 5l7 7-7 7"/>
-                </svg>
-            </a>
-            
-        </nav>
-        
     </section>
+
+    <!-- Featured Agents -->
+    <section class="home-agents">
+        <div class="container">
+            <h2 class="section-title">AI Solutions</h2>
+            <p class="section-subtitle">Specialized agents that automate your most labor-intensive operations</p>
+            
+            <div class="agents-grid">
+                <a href="/projects/#customer-support" class="agent-card">
+                    <div class="agent-icon">💬</div>
+                    <h3>Customer Support Agent</h3>
+                    <p>Resolve 60-80% of tickets automatically across all channels</p>
+                    <span class="agent-link">Learn more →</span>
+                </a>
+                
+                <a href="/projects/#competitor" class="agent-card">
+                    <div class="agent-icon">📊</div>
+                    <h3>Competitor Agent</h3>
+                    <p>Monitor pricing and get optimal recommendations daily</p>
+                    <span class="agent-link">Learn more →</span>
+                </a>
+                
+                <a href="/projects/#insight" class="agent-card">
+                    <div class="agent-icon">📈</div>
+                    <h3>Insight Agent</h3>
+                    <p>Forecast demand and predict stockouts before they happen</p>
+                    <span class="agent-link">Learn more →</span>
+                </a>
+                
+                <a href="/projects/#invoice" class="agent-card">
+                    <div class="agent-icon">📝</div>
+                    <h3>Invoice Agent</h3>
+                    <p>Process supplier invoices with 80-90% automation</p>
+                    <span class="agent-link">Learn more →</span>
+                </a>
+            </div>
+            
+            <div class="agents-cta">
+                <a href="/projects/" class="cta-button outline">View All 6 Agents</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Latest from Blog -->
+    
+    <section class="home-blog">
+        <div class="container">
+            <h2 class="section-title">Latest Blog Posts</h2>
+            
+            <div class="blog-grid">
+                
+                <article class="blog-card">
+                    <h3><a href="/dev_nurse_project_4/">From device to system: communication, backend, and dashboard for an embedded AI product</a></h3>
+                    <p class="blog-meta">
+                        <time>2026-01-07</time>
+                    </p>
+                    <p class="blog-excerpt">🟠 In this final article, I connect the embedded AI device to the real world.
+I describe how inference results leave the MCU, travel through MQTT and H...</p>
+                    <a href="/dev_nurse_project_4/" class="read-more">Read more →</a>
+                </article>
+                
+                <article class="blog-card">
+                    <h3><a href="/dev_nurse_project_3/">TinyML on MCU: from dataset to real-time inference in Rust firmware</a></h3>
+                    <p class="blog-meta">
+                        <time>2025-12-26</time>
+                    </p>
+                    <p class="blog-excerpt">🟠 In this article, I walk through the complete TinyML lifecycle on a microcontroller —
+from dataset preparation and model training to running TensorFl...</p>
+                    <a href="/dev_nurse_project_3/" class="read-more">Read more →</a>
+                </article>
+                
+                <article class="blog-card">
+                    <h3><a href="/dev_nurse_project_2/">Hardware and firmware organization: the foundation of an AI device on the ESP32-S3</a></h3>
+                    <p class="blog-meta">
+                        <time>2025-12-05</time>
+                    </p>
+                    <p class="blog-excerpt">🟠 In this article, I&#39;ll explain the hardware I&#39;m using in my AI device project, why I chose it, and how I structured the firmware in Rust.  
+This is t...</p>
+                    <a href="/dev_nurse_project_2/" class="read-more">Read more →</a>
+                </article>
+                
+            </div>
+            
+            <div class="blog-cta">
+                <a href="/archive/" class="cta-button outline">View All Posts</a>
+            </div>
+        </div>
+    </section>
+    
 </div>
 
         </main>

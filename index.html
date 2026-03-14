@@ -9,7 +9,7 @@
     <meta property="og:title" content="dev_stories">
     <meta property="og:url" content="https://maltsev-dev.github.io/">
     <meta property="og:image" content="https://github.com/maltsev-dev/favicon.png">
-    <title>dev_stories - Technical Blog</title>
+    <title>dev_stories - AI Automation for SMBs</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -35,13 +35,13 @@
                     <a href="/" class="nav-link active">Home</a>
                 </li>
                 <li class="nav-item">
-                    <a href="/archive/" class="nav-link ">Blog</a>
-                </li>
-                <li class="nav-item">
                     <a href="/projects/" class="nav-link ">AI Solutions</a>
                 </li>
                 <li class="nav-item">
                     <a href="/about/" class="nav-link ">About</a>
+                </li>
+                <li class="nav-item">
+                    <a href="/archive/" class="nav-link ">Blog</a>
                 </li>
             </ul>
         </nav>
@@ -56,408 +56,140 @@
         
         <main class="main-content">
             
-<div class="container">
-    <section class="hero">
-        <h1 class="hero-title">Welcome to <span class="accent">dev_stories</span></h1>
-        <p class="hero-subtitle">Documenting the journey through research and development of modern technologies</p>
+<div class="home-page">
+    <!-- Hero Section -->
+        <section class="home-hero">
+        <div class="container">
+            <h1 class="hero-title">Transform Your Business with <br> <span class="accent">AI Automation</span></h1>
+            <p class="hero-subtitle">
+                I help small and medium businesses replace manual workflows with intelligent AI agents that work 24/7 — reducing costs, eliminating errors, and enabling teams to focus on what matters.
+            </p>       
+         </div>
     </section>
 
-    <section class="posts-section">
-        <div class="posts-list">
+
+
+     <!-- Why AI Automation -->
+    <section class="home-why">
+        <div class="container">
+            <h2 class="section-title">Why AI Automation Now?</h2>
             
-            <article class="post-card">
-                <div class="post-card-header">
-                    <h2 class="post-card-title">
-                        <a href="/dev_nurse_project_4.html">From device to system: communication, backend, and dashboard for an embedded AI product</a>
-                    </h2>
-                    <time class="post-card-date" datetime="2026-01-07">
-                        2026-01-07
-                    </time>
-                </div>
-
-                
-                <div class="post-card-tags">
-                    
-                    <a href="/tags/project/" class="tag">#project</a>
-                    
-                    <a href="/tags/rust/" class="tag">#rust</a>
-                    
-                    <a href="/tags/nurse/" class="tag">#nurse</a>
-                    
-                    <a href="/tags/product/" class="tag">#product</a>
-                    
+            <div class="why-grid">
+                <div class="why-card">
+                    <div class="why-icon">⏱️</div>
+                    <h3>Save Time</h3>
+                    <p>Replace 500+ hours/month of manual work with autonomous agents</p>
                 </div>
                 
-
-                <div class="post-card-excerpt">
-                    🟠 In this final article, I connect the embedded AI device to the real world.
-I describe how inference results leave the MCU, travel through MQTT and HTTP, land in a Rust backend, and become visible through a web dashboard.
-
-This is the layer where a TinyML prototype turns into an actual **end-to-end product**....
-                </div>
-
-                <a href="/dev_nurse_project_4.html" class="read-more-link">
-                    Read more
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M5 12h14M12 5l7 7-7 7"/>
-                    </svg>
-                </a>
-            </article>
-            
-            <article class="post-card">
-                <div class="post-card-header">
-                    <h2 class="post-card-title">
-                        <a href="/dev_nurse_project_3.html">TinyML on MCU: from dataset to real-time inference in Rust firmware</a>
-                    </h2>
-                    <time class="post-card-date" datetime="2025-12-26">
-                        2025-12-26
-                    </time>
-                </div>
-
-                
-                <div class="post-card-tags">
-                    
-                    <a href="/tags/project/" class="tag">#project</a>
-                    
-                    <a href="/tags/rust/" class="tag">#rust</a>
-                    
-                    <a href="/tags/nurse/" class="tag">#nurse</a>
-                    
-                    <a href="/tags/product/" class="tag">#product</a>
-                    
+                <div class="why-card">
+                    <div class="why-icon">💰</div>
+                    <h3>Reduce Costs</h3>
+                    <p>Cut operational expenses by 60-80% without sacrificing quality</p>
                 </div>
                 
-
-                <div class="post-card-excerpt">
-                    🟠 In this article, I walk through the complete TinyML lifecycle on a microcontroller —
-from dataset preparation and model training to running TensorFlow Lite Micro on bare metal and integrating the model into a Rust firmware via a custom FFI wrapper.   
-
-This project intentionally spans multiple domains: embedded systems, machine learning, data engineering, and low-level systems programming in Rust....
-                </div>
-
-                <a href="/dev_nurse_project_3.html" class="read-more-link">
-                    Read more
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M5 12h14M12 5l7 7-7 7"/>
-                    </svg>
-                </a>
-            </article>
-            
-            <article class="post-card">
-                <div class="post-card-header">
-                    <h2 class="post-card-title">
-                        <a href="/dev_nurse_project_2.html">Hardware and firmware organization: the foundation of an AI device on the ESP32-S3</a>
-                    </h2>
-                    <time class="post-card-date" datetime="2025-12-05">
-                        2025-12-05
-                    </time>
-                </div>
-
-                
-                <div class="post-card-tags">
-                    
-                    <a href="/tags/project/" class="tag">#project</a>
-                    
-                    <a href="/tags/rust/" class="tag">#rust</a>
-                    
-                    <a href="/tags/nurse/" class="tag">#nurse</a>
-                    
-                    <a href="/tags/product/" class="tag">#product</a>
-                    
+                <div class="why-card">
+                    <div class="why-icon">📈</div>
+                    <h3>Scale Faster</h3>
+                    <p>Grow capacity without linearly increasing headcount</p>
                 </div>
                 
-
-                <div class="post-card-excerpt">
-                    🟠 In this article, I&#39;ll explain the hardware I&#39;m using in my AI device project, why I chose it, and how I structured the firmware in Rust.  
-This is the foundation of the entire project: the MCU, display, controls, and a minimal firmware skeleton that ensures modularity and expandability....
+                <div class="why-card">
+                    <div class="why-icon">🎯</div>
+                    <h3>Improve Accuracy</h3>
+                    <p>Eliminate human errors with 99%+ accurate automated processes</p>
                 </div>
-
-                <a href="/dev_nurse_project_2.html" class="read-more-link">
-                    Read more
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M5 12h14M12 5l7 7-7 7"/>
-                    </svg>
-                </a>
-            </article>
-            
-            <article class="post-card">
-                <div class="post-card-header">
-                    <h2 class="post-card-title">
-                        <a href="/dev_nurse_project_1.html">Why overspecialization is over, and how I decided to create my own AI device on MCU</a>
-                    </h2>
-                    <time class="post-card-date" datetime="2025-12-02">
-                        2025-12-02
-                    </time>
-                </div>
-
-                
-                <div class="post-card-tags">
-                    
-                    <a href="/tags/project/" class="tag">#project</a>
-                    
-                    <a href="/tags/rust/" class="tag">#rust</a>
-                    
-                    <a href="/tags/nurse/" class="tag">#nurse</a>
-                    
-                    <a href="/tags/product/" class="tag">#product</a>
-                    
-                </div>
-                
-
-                <div class="post-card-excerpt">
-                    In this series of articles, I&#39;d like to show you how to create your own **ESP32-S3**-based device with **ML** built right into the firmware. 
-🟠 I&#39;ll try to describe not only what I&#39;m doing, but also how I got there—all the decisions, compromises, and challenges that arose along the way....
-                </div>
-
-                <a href="/dev_nurse_project_1.html" class="read-more-link">
-                    Read more
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M5 12h14M12 5l7 7-7 7"/>
-                    </svg>
-                </a>
-            </article>
-            
-            <article class="post-card">
-                <div class="post-card-header">
-                    <h2 class="post-card-title">
-                        <a href="/needle_core.html">From image to pattern: building a cross-stitch generator as a CLI tool</a>
-                    </h2>
-                    <time class="post-card-date" datetime="2025-11-30">
-                        2025-11-30
-                    </time>
-                </div>
-
-                
-                <div class="post-card-tags">
-                    
-                    <a href="/tags/project/" class="tag">#project</a>
-                    
-                    <a href="/tags/rust/" class="tag">#rust</a>
-                    
-                    <a href="/tags/cli/" class="tag">#cli</a>
-                    
-                    <a href="/tags/graphics/" class="tag">#graphics</a>
-                    
-                    <a href="/tags/svg/" class="tag">#svg</a>
-                    
-                </div>
-                
-
-                <div class="post-card-excerpt">
-                    🟠 In this article, I describe a small but complete system that converts raster images into **cross-stitch / needlepoint patterns**.
-
-The project focuses on turning an image into a **structured, printable, and editable SVG pattern**, with full control over size and color palette.  
-It sits at the intersection of image processing, CLI tooling, and practical craft-oriented output....
-                </div>
-
-                <a href="/needle_core.html" class="read-more-link">
-                    Read more
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M5 12h14M12 5l7 7-7 7"/>
-                    </svg>
-                </a>
-            </article>
-            
-            <article class="post-card">
-                <div class="post-card-header">
-                    <h2 class="post-card-title">
-                        <a href="/nrf52833_projects.html">🧪 nrf52833 BBC micro:bit</a>
-                    </h2>
-                    <time class="post-card-date" datetime="2025-07-24">
-                        2025-07-24
-                    </time>
-                </div>
-
-                
-                <div class="post-card-tags">
-                    
-                    <a href="/tags/rust/" class="tag">#rust</a>
-                    
-                    <a href="/tags/nrf52833/" class="tag">#nrf52833</a>
-                    
-                    <a href="/tags/embedded/" class="tag">#embedded</a>
-                    
-                    <a href="/tags/project/" class="tag">#project</a>
-                    
-                </div>
-                
-
-                <div class="post-card-excerpt">
-                    **Experiments, Prototypes &amp; Notes with the micro:bit v2.21**
-
-This repository contains my projects, experiments, and notes using the **micro:bit v2.21**, built on the **nrf52833** microcontroller.  
-It serves as a playground for testing ideas, learning embedded concepts, and building small prototypes....
-                </div>
-
-                <a href="/nrf52833_projects.html" class="read-more-link">
-                    Read more
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M5 12h14M12 5l7 7-7 7"/>
-                    </svg>
-                </a>
-            </article>
-            
-            <article class="post-card">
-                <div class="post-card-header">
-                    <h2 class="post-card-title">
-                        <a href="/emb_sync.html">MCU Synchronization</a>
-                    </h2>
-                    <time class="post-card-date" datetime="2025-07-16">
-                        2025-07-16
-                    </time>
-                </div>
-
-                
-                <div class="post-card-tags">
-                    
-                    <a href="/tags/embedded/" class="tag">#embedded</a>
-                    
-                    <a href="/tags/basic/" class="tag">#basic</a>
-                    
-                    <a href="/tags/clock/" class="tag">#clock</a>
-                    
-                    <a href="/tags/timers/" class="tag">#timers</a>
-                    
-                    <a href="/tags/interrupts/" class="tag">#interrupts</a>
-                    
-                </div>
-                
-
-                <div class="post-card-excerpt">
-                    🟠 **Synchronization** is a fundamental concept that ensures that the processor, peripherals, timers, and interrupts operate in a consistent and accurate manner based on a common clock source....
-                </div>
-
-                <a href="/emb_sync.html" class="read-more-link">
-                    Read more
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M5 12h14M12 5l7 7-7 7"/>
-                    </svg>
-                </a>
-            </article>
-            
-            <article class="post-card">
-                <div class="post-card-header">
-                    <h2 class="post-card-title">
-                        <a href="/emb_clock.html">MCU Clock System</a>
-                    </h2>
-                    <time class="post-card-date" datetime="2025-07-15">
-                        2025-07-15
-                    </time>
-                </div>
-
-                
-                <div class="post-card-tags">
-                    
-                    <a href="/tags/embedded/" class="tag">#embedded</a>
-                    
-                    <a href="/tags/basic/" class="tag">#basic</a>
-                    
-                    <a href="/tags/clock/" class="tag">#clock</a>
-                    
-                </div>
-                
-
-                <div class="post-card-excerpt">
-                    🟠 **Clock is the basis for timers and interrupts**
-The clock system sets the pace of all digital components of the microcontroller. Timers use its signals to generate interrupts and perform tasks with precise time control....
-                </div>
-
-                <a href="/emb_clock.html" class="read-more-link">
-                    Read more
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M5 12h14M12 5l7 7-7 7"/>
-                    </svg>
-                </a>
-            </article>
-            
-            <article class="post-card">
-                <div class="post-card-header">
-                    <h2 class="post-card-title">
-                        <a href="/emb_timers.html">Timers</a>
-                    </h2>
-                    <time class="post-card-date" datetime="2025-07-14">
-                        2025-07-14
-                    </time>
-                </div>
-
-                
-                <div class="post-card-tags">
-                    
-                    <a href="/tags/embedded/" class="tag">#embedded</a>
-                    
-                    <a href="/tags/basic/" class="tag">#basic</a>
-                    
-                    <a href="/tags/timers/" class="tag">#timers</a>
-                    
-                </div>
-                
-
-                <div class="post-card-excerpt">
-                    🟠 Timers are hardware modules of the microcontroller for actions with time counting and event generation **without the participation of the main code**.  
- The accuracy of the timer and its maximum time range depends on its `bit depth`, the clock `frequency` to which it is connected and the value of the `divider`....
-                </div>
-
-                <a href="/emb_timers.html" class="read-more-link">
-                    Read more
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M5 12h14M12 5l7 7-7 7"/>
-                    </svg>
-                </a>
-            </article>
-            
-            <article class="post-card">
-                <div class="post-card-header">
-                    <h2 class="post-card-title">
-                        <a href="/emb_pwm.html">PWM (Pulse Width Modulation)</a>
-                    </h2>
-                    <time class="post-card-date" datetime="2025-07-13">
-                        2025-07-13
-                    </time>
-                </div>
-
-                
-                <div class="post-card-tags">
-                    
-                    <a href="/tags/embedded/" class="tag">#embedded</a>
-                    
-                    <a href="/tags/basic/" class="tag">#basic</a>
-                    
-                    <a href="/tags/pwm/" class="tag">#pwm</a>
-                    
-                </div>
-                
-
-                <div class="post-card-excerpt">
-                    🟠 How to handle pulse width modulation...
-                </div>
-
-                <a href="/emb_pwm.html" class="read-more-link">
-                    Read more
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M5 12h14M12 5l7 7-7 7"/>
-                    </svg>
-                </a>
-            </article>
-            
+            </div>
         </div>
-
-        
-        <nav class="pagination">
-            
-
-            <span class="pagination-info">Page 1 of 5</span>
-
-            
-            <a href="/page/2/" class="pagination-btn next">
-                Older
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M5 12h14M12 5l7 7-7 7"/>
-                </svg>
-            </a>
-            
-        </nav>
-        
     </section>
+
+    <!-- Featured Agents -->
+    <section class="home-agents">
+        <div class="container">
+            <h2 class="section-title">AI Solutions</h2>
+            <p class="section-subtitle">Specialized agents that automate your most labor-intensive operations</p>
+            
+            <div class="agents-grid">
+                <a href="/projects/#customer-support" class="agent-card">
+                    <div class="agent-icon">💬</div>
+                    <h3>Customer Support Agent</h3>
+                    <p>Resolve 60-80% of tickets automatically across all channels</p>
+                    <span class="agent-link">Learn more →</span>
+                </a>
+                
+                <a href="/projects/#competitor" class="agent-card">
+                    <div class="agent-icon">📊</div>
+                    <h3>Competitor Agent</h3>
+                    <p>Monitor pricing and get optimal recommendations daily</p>
+                    <span class="agent-link">Learn more →</span>
+                </a>
+                
+                <a href="/projects/#insight" class="agent-card">
+                    <div class="agent-icon">📈</div>
+                    <h3>Insight Agent</h3>
+                    <p>Forecast demand and predict stockouts before they happen</p>
+                    <span class="agent-link">Learn more →</span>
+                </a>
+                
+                <a href="/projects/#invoice" class="agent-card">
+                    <div class="agent-icon">📝</div>
+                    <h3>Invoice Agent</h3>
+                    <p>Process supplier invoices with 80-90% automation</p>
+                    <span class="agent-link">Learn more →</span>
+                </a>
+            </div>
+            
+            <div class="agents-cta">
+                <a href="/projects/" class="cta-button outline">View All 6 Agents</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Latest from Blog -->
+    
+    <section class="home-blog">
+        <div class="container">
+            <h2 class="section-title">Latest Blog Posts</h2>
+            
+            <div class="blog-grid">
+                
+                <article class="blog-card">
+                    <h3><a href="/dev_nurse_project_4/">From device to system: communication, backend, and dashboard for an embedded AI product</a></h3>
+                    <p class="blog-meta">
+                        <time>2026-01-07</time>
+                    </p>
+                    <p class="blog-excerpt">🟠 In this final article, I connect the embedded AI device to the real world.
+I describe how inference results leave the MCU, travel through MQTT and H...</p>
+                    <a href="/dev_nurse_project_4/" class="read-more">Read more →</a>
+                </article>
+                
+                <article class="blog-card">
+                    <h3><a href="/dev_nurse_project_3/">TinyML on MCU: from dataset to real-time inference in Rust firmware</a></h3>
+                    <p class="blog-meta">
+                        <time>2025-12-26</time>
+                    </p>
+                    <p class="blog-excerpt">🟠 In this article, I walk through the complete TinyML lifecycle on a microcontroller —
+from dataset preparation and model training to running TensorFl...</p>
+                    <a href="/dev_nurse_project_3/" class="read-more">Read more →</a>
+                </article>
+                
+                <article class="blog-card">
+                    <h3><a href="/dev_nurse_project_2/">Hardware and firmware organization: the foundation of an AI device on the ESP32-S3</a></h3>
+                    <p class="blog-meta">
+                        <time>2025-12-05</time>
+                    </p>
+                    <p class="blog-excerpt">🟠 In this article, I&#39;ll explain the hardware I&#39;m using in my AI device project, why I chose it, and how I structured the firmware in Rust.  
+This is t...</p>
+                    <a href="/dev_nurse_project_2/" class="read-more">Read more →</a>
+                </article>
+                
+            </div>
+            
+            <div class="blog-cta">
+                <a href="/archive/" class="cta-button outline">View All Posts</a>
+            </div>
+        </div>
+    </section>
+    
 </div>
 
         </main>

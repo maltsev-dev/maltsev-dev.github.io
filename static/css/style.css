@@ -670,7 +670,6 @@ p {
 .tag-header {
     text-align: center;
     margin-bottom: 40px;
-    padding: 40px;
     background: var(--accent-alpha);
     border-radius: var(--radius-lg);
     border: 2px solid var(--accent);
@@ -1602,7 +1601,7 @@ p {
     font-size: 1.25rem;
     color: var(--text-secondary);
     max-width: 700px;
-    margin: 0 auto 40px;
+    margin: auto;
 }
 
 .stat-item {
@@ -2527,7 +2526,7 @@ p {
    MAS System Section Styles
    ============================================ */
 .mas-system-section {
-    padding: 20px 0;
+    padding: 40px 0;
     background: var(--bg-secondary);
     border-top: 1px solid var(--border-color);
     border-bottom: 1px solid var(--border-color);
@@ -3170,12 +3169,436 @@ p {
     .post-navigation {
         display: none;
     }
-    
+
     .post-content {
         font-size: 12pt;
     }
-    
+
     a {
         color: #000;
+    }
+}
+
+/* ============================================
+   Home Page Styles
+   ============================================ */
+.home-page {
+    padding: 0;
+}
+
+/* Hero Section */
+.home-hero {
+    padding: 40px 0 20px;
+    background: linear-gradient(135deg, var(--accent-alpha) 0%, var(--bg-secondary) 100%);
+    text-align: center;
+}
+
+.hero-title {
+    font-size: 3rem;
+    line-height: 1.2;
+    margin-bottom: 24px;
+    color: var(--text-primary);
+}
+
+.hero-title .accent {
+    color: var(--accent);
+}
+
+.hero-subtitle {
+    font-size: 1.25rem;
+    line-height: 1.7;
+    color: var(--text-secondary);
+    max-width: 800px;
+    margin: 0 auto 40px;
+}
+
+.hero-cta {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    margin-bottom: 60px;
+    flex-wrap: wrap;
+}
+
+.hero-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 32px;
+    max-width: 900px;
+    margin: 0 auto;
+    padding-top: 40px;
+    border-top: 1px solid var(--border-color);
+}
+
+.stat {
+    text-align: center;
+}
+
+.stat-value {
+    display: block;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--accent);
+    margin-bottom: 8px;
+}
+
+.stat-label {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+}
+
+/* Agents Section */
+.home-agents {
+    padding: 40px 0 0;
+    background: var(--bg-primary);
+}
+
+.agents-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+    margin: 40px 0;
+}
+
+.agent-card {
+    background: var(--bg-secondary);
+    padding: 32px 24px;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-color);
+    text-align: center;
+    text-decoration: none;
+    color: var(--text-primary);
+    transition: var(--transition);
+}
+
+.agent-card:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--accent);
+}
+
+.agent-icon {
+    font-size: 3rem;
+    margin-bottom: 16px;
+    display: block;
+}
+
+.agent-card h3 {
+    font-size: 1.125rem;
+    margin-bottom: 12px;
+    color: var(--text-primary);
+}
+
+.agent-card p {
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: 16px;
+}
+
+.agent-link {
+    font-size: 0.9rem;
+    color: var(--accent);
+    font-weight: 600;
+}
+
+.agents-cta {
+    text-align: center;
+    margin-top: 32px;
+    margin-bottom: 32px;
+}
+
+/* MAS Section */
+.home-mas {
+    padding: 80px 0;
+    background: var(--bg-secondary);
+    border-top: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.mas-content {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.mas-text h2 {
+    font-size: 2rem;
+    margin-bottom: 16px;
+    color: var(--text-primary);
+}
+
+.mas-intro {
+    font-size: 1.125rem;
+    line-height: 1.7;
+    color: var(--text-secondary);
+    margin-bottom: 24px;
+}
+
+.mas-features {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 24px 0;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+}
+
+.mas-features li {
+    font-size: 1rem;
+    color: var(--text-secondary);
+}
+
+.mas-highlight {
+    display: flex;
+    gap: 24px;
+    align-items: center;
+    margin-bottom: 32px;
+    padding: 20px;
+    background: var(--accent-alpha);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--accent);
+}
+
+.mas-price {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--accent);
+}
+
+.mas-roi {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    padding-left: 16px;
+    border-left: 1px solid var(--border-color);
+}
+
+/* Why Section */
+.home-why {
+    padding: 40px 0 0;
+    background: var(--bg-primary);
+}
+
+.why-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+    margin-top: 40px;
+}
+
+.why-card {
+    background: var(--bg-secondary);
+    padding: 32px 24px;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-color);
+    text-align: center;
+    transition: var(--transition);
+}
+
+.why-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--accent);
+}
+
+.why-icon {
+    font-size: 3rem;
+    margin-bottom: 16px;
+    display: block;
+}
+
+.why-card h3 {
+    font-size: 1.125rem;
+    margin-bottom: 12px;
+    color: var(--text-primary);
+}
+
+.why-card p {
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* Blog Section */
+.home-blog {
+    padding: 30px 0;
+    background: var(--bg-secondary);
+    border-top: 1px solid var(--border-color);
+}
+
+.blog-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    margin: 40px 0;
+}
+
+.blog-card {
+    background: var(--bg-primary);
+    padding: 32px;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-color);
+    transition: var(--transition);
+}
+
+.blog-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+}
+
+.blog-card h3 {
+    font-size: 1.125rem;
+    margin-bottom: 12px;
+}
+
+.blog-card h3 a {
+    color: var(--text-primary);
+    text-decoration: none;
+}
+
+.blog-card h3 a:hover {
+    color: var(--accent);
+}
+
+.blog-meta {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+}
+
+.blog-excerpt {
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: 16px;
+}
+
+.read-more {
+    font-size: 0.9rem;
+    color: var(--accent);
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.blog-cta {
+    text-align: center;
+    margin-top: 32px;
+}
+
+/* Contact Section */
+.home-contact {
+    padding: 30px 0;
+    background: linear-gradient(135deg, var(--accent-alpha) 0%, var(--bg-secondary) 100%);
+    border-top: 1px solid var(--border-color);
+}
+
+.contact-content {
+    max-width: 800px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.contact-content h2 {
+    font-size: 2.25rem;
+    margin-bottom: 16px;
+    color: var(--text-primary);
+}
+
+.contact-content p {
+    font-size: 1.125rem;
+    color: var(--text-secondary);
+    margin-bottom: 40px;
+}
+
+.contact-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+    .agents-grid,
+    .why-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .hero-stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 900px) {
+    .home-hero {
+        padding: 80px 0 60px;
+    }
+    
+    .hero-title {
+        font-size: 2.25rem;
+    }
+    
+    .agents-grid,
+    .why-grid,
+    .blog-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .hero-stats {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 24px;
+    }
+    
+    .mas-features {
+        grid-template-columns: 1fr;
+    }
+    
+    .mas-highlight {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .mas-roi {
+        padding-left: 0;
+        border-left: none;
+    }
+}
+
+@media (max-width: 600px) {
+    .home-hero,
+    .home-agents,
+    .home-mas,
+    .home-why,
+    .home-blog,
+    .home-contact {
+        padding: 60px 0;
+    }
+    
+    .hero-title {
+        font-size: 1.75rem;
+    }
+    
+    .hero-subtitle {
+        font-size: 1.05rem;
+    }
+    
+    .hero-cta {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .stat-value {
+        font-size: 1.5rem;
+    }
+    
+    .contact-buttons {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .contact-buttons .cta-button {
+        width: 100%;
+        max-width: 280px;
+        justify-content: center;
     }
 }
