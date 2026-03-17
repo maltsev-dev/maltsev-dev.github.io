@@ -1,86 +1,85 @@
 {% extends "base.html" %}
 
-{% block title %}{{ site.title }} - AI Automation for SMBs{% endblock %}
+{% block title %}{{ site.title }} - Operational Systems Powered by AI{% endblock %}
 
 {% block content %}
 <div class="home-page">
+
     <!-- Hero Section -->
-        <section class="home-hero">
+    <section class="home-hero">
         <div class="container">
-            <h1 class="hero-title">Transform Your Business with <br> <span class="accent">AI Automation</span></h1>
+            <h1 class="hero-title">
+                Build Systems That Run Your Business — Not Just Support It
+            </h1>
             <p class="hero-subtitle">
-                I help small and medium businesses replace manual workflows with intelligent AI agents that work 24/7 — reducing costs, eliminating errors, and enabling teams to focus on what matters.
-            </p>       
-         </div>
+                I design and implement AI-powered operational systems that replace manual workflows,
+                reduce costs, and enable scalable execution — without increasing headcount.
+            </p>
+            <div class="hero-cta">
+                <button id="book-call" class="cta-button outline">Book a Call</button>
+                <a href="/projects/" class="cta-button outline">See Agentic Systems</a>
+            </div>
+        </div>
     </section>
 
-
-
-     <!-- Why AI Automation -->
+    <!-- Why AI Automation -->
     <section class="home-why">
         <div class="container">
-            <h2 class="section-title">Why AI Automation Now?</h2>
-            
+            <h2 class="section-title">What Changes When Systems Replace Work</h2>
             <div class="why-grid">
                 <div class="why-card">
                     <div class="why-icon">⏱️</div>
-                    <h3>Save Time</h3>
-                    <p>Replace 500+ hours/month of manual work with autonomous agents</p>
+                    <h3>Operational Leverage</h3>
+                    <p>Autonomous agents execute repetitive workflows continuously without supervision or fatigue.</p>
                 </div>
-                
                 <div class="why-card">
                     <div class="why-icon">💰</div>
-                    <h3>Reduce Costs</h3>
-                    <p>Cut operational expenses by 60-80% without sacrificing quality</p>
+                    <h3>Cost Efficiency</h3>
+                    <p>Reduce operational overhead and avoid human error without sacrificing quality or control.</p>
                 </div>
-                
                 <div class="why-card">
                     <div class="why-icon">📈</div>
-                    <h3>Scale Faster</h3>
-                    <p>Grow capacity without linearly increasing headcount</p>
+                    <h3>Scalable Execution</h3>
+                    <p>Systems grow with your business, enabling higher throughput without linearly increasing headcount.</p>
                 </div>
-                
                 <div class="why-card">
                     <div class="why-icon">🎯</div>
-                    <h3>Improve Accuracy</h3>
-                    <p>Eliminate human errors with 99%+ accurate automated processes</p>
+                    <h3>Reliable Operations</h3>
+                    <p>Clear architecture and intentional abstractions ensure your systems remain predictable and maintainable.</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Featured Agents -->
+    <!-- Featured Agents / Agentic Systems -->
     <section class="home-agents">
         <div class="container">
-            <h2 class="section-title">AI Solutions</h2>
-            <p class="section-subtitle">Specialized agents that automate your most labor-intensive operations</p>
+            <h2 class="section-title">Agentic Systems</h2>
+            <p class="section-subtitle">Coordinated AI agents that automate your most labor-intensive operations</p>
             
             <div class="agents-grid">
                 <a href="/projects/#customer-support" class="agent-card">
                     <div class="agent-icon">💬</div>
                     <h3>Customer Support Agent</h3>
-                    <p>Resolve 60-80% of tickets automatically across all channels</p>
+                    <p>Resolve tickets automatically across channels while maintaining service quality</p>
                     <span class="agent-link">Learn more →</span>
                 </a>
-                
                 <a href="/projects/#competitor" class="agent-card">
                     <div class="agent-icon">📊</div>
                     <h3>Competitor Agent</h3>
-                    <p>Monitor pricing and get optimal recommendations daily</p>
+                    <p>Monitor competitor activity and generate actionable pricing recommendations</p>
                     <span class="agent-link">Learn more →</span>
                 </a>
-                
                 <a href="/projects/#insight" class="agent-card">
                     <div class="agent-icon">📈</div>
                     <h3>Insight Agent</h3>
-                    <p>Forecast demand and predict stockouts before they happen</p>
+                    <p>Forecast demand, detect anomalies, and anticipate stockouts</p>
                     <span class="agent-link">Learn more →</span>
                 </a>
-                
                 <a href="/projects/#invoice" class="agent-card">
                     <div class="agent-icon">📝</div>
                     <h3>Invoice Agent</h3>
-                    <p>Process supplier invoices with 80-90% automation</p>
+                    <p>Automate invoice processing and reconciliation with minimal supervision</p>
                     <span class="agent-link">Learn more →</span>
                 </a>
             </div>
@@ -95,15 +94,14 @@
     {% if all_posts %}
     <section class="home-blog">
         <div class="container">
-            <h2 class="section-title">Latest Blog Posts</h2>
+            <h2 class="section-title">Latest Insights</h2>
+            <p class="section-subtitle">Thoughts on system design, AI agents, and building scalable operations</p>
             
             <div class="blog-grid">
                 {% for post in all_posts[:3] %}
                 <article class="blog-card">
                     <h3><a href="/{{ post.url_path }}.html">{{ post.title }}</a></h3>
-                    <p class="blog-meta">
-                        <time>{{ post.date }}</time>
-                    </p>
+                    <p class="blog-meta"><time>{{ post.date }}</time></p>
                     <p class="blog-excerpt">{{ post.summary[:150] if post.summary else post.content[:200] | striptags }}...</p>
                     <a href="/{{ post.url_path }}.html" class="read-more">Read more →</a>
                 </article>
@@ -116,5 +114,21 @@
         </div>
     </section>
     {% endif %}
+
 </div>
+
+<!-- Calendly Embed -->
+<link href="https://assets.calendly.com/assets/external/widget.css" rel="stylesheet">
+<script src="https://assets.calendly.com/assets/external/widget.js" type="text/javascript"></script>
+<script type="text/javascript">
+document.addEventListener("DOMContentLoaded", function() {
+    var btn = document.getElementById("book-call");
+    btn.addEventListener("click", function(e) {
+        e.preventDefault();
+        Calendly.showPopupWidget("https://calendly.com/mr-a-maltsev/30min");
+        return false;
+    });
+});
+</script>
+
 {% endblock %}
