@@ -1,9 +1,4 @@
 #!/usr/bin/env python3
-"""
-Custom Static Site Generator for maltsev-dev.github.io
-Replaces Zola with a lightweight Python-based generator
-"""
-
 import os
 import re
 import json

@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Customer Support Architecture</title>
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    height: 100%;
+    width: 100%;
+  }
+  html {
+    background: #ffffff;
+  }
+  body {
+    background: #ffffff;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    padding: 0;
+    min-height: 100vh;
+  }
+  h1 {
+    font-size: 24px;
+    font-weight: 600;
+    color: #1a1a18;
+    margin: 0;
+    padding: 16px 24px;
+    text-align: center;
+    flex-shrink: 0;
+    background: var(--bg-secondary, #f8f9fa);
+    border-bottom: 1px solid var(--border-color, #dee2e6);
+  }
+  .svg-container {
+    flex: 1;
+    overflow: auto;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 24px;
+    background: var(--bg-primary, #ffffff);
+  }
+  svg {
+    width: 900px;
+    height: 1000px;
+    min-width: 680px;
+    min-height: 780px;
+    display: block;
+  }
+  svg text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+  .th { font-size: 14px; font-weight: 500; fill: #0c447c; }
+  .ts { font-size: 12px; font-weight: 400; fill: #5f5e5a; }
+  /* c-blue */
+  .c-blue rect, .c-blue circle { fill: #e6f1fb; stroke: #185fa5; transition: all 0.2s ease; }
+  .c-blue .th { fill: #0c447c; }
+  .c-blue:hover rect { fill: #185fa5; }
+  .c-blue:hover .th { fill: #e6f1fb; }
+  /* c-teal */
+  .c-teal rect { fill: #e1f5ee; stroke: #0f6e56; transition: all 0.2s ease; }
+  .c-teal .th { fill: #085041; }
+  .c-teal:hover rect { fill: #0f6e56; }
+  .c-teal:hover .th { fill: #e1f5ee; }
+  /* c-purple */
+  .c-purple rect { fill: #eeedfe; stroke: #534ab7; transition: all 0.2s ease; }
+  .c-purple .th { fill: #3c3489; }
+  .c-purple .ts { fill: #534ab7; }
+  .c-purple:hover rect { fill: #534ab7; }
+  .c-purple:hover .th, .c-purple:hover .ts { fill: #eeedfe; }
+  /* c-coral */
+  .c-coral rect { fill: #faece7; stroke: #993c1d; transition: all 0.2s ease; }
+  .c-coral .th { fill: #712b13; }
+  .c-coral .ts { fill: #993c1d; }
+  .c-coral:hover rect { fill: #993c1d; }
+  .c-coral:hover .th, .c-coral:hover .ts { fill: #faece7; }
+  /* c-amber */
+  .c-amber rect { fill: #faeeda; stroke: #854f0b; transition: all 0.2s ease; }
+  .c-amber .th { fill: #633806; }
+  .c-amber:hover rect { fill: #854f0b; }
+  .c-amber:hover .th { fill: #faeeda; }
+  /* c-green */
+  .c-green rect { fill: #eaf3de; stroke: #3b6d11; transition: all 0.2s ease; }
+  .c-green .th { fill: #27500a; }
+  .c-green:hover rect { fill: #3b6d11; }
+  .c-green:hover .th { fill: #eaf3de; }
+  /* c-gray */
+  .c-gray rect { fill: #f1efe8; stroke: #5f5e5a; transition: all 0.2s ease; }
+  .c-gray .th { fill: #444441; }
+  .c-gray:hover rect { fill: #5f5e5a; }
+  .c-gray:hover .th { fill: #f1efe8; }
+  .arr { stroke: #888780; stroke-width: 1; fill: none; }
+  
+  /* Interactive elements */
+  .interactive-group {
+    cursor: pointer;
+  }
+  .interactive-group:hover rect {
+    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.15));
+    stroke-width: 1.5;
+  }
+  
+  /* Tooltip styles */
+  .tooltip {
+    position: fixed;
+    background: rgba(26, 26, 46, 0.95);
+    color: #fff;
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    line-height: 1.5;
+    max-width: 320px;
+    pointer-events: none;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+    z-index: 10000;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    backdrop-filter: blur(8px);
+  }
+  .tooltip.visible {
+    opacity: 1;
+    visibility: visible;
+  }
+  .tooltip-title {
+    font-weight: 700;
+    margin-bottom: 6px;
+    font-size: 14px;
+    color: #f59140;
+  }
+  .tooltip-desc {
+    font-weight: 400;
+    color: #e8e8e8;
+  }
+  
+  @media (prefers-color-scheme: dark) {
+    body { background: #1a1a18; }
+    h1 { color: #e0dfd6; }
+    .th { fill: #b5d4f4; }
+    .ts { fill: #b4b2a9; }
+    .c-blue rect { fill: #0c447c; stroke: #85b7eb; }
+    .c-blue .th { fill: #e6f1fb; }
+    .c-blue:hover rect { fill: #85b7eb; }
+    .c-blue:hover .th { fill: #0c447c; }
+    .c-teal rect { fill: #085041; stroke: #5dcaa5; }
+    .c-teal .th { fill: #e1f5ee; }
+    .c-teal:hover rect { fill: #5dcaa5; }
+    .c-teal:hover .th { fill: #085041; }
+    .c-purple rect { fill: #3c3489; stroke: #afa9ec; }
+    .c-purple .th { fill: #eeedfe; }
+    .c-purple .ts { fill: #cecbf6; }
+    .c-purple:hover rect { fill: #afa9ec; }
+    .c-purple:hover .th, .c-purple:hover .ts { fill: #3c3489; }
+    .c-coral rect { fill: #712b13; stroke: #f0997b; }
+    .c-coral .th { fill: #faece7; }
+    .c-coral .ts { fill: #f5c4b3; }
+    .c-coral:hover rect { fill: #f0997b; }
+    .c-coral:hover .th, .c-coral:hover .ts { fill: #712b13; }
+    .c-amber rect { fill: #633806; stroke: #ef9f27; }
+    .c-amber .th { fill: #faeeda; }
+    .c-amber:hover rect { fill: #ef9f27; }
+    .c-amber:hover .th { fill: #633806; }
+    .c-green rect { fill: #27500a; stroke: #97c459; }
+    .c-green .th { fill: #eaf3de; }
+    .c-green:hover rect { fill: #97c459; }
+    .c-green:hover .th { fill: #27500a; }
+    .c-gray rect { fill: #444441; stroke: #b4b2a9; }
+    .c-gray .th { fill: #f1efe8; }
+    .c-gray:hover rect { fill: #b4b2a9; }
+    .c-gray:hover .th { fill: #444441; }
+    .arr { stroke: #888780; }
+  }
+  
+  /* Support for manual theme toggle via data-theme attribute (from parent iframe context) */
+  /* Light theme - explicit reset when data-theme="light" */
+  [data-theme="light"] body { background: #ffffff !important; }
+  [data-theme="light"] h1 { color: #1a1a18 !important; }
+  [data-theme="light"] .th { fill: #0c447c !important; }
+  [data-theme="light"] .ts { fill: #5f5e5a !important; }
+  [data-theme="light"] .c-blue rect { fill: #e6f1fb !important; stroke: #185fa5 !important; }
+  [data-theme="light"] .c-blue .th { fill: #0c447c !important; }
+  [data-theme="light"] .c-blue:hover rect { fill: #185fa5 !important; }
+  [data-theme="light"] .c-blue:hover .th { fill: #e6f1fb !important; }
+  [data-theme="light"] .c-teal rect { fill: #e1f5ee !important; stroke: #0f6e56 !important; }
+  [data-theme="light"] .c-teal .th { fill: #085041 !important; }
+  [data-theme="light"] .c-teal:hover rect { fill: #0f6e56 !important; }
+  [data-theme="light"] .c-teal:hover .th { fill: #e1f5ee !important; }
+  [data-theme="light"] .c-purple rect { fill: #eeedfe !important; stroke: #534ab7 !important; }
+  [data-theme="light"] .c-purple .th { fill: #3c3489 !important; }
+  [data-theme="light"] .c-purple .ts { fill: #534ab7 !important; }
+  [data-theme="light"] .c-purple:hover rect { fill: #534ab7 !important; }
+  [data-theme="light"] .c-purple:hover .th, [data-theme="light"] .c-purple:hover .ts { fill: #eeedfe !important; }
+  [data-theme="light"] .c-coral rect { fill: #faece7 !important; stroke: #993c1d !important; }
+  [data-theme="light"] .c-coral .th { fill: #712b13 !important; }
+  [data-theme="light"] .c-coral .ts { fill: #993c1d !important; }
+  [data-theme="light"] .c-coral:hover rect { fill: #993c1d !important; }
+  [data-theme="light"] .c-coral:hover .th, [data-theme="light"] .c-coral:hover .ts { fill: #faece7 !important; }
+  [data-theme="light"] .c-amber rect { fill: #faeeda !important; stroke: #854f0b !important; }
+  [data-theme="light"] .c-amber .th { fill: #633806 !important; }
+  [data-theme="light"] .c-amber:hover rect { fill: #854f0b !important; }
+  [data-theme="light"] .c-amber:hover .th { fill: #faeeda !important; }
+  [data-theme="light"] .c-green rect { fill: #eaf3de !important; stroke: #3b6d11 !important; }
+  [data-theme="light"] .c-green .th { fill: #27500a !important; }
+  [data-theme="light"] .c-green:hover rect { fill: #3b6d11 !important; }
+  [data-theme="light"] .c-green:hover .th { fill: #eaf3de !important; }
+  [data-theme="light"] .c-gray rect { fill: #f1efe8 !important; stroke: #5f5e5a !important; }
+  [data-theme="light"] .c-gray .th { fill: #444441 !important; }
+  [data-theme="light"] .c-gray:hover rect { fill: #5f5e5a !important; }
+  [data-theme="light"] .c-gray:hover .th { fill: #f1efe8 !important; }
+  [data-theme="light"] .arr { stroke: #888780 !important; }
+  [data-theme="light"] .tooltip { background: rgba(26, 26, 46, 0.95) !important; color: #fff !important; }
+  [data-theme="light"] .tooltip-title { color: #f59140 !important; }
+  [data-theme="light"] .tooltip-desc { color: #e8e8e8 !important; }
+  
+  /* Dark theme */
+  [data-theme="dark"] body { background: #1a1a18 !important; }
+  [data-theme="dark"] h1 { color: #e0dfd6 !important; }
+  [data-theme="dark"] .th { fill: #b5d4f4 !important; }
+  [data-theme="dark"] .ts { fill: #b4b2a9 !important; }
+  [data-theme="dark"] .c-blue rect { fill: #0c447c !important; stroke: #85b7eb !important; }
+  [data-theme="dark"] .c-blue .th { fill: #e6f1fb !important; }
+  [data-theme="dark"] .c-blue:hover rect { fill: #85b7eb !important; }
+  [data-theme="dark"] .c-blue:hover .th { fill: #0c447c !important; }
+  [data-theme="dark"] .c-teal rect { fill: #085041 !important; stroke: #5dcaa5 !important; }
+  [data-theme="dark"] .c-teal .th { fill: #e1f5ee !important; }
+  [data-theme="dark"] .c-teal:hover rect { fill: #5dcaa5 !important; }
+  [data-theme="dark"] .c-teal:hover .th { fill: #085041 !important; }
+  [data-theme="dark"] .c-purple rect { fill: #3c3489 !important; stroke: #afa9ec !important; }
+  [data-theme="dark"] .c-purple .th { fill: #eeedfe !important; }
+  [data-theme="dark"] .c-purple .ts { fill: #cecbf6 !important; }
+  [data-theme="dark"] .c-purple:hover rect { fill: #afa9ec !important; }
+  [data-theme="dark"] .c-purple:hover .th, [data-theme="dark"] .c-purple:hover .ts { fill: #3c3489 !important; }
+  [data-theme="dark"] .c-coral rect { fill: #712b13 !important; stroke: #f0997b !important; }
+  [data-theme="dark"] .c-coral .th { fill: #faece7 !important; }
+  [data-theme="dark"] .c-coral .ts { fill: #f5c4b3 !important; }
+  [data-theme="dark"] .c-coral:hover rect { fill: #f0997b !important; }
+  [data-theme="dark"] .c-coral:hover .th, [data-theme="dark"] .c-coral:hover .ts { fill: #712b13 !important; }
+  [data-theme="dark"] .c-amber rect { fill: #633806 !important; stroke: #ef9f27 !important; }
+  [data-theme="dark"] .c-amber .th { fill: #faeeda !important; }
+  [data-theme="dark"] .c-amber:hover rect { fill: #ef9f27 !important; }
+  [data-theme="dark"] .c-amber:hover .th { fill: #633806 !important; }
+  [data-theme="dark"] .c-green rect { fill: #27500a !important; stroke: #97c459 !important; }
+  [data-theme="dark"] .c-green .th { fill: #eaf3de !important; }
+  [data-theme="dark"] .c-green:hover rect { fill: #97c459 !important; }
+  [data-theme="dark"] .c-green:hover .th { fill: #27500a !important; }
+  [data-theme="dark"] .c-gray rect { fill: #444441 !important; stroke: #b4b2a9 !important; }
+  [data-theme="dark"] .c-gray .th { fill: #f1efe8 !important; }
+  [data-theme="dark"] .c-gray:hover rect { fill: #b4b2a9 !important; }
+  [data-theme="dark"] .c-gray:hover .th { fill: #444441 !important; }
+  [data-theme="dark"] .arr { stroke: #888780 !important; }
+  [data-theme="dark"] .tooltip { background: rgba(232, 232, 232, 0.95) !important; color: #1a1a2e !important; }
+  [data-theme="dark"] .tooltip-title { color: #f59140 !important; }
+  [data-theme="dark"] .tooltip-desc { color: #1a1a2e !important; }
+</style>
+</head>
+<body>
+<script>
+  // Sync theme with parent on load
+  (function() {
+    try {
+      const parentDoc = window.parent.document;
+      const parentTheme = parentDoc.documentElement.getAttribute('data-theme');
+      if (parentTheme) {
+        document.documentElement.setAttribute('data-theme', parentTheme);
+      }
+    } catch(e) {}
+  })();
+  
+  // Listen for theme changes via postMessage
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'theme-change' && e.data.theme) {
+      document.documentElement.setAttribute('data-theme', e.data.theme);
+    }
+  });
+</script>
+<div class="tooltip" id="tooltip">
+  <div class="tooltip-title" id="tooltip-title"></div>
+  <div class="tooltip-desc" id="tooltip-desc"></div>
+</div>
+<div class="svg-container">
+<svg viewBox="0 0 680 780" xmlns="http://www.w3.org/2000/svg">
+<defs>
+  <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+    <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </marker>
+</defs>
+
+<!-- ── LAYER 1: CUSTOMER CHANNEL ── -->
+<rect x="24" y="24" width="632" height="68" rx="12" fill="none" stroke="#b4b2a9" stroke-width="0.5" stroke-dasharray="4 3"/>
+<text class="ts" x="36" y="42">Customer channel</text>
+<g class="c-blue interactive-group" data-title="Telegram Users" data-desc="End users interacting with the support bot via Telegram messaging platform">
+  <rect x="88" y="48" width="168" height="36" rx="8" stroke-width="0.5"/>
+  <text class="th" x="172" y="66" text-anchor="middle" dominant-baseline="central">Telegram users</text>
+</g>
+<g class="c-gray interactive-group" data-title="Admin Group" data-desc="Internal team channel for escalated issues and administrative oversight">
+  <rect x="424" y="48" width="168" height="36" rx="8" stroke-width="0.5"/>
+  <text class="th" x="508" y="66" text-anchor="middle" dominant-baseline="central">Admin group</text>
+</g>
+
+<!-- ── LAYER 2: BOT LAYER ── -->
+<rect x="24" y="116" width="632" height="68" rx="12" fill="none" stroke="#b4b2a9" stroke-width="0.5" stroke-dasharray="4 3"/>
+<text class="ts" x="36" y="134">Bot layer — rate limiting &amp; sanitization</text>
+<g class="c-teal interactive-group" data-title="Webhook" data-desc="Entry point for incoming Telegram messages via HTTP webhooks">
+  <rect x="52" y="140" width="140" height="36" rx="8" stroke-width="0.5"/>
+  <text class="th" x="122" y="158" text-anchor="middle" dominant-baseline="central">Webhook</text>
+</g>
+<g class="c-teal interactive-group" data-title="Rate Limiter" data-desc="Protects against abuse by limiting request frequency per user">
+  <rect x="212" y="140" width="140" height="36" rx="8" stroke-width="0.5"/>
+  <text class="th" x="282" y="158" text-anchor="middle" dominant-baseline="central">Rate limiter</text>
+</g>
+<g class="c-teal interactive-group" data-title="Input Sanitizer" data-desc="Validates and sanitizes user input to prevent injection attacks">
+  <rect x="372" y="140" width="140" height="36" rx="8" stroke-width="0.5"/>
+  <text class="th" x="442" y="158" text-anchor="middle" dominant-baseline="central">Input sanitizer</text>
+</g>
+
+<!-- ── LAYER 3: AGENT PIPELINE ── -->
+<rect x="24" y="210" width="632" height="188" rx="12" fill="none" stroke="#b4b2a9" stroke-width="0.5" stroke-dasharray="4 3"/>
+<text class="ts" x="36" y="228">Multi-agent pipeline (LangGraph)</text>
+
+<g class="c-purple interactive-group" data-title="Gateway" data-desc="Entry point that routes incoming requests to the appropriate agent">
+  <rect x="44" y="236" width="116" height="44" rx="8" stroke-width="0.5"/>
+  <text class="th" x="102" y="252" text-anchor="middle" dominant-baseline="central">Gateway</text>
+  <text class="ts" x="102" y="268" text-anchor="middle" dominant-baseline="central">entry point</text>
+</g>
+<g class="c-purple interactive-group" data-title="Customer ID" data-desc="Identifies and authenticates the customer from the incoming message">
+  <rect x="176" y="236" width="116" height="44" rx="8" stroke-width="0.5"/>
+  <text class="th" x="234" y="252" text-anchor="middle" dominant-baseline="central">Customer ID</text>
+  <text class="ts" x="234" y="268" text-anchor="middle" dominant-baseline="central">who is this?</text>
+</g>
+<g class="c-purple interactive-group" data-title="Intent Classification" data-desc="AI-powered classification to understand what the customer wants">
+  <rect x="308" y="236" width="116" height="44" rx="8" stroke-width="0.5"/>
+  <text class="th" x="366" y="252" text-anchor="middle" dominant-baseline="central">Intent</text>
+  <text class="ts" x="366" y="268" text-anchor="middle" dominant-baseline="central">what do they want?</text>
+</g>
+<g class="c-purple interactive-group" data-title="Knowledge Retrieval" data-desc="RAG-based retrieval from knowledge base to find relevant information">
+  <rect x="440" y="236" width="116" height="44" rx="8" stroke-width="0.5"/>
+  <text class="th" x="498" y="252" text-anchor="middle" dominant-baseline="central">Knowledge</text>
+  <text class="ts" x="498" y="268" text-anchor="middle" dominant-baseline="central">find the answer</text>
+</g>
+
+<g class="c-purple interactive-group" data-title="Response Generator" data-desc="Drafts the reply using retrieved context and conversation history">
+  <rect x="44" y="302" width="116" height="44" rx="8" stroke-width="0.5"/>
+  <text class="th" x="102" y="318" text-anchor="middle" dominant-baseline="central">Response</text>
+  <text class="ts" x="102" y="334" text-anchor="middle" dominant-baseline="central">draft reply</text>
+</g>
+<g class="c-purple interactive-group" data-title="Quality Check" data-desc="Validates response accuracy and tone before sending to customer">
+  <rect x="176" y="302" width="116" height="44" rx="8" stroke-width="0.5"/>
+  <text class="th" x="234" y="318" text-anchor="middle" dominant-baseline="central">Quality</text>
+  <text class="ts" x="234" y="334" text-anchor="middle" dominant-baseline="central">check before send</text>
+</g>
+<g class="c-purple interactive-group" data-title="Ticket Logger" data-desc="Logs the interaction for audit trail and analytics">
+  <rect x="308" y="302" width="116" height="44" rx="8" stroke-width="0.5"/>
+  <text class="th" x="366" y="318" text-anchor="middle" dominant-baseline="central">Ticket</text>
+  <text class="ts" x="366" y="334" text-anchor="middle" dominant-baseline="central">log interaction</text>
+</g>
+<g class="c-coral interactive-group" data-title="Escalation Handler" data-desc="Routes complex issues to human agents with full context">
+  <rect x="440" y="302" width="116" height="44" rx="8" stroke-width="0.5"/>
+  <text class="th" x="498" y="318" text-anchor="middle" dominant-baseline="central">Escalation</text>
+  <text class="ts" x="498" y="334" text-anchor="middle" dominant-baseline="central">human handoff</text>
+</g>
+
+<g class="c-purple interactive-group" data-title="Send Reply" data-desc="Delivers the response back to the customer via Telegram">
+  <rect x="44" y="368" width="116" height="24" rx="8" stroke-width="0.5"/>
+  <text class="th" x="102" y="380" text-anchor="middle" dominant-baseline="central">Send reply</text>
+</g>
+<g class="c-purple interactive-group" data-title="Summarizer" data-desc="Creates concise summaries of conversations for quick review">
+  <rect x="176" y="368" width="116" height="24" rx="8" stroke-width="0.5"/>
+  <text class="th" x="234" y="380" text-anchor="middle" dominant-baseline="central">Summarizer</text>
+</g>
+<g class="c-purple interactive-group" data-title="CSAT Survey" data-desc="Collects customer satisfaction feedback after resolution">
+  <rect x="308" y="368" width="116" height="24" rx="8" stroke-width="0.5"/>
+  <text class="th" x="366" y="380" text-anchor="middle" dominant-baseline="central">CSAT survey</text>
+</g>
+
+<!-- ── LAYER 4: DATA ── -->
+<rect x="24" y="420" width="632" height="68" rx="12" fill="none" stroke="#b4b2a9" stroke-width="0.5" stroke-dasharray="4 3"/>
+<text class="ts" x="36" y="438">Data layer</text>
+<g class="c-amber interactive-group" data-title="SQLite Database" data-desc="Persistent storage for customer data, tickets, and conversation history">
+  <rect x="52" y="444" width="140" height="36" rx="8" stroke-width="0.5"/>
+  <text class="th" x="122" y="462" text-anchor="middle" dominant-baseline="central">SQLite DB</text>
+</g>
+<g class="c-amber interactive-group" data-title="Vector Store" data-desc="Embeddings storage for semantic search and RAG retrieval">
+  <rect x="212" y="444" width="140" height="36" rx="8" stroke-width="0.5"/>
+  <text class="th" x="282" y="462" text-anchor="middle" dominant-baseline="central">Vector store</text>
+</g>
+<g class="c-amber interactive-group" data-title="LRU Cache" data-desc="Fast access cache for frequently accessed data and responses">
+  <rect x="372" y="444" width="140" height="36" rx="8" stroke-width="0.5"/>
+  <text class="th" x="442" y="462" text-anchor="middle" dominant-baseline="central">LRU cache</text>
+</g>
+
+<!-- ── LAYER 5: EXTERNAL + OBSERVABILITY ── -->
+<rect x="24" y="512" width="632" height="68" rx="12" fill="none" stroke="#b4b2a9" stroke-width="0.5" stroke-dasharray="4 3"/>
+<text class="ts" x="36" y="530">External services &amp; observability</text>
+<g class="c-green interactive-group" data-title="OpenAI API" data-desc="LLM provider for natural language understanding and generation">
+  <rect x="52" y="536" width="140" height="36" rx="8" stroke-width="0.5"/>
+  <text class="th" x="122" y="554" text-anchor="middle" dominant-baseline="central">OpenAI API</text>
+</g>
+<g class="c-green interactive-group" data-title="LangSmith" data-desc="Observability platform for tracing and debugging agent workflows">
+  <rect x="212" y="536" width="140" height="36" rx="8" stroke-width="0.5"/>
+  <text class="th" x="282" y="554" text-anchor="middle" dominant-baseline="central">LangSmith</text>
+</g>
+<g class="c-gray interactive-group" data-title="Grafana" data-desc="Metrics visualization and monitoring dashboards">
+  <rect x="372" y="536" width="140" height="36" rx="8" stroke-width="0.5"/>
+  <text class="th" x="442" y="554" text-anchor="middle" dominant-baseline="central">Grafana</text>
+</g>
+<g class="c-gray interactive-group" data-title="Logs" data-desc="Structured logging for debugging and audit purposes">
+  <rect x="524" y="536" width="120" height="36" rx="8" stroke-width="0.5"/>
+  <text class="th" x="584" y="554" text-anchor="middle" dominant-baseline="central">Logs</text>
+</g>
+
+<!-- ════ FLOW ARROWS ════ -->
+<line x1="172" y1="84" x2="122" y2="140" class="arr" marker-end="url(#arrow)"/>
+<line x1="192" y1="158" x2="212" y2="158" class="arr" marker-end="url(#arrow)"/>
+<line x1="352" y1="158" x2="372" y2="158" class="arr" marker-end="url(#arrow)"/>
+<line x1="442" y1="176" x2="102" y2="236" class="arr" marker-end="url(#arrow)"/>
+<line x1="160" y1="258" x2="176" y2="258" class="arr" marker-end="url(#arrow)"/>
+<line x1="292" y1="258" x2="308" y2="258" class="arr" marker-end="url(#arrow)"/>
+<line x1="424" y1="258" x2="440" y2="258" class="arr" marker-end="url(#arrow)"/>
+<path d="M440 280 L440 292 L160 292 L160 302" class="arr" marker-end="url(#arrow)"/>
+<line x1="160" y1="324" x2="176" y2="324" class="arr" marker-end="url(#arrow)"/>
+<line x1="292" y1="324" x2="308" y2="324" class="arr" marker-end="url(#arrow)"/>
+<path d="M366 280 L366 295 L498 295 L498 302" stroke="#b4b2a9" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#arrow)" fill="none"/>
+<path d="M308 346 L234 346 L234 368" class="arr" marker-end="url(#arrow)"/>
+<line x1="160" y1="346" x2="102" y2="368" class="arr" marker-end="url(#arrow)"/>
+<path d="M556 302 L608 302 L608 84" stroke="#D85A30" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#arrow)" fill="none"/>
+<line x1="160" y1="380" x2="176" y2="380" class="arr" marker-end="url(#arrow)"/>
+<line x1="292" y1="380" x2="308" y2="380" class="arr" marker-end="url(#arrow)"/>
+<path d="M44 380 L28 380 L28 66 L88 66" stroke="#185FA5" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#arrow)" fill="none"/>
+<path d="M366 392 L366 408 L122 408 L122 444" stroke="#b4b2a9" stroke-width="1" marker-end="url(#arrow)" fill="none"/>
+<path d="M498 280 L498 414 L282 414 L282 444" stroke="#b4b2a9" stroke-width="1" stroke-dasharray="3 3" marker-end="url(#arrow)" fill="none"/>
+<path d="M498 280 L498 420 L442 420 L442 444" stroke="#b4b2a9" stroke-width="1" stroke-dasharray="3 3" marker-end="url(#arrow)" fill="none"/>
+<path d="M102 390 L102 500 L122 500 L122 536" stroke="#b4b2a9" stroke-width="1" stroke-dasharray="3 3" marker-end="url(#arrow)" fill="none"/>
+<line x1="192" y1="554" x2="212" y2="554" stroke="#b4b2a9" stroke-width="1" marker-end="url(#arrow)" fill="none"/>
+<path d="M122 480 L122 504 L442 504 L442 536" stroke="#b4b2a9" stroke-width="1" stroke-dasharray="3 3" marker-end="url(#arrow)" fill="none"/>
+
+<!-- Legend -->
+<rect x="24" y="610" width="400" height="84" rx="10" fill="none" stroke="#d3d1c7" stroke-width="0.5"/>
+<line x1="44" y1="626" x2="80" y2="626" stroke="#888780" stroke-width="1" marker-end="url(#arrow)"/>
+<text class="ts" x="88" y="630">Main flow</text>
+<line x1="44" y1="648" x2="80" y2="648" stroke="#D85A30" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#arrow)"/>
+<text class="ts" x="88" y="652">Escalation / human handoff</text>
+<line x1="44" y1="670" x2="80" y2="670" stroke="#888780" stroke-width="1" stroke-dasharray="3 3" marker-end="url(#arrow)"/>
+<text class="ts" x="88" y="674">Data / metrics flow</text>
+</svg>
+</div>
+<script>
+// Tooltip functionality
+document.addEventListener('DOMContentLoaded', function() {
+  const tooltip = document.getElementById('tooltip');
+  const tooltipTitle = document.getElementById('tooltip-title');
+  const tooltipDesc = document.getElementById('tooltip-desc');
+  const interactiveGroups = document.querySelectorAll('.interactive-group');
+  
+  interactiveGroups.forEach(group => {
+    group.addEventListener('mouseenter', function(e) {
+      const title = this.getAttribute('data-title');
+      const desc = this.getAttribute('data-desc');
+      
+      tooltipTitle.textContent = title;
+      tooltipDesc.textContent = desc;
+      tooltip.classList.add('visible');
+      
+      // Position tooltip near cursor
+      updateTooltipPosition(e);
+    });
+    
+    group.addEventListener('mousemove', function(e) {
+      updateTooltipPosition(e);
+    });
+    
+    group.addEventListener('mouseleave', function() {
+      tooltip.classList.remove('visible');
+    });
+  });
+  
+  function updateTooltipPosition(e) {
+    const padding = 15;
+    const tooltipRect = tooltip.getBoundingClientRect();
+    let x = e.clientX + padding;
+    let y = e.clientY + padding;
+    
+    // Adjust if tooltip goes off right edge
+    if (x + tooltipRect.width > window.innerWidth) {
+      x = e.clientX - tooltipRect.width - padding;
+    }
+    
+    // Adjust if tooltip goes off bottom edge
+    if (y + tooltipRect.height > window.innerHeight) {
+      y = e.clientY - tooltipRect.height - padding;
+    }
+    
+    tooltip.style.left = x + 'px';
+    tooltip.style.top = y + 'px';
+  }
+});
+</script>
+</body>
+</html>

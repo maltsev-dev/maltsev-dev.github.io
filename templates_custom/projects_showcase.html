@@ -58,7 +58,10 @@
                         <span class="price-timeline">5-6 weeks</span>
                     </div>
 
-                    <a href="#contact" class="project-cta">Request Proposal</a>
+                    <div class="project-buttons">
+                        <button class="project-demo" data-demo="insight-agent">Demo</button>
+                        <a href="#contact" class="project-cta">Request Proposal</a>
+                    </div>
                 </article>
 
                 <!-- Project Card 2: Competitor Agent -->
@@ -144,7 +147,10 @@
                         <span class="price-timeline">6-7 weeks</span>
                     </div>
 
-                    <a href="#contact" class="project-cta">Request Proposal</a>
+                    <div class="project-buttons">
+                        <button class="project-demo" data-demo="customer-support">Demo</button>
+                        <a href="#contact" class="project-cta">Request Proposal</a>
+                    </div>
                 </article>
 
                 <!-- Project Card 4: Invoice Agent -->
@@ -722,6 +728,24 @@
     </section>
 </div>
 
+<!-- Demo Modal -->
+<div class="demo-modal" id="demo-modal">
+    <div class="demo-modal-overlay"></div>
+    <div class="demo-modal-content">
+        <div class="demo-modal-header">
+            <h3 class="demo-modal-title" id="demo-modal-title">Demo</h3>
+            <button class="demo-modal-close" id="demo-modal-close">&times;</button>
+        </div>
+        <div class="demo-modal-body" id="demo-modal-body">
+            <!-- Demo content will be injected here -->
+        </div>
+    </div>
+</div>
+
+<!-- Customer Support Agent Demo Content (Hidden by default) -->
+<div class="demo-content" id="demo-customer-support" style="display: none;">
+</div>
+
 <script>
 // Integration selector cart functionality
 document.addEventListener('DOMContentLoaded', function() {
@@ -748,6 +772,98 @@ document.addEventListener('DOMContentLoaded', function() {
             proposalCart.classList.remove('active');
         }
     }
+});
+
+// Demo Modal functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const modal = document.getElementById('demo-modal');
+    const modalOverlay = modal.querySelector('.demo-modal-overlay');
+    const modalClose = document.getElementById('demo-modal-close');
+    const modalTitle = document.getElementById('demo-modal-title');
+    const modalBody = document.getElementById('demo-modal-body');
+    const demoButtons = document.querySelectorAll('.project-demo');
+    
+    // Demo content mapping
+    const demoContent = {
+        'customer-support': {
+            title: 'Customer Support Agent — Architecture',
+            src: '/static/ai_customer_support_architecture.html'
+        },
+        // Placeholder for future demos - add your demo HTML here
+        /*
+        'insight-agent': {
+            title: 'Insight Agent — Architecture',
+            src: '/path/to/insight-agent-demo.html'
+        },
+        */
+    };
+
+    // Open modal on demo button click
+    demoButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const demoId = this.getAttribute('data-demo');
+            const demo = demoContent[demoId];
+
+            if (demo && demo.src) {
+                modalTitle.textContent = demo.title;
+                // Use iframe for external HTML content
+                modalBody.innerHTML = `<iframe id="demo-iframe" src="${demo.src}" title="${demo.title}" style="width: 100%; height: 100%; border: none; display: block;"></iframe>`;
+                modal.classList.add('active');
+                document.body.style.overflow = 'hidden';
+
+                // Send current theme to iframe after it loads
+                const iframe = modalBody.querySelector('#demo-iframe');
+                if (iframe) {
+                    iframe.onload = () => {
+                        const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+                        iframe.contentWindow.postMessage({ type: 'theme-change', theme: currentTheme }, '*');
+                    };
+                    // Fallback timeout in case onload doesn't fire (cached content)
+                    setTimeout(() => {
+                        const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+                        iframe.contentWindow.postMessage({ type: 'theme-change', theme: currentTheme }, '*');
+                    }, 50);
+                }
+            } else {
+                // Show placeholder for demos without content
+                modalTitle.textContent = 'Demo Coming Soon';
+                modalBody.innerHTML = '<div style="padding: 40px; text-align: center; color: var(--text-muted);"><h3 style="color: var(--text-primary); margin-bottom: 12px;">🚧 Under Construction</h3><p>This interactive demo is being prepared. Check back soon!</p></div>';
+                modal.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            }
+        });
+    });
+    
+    // Listen for theme changes and sync with iframe
+    const themeToggle = document.getElementById('themeToggle');
+    if (themeToggle) {
+        themeToggle.addEventListener('click', function() {
+            setTimeout(() => {
+                const iframe = document.getElementById('demo-iframe');
+                if (iframe && modal.classList.contains('active')) {
+                    const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+                    iframe.contentWindow.postMessage({ type: 'theme-change', theme: currentTheme }, '*');
+                }
+            }, 50);
+        });
+    }
+
+    // Close modal functions
+    function closeModal() {
+        modal.classList.remove('active');
+        modalBody.innerHTML = '';
+        document.body.style.overflow = '';
+    }
+
+    modalClose.addEventListener('click', closeModal);
+    modalOverlay.addEventListener('click', closeModal);
+
+    // Close on Escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && modal.classList.contains('active')) {
+            closeModal();
+        }
+    });
 });
 </script>
 {% endblock %}
