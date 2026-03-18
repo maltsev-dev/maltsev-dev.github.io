@@ -6,10 +6,10 @@
     <meta name="description" content="dev_stories - Technical blog about embedded systems, Rust, and engineering">
     <meta property="og:site_name" content="dev_stories">
     <meta property="og:type" content="article">
-    <meta property="og:title" content="Untitled">
+    <meta property="og:title" content="Interrupts (ISR, IVT, NVIC)">
     <meta property="og:url" content="https://maltsev-dev.github.io/emb_interrupt">
     <meta property="og:image" content="https://github.com/maltsev-dev/favicon.png">
-    <title>Untitled - dev_stories</title>
+    <title>Interrupts (ISR, IVT, NVIC) - dev_stories</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -62,30 +62,34 @@
 <article class="post-container">
     <div class="container">
         <header class="post-header">
-            <h1 class="post-title">Untitled</h1>
+            <h1 class="post-title">Interrupts (ISR, IVT, NVIC)</h1>
             <div class="post-meta">
-                <time class="post-date" datetime="">
+                <time class="post-date" datetime="2025-07-15">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
                         <line x1="16" y1="2" x2="16" y2="6"/>
                         <line x1="8" y1="2" x2="8" y2="6"/>
                         <line x1="3" y1="10" x2="21" y2="10"/>
                     </svg>
-                    
+                    July 15, 2025
                 </time>
 
+                
+                <div class="post-tags">
+                    
+                    <a href="/tags/embedded/" class="tag">#embedded</a>
+                    
+                    <a href="/tags/basic/" class="tag">#basic</a>
+                    
+                    <a href="/tags/interrupts/" class="tag">#interrupts</a>
+                    
+                </div>
                 
             </div>
         </header>
 
         <div class="post-content">
-            <p>+++
-title = "Interrupts (ISR, IVT, NVIC)"
-date = "2025-07-15"</p>
-<p>[taxonomies]
-tags = ["embedded", "basic", "interrupts"]
-+++</p>
-<p>🟠 Interrupts allow the microcontroller to <strong>instantly respond to important events</strong> without wasting resources on constantly polling the peripherals.  </p>
+            <p>🟠 Interrupts allow the microcontroller to <strong>instantly respond to important events</strong> without wasting resources on constantly polling the peripherals.  </p>
 <p>When an interrupt occurs, the <strong>CPU suspends the current task</strong>, goes to the <strong>Interrupt Service Routine (ISR)</strong>, performs the required action, and returns back.</p>
 <!-- more -->
 <hr />
@@ -216,11 +220,16 @@ When the system starts, the initialization code specifies the necessary function
         <nav class="post-navigation">
             <div class="nav-inner">
                 
+                <a href="/emb_timers.html" class="nav-link nav-prev">
+                    <span class="nav-label">Earlier</span>
+                    <span class="nav-title">Timers</span>
+                </a>
+                
 
                 
-                <a href="/html_scrapper.html" class="nav-link nav-next">
+                <a href="/emb_clock.html" class="nav-link nav-next">
                     <span class="nav-label">Later</span>
-                    <span class="nav-title">📄 HTML Scraper</span>
+                    <span class="nav-title">MCU Clock System</span>
                 </a>
                 
             </div>
@@ -266,6 +275,7 @@ When the system starts, the initialization code specifies the necessary function
 
     <script src="/static/js/theme.js"></script>
     <script src="/static/js/constellation.js"></script>
+    <script src="/static/js/fade-in.js"></script>
     
 <script>
     // Add copy buttons to code blocks
