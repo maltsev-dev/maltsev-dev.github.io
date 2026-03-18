@@ -10,16 +10,19 @@
     <meta property="og:url" content="https://maltsev-dev.github.io/rust_reston">
     <meta property="og:image" content="https://github.com/maltsev-dev/favicon.png">
     <title>🤖 Actix-web AI Agent - dev_stories</title>
-    
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/static/css/style.css">
     <link rel="shortcut icon" type="image/png" href="/static/favicon.png">
-    
+
     
 </head>
 <body class="">
+    <div class="constellation-container">
+        <canvas id="constellation-canvas"></canvas>
+    </div>
     <div class="site-wrapper">
         <header class="header">
     <div class="container header-inner">
@@ -53,7 +56,7 @@
         </button>
     </div>
 </header>
-        
+
         <main class="main-content">
             
 <article class="post-container">
@@ -271,7 +274,7 @@ Whether you need a simple <code>CRUD app</code> or a sophisticated <code>SAAS pl
 </article>
 
         </main>
-        
+
         <footer class="footer">
     <div class="container footer-inner">
         <div class="copyright">
@@ -294,7 +297,7 @@ Whether you need a simple <code>CRUD app</code> or a sophisticated <code>SAAS pl
     </div>
 </footer>
     </div>
-    
+
     <button class="theme-toggle" aria-label="Toggle dark mode" id="themeToggle">
         <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="12" cy="12" r="5"/>
@@ -304,8 +307,9 @@ Whether you need a simple <code>CRUD app</code> or a sophisticated <code>SAAS pl
             <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
         </svg>
     </button>
-    
+
     <script src="/static/js/theme.js"></script>
+    <script src="/static/js/constellation.js"></script>
     
 <script>
     // Add copy buttons to code blocks

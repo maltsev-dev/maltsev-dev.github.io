@@ -122,7 +122,7 @@ p {
 /* --- Header --- */
 .header {
     background: var(--bg-secondary);
-    border-bottom: 1px solid var(--border-color);
+    /* border-bottom: 1px solid var(--border-color); */
     position: sticky;
     top: 0;
     z-index: 100;
@@ -146,7 +146,9 @@ p {
     font-weight: 700;
     color: var(--text-primary);
     padding: 8px 16px;
-    background: var(--accent-alpha);
+    background: linear-gradient(-45deg, var(--accent-alpha), rgba(245, 145, 64, 0.2), var(--accent-alpha));
+    background-size: 200% 200%;
+    animation: gradientShift 8s ease infinite;
     border-radius: var(--radius-sm);
     border: 2px solid var(--accent);
     display: inline-block;
@@ -156,6 +158,7 @@ p {
 .logo-link:hover .logo {
     background: var(--accent);
     color: var(--bg-primary);
+    animation: none;
 }
 
 .main-nav {
@@ -305,7 +308,9 @@ p {
 .tag {
     display: inline-block;
     padding: 4px 12px;
-    background: var(--accent-alpha);
+    background: linear-gradient(-45deg, var(--accent-alpha), rgba(245, 145, 64, 0.2), var(--accent-alpha));
+    background-size: 200% 200%;
+    animation: gradientShift 8s ease infinite;
     color: var(--accent);
     border-radius: 20px;
     font-size: 0.825rem;
@@ -316,6 +321,7 @@ p {
 .tag:hover {
     background: var(--accent);
     color: var(--bg-primary);
+    animation: none;
 }
 
 .tag-small {
@@ -730,7 +736,7 @@ p {
 /* --- Footer --- */
 .footer {
     background: var(--bg-secondary);
-    border-top: 1px solid var(--border-color);
+    /* border-top: 1px solid var(--border-color); */
     padding: 32px 0;
     margin-top: auto;
 }
@@ -1000,6 +1006,12 @@ p {
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(20px); }
     to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
 }
 
 .post-card,
@@ -1482,12 +1494,16 @@ p {
 }
 
 .cta-button.primary {
-    background: var(--accent);
+    background: linear-gradient(-45deg, var(--accent), #ff9f52, var(--accent));
+    background-size: 200% 200%;
+    animation: gradientShift 6s ease infinite;
     color: var(--bg-primary);
 }
 
 .cta-button.primary:hover {
     background: var(--accent-hover);
+    color: var(--bg-primary);
+    animation: none;
     transform: translateY(-2px);
     box-shadow: var(--shadow-md);
 }
@@ -1618,8 +1634,7 @@ p {
 .showcase-hero {
     text-align: center;
     padding: 20px 24px 20px;
-    background: linear-gradient(135deg, var(--accent-alpha) 0%, transparent 100%);
-    border-bottom: 1px solid var(--border-color);
+    background: transparent;
 }
 
 .showcase-title {
@@ -1840,7 +1855,9 @@ p {
     display: block;
     text-align: center;
     padding: 14px 24px;
-    background: var(--accent);
+    background: linear-gradient(-45deg, var(--accent), #ff9f52, var(--accent));
+    background-size: 200% 200%;
+    animation: gradientShift 6s ease infinite;
     color: var(--bg-primary);
     border-radius: var(--radius-md);
     font-weight: 700;
@@ -1851,6 +1868,7 @@ p {
 .project-cta:hover {
     background: var(--accent-hover);
     color: var(--bg-primary);
+    animation: none;
     transform: translateY(-2px);
     box-shadow: var(--shadow-md);
 }
@@ -1858,9 +1876,10 @@ p {
 /* Process Section */
 .process-section {
     padding: 30px 24px;
-    background: var(--bg-secondary);
-    border-top: 1px solid var(--border-color);
-    border-bottom: 1px solid var(--border-color);
+    /* background: var(--bg-secondary); */
+    background: transparent;
+    /* border-top: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--border-color); */
 }
 
 .width-container{
@@ -1976,12 +1995,16 @@ p {
 }
 
 .cta-button.primary {
-    background: var(--accent);
+    background: linear-gradient(-45deg, var(--accent), #ff9f52, var(--accent));
+    background-size: 200% 200%;
+    animation: gradientShift 6s ease infinite;
     color: var(--bg-primary);
 }
 
 .cta-button.primary:hover {
     background: var(--accent-hover);
+    color: var(--bg-primary);
+    animation: none;
     transform: translateY(-2px);
     box-shadow: var(--shadow-md);
 }
@@ -2022,8 +2045,7 @@ p {
 /* --- Pricing & Timeline Explanation Section --- */
 .explanation-section {
     padding: 30px 24px;
-    background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
-    border-top: 1px solid var(--border-color);
+    background: transparent;
 }
 
 .explanation-section .section-title {
@@ -2563,16 +2585,16 @@ p {
    ============================================ */
 .mas-system-section {
     padding: 40px 0;
-    background: var(--bg-secondary);
-    border-top: 1px solid var(--border-color);
-    border-bottom: 1px solid var(--border-color);
+    background: transparent;
 }
 
 .mas-title {
     text-align: center;
     font-size: 2rem;
     margin-bottom: 0.5rem;
-    background: linear-gradient(135deg, var(--accent), #ff6b6b);
+    background: linear-gradient(-45deg, var(--accent), #ff6b6b, var(--accent));
+    background-size: 200% 200%;
+    animation: gradientShift 6s ease infinite;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -3048,8 +3070,7 @@ p {
    ============================================ */
 .market-positioning-section {
     padding: 20px 0;
-    background: var(--bg-secondary);
-    border-top: 1px solid var(--border-color);
+    background: transparent;
 }
 
 .positioning-comparison {
@@ -3225,7 +3246,7 @@ p {
 /* Hero Section */
 .home-hero {
     padding: 40px 0 20px;
-    background: linear-gradient(135deg, var(--accent-alpha) 0%, var(--bg-secondary) 100%);
+    background: transparent;
     text-align: center;
 }
 
@@ -3237,7 +3258,12 @@ p {
 }
 
 .hero-title .accent {
-    color: var(--accent);
+    background: linear-gradient(-45deg, var(--accent), #ff9f52, var(--accent));
+    background-size: 200% 200%;
+    animation: gradientShift 6s ease infinite;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
 .hero-subtitle {
@@ -3263,7 +3289,6 @@ p {
     max-width: 900px;
     margin: 0 auto;
     padding-top: 40px;
-    border-top: 1px solid var(--border-color);
 }
 
 .stat {
@@ -3274,7 +3299,12 @@ p {
     display: block;
     font-size: 2rem;
     font-weight: 700;
-    color: var(--accent);
+    background: linear-gradient(-45deg, var(--accent), #ff9f52, var(--accent));
+    background-size: 200% 200%;
+    animation: gradientShift 6s ease infinite;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
     margin-bottom: 8px;
 }
 
@@ -3286,7 +3316,7 @@ p {
 /* Agents Section */
 .home-agents {
     padding: 40px 0 0;
-    background: var(--bg-primary);
+    background: transparent;
 }
 
 .agents-grid {
@@ -3334,7 +3364,12 @@ p {
 
 .agent-link {
     font-size: 0.9rem;
-    color: var(--accent);
+    background: linear-gradient(-45deg, var(--accent), #ff9f52, var(--accent));
+    background-size: 200% 200%;
+    animation: gradientShift 6s ease infinite;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
     font-weight: 600;
 }
 
@@ -3411,7 +3446,7 @@ p {
 /* Why Section */
 .home-why {
     padding: 40px 0 0;
-    background: var(--bg-primary);
+    background: transparent;
 }
 
 .why-grid {
@@ -3458,8 +3493,7 @@ p {
 /* Blog Section */
 .home-blog {
     padding: 30px 0;
-    background: var(--bg-secondary);
-    border-top: 1px solid var(--border-color);
+    background: transparent;
 }
 
 .blog-grid {
@@ -3511,7 +3545,12 @@ p {
 
 .read-more {
     font-size: 0.9rem;
-    color: var(--accent);
+    background: linear-gradient(-45deg, var(--accent), #ff9f52, var(--accent));
+    background-size: 200% 200%;
+    animation: gradientShift 6s ease infinite;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
     font-weight: 600;
     text-decoration: none;
 }
@@ -3524,8 +3563,7 @@ p {
 /* Contact Section */
 .home-contact {
     padding: 30px 0;
-    background: linear-gradient(135deg, var(--accent-alpha) 0%, var(--bg-secondary) 100%);
-    border-top: 1px solid var(--border-color);
+    background: transparent;
 }
 
 .contact-content {
@@ -3806,4 +3844,30 @@ p {
     .demo-modal-title {
         font-size: 1rem;
     }
+}
+
+/* ============================================
+   Constellation Network Background Animation
+   ============================================ */
+
+.constellation-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+#constellation-canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.site-wrapper {
+    position: relative;
+    z-index: 1;
 }
