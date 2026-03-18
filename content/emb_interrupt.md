@@ -1,4 +1,3 @@
-
 +++
 title = "Interrupts (ISR, IVT, NVIC)"
 date = "2025-07-15"

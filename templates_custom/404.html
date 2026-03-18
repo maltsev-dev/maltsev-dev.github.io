@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}404 - Page Not Found{% endblock %}
+
+{% block content %}
+<div class="error-404">
+  <div class="error-404-content">
+    <!-- Glitch decorative elements -->
+    <div class="error-404-glitch"></div>
+    <div class="error-404-glitch"></div>
+    <div class="error-404-glitch"></div>
+    
+    <h1 class="error-404-code">404</h1>
+    <h2 class="error-404-title">Lost in the Matrix?</h2>
+    <p class="error-404-message">This page has been disconnected from the system. Let's get you back on track.</p>
+    <a href="/" class="error-404-home-link">Return to Base</a>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="/static/js/glitch-404.js"></script>
+{% endblock %}

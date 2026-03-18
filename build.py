@@ -348,10 +348,20 @@ def generate_static_page_html(post: Post, env: Environment) -> str:
 def generate_projects_showcase_html(env: Environment) -> str:
     """Generate projects showcase page HTML"""
     template = env.get_template("projects_showcase.html")
-    
+
     return template.render(
         site=SITE_CONFIG,
         current_path="projects"
+    )
+
+
+def generate_404_html(env: Environment) -> str:
+    """Generate 404 error page HTML"""
+    template = env.get_template("404.html")
+
+    return template.render(
+        site=SITE_CONFIG,
+        current_path="404"
     )
 
 
@@ -454,6 +464,12 @@ def build_site():
     html = generate_projects_showcase_html(env)
     projects_file.write_text(html, encoding='utf-8')
     print("[OK] Generated projects showcase page")
+
+    # Generate 404 error page
+    output_file = OUTPUT_DIR / "404.html"
+    html = generate_404_html(env)
+    output_file.write_text(html, encoding='utf-8')
+    print("[OK] Generated 404 error page")
 
     print("\n[BUILD] Build complete!")
     print(f"[INFO] Output: {OUTPUT_DIR.absolute()}")

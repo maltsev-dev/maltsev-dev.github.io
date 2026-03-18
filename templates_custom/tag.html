@@ -5,13 +5,13 @@
 {% block content %}
 <div class="container">
     <header class="tag-header">
-        <h1 class="tag-title">#{{ tag }}</h1>
-        <p class="tag-subtitle">{{ posts|length }} post{% if posts|length != 1 %}s{% endif %}</p>
+        <h1 class="tag-title reveal-left">#{{ tag }}</h1>
+        <p class="tag-subtitle reveal-right">{{ posts|length }} post{% if posts|length != 1 %}s{% endif %}</p>
     </header>
 
     <div class="posts-list">
         {% for post in posts %}
-        <article class="post-card">
+        <article class="post-card reveal-left">
             <div class="post-card-header">
                 <h2 class="post-card-title">
                     <a href="/{{ post.url_path }}.html">{{ post.title }}</a>
@@ -35,7 +35,7 @@
         {% endfor %}
     </div>
 
-    <div class="back-to-home">
+    <div class="back-to-home reveal-left">
         <a href="/" class="back-link">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M19 12H5M12 19l-7-7 7-7"/>

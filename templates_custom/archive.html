@@ -5,8 +5,8 @@
 {% block content %}
 <div class="container">
     <header class="archive-header">
-        <h1 class="archive-title">Archive</h1>
-        <p class="archive-subtitle">All {{ posts|length }} posts in chronological order</p>
+        <h1 class="archive-title reveal-left">Archive</h1>
+        <p class="archive-subtitle reveal-right">All {{ posts|length }} posts in chronological order</p>
     </header>
 
     <div class="archive-list">
@@ -21,11 +21,11 @@
 
                 {% set current_year.value = post_year %}
                 <section class="archive-year">
-                <h2 class="year-heading">{{ post_year }}</h2>
+                <h2 class="year-heading reveal-left">{{ post_year }}</h2>
                 <div class="year-posts">
             {% endif %}
 
-            <article class="archive-post-item">
+            <article class="archive-post-item reveal-left">
                 <time class="archive-post-date" datetime="{{ post.date }}">
                     {{ post.date | format_date_short }}
                 </time>
