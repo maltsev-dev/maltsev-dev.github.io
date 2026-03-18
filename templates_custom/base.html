@@ -10,26 +10,29 @@
     <meta property="og:url" content="{{ site.base_url }}/{% if current_path %}{{ current_path }}{% endif %}">
     <meta property="og:image" content="https://github.com/maltsev-dev/favicon.png">
     <title>{% block title %}{{ site.title }}{% endblock %}</title>
-    
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/static/css/style.css">
     <link rel="shortcut icon" type="image/png" href="/static/favicon.png">
-    
+
     {% block extra_head %}{% endblock %}
 </head>
 <body class="{% block body_class %}{% endblock %}">
+    <div class="constellation-container">
+        <canvas id="constellation-canvas"></canvas>
+    </div>
     <div class="site-wrapper">
         {% include "components/header.html" %}
-        
+
         <main class="main-content">
             {% block content %}{% endblock %}
         </main>
-        
+
         {% include "components/footer.html" %}
     </div>
-    
+
     <button class="theme-toggle" aria-label="Toggle dark mode" id="themeToggle">
         <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="12" cy="12" r="5"/>
@@ -39,8 +42,9 @@
             <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
         </svg>
     </button>
-    
+
     <script src="/static/js/theme.js"></script>
+    <script src="/static/js/constellation.js"></script>
     {% block extra_scripts %}{% endblock %}
 </body>
 </html>
