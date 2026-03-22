@@ -6,6 +6,6 @@
 .DS_Store
 
 # Generated HTML in content (build artifacts)
-content/**/*.html
-!content/**/*.md
+# But keep project landing pages
+content/projects/*.html
 QWEN.md
