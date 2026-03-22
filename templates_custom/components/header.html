@@ -8,18 +8,35 @@
 
         <nav class="main-nav">
             <ul class="nav-list">
+
                 <li class="nav-item">
-                    <a href="/" class="nav-link {% if current_path == '/' or current_path == '' %}active{% endif %}">Home</a>
+                    <a href="/" class="nav-link 
+                    {% if current_path == '/' or current_path == '' %}active{% endif %}">
+                        Home
+                    </a>
                 </li>
+
                 <li class="nav-item">
-                    <a href="/projects/" class="nav-link {% if current_path == '/projects/' %}active{% endif %}">AI Solutions</a>
+                    <a href="/projects/" class="nav-link 
+                    {% if current_path and current_path.startswith('/projects') %}active{% endif %}">
+                        AI Projects
+                    </a>
                 </li>
+
                 <li class="nav-item">
-                    <a href="/about/" class="nav-link {% if current_path == '/about/' %}active{% endif %}">About</a>
+                    <a href="/about/" class="nav-link 
+                    {% if current_path and current_path.startswith('/about') %}active{% endif %}">
+                        About
+                    </a>
                 </li>
+
                 <li class="nav-item">
-                    <a href="/archive/" class="nav-link {% if current_path == '/archive/' %}active{% endif %}">Blog</a>
+                    <a href="/archive/" class="nav-link 
+                    {% if current_path and current_path.startswith('/archive') %}active{% endif %}">
+                        Blog
+                    </a>
                 </li>
+
             </ul>
         </nav>
 

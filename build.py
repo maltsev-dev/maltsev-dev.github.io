@@ -25,10 +25,10 @@ SASS_DIR = BASE_DIR / "sass"
 TEMPLATES_DIR = BASE_DIR / "templates_custom"
 
 SITE_CONFIG = {
-    "title": "dev_stories",
+    "title": "AI Operational Systems",
     "base_url": "https://maltsev-dev.github.io",
     "author": "A.Maltsev",
-    "logo_text": "Research. Build. Evolve.",
+    "logo_text": "Automate. Scale. Win.",
     "accent_color": "orange",
     "posts_per_page": 10,
 }
@@ -68,19 +68,28 @@ class Post:
     """Represents a blog post"""
     def __init__(self, path: Path):
         self.path = path
-        
+
         # Read and parse frontmatter manually
         content = path.read_text(encoding='utf-8')
-        
-        # Parse frontmatter (between +++ markers)
+
+        # Parse frontmatter (between +++ markers for TOML or --- for YAML)
         if content.startswith('+++'):
             parts = content.split('+++', 2)
             if len(parts) >= 3:
                 fm_text = parts[1].strip()
                 self.content = parts[2].strip()
-                
                 # Parse TOML frontmatter manually
                 self.metadata = self._parse_toml(fm_text)
+            else:
+                self.metadata = {}
+                self.content = content
+        elif content.startswith('---'):
+            parts = content.split('---', 2)
+            if len(parts) >= 3:
+                fm_text = parts[1].strip()
+                self.content = parts[2].strip()
+                # Parse YAML frontmatter manually
+                self.metadata = self._parse_yaml(fm_text)
             else:
                 self.metadata = {}
                 self.content = content
@@ -90,17 +99,18 @@ class Post:
 
         self.title: str = self.metadata.get("title", "Untitled")
         self.date: str = self.metadata.get("date", "")
-        
+
         # Tags can be in [taxonomies] table or directly in metadata
         self.tags: List[str] = []
         if "taxonomies" in self.metadata and isinstance(self.metadata["taxonomies"], dict):
             self.tags = self.metadata["taxonomies"].get("tags", [])
         else:
             self.tags = self.metadata.get("tags", [])
-        
+
         self.slug: str = path.stem
         self.summary: Optional[str] = None
-        
+        self.extra: Dict[str, Any] = self.metadata.get("extra", {})
+
         # Extract summary (content before <!-- more -->)
         if "<!-- more -->" in self.content:
             self.summary = self.content.split("<!-- more -->")[0].strip()
@@ -167,7 +177,131 @@ class Post:
                     result[key] = parsed_value
         
         return result
+
+    def _parse_yaml(self, yaml_text: str) -> Dict[str, Any]:
+        """Simple YAML parser for frontmatter (handles basic YAML with nesting)"""
+        result = {}
+        lines = yaml_text.split('\n')
+        
+        # Track state
+        current_key = None  # Top-level key being processed
+        current_list = None  # Current list being built
+        current_dict = None  # Current dict item in list
+        nested_key = None  # Key inside nested dict (like extra)
+        
+        for line in lines:
+            # Skip empty lines and comments
+            if not line.strip() or line.strip().startswith('#'):
+                continue
             
+            indent = len(line) - len(line.lstrip())
+            stripped = line.strip()
+            
+            # Top-level key: value (indent 0)
+            if indent == 0 and ':' in stripped:
+                key, value = stripped.split(':', 1)
+                key = key.strip()
+                value = value.strip()
+                current_key = key
+                nested_key = None
+                
+                if value == '':
+                    result[key] = None
+                    current_list = None
+                    current_dict = None
+                else:
+                    result[key] = self._parse_yaml_value(value)
+                    current_list = None
+                    current_dict = None
+            
+            # Level 2: nested dict key: value OR list start
+            elif indent == 2 and current_key:
+                # Initialize nested dict if needed
+                if result.get(current_key) is None:
+                    result[current_key] = {}
+                
+                if isinstance(result[current_key], dict):
+                    if stripped.startswith('- '):
+                        # This shouldn't happen at indent 2 under a dict
+                        pass
+                    elif ':' in stripped:
+                        key, value = stripped.split(':', 1)
+                        key = key.strip()
+                        value = value.strip()
+                        nested_key = key
+                        
+                        if value == '':
+                            result[current_key][key] = None
+                            current_list = None
+                        else:
+                            result[current_key][key] = self._parse_yaml_value(value)
+                            current_list = None
+            
+            # Level 4: list items under nested dict key
+            elif indent == 4 and stripped.startswith('- '):
+                # Find which nested key this list belongs to
+                if current_key and nested_key and isinstance(result.get(current_key), dict):
+                    if result[current_key].get(nested_key) is None:
+                        result[current_key][nested_key] = []
+                    current_list = result[current_key][nested_key]
+                    
+                    if isinstance(current_list, list):
+                        item_value = stripped[2:].strip()
+                        if ':' in item_value and not item_value.startswith('"'):
+                            item_dict = {}
+                            k, v = item_value.split(':', 1)
+                            item_dict[k.strip()] = self._parse_yaml_value(v.strip())
+                            current_list.append(item_dict)
+                            current_dict = item_dict
+                        else:
+                            current_list.append(self._parse_yaml_value(item_value))
+                            current_dict = None
+            
+            # Level 6+: nested key: value in list item
+            elif indent >= 6 and current_dict is not None and ':' in stripped:
+                key, value = stripped.split(':', 1)
+                key = key.strip()
+                value = value.strip()
+                current_dict[key] = self._parse_yaml_value(value)
+        
+        return result
+
+    def _fix_yaml_lists(self, obj: Any, parent: Dict = None, key: str = None):
+        """Convert empty dicts to lists if they should be lists based on content"""
+        if isinstance(obj, dict):
+            for k, v in list(obj.items()):
+                if isinstance(v, dict) and len(v) == 0:
+                    # Check if this key is followed by list items in original
+                    # For now, assume keys with list-like names should be lists
+                    pass
+                else:
+                    self._fix_yaml_lists(v, obj, k)
+
+    def _parse_yaml_value(self, value: str) -> Any:
+        """Parse a YAML value string into Python type"""
+        if not value:
+            return ""
+        if value.startswith('"') and value.endswith('"'):
+            return value[1:-1]
+        if value.startswith("'") and value.endswith("'"):
+            return value[1:-1]
+        if value == 'true':
+            return True
+        if value == 'false':
+            return False
+        if value.startswith('[') and value.endswith(']'):
+            array_content = value[1:-1].strip()
+            if array_content:
+                return [item.strip().strip('"').strip("'") for item in array_content.split(',')]
+            return []
+        try:
+            return int(value)
+        except ValueError:
+            try:
+                return float(value)
+            except ValueError:
+                return value
+
     def render_content(self) -> str:
         """Render markdown content to HTML"""
         md = create_markdown_instance()
@@ -210,13 +344,28 @@ def load_pages() -> Dict[str, Post]:
     """Load static pages from content/pages"""
     pages_dir = CONTENT_DIR / "pages"
     pages = {}
-    
+
     if pages_dir.exists():
         for md_file in pages_dir.glob("*.md"):
             post = Post(md_file)
             pages[post.url_path] = post
-    
+
     return pages
+
+
+def load_project_pages() -> Dict[str, str]:
+    """Load project landing pages from content/projects (HTML files)"""
+    projects_dir = CONTENT_DIR / "projects"
+    projects = {}
+
+    if projects_dir.exists():
+        for html_file in projects_dir.glob("*.html"):
+            if html_file.name == "index.html":
+                continue  # Skip the projects index page
+            slug = html_file.stem
+            projects[slug] = html_file.read_text(encoding='utf-8')
+
+    return projects
 
 
 def get_all_tags(posts: List[Post]) -> Dict[str, List[Post]]:
@@ -345,6 +494,20 @@ def generate_static_page_html(post: Post, env: Environment) -> str:
     )
 
 
+def generate_project_page_html(post: Post, env: Environment) -> str:
+    """Generate HTML for project landing page"""
+    # Use template from frontmatter, default to project_landing.html
+    template_name = post.metadata.get("template", "project_landing.html")
+    template = env.get_template(template_name)
+
+    return template.render(
+        site=SITE_CONFIG,
+        page=post,
+        content=post.render_content(),
+        current_path=f"projects/{post.slug}"
+    )
+
+
 def generate_projects_showcase_html(env: Environment) -> str:
     """Generate projects showcase page HTML"""
     template = env.get_template("projects_showcase.html")
@@ -394,10 +557,12 @@ def build_site():
     # Load content
     posts = load_all_posts()
     pages = load_pages()
+    projects = load_project_pages()
     tags = get_all_tags(posts)
 
     print(f"[INFO] Loaded {len(posts)} posts")
     print(f"[INFO] Loaded {len(pages)} pages")
+    print(f"[INFO] Loaded {len(projects)} project pages")
     print(f"[INFO] Found {len(tags)} tags")
     
     # Setup templates
@@ -464,6 +629,16 @@ def build_site():
     html = generate_projects_showcase_html(env)
     projects_file.write_text(html, encoding='utf-8')
     print("[OK] Generated projects showcase page")
+
+    # Copy project landing pages (pre-built HTML)
+    for slug, project_html in projects.items():
+        project_output_dir = projects_dir / slug
+        project_output_dir.mkdir(parents=True, exist_ok=True)
+        project_file = project_output_dir / "index.html"
+        # Fix relative paths in HTML (e.g., /static/ -> ../static/ or keep absolute)
+        project_file.write_text(project_html, encoding='utf-8')
+
+    print(f"[OK] Generated {len(projects)} project landing pages")
 
     # Generate 404 error page
     output_file = OUTPUT_DIR / "404.html"

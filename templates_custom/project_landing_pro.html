@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+
+{% block title %}{{ page.title }} - {{ site.title }}{% endblock %}
+
+{% block content %}
+<div class="project-landing-pro">
+    <!-- Fixed Back Button Bar -->
+    <div class="back-bar">
+        <div class="container">
+            <a href="/projects/" class="back-link">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                Back to Projects
+            </a>
+        </div>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="hero-pro">
+        <div class="hero-bg-animation"></div>
+        <div class="container hero-container">
+            <div class="hero-content">
+                <div class="hero-icon-wrapper">
+                    <span class="hero-icon">{{ page.extra.project_icon }}</span>
+                </div>
+                <h1 class="hero-title">{{ page.title }}</h1>
+                <p class="hero-subtitle">{{ page.extra.tagline }}</p>
+                
+                <div class="hero-metrics">
+                    {% for metric in page.extra.metrics %}
+                    <div class="metric-card">
+                        <span class="metric-value">{{ metric.value }}</span>
+                        <span class="metric-label">{{ metric.label }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                <div class="hero-cta">
+                    <a href="#contact" class="btn btn-primary btn-large">
+                        <span>{{ page.extra.cta_primary }}</span>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M5 12h14M12 5l7 7-7 7"/>
+                        </svg>
+                    </a>
+                    <a href="#contact" class="btn btn-outline btn-large">{{ page.extra.cta_secondary }}</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Grid -->
+    <section class="features-pro">
+        <div class="container">
+            <div class="features-grid">
+                {% for feature in page.extra.features %}
+                <div class="feature-card">
+                    <div class="feature-icon">{{ feature.icon }}</div>
+                    <h3 class="feature-title">{{ feature.title }}</h3>
+                    <p class="feature-desc">{{ feature.desc }}</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <section class="content-pro">
+        <div class="container content-container">
+            <div class="content-body">
+                {{ content | safe }}
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-pro" id="contact">
+        <div class="container">
+            <div class="cta-content">
+                <h2 class="cta-title">Ready to Automate?</h2>
+                <p class="cta-desc">Let's discuss which solution fits your needs and create a custom proposal</p>
+                
+                <div class="cta-actions">
+                    <a href="mailto:mr.a.maltsev@gmail.com" class="btn btn-outline">Email Me</a>
+                    <a href="https://t.me/replicantDuke" target="_blank" class="btn btn-outline">Telegram</a>
+                    <a href="https://www.linkedin.com/in/a-maltsev" class="btn btn-outline">LinkedIn</a>
+                    <a href="https://www.upwork.com/freelancers/~017ad72fa11d4f3d91" class="btn btn-outline">Upwork</a>
+                    <a href="/about/" class="btn btn-outline">About</a>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock %}

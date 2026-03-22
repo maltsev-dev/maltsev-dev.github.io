@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Email Agent Architecture</title>
+<style>
+  :root {
+    --bg-color: #ffffff;
+    --text-color: #1a1a18;
+    --text-secondary: #5f5e5a;
+    --border-color: #b4b2a9;
+    --blue-fill: #e6f1fb; --blue-stroke: #185fa5; --blue-text: #0c447c;
+    --teal-fill: #e1f5ee; --teal-stroke: #0f6e56; --teal-text: #085041;
+    --purple-fill: #eeedfe; --purple-stroke: #534ab7; --purple-text: #3c3489;
+    --green-fill: #eaf3de; --green-stroke: #3b6d11; --green-text: #27500a;
+    --coral-fill: #faece7; --coral-stroke: #993c1d; --coral-text: #712b13;
+    --amber-fill: #faeeda; --amber-stroke: #854f0b; --amber-text: #633806;
+    --gray-fill: #f1efe8; --gray-stroke: #5f5e5a; --gray-text: #444441;
+  }
+  [data-theme="dark"] {
+    --bg-color: #1a1a18;
+    --text-color: #e0dfd6;
+    --text-secondary: #b4b2a9;
+    --border-color: #444441;
+    --blue-fill: #0c447c; --blue-stroke: #85b7eb; --blue-text: #e6f1fb;
+    --teal-fill: #085041; --teal-stroke: #5dcaa5; --teal-text: #e1f5ee;
+    --purple-fill: #3c3489; --purple-stroke: #afa9ec; --purple-text: #eeedfe;
+    --green-fill: #27500a; --green-stroke: #97c459; --green-text: #eaf3de;
+    --coral-fill: #712b13; --coral-stroke: #f0997b; --coral-text: #faece7;
+    --amber-fill: #633806; --amber-stroke: #ef9f27; --amber-text: #faeeda;
+    --gray-fill: #444441; --gray-stroke: #b4b2a9; --gray-text: #f1efe8;
+  }
+  body {
+    margin: 0;
+    padding: 24px;
+    background: var(--bg-color);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: background-color 0.3s ease;
+  }
+  h1 {
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--text-color);
+    margin: 0 0 20px;
+    text-align: center;
+    transition: color 0.3s ease;
+  }
+  svg text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+  .th { font-size: 14px; font-weight: 500; }
+  .ts { font-size: 12px; font-weight: 400; fill: var(--text-secondary); transition: fill 0.3s ease; }
+  .c-blue rect { fill: var(--blue-fill); stroke: var(--blue-stroke); transition: all 0.3s ease; }
+  .c-blue .th { fill: var(--blue-text); transition: fill 0.3s ease; }
+  .c-teal rect { fill: var(--teal-fill); stroke: var(--teal-stroke); transition: all 0.3s ease; }
+  .c-teal .th { fill: var(--teal-text); transition: fill 0.3s ease; }
+  .c-purple rect { fill: var(--purple-fill); stroke: var(--purple-stroke); transition: all 0.3s ease; }
+  .c-purple .th { fill: var(--purple-text); transition: fill 0.3s ease; }
+  .c-green rect { fill: var(--green-fill); stroke: var(--green-stroke); transition: all 0.3s ease; }
+  .c-green .th { fill: var(--green-text); transition: fill 0.3s ease; }
+  .c-coral rect { fill: var(--coral-fill); stroke: var(--coral-stroke); transition: all 0.3s ease; }
+  .c-coral .th { fill: var(--coral-text); transition: fill 0.3s ease; }
+  .c-amber rect { fill: var(--amber-fill); stroke: var(--amber-stroke); transition: all 0.3s ease; }
+  .c-amber .th { fill: var(--amber-text); transition: fill 0.3s ease; }
+  .c-gray rect { fill: var(--gray-fill); stroke: var(--gray-stroke); transition: all 0.3s ease; }
+  .c-gray .th { fill: var(--gray-text); transition: fill 0.3s ease; }
+</style>
+<script>
+  // Sync theme with parent page
+  function syncTheme() {
+    try {
+      const parentTheme = localStorage.getItem('theme');
+      document.documentElement.setAttribute('data-theme', parentTheme || 'dark');
+    } catch(e) {}
+  }
+  syncTheme();
+  window.addEventListener('storage', (e) => {
+    if (e.key === 'theme') syncTheme();
+  });
+</script>
+</head>
+<body>
+<h1>AI Email Agent — System Architecture</h1>
+<svg width="100%" viewBox="0 0 680 860" xmlns="http://www.w3.org/2000/svg">
+<defs>
+  <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+    <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </marker>
+</defs>
+
+<!-- LAYER 1: EXTERNAL -->
+<rect x="24" y="24" width="632" height="68" rx="12" fill="none" stroke="#b4b2a9" stroke-width="0.5" stroke-dasharray="4 3"/>
+<text class="ts" x="36" y="42">External systems</text>
+<g class="c-blue"><rect x="40" y="48" width="132" height="36" rx="8" stroke-width="0.5"/><text class="th" x="106" y="66" text-anchor="middle" dominant-baseline="central">Gmail API</text></g>
+<g class="c-blue"><rect x="188" y="48" width="132" height="36" rx="8" stroke-width="0.5"/><text class="th" x="254" y="66" text-anchor="middle" dominant-baseline="central">Google Calendar</text></g>
+<g class="c-blue"><rect x="336" y="48" width="132" height="36" rx="8" stroke-width="0.5"/><text class="th" x="402" y="66" text-anchor="middle" dominant-baseline="central">Slack API</text></g>
+<g class="c-blue"><rect x="484" y="48" width="172" height="36" rx="8" stroke-width="0.5"/><text class="th" x="570" y="66" text-anchor="middle" dominant-baseline="central">Google Sheets</text></g>
+
+<!-- LAYER 2: INGESTION -->
+<rect x="24" y="116" width="632" height="68" rx="12" fill="none" stroke="#b4b2a9" stroke-width="0.5" stroke-dasharray="4 3"/>
+<text class="ts" x="36" y="134">Email ingestion</text>
+<g class="c-teal"><rect x="52" y="140" width="148" height="36" rx="8" stroke-width="0.5"/><text class="th" x="126" y="158" text-anchor="middle" dominant-baseline="central">Webhook handler</text></g>
+<g class="c-teal"><rect x="220" y="140" width="148" height="36" rx="8" stroke-width="0.5"/><text class="th" x="294" y="158" text-anchor="middle" dominant-baseline="central">Polling service</text></g>
+<g class="c-teal"><rect x="388" y="140" width="148" height="36" rx="8" stroke-width="0.5"/><text class="th" x="462" y="158" text-anchor="middle" dominant-baseline="central">Email parser</text></g>
+
+<!-- LAYER 3: ORCHESTRATOR -->
+<rect x="24" y="208" width="632" height="68" rx="12" fill="none" stroke="#b4b2a9" stroke-width="0.5" stroke-dasharray="4 3"/>
+<text class="ts" x="36" y="226">LangGraph orchestrator</text>
+<g class="c-purple"><rect x="160" y="232" width="160" height="36" rx="8" stroke-width="0.5"/><text class="th" x="240" y="250" text-anchor="middle" dominant-baseline="central">Supervisor agent</text></g>
+<g class="c-purple"><rect x="360" y="232" width="148" height="36" rx="8" stroke-width="0.5"/><text class="th" x="434" y="250" text-anchor="middle" dominant-baseline="central">Cost router</text></g>
+
+<!-- LAYER 4: AGENTS -->
+<rect x="24" y="300" width="632" height="68" rx="12" fill="none" stroke="#b4b2a9" stroke-width="0.5" stroke-dasharray="4 3"/>
+<text class="ts" x="36" y="318">Specialized AI agents</text>
+<g class="c-green"><rect x="40" y="324" width="138" height="36" rx="8" stroke-width="0.5"/><text class="th" x="109" y="342" text-anchor="middle" dominant-baseline="central">Classifier</text></g>
+<g class="c-green"><rect x="192" y="324" width="138" height="36" rx="8" stroke-width="0.5"/><text class="th" x="261" y="342" text-anchor="middle" dominant-baseline="central">Response gen.</text></g>
+<g class="c-green"><rect x="344" y="324" width="138" height="36" rx="8" stroke-width="0.5"/><text class="th" x="413" y="342" text-anchor="middle" dominant-baseline="central">Follow-up agent</text></g>
+<g class="c-coral"><rect x="496" y="324" width="148" height="36" rx="8" stroke-width="0.5"/><text class="th" x="570" y="342" text-anchor="middle" dominant-baseline="central">HITL router</text></g>
+
+<!-- LAYER 5: EXECUTOR -->
+<rect x="24" y="392" width="632" height="68" rx="12" fill="none" stroke="#b4b2a9" stroke-width="0.5" stroke-dasharray="4 3"/>
+<text class="ts" x="36" y="410">Action executor</text>
+<g class="c-amber"><rect x="40" y="416" width="138" height="36" rx="8" stroke-width="0.5"/><text class="th" x="109" y="434" text-anchor="middle" dominant-baseline="central">Email sender</text></g>
+<g class="c-amber"><rect x="192" y="416" width="138" height="36" rx="8" stroke-width="0.5"/><text class="th" x="261" y="434" text-anchor="middle" dominant-baseline="central">Label manager</text></g>
+<g class="c-amber"><rect x="344" y="416" width="138" height="36" rx="8" stroke-width="0.5"/><text class="th" x="413" y="434" text-anchor="middle" dominant-baseline="central">Notifications</text></g>
+<g class="c-amber"><rect x="496" y="416" width="148" height="36" rx="8" stroke-width="0.5"/><text class="th" x="570" y="434" text-anchor="middle" dominant-baseline="central">Action logger</text></g>
+
+<!-- LAYER 6: DATA -->
+<rect x="24" y="484" width="632" height="68" rx="12" fill="none" stroke="#b4b2a9" stroke-width="0.5" stroke-dasharray="4 3"/>
+<text class="ts" x="36" y="502">Data layer</text>
+<g class="c-gray"><rect x="52" y="508" width="172" height="36" rx="8" stroke-width="0.5"/><text class="th" x="138" y="526" text-anchor="middle" dominant-baseline="central">Supabase (PostgreSQL)</text></g>
+<g class="c-gray"><rect x="254" y="508" width="172" height="36" rx="8" stroke-width="0.5"/><text class="th" x="340" y="526" text-anchor="middle" dominant-baseline="central">Upstash Redis</text></g>
+<g class="c-gray"><rect x="456" y="508" width="172" height="36" rx="8" stroke-width="0.5"/><text class="th" x="542" y="526" text-anchor="middle" dominant-baseline="central">Google Sheets (audit)</text></g>
+
+<!-- ARROWS -->
+<path d="M106 84 L106 100 L126 100 L126 140" stroke="#888780" stroke-width="1" marker-end="url(#arrow)" fill="none"/>
+<path d="M106 84 L106 100 L294 100 L294 140" stroke="#b4b2a9" stroke-width="1" stroke-dasharray="3 3" marker-end="url(#arrow)" fill="none"/>
+<path d="M254 84 L254 100 L413 100 L413 324" stroke="#b4b2a9" stroke-width="1" stroke-dasharray="3 3" marker-end="url(#arrow)" fill="none"/>
+<path d="M402 84 L402 100 L640 100 L640 390 L413 390 L413 452" stroke="#b4b2a9" stroke-width="1" stroke-dasharray="3 3" marker-end="url(#arrow)" fill="none"/>
+<line x1="200" y1="158" x2="220" y2="158" stroke="#888780" stroke-width="1" marker-end="url(#arrow)" fill="none"/>
+<line x1="368" y1="158" x2="388" y2="158" stroke="#888780" stroke-width="1" marker-end="url(#arrow)" fill="none"/>
+<path d="M462 176 L462 196 L240 196 L240 232" stroke="#888780" stroke-width="1" marker-end="url(#arrow)" fill="none"/>
+<line x1="320" y1="250" x2="360" y2="250" stroke="#888780" stroke-width="1" marker-end="url(#arrow)" fill="none"/>
+<path d="M434 268 L434 290 L109 290 L109 324" stroke="#888780" stroke-width="1" marker-end="url(#arrow)" fill="none"/>
+<path d="M434 268 L434 290 L261 290 L261 324" stroke="#888780" stroke-width="1" marker-end="url(#arrow)" fill="none"/>
+<path d="M434 268 L434 290 L413 290 L413 324" stroke="#888780" stroke-width="1" marker-end="url(#arrow)" fill="none"/>
+<path d="M434 268 L434 290 L570 290 L570 324" stroke="#888780" stroke-width="1" marker-end="url(#arrow)" fill="none"/>
+<line x1="109" y1="360" x2="109" y2="416" stroke="#888780" stroke-width="1" marker-end="url(#arrow)" fill="none"/>
+<line x1="261" y1="360" x2="261" y2="416" stroke="#888780" stroke-width="1" marker-end="url(#arrow)" fill="none"/>
+<line x1="413" y1="360" x2="413" y2="416" stroke="#888780" stroke-width="1" marker-end="url(#arrow)" fill="none"/>
+<line x1="570" y1="360" x2="570" y2="416" stroke="#888780" stroke-width="1" marker-end="url(#arrow)" fill="none"/>
+<path d="M109 452 L109 470 L20 470 L20 66 L40 66" stroke="#185FA5" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#arrow)" fill="none"/>
+<path d="M261 452 L261 464 L20 464" stroke="#185FA5" stroke-width="1" stroke-dasharray="4 3" fill="none"/>
+<path d="M413 452 L413 470 L655 470 L655 66 L484 66" stroke="#185FA5" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#arrow)" fill="none"/>
+<path d="M570 452 L570 476 L542 476 L542 508" stroke="#b4b2a9" stroke-width="1" marker-end="url(#arrow)" fill="none"/>
+<path d="M570 452 L570 476 L138 476 L138 508" stroke="#b4b2a9" stroke-width="1" stroke-dasharray="3 3" marker-end="url(#arrow)" fill="none"/>
+<path d="M138 508 L138 488 L240 488 L240 268" stroke="#b4b2a9" stroke-width="1" stroke-dasharray="3 3" marker-end="url(#arrow)" fill="none"/>
+<path d="M340 508 L340 488 L261 488 L261 360" stroke="#b4b2a9" stroke-width="1" stroke-dasharray="3 3" marker-end="url(#arrow)" fill="none"/>
+<path d="M340 508 L340 488 L413 488 L413 360" stroke="#b4b2a9" stroke-width="1" stroke-dasharray="3 3" fill="none"/>
+
+<!-- LEGEND -->
+<rect x="24" y="576" width="460" height="84" rx="10" fill="none" stroke="#d3d1c7" stroke-width="0.5"/>
+<line x1="44" y1="596" x2="80" y2="596" stroke="#888780" stroke-width="1" marker-end="url(#arrow)"/>
+<text class="ts" x="88" y="600">Main flow</text>
+<line x1="44" y1="618" x2="80" y2="618" stroke="#185FA5" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#arrow)"/>
+<text class="ts" x="88" y="622">Response back to Gmail / Slack</text>
+<line x1="44" y1="640" x2="80" y2="640" stroke="#b4b2a9" stroke-width="1" stroke-dasharray="3 3" marker-end="url(#arrow)"/>
+<text class="ts" x="88" y="644">Data / cache / audit flow</text>
+
+<!-- COLOR LEGEND -->
+<g class="c-blue"><rect x="24" y="676" width="12" height="12" rx="2" stroke-width="0.5"/></g><text class="ts" x="42" y="685">External APIs</text>
+<g class="c-teal"><rect x="140" y="676" width="12" height="12" rx="2" stroke-width="0.5"/></g><text class="ts" x="158" y="685">Ingestion</text>
+<g class="c-purple"><rect x="240" y="676" width="12" height="12" rx="2" stroke-width="0.5"/></g><text class="ts" x="258" y="685">Orchestrator</text>
+<g class="c-green"><rect x="360" y="676" width="12" height="12" rx="2" stroke-width="0.5"/></g><text class="ts" x="378" y="685">AI agents</text>
+<g class="c-coral"><rect x="450" y="676" width="12" height="12" rx="2" stroke-width="0.5"/></g><text class="ts" x="468" y="685">HITL</text>
+<g class="c-amber"><rect x="510" y="676" width="12" height="12" rx="2" stroke-width="0.5"/></g><text class="ts" x="528" y="685">Executor</text>
+<g class="c-gray"><rect x="590" y="676" width="12" height="12" rx="2" stroke-width="0.5"/></g><text class="ts" x="608" y="685">Data</text>
+
+</svg>
+</body>
+</html>
