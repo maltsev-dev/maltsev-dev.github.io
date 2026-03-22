@@ -3,18 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="dev_stories - Technical blog about embedded systems, Rust, and engineering">
-    <meta property="og:site_name" content="dev_stories">
+    <meta name="description" content="AI Operational Systems - Technical blog about embedded systems, Rust, and engineering">
+    <meta property="og:site_name" content="AI Operational Systems">
     <meta property="og:type" content="website">
-    <meta property="og:title" content="dev_stories">
+    <meta property="og:title" content="AI Operational Systems">
     <meta property="og:url" content="https://maltsev-dev.github.io/projects">
     <meta property="og:image" content="https://github.com/maltsev-dev/favicon.png">
-    <title>Projects Showcase - dev_stories</title>
+    <title>Projects Showcase - AI Operational Systems</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/style.css?v=20260321">
     <link rel="shortcut icon" type="image/png" href="/static/favicon.png">
 
     
@@ -28,24 +30,41 @@
     <div class="container header-inner">
         <a href="/" class="logo-link">
             <div class="logo">
-                <span class="logo-text">Research. Build. Evolve.</span>
+                <span class="logo-text">Automate. Scale. Win.</span>
             </div>
         </a>
 
         <nav class="main-nav">
             <ul class="nav-list">
+
                 <li class="nav-item">
-                    <a href="/" class="nav-link ">Home</a>
+                    <a href="/" class="nav-link 
+                    ">
+                        Home
+                    </a>
                 </li>
+
                 <li class="nav-item">
-                    <a href="/projects/" class="nav-link ">AI Solutions</a>
+                    <a href="/projects/" class="nav-link 
+                    ">
+                        AI Projects
+                    </a>
                 </li>
+
                 <li class="nav-item">
-                    <a href="/about/" class="nav-link ">About</a>
+                    <a href="/about/" class="nav-link 
+                    ">
+                        About
+                    </a>
                 </li>
+
                 <li class="nav-item">
-                    <a href="/archive/" class="nav-link ">Blog</a>
+                    <a href="/archive/" class="nav-link 
+                    ">
+                        Blog
+                    </a>
                 </li>
+
             </ul>
         </nav>
 
@@ -74,119 +93,67 @@
             <p class="section-subtitle">Choose from our proven AI automation systems</p>
 
             <div class="projects-grid">
-                <!-- Project Card 1: Insight Agent -->
+                <!-- Project Card 1: AI Email Reply Agent -->
                 <article class="project-card">
                     <div class="project-card-header">
-                        <div class="project-icon">📈</div>
-                        <h3 class="project-title">Insight Agent</h3>
-                        <p class="project-tagline">Inventory intelligence & demand forecasting</p>
+                        <div class="project-icon">📧</div>
+                        <h3 class="project-title">AI Email Reply Agent</h3>
+                        <p class="project-tagline">Assisted decision system for cold outreach</p>
                     </div>
 
                     <div class="project-description">
-                        <p>AI-powered inventory intelligence that forecasts demand, predicts stockouts, detects anomalies, and provides actionable recommendations.</p>
+                        <p>AI-assisted email reply system that streamlines handling responses from cold outreach campaigns. Reduces repetitive manual work while ensuring consistency and fast response times.</p>
                     </div>
 
                     <div class="project-features">
                         <h4>Key Capabilities</h4>
                         <ul>
-                            <li>Multi-factor demand forecasting (7, 14, 30 days)</li>
-                            <li>Stockout prediction engine</li>
-                            <li>Anomaly detection (sales spikes/drops)</li>
-                            <li>Replenishment recommendations</li>
-                            <li>Excess inventory alerts</li>
-                            <li>Natural language query interface</li>
+                            <li>Real-time reply classification (Interested, Objection, Not Interested, etc.)</li>
+                            <li>AI-generated draft responses with human approval workflow</li>
+                            <li>Automated follow-up sequences with stop logic</li>
+                            <li>Gmail & Google Calendar integration</li>
+                            <li>Confidence scoring & human-in-the-loop escalation</li>
+                            <li>Safety controls: dry-run mode, duplicate prevention, unsubscribe handling</li>
                         </ul>
                     </div>
 
                     <div class="project-use-cases">
                         <h4>Ideal For</h4>
                         <div class="use-case-tags">
-                            <span class="use-case-tag">Inventory</span>
-                            <span class="use-case-tag">Merchandising</span>
-                            <span class="use-case-tag">Planning</span>
-                            <span class="use-case-tag">Analytics</span>
+                            <span class="use-case-tag">Sales</span>
+                            <span class="use-case-tag">Outreach</span>
+                            <span class="use-case-tag">Lead Gen</span>
+                            <span class="use-case-tag">SDR Teams</span>
                         </div>
                     </div>
 
-                    <div class="project-pricing-single">
-                        <span class="price-label">Starting at</span>
-                        <span class="price-value">$24,000</span>
-                        <span class="price-timeline">5-6 weeks</span>
-                    </div>
-
                     <div class="project-buttons">
-                        <button class="project-demo" data-demo="insight-agent">Demo</button>
+                        <a href="/projects/email-reply-agent/" class="project-cta">Learn More</a>
                         <a href="#contact" class="project-cta">Request Proposal</a>
                     </div>
                 </article>
 
-                <!-- Project Card 2: Competitor Agent -->
+                <!-- Project Card 2: AI Support Triage Agent -->
                 <article class="project-card">
                     <div class="project-card-header">
-                        <div class="project-icon">📊</div>
-                        <h3 class="project-title">Competitor Agent</h3>
-                        <p class="project-tagline">Automated pricing & market intelligence</p>
+                        <div class="project-icon">🎫</div>
+                        <h3 class="project-title">AI Support Triage Agent</h3>
+                        <p class="project-tagline">Autonomous customer support across email & chat</p>
                     </div>
 
                     <div class="project-description">
-                        <p>Monitor competitors' pricing, stockouts, and new products daily. Get optimal pricing recommendations based on margin targets and competitive position.</p>
+                        <p>AI agent that autonomously handles incoming support tickets across Freshchat/Intercom. Classifies issues, retrieves customer data, drafts or sends responses, and escalates complex cases—reducing manual workload by 40-60%.</p>
                     </div>
 
                     <div class="project-features">
                         <h4>Key Capabilities</h4>
                         <ul>
-                            <li>Daily price monitoring for 1,000+ SKUs</li>
-                            <li>Stockout detection & alerts</li>
-                            <li>New product launch tracking</li>
-                            <li>Promotion & bundle monitoring</li>
-                            <li>Pricing recommendations engine</li>
-                            <li>Approval workflow (optional auto-pricing)</li>
-                        </ul>
-                    </div>
-
-                    <div class="project-use-cases">
-                        <h4>Ideal For</h4>
-                        <div class="use-case-tags">
-                            <span class="use-case-tag">Pricing</span>
-                            <span class="use-case-tag">Product</span>
-                            <span class="use-case-tag">Marketing</span>
-                            <span class="use-case-tag">Strategy</span>
-                        </div>
-                    </div>
-
-                    <div class="project-pricing-single">
-                        <span class="price-label">Starting at</span>
-                        <span class="price-value">$22,000</span>
-                        <span class="price-timeline">5 weeks</span>
-                    </div>
-
-                    <div class="project-buttons">
-                        <button class="project-demo" data-demo="competitor-agent">Demo</button>
-                        <a href="#contact" class="project-cta">Request Proposal</a>
-                    </div>
-                </article>
-
-                <!-- Project Card 2: Customer Support Agent -->
-                <article class="project-card">
-                    <div class="project-card-header">
-                        <div class="project-icon">💬</div>
-                        <h3 class="project-title">Customer Support Agent</h3>
-                        <p class="project-tagline">Omnichannel AI concierge for e-commerce</p>
-                    </div>
-
-                    <div class="project-description">
-                        <p>Omnichannel AI agent that handles 60-80% of customer inquiries autonomously across email, chat, SMS, and social media—with seamless human handoff.</p>
-                    </div>
-
-                    <div class="project-features">
-                        <h4>Key Capabilities</h4>
-                        <ul>
-                            <li>Omnichannel ingestion (email, chat, SMS, social)</li>
-                            <li>Order tracking & status updates</li>
-                            <li>Return/refund automation</li>
-                            <li>FAQ resolution from knowledge base</li>
-                            <li>Sentiment analysis & prioritization</li>
-                            <li>Human handoff with full context</li>
+                            <li>9-category ticket classification with 90%+ accuracy</li>
+                            <li>Order/customer data retrieval (Shopify, WooCommerce)</li>
+                            <li>Context-aware response generation with brand voice</li>
+                            <li>Risk-based routing: auto-send, draft for review, or escalate</li>
+                            <li>Knowledge base integration (RAG) for accurate answers</li>
+                            <li>Real-time analytics dashboard & cost tracking</li>
                         </ul>
                     </div>
 
@@ -195,569 +162,56 @@
                         <div class="use-case-tags">
                             <span class="use-case-tag">Support</span>
                             <span class="use-case-tag">E-commerce</span>
-                            <span class="use-case-tag">Sales</span>
                             <span class="use-case-tag">SaaS</span>
+                            <span class="use-case-tag">Help Desk</span>
                         </div>
                     </div>
 
-                    <div class="project-pricing-single">
-                        <span class="price-label">Starting at</span>
-                        <span class="price-value">$28,000</span>
-                        <span class="price-timeline">6-7 weeks</span>
-                    </div>
-
                     <div class="project-buttons">
-                        <button class="project-demo" data-demo="customer-support">Demo</button>
+                        <a href="/projects/support-triage-agent/" class="project-cta">Learn More</a>
                         <a href="#contact" class="project-cta">Request Proposal</a>
                     </div>
                 </article>
 
-                <!-- Project Card 4: Invoice Agent -->
+                <!-- Project Card 3: AI Lead Qualification Agent -->
                 <article class="project-card">
                     <div class="project-card-header">
-                        <div class="project-icon">📝</div>
-                        <h3 class="project-title">Invoice Agent</h3>
-                        <p class="project-tagline">Supplier invoice automation</p>
+                        <div class="project-icon">💬</div>
+                        <h3 class="project-title">AI Lead Qualification Agent</h3>
+                        <p class="project-tagline">SMS/WhatsApp conversations that book meetings</p>
                     </div>
 
                     <div class="project-description">
-                        <p>Automate supplier invoice processing: ingest from any channel, extract data with AI, match to POs, flag discrepancies, and initiate payment.</p>
+                        <p>AI agent that engages prospects in human-like SMS/WhatsApp conversations, qualifies them based on configurable criteria, books appointments, and notifies sales of hot leads—reducing qualification time by 70-80%.</p>
                     </div>
 
                     <div class="project-features">
                         <h4>Key Capabilities</h4>
                         <ul>
-                            <li>Multi-channel ingestion (email, portal, upload)</li>
-                            <li>AI-powered OCR & data extraction</li>
-                            <li>2-way and 3-way PO matching</li>
-                            <li>Discrepancy detection & alerts</li>
-                            <li>Approval workflow routing</li>
-                            <li>ERP integration for payments</li>
+                            <li>8-category intent classification (Interested, Price Inquiry, Not Interested, etc.)</li>
+                            <li>Multi-turn qualification conversations (3-5 dynamic questions)</li>
+                            <li>Lead scoring with auto-qualify/disqualify thresholds</li>
+                            <li>Calendar integration (Calendly, Cal.com, GoHighLevel)</li>
+                            <li>CRM sync (GoHighLevel, Airtable, Google Sheets)</li>
+                            <li>TCPA/GDPR compliance with suppression list management</li>
                         </ul>
                     </div>
 
                     <div class="project-use-cases">
                         <h4>Ideal For</h4>
                         <div class="use-case-tags">
-                            <span class="use-case-tag">Finance</span>
-                            <span class="use-case-tag">Procurement</span>
-                            <span class="use-case-tag">Operations</span>
-                            <span class="use-case-tag">AP Team</span>
+                            <span class="use-case-tag">Sales</span>
+                            <span class="use-case-tag">Lead Gen</span>
+                            <span class="use-case-tag">Real Estate</span>
+                            <span class="use-case-tag">Service Business</span>
                         </div>
-                    </div>
-
-                    <div class="project-pricing-single">
-                        <span class="price-label">Starting at</span>
-                        <span class="price-value">$26,000</span>
-                        <span class="price-timeline">6 weeks</span>
                     </div>
 
                     <div class="project-buttons">
-                        <button class="project-demo" data-demo="invoice-agent">Demo</button>
+                        <a href="/projects/lead-qualification-agent/" class="project-cta">Learn More</a>
                         <a href="#contact" class="project-cta">Request Proposal</a>
                     </div>
                 </article>
-
-                <!-- Project Card 5: SMM Agent -->
-                <article class="project-card">
-                    <div class="project-card-header">
-                        <div class="project-icon">📱</div>
-                        <h3 class="project-title">SMM Agent</h3>
-                        <p class="project-tagline">AI content engine for social commerce</p>
-                    </div>
-
-                    <div class="project-description">
-                        <p>AI content engine that generates SEO-optimized product descriptions, creates platform-specific social posts, and adapts to trending topics.</p>
-                    </div>
-
-                    <div class="project-features">
-                        <h4>Key Capabilities</h4>
-                        <ul>
-                            <li>Product description generation from specs/images</li>
-                            <li>Multi-platform adaptation (Instagram, TikTok, Facebook)</li>
-                            <li>Bulk processing (100+ products in minutes)</li>
-                            <li>Brand voice customization</li>
-                            <li>Trend integration & hashtag recommendations</li>
-                            <li>Image-to-description capability</li>
-                        </ul>
-                    </div>
-
-                    <div class="project-use-cases">
-                        <h4>Ideal For</h4>
-                        <div class="use-case-tags">
-                            <span class="use-case-tag">Marketing</span>
-                            <span class="use-case-tag">Content</span>
-                            <span class="use-case-tag">Social Media</span>
-                            <span class="use-case-tag">E-commerce</span>
-                        </div>
-                    </div>
-
-                    <div class="project-pricing-single">
-                        <span class="price-label">Starting at</span>
-                        <span class="price-value">$25,000</span>
-                        <span class="price-timeline">5-6 weeks</span>
-                    </div>
-
-                    <div class="project-buttons">
-                        <button class="project-demo" data-demo="smm-agent">Demo</button>
-                        <a href="#contact" class="project-cta">Request Proposal</a>
-                    </div>
-                </article>
-
-                <!-- Project Card 6: Store Ops Agent -->
-                <article class="project-card">
-                    <div class="project-card-header">
-                        <div class="project-icon">🏪</div>
-                        <h3 class="project-title">Store Ops Agent</h3>
-                        <p class="project-tagline">AI assistant for store managers</p>
-                    </div>
-
-                    <div class="project-description">
-                        <p>AI assistant that gives every manager a real-time dashboard of their store's performance, automatically highlights anomalies, and provides natural language answers.</p>
-                    </div>
-
-                    <div class="project-features">
-                        <h4>Key Capabilities</h4>
-                        <ul>
-                            <li>Real-time KPI dashboard (sales, traffic, conversion, AOV)</li>
-                            <li>Anomaly detection (returns, voids, traffic drops)</li>
-                            <li>Natural language query interface</li>
-                            <li>Task prioritization</li>
-                            <li>Inventory & staffing alerts</li>
-                            <li>Automated daily briefings</li>
-                        </ul>
-                    </div>
-
-                    <div class="project-use-cases">
-                        <h4>Ideal For</h4>
-                        <div class="use-case-tags">
-                            <span class="use-case-tag">Retail</span>
-                            <span class="use-case-tag">Operations</span>
-                            <span class="use-case-tag">Management</span>
-                            <span class="use-case-tag">Multi-store</span>
-                        </div>
-                    </div>
-
-                    <div class="project-pricing-single">
-                        <span class="price-label">Starting at</span>
-                        <span class="price-value">$25,000</span>
-                        <span class="price-timeline">5 weeks</span>
-                    </div>
-
-                    <div class="project-buttons">
-                        <button class="project-demo" data-demo="store-ops">Demo</button>
-                        <a href="#contact" class="project-cta">Request Proposal</a>
-                    </div>
-                </article>
-            </div>
-        </div>
-    </section>
-
-    <!-- MAS System Section -->
-    <section class="mas-system-section">
-        <div class="wide-container">
-            <h2 class="section-title mas-title">E-Commerce Agentic Suite — Multi-Agent Platform</h2>
-            <p class="section-subtitle mas-subtitle">
-            A unified AI-driven operating layer powered by coordinated autonomous agents
-            </p>
-
-        <div class="mas-overview">
-            <div class="mas-intro">
-                <p class="mas-intro-text">
-                    A production-grade multi-agent system designed to take ownership of core e-commerce operations — 
-                    from customer support and competitor intelligence to inventory analysis, supplier document processing, 
-                    and content generation. <br> Each capability is implemented as a specialized agent within a structured, 
-                    observable, and extensible architecture.
-                </p>
-
-                <p class="mas-intro-text">
-                    The platform replaces fragmented tools and manual workflows with a cohesive system that operates 
-                    continuously, scales with demand, and improves over time through data and feedback loops.
-                </p>
-
-                <p class="mas-highlight">
-                    <strong>Investment:</strong> $130,000 
-                    &nbsp;|&nbsp; 
-                    <strong>Timeline:</strong> 16–20 weeks 
-                    &nbsp;|&nbsp; 
-                    <strong>Expected ROI:</strong> up to 1,640%
-                </p>
-            </div>
-        </div>
-            <!-- Interactive Integration Ecosystem -->
-            <div class="mas-integrations">
-                <h3>Build Your Custom Solution</h3>
-                <p class="integrations-intro">Select integrations you need. We'll create a tailored proposal.</p>
-                
-                <div class="integrations-grid" id="integrations-selector">
-                    <div class="integration-category">
-                        <h4>E-Commerce Platforms</h4>
-                        <div class="integration-tags">
-                            <label class="integration-tag selectable">
-                                <input type="checkbox" name="integration" value="Shopify" class="integration-checkbox">
-                                <span>Shopify</span>
-                            </label>
-                            <label class="integration-tag selectable">
-                                <input type="checkbox" name="integration" value="Magento" class="integration-checkbox">
-                                <span>Wix eCommerce</span>
-                            </label>
-                            <label class="integration-tag selectable">
-                                <input type="checkbox" name="integration" value="WooCommerce" class="integration-checkbox">
-                                <span>WooCommerce</span>
-                            </label>
-                            <label class="integration-tag selectable">
-                                <input type="checkbox" name="integration" value="BigCommerce" class="integration-checkbox">
-                                <span>Custom Solution</span>
-                            </label>
-                        </div>
-                    </div>
-                    <div class="integration-category">
-                        <h4>ERP/WMS</h4>
-                        <div class="integration-tags">
-                            <label class="integration-tag selectable">
-                                <input type="checkbox" name="integration" value="SAP" class="integration-checkbox">
-                                <span>SAP</span>
-                            </label>
-                            <label class="integration-tag selectable">
-                                <input type="checkbox" name="integration" value="Oracle" class="integration-checkbox">
-                                <span>Oracle</span>
-                            </label>
-                            <label class="integration-tag selectable">
-                                <input type="checkbox" name="integration" value="NetSuite" class="integration-checkbox">
-                                <span>1C</span>
-                            </label>
-                            <label class="integration-tag selectable">
-                                <input type="checkbox" name="integration" value="ShipStation" class="integration-checkbox">
-                                <span>ShipStation</span>
-                            </label>
-                        </div>
-                    </div>
-                    <div class="integration-category">
-                        <h4>Social Platforms</h4>
-                        <div class="integration-tags">
-                            <label class="integration-tag selectable">
-                                <input type="checkbox" name="integration" value="Instagram" class="integration-checkbox">
-                                <span>Instagram</span>
-                            </label>
-                            <label class="integration-tag selectable">
-                                <input type="checkbox" name="integration" value="TikTok" class="integration-checkbox">
-                                <span>TikTok</span>
-                            </label>
-                            <label class="integration-tag selectable">
-                                <input type="checkbox" name="integration" value="Facebook" class="integration-checkbox">
-                                <span>Facebook</span>
-                            </label>
-                            <label class="integration-tag selectable">
-                                <input type="checkbox" name="integration" value="Pinterest" class="integration-checkbox">
-                                <span>Pinterest</span>
-                            </label>
-                        </div>
-                    </div>
-                    <div class="integration-category">
-                        <h4>Communication</h4>
-                        <div class="integration-tags">
-                            <label class="integration-tag selectable">
-                                <input type="checkbox" name="integration" value="Slack" class="integration-checkbox">
-                                <span>Telegram</span>
-                            </label>
-                            <label class="integration-tag selectable">
-                                <input type="checkbox" name="integration" value="Teams" class="integration-checkbox">
-                                <span>WhatsApp Business</span>
-                            </label>
-                            <label class="integration-tag selectable">
-                                <input type="checkbox" name="integration" value="Email" class="integration-checkbox">
-                                <span>Email</span>
-                            </label>
-                            <label class="integration-tag selectable">
-                                <input type="checkbox" name="integration" value="SMS" class="integration-checkbox">
-                                <span>SMS</span>
-                            </label>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Shopping Cart / Proposal Builder -->
-                <div class="proposal-cart" id="proposal-cart">
-                    <div class="cart-summary">
-                        <span class="cart-icon">🛒</span>
-                        <span class="cart-text">Selected: <span id="selected-count">0</span> integrations</span>
-                        <span class="cart-items" id="selected-items"></span>
-                    </div>
-                    <a href="#contact" class="cart-cta" id="request-proposal-btn">Request Proposal</a>
-                </div>
-            </div>
-                <div class="mas-roi">
-                    <h3>Expected Impact</h3>
-                    <div class="roi-grid">
-                        <div class="roi-card">
-                            <div class="roi-value">$450K–$850K</div>
-                            <div class="roi-label">Estimated Annual Labor Savings</div>
-                        </div>
-                        <div class="roi-card">
-                            <div class="roi-value">15–25%</div>
-                            <div class="roi-label">Reduction in Stockouts</div>
-                        </div>
-                        <div class="roi-card">
-                            <div class="roi-value">10–15%</div>
-                            <div class="roi-label">Lower Excess Inventory</div>
-                        </div>
-                        <div class="roi-card">
-                            <div class="roi-value">60–80%</div>
-                            <div class="roi-label">Support Tickets Automated</div>
-                        </div>
-                        <div class="roi-card">
-                            <div class="roi-value">3–8%</div>
-                            <div class="roi-label">Margin Improvement</div>
-                        </div>
-                        <div class="roi-card">
-                            <div class="roi-value">4–8 months</div>
-                            <div class="roi-label">Typical Payback Period</div>
-                        </div>
-                    </div>
-                    <p class="roi-note">
-                        Estimates are based on typical mid-sized e-commerce operations and vary depending on data quality, process maturity, and integration scope.
-                    </p>
-                </div>
-
-                <div class="mas-phases">
-                    <h3>Implementation Roadmap</h3>
-                    <div class="phases-timeline">
-                    
-                        <div class="phase-card">
-                            <div class="phase-number">1</div>
-                            <h4>Foundation & Integration</h4>
-                            <p>Weeks 1–5</p>
-                            <ul>
-                                <li>Core platform and API integrations</li>
-                                <li>ERP / WMS connectivity</li>
-                                <li>Authentication and access control (SSO/SAML)</li>
-                                <li>Data pipelines and system boundaries definition</li>
-                            </ul>
-                        </div>
-                    
-                        <div class="phase-card">
-                            <div class="phase-number">2</div>
-                            <h4>Customer Support Agent</h4>
-                            <p>Weeks 6–9</p>
-                            <ul>
-                                <li>Omnichannel request ingestion</li>
-                                <li>Order status and support automation</li>
-                                <li>Returns and refund workflows</li>
-                                <li>Knowledge base integration (RAG)</li>
-                            </ul>
-                        </div>
-                    
-                        <div class="phase-card">
-                            <div class="phase-number">3</div>
-                            <h4>Pricing & Competitor Intelligence</h4>
-                            <p>Weeks 10–12</p>
-                            <ul>
-                                <li>Competitor monitoring pipelines</li>
-                                <li>Price change detection</li>
-                                <li>Recommendation engine for pricing</li>
-                                <li>Alerting and signal prioritization</li>
-                            </ul>
-                        </div>
-                    
-                        <div class="phase-card">
-                            <div class="phase-number">4</div>
-                            <h4>Insight & Forecasting Agent</h4>
-                            <p>Weeks 13–15</p>
-                            <ul>
-                                <li>Demand forecasting models</li>
-                                <li>Stockout risk prediction</li>
-                                <li>Anomaly detection pipelines</li>
-                                <li>Operational dashboards</li>
-                            </ul>
-                        </div>
-                    
-                        <div class="phase-card">
-                            <div class="phase-number">5</div>
-                            <h4>Invoice & Finance Automation</h4>
-                            <p>Weeks 16–18</p>
-                            <ul>
-                                <li>Invoice ingestion and parsing</li>
-                                <li>OCR and structured data extraction</li>
-                                <li>2-way / 3-way matching (PO, invoice, receipt)</li>
-                                <li>Payment workflow integration</li>
-                            </ul>
-                        </div>
-                    
-                        <div class="phase-card">
-                            <div class="phase-number">6</div>
-                            <h4>Content & Store Operations</h4>
-                            <p>Weeks 19–20</p>
-                            <ul>
-                                <li>Product and content generation</li>
-                                <li>Multi-channel content adaptation</li>
-                                <li>KPI tracking and reporting</li>
-                                <li>Anomaly alerts for operators</li>
-                            </ul>
-                        </div>
-                    
-                    </div>
-                </div>
-
-            <div class="mas-cta">
-                <a href="#contact" class="mas-cta-button">Request MAS Proposal</a>
-            </div>
-        </div>
-    </section>
-
-        <!-- How It Works Section -->
-    <section class="process-section">
-        <div class="medium-container">
-            <h2 class="section-title">How It Works</h2>
-            <p class="section-subtitle">
-                A structured, architecture-first process focused on delivering reliable, production-grade systems
-            </p>
-        
-            <div class="process-timeline">
-                <div class="process-step">
-                    <div class="step-number">1</div>
-                    <h3>Discovery</h3>
-                    <p>
-                        Structured analysis of your business workflows, constraints, and objectives. 
-                        We identify high-impact opportunities, define success metrics, and align on system boundaries 
-                        and priorities.
-                    </p>
-                </div>
-            
-                <div class="process-step">
-                    <div class="step-number">2</div>
-                    <h3>System Design</h3>
-                    <p>
-                        Architecture-first design: agent responsibilities, data flows, integration points, and failure handling. 
-                        You receive a clear, reviewable technical specification before implementation begins.
-                    </p>
-                </div>
-            
-                <div class="process-step">
-                    <div class="step-number">3</div>
-                    <h3>Implementation</h3>
-                    <p>
-                        Iterative development with regular checkpoints. Each iteration delivers working system components, 
-                        enabling early validation, feedback, and controlled evolution of the solution.
-                    </p>
-                </div>
-            
-                <div class="process-step">
-                    <div class="step-number">4</div>
-                    <h3>Deployment & Handover</h3>
-                    <p>
-                        Production deployment with containerized infrastructure, monitoring setup, and full documentation. 
-                        Includes knowledge transfer to ensure your team can operate and extend the system independently.
-                    </p>
-                </div>
-            </div>
-        
-            <div class="process-notes">
-                <div class="note-item">
-                    <span class="note-icon">📋</span>
-                    <div>
-                        <strong>Discovery Workshop</strong>
-                        <p>
-                            Optional deep-dive to map processes and define system architecture upfront. 
-                            The outcome is a clear implementation roadmap and validated scope.
-                        </p>
-                    </div>
-                </div>
-            
-                <div class="note-item">
-                    <span class="note-icon">🔄</span>
-                    <div>
-                        <strong>Iteration & Feedback</strong>
-                        <p>
-                            Regular review cycles ensure alignment, reduce risk, and keep the system grounded in real business needs.
-                        </p>
-                    </div>
-                </div>
-            
-                <div class="note-item">
-                    <span class="note-icon">📚</span>
-                    <div>
-                        <strong>Knowledge Transfer</strong>
-                        <p>
-                            Clear documentation, system walkthroughs, and training enable long-term maintainability and independence.
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Pricing & Timeline Section -->
-    <section class="explanation-section">
-        <div class="medium-container">
-            <h2 class="section-title">Understanding Pricing & Timeline</h2>
-            <p class="section-subtitle">Transparent breakdown of how estimates are calculated and what drives variability</p>
-
-            <div class="pricing-timeline-grid">
-                <!-- Pricing Breakdown -->
-                <div class="pricing-card">
-                    <div class="pricing-icon">💰</div>
-                    <h3>Pricing Strategy</h3>
-                    <p class="pricing-intro">Value-based pricing anchored to ROI — typical payback period is 2-6 months</p>
-
-                    <div class="pricing-examples">
-                        <div class="pricing-example">
-                            <span class="example-agent">Individual Agents</span>
-                            <span class="example-range">$22K - $28K</span>
-                            <span class="example-desc">Single use case, department budget</span>
-                        </div>
-                        <div class="pricing-example">
-                            <span class="example-agent">MAS Platform</span>
-                            <span class="example-range">$150K</span>
-                            <span class="example-desc">All 6 agents, ~40% savings vs. individual</span>
-                        </div>
-                    </div>
-
-                    <div class="pricing-note">
-                        <p><strong>What's included:</strong> Discovery, development, RAG/AI features, integrations, deployment, and training.</p>
-                    </div>
-                </div>
-
-                <!-- Timeline Breakdown -->
-                <div class="timeline-card">
-                    <div class="timeline-icon">⏱️</div>
-                    <h3>Timeline Factors</h3>
-                    <p class="timeline-intro">All timelines include 15-20% buffer for feedback cycles and testing</p>
-
-                    <div class="timeline-examples">
-                        <div class="timeline-example">
-                            <span class="example-agent">Individual Agent</span>
-                            <span class="example-range">5-7 weeks</span>
-                            <span class="example-desc">Single agent deployment</span>
-                        </div>
-                        <div class="timeline-example">
-                            <span class="example-agent">MAS Platform</span>
-                            <span class="example-range">16-20 weeks</span>
-                            <span class="example-desc">Full 6-agent phased rollout</span>
-                        </div>
-                    </div>
-
-                    <div class="timeline-factors">
-                        <h4>What Affects Timeline</h4>
-                        <div class="factors-mini-grid">
-                            <div class="factor-mini">
-                                <span class="factor-mini-icon">📄</span>
-                                <span>Data availability</span>
-                            </div>
-                            <div class="factor-mini">
-                                <span class="factor-mini-icon">🔌</span>
-                                <span>Integrations count</span>
-                            </div>
-                            <div class="factor-mini">
-                                <span class="factor-mini-icon">🔒</span>
-                                <span>Security review</span>
-                            </div>
-                            <div class="factor-mini">
-                                <span class="factor-mini-icon">👥</span>
-                                <span>Feedback speed</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
     </section>
@@ -866,24 +320,6 @@
     </section>
 </div>
 
-<!-- Demo Modal -->
-<div class="demo-modal" id="demo-modal">
-    <div class="demo-modal-overlay"></div>
-    <div class="demo-modal-content">
-        <div class="demo-modal-header">
-            <h3 class="demo-modal-title" id="demo-modal-title">Demo</h3>
-            <button class="demo-modal-close" id="demo-modal-close">&times;</button>
-        </div>
-        <div class="demo-modal-body" id="demo-modal-body">
-            <!-- Demo content will be injected here -->
-        </div>
-    </div>
-</div>
-
-<!-- Customer Support Agent Demo Content (Hidden by default) -->
-<div class="demo-content" id="demo-customer-support" style="display: none;">
-</div>
-
 <script>
 // Integration selector cart functionality
 document.addEventListener('DOMContentLoaded', function() {
@@ -891,117 +327,25 @@ document.addEventListener('DOMContentLoaded', function() {
     const selectedCount = document.getElementById('selected-count');
     const selectedItems = document.getElementById('selected-items');
     const proposalCart = document.getElementById('proposal-cart');
-    
+
     checkboxes.forEach(checkbox => {
         checkbox.addEventListener('change', updateCart);
     });
-    
+
     function updateCart() {
         const checked = document.querySelectorAll('.integration-checkbox:checked');
         const count = checked.length;
         const items = Array.from(checked).map(cb => cb.value).join(', ');
-        
+
         selectedCount.textContent = count;
         selectedItems.textContent = items;
-        
+
         if (count > 0) {
             proposalCart.classList.add('active');
         } else {
             proposalCart.classList.remove('active');
         }
     }
-});
-
-// Demo Modal functionality
-document.addEventListener('DOMContentLoaded', function() {
-    const modal = document.getElementById('demo-modal');
-    const modalOverlay = modal.querySelector('.demo-modal-overlay');
-    const modalClose = document.getElementById('demo-modal-close');
-    const modalTitle = document.getElementById('demo-modal-title');
-    const modalBody = document.getElementById('demo-modal-body');
-    const demoButtons = document.querySelectorAll('.project-demo');
-    
-    // Demo content mapping
-    const demoContent = {
-        'customer-support': {
-            title: 'Customer Support Agent — Architecture',
-            src: '/static/ai_customer_support_architecture.html'
-        },
-        // Placeholder for future demos - add your demo HTML here
-        /*
-        'insight-agent': {
-            title: 'Insight Agent — Architecture',
-            src: '/path/to/insight-agent-demo.html'
-        },
-        */
-    };
-
-    // Open modal on demo button click
-    demoButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            const demoId = this.getAttribute('data-demo');
-            const demo = demoContent[demoId];
-
-            if (demo && demo.src) {
-                modalTitle.textContent = demo.title;
-                // Use iframe for external HTML content
-                modalBody.innerHTML = `<iframe id="demo-iframe" src="${demo.src}" title="${demo.title}" style="width: 100%; height: 100%; border: none; display: block;"></iframe>`;
-                modal.classList.add('active');
-                document.body.style.overflow = 'hidden';
-
-                // Send current theme to iframe after it loads
-                const iframe = modalBody.querySelector('#demo-iframe');
-                if (iframe) {
-                    iframe.onload = () => {
-                        const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
-                        iframe.contentWindow.postMessage({ type: 'theme-change', theme: currentTheme }, '*');
-                    };
-                    // Fallback timeout in case onload doesn't fire (cached content)
-                    setTimeout(() => {
-                        const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
-                        iframe.contentWindow.postMessage({ type: 'theme-change', theme: currentTheme }, '*');
-                    }, 50);
-                }
-            } else {
-                // Show placeholder for demos without content
-                modalTitle.textContent = 'Demo Coming Soon';
-                modalBody.innerHTML = '<div style="padding: 40px; text-align: center; color: var(--text-muted);"><h3 style="color: var(--text-primary); margin-bottom: 12px;">🚧 Under Construction</h3><p>This interactive demo is being prepared. Check back soon!</p></div>';
-                modal.classList.add('active');
-                document.body.style.overflow = 'hidden';
-            }
-        });
-    });
-    
-    // Listen for theme changes and sync with iframe
-    const themeToggle = document.getElementById('themeToggle');
-    if (themeToggle) {
-        themeToggle.addEventListener('click', function() {
-            setTimeout(() => {
-                const iframe = document.getElementById('demo-iframe');
-                if (iframe && modal.classList.contains('active')) {
-                    const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
-                    iframe.contentWindow.postMessage({ type: 'theme-change', theme: currentTheme }, '*');
-                }
-            }, 50);
-        });
-    }
-
-    // Close modal functions
-    function closeModal() {
-        modal.classList.remove('active');
-        modalBody.innerHTML = '';
-        document.body.style.overflow = '';
-    }
-
-    modalClose.addEventListener('click', closeModal);
-    modalOverlay.addEventListener('click', closeModal);
-
-    // Close on Escape key
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape' && modal.classList.contains('active')) {
-            closeModal();
-        }
-    });
 });
 </script>
 

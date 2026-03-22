@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI SMS Lead Agent Architecture</title>
+<style>
+  :root {
+    --bg-color: #ffffff;
+    --text-color: #1a1a18;
+    --text-secondary: #5f5e5a;
+    --border-color: #b4b2a9;
+    --blue-fill: #e6f1fb; --blue-stroke: #185fa5; --blue-text: #0c447c;
+    --teal-fill: #e1f5ee; --teal-stroke: #0f6e56; --teal-text: #085041;
+    --purple-fill: #eeedfe; --purple-stroke: #534ab7; --purple-text: #3c3489;
+    --green-fill: #eaf3de; --green-stroke: #3b6d11; --green-text: #27500a;
+    --coral-fill: #faece7; --coral-stroke: #993c1d; --coral-text: #712b13;
+    --amber-fill: #faeeda; --amber-stroke: #854f0b; --amber-text: #633806;
+    --gray-fill: #f1efe8; --gray-stroke: #5f5e5a; --gray-text: #444441;
+  }
+  [data-theme="dark"] {
+    --bg-color: #1a1a18;
+    --text-color: #e0dfd6;
+    --text-secondary: #b4b2a9;
+    --border-color: #444441;
+    --blue-fill: #0c447c; --blue-stroke: #85b7eb; --blue-text: #e6f1fb;
+    --teal-fill: #085041; --teal-stroke: #5dcaa5; --teal-text: #e1f5ee;
+    --purple-fill: #3c3489; --purple-stroke: #afa9ec; --purple-text: #eeedfe;
+    --green-fill: #27500a; --green-stroke: #97c459; --green-text: #eaf3de;
+    --coral-fill: #712b13; --coral-stroke: #f0997b; --coral-text: #faece7;
+    --amber-fill: #633806; --amber-stroke: #ef9f27; --amber-text: #faeeda;
+    --gray-fill: #444441; --gray-stroke: #b4b2a9; --gray-text: #f1efe8;
+  }
+  body {
+    margin: 0;
+    padding: 24px;
+    background: var(--bg-color);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: background-color 0.3s ease;
+  }
+  h1 {
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--text-color);
+    margin: 0 0 20px;
+    text-align: center;
+    transition: color 0.3s ease;
+  }
+  svg text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+  .th { font-size: 14px; font-weight: 500; }
+  .ts { font-size: 12px; font-weight: 400; fill: var(--text-secondary); transition: fill 0.3s ease; }
+  .c-blue rect { fill: var(--blue-fill); stroke: var(--blue-stroke); transition: all 0.3s ease; }
+  .c-blue .th { fill: var(--blue-text); transition: fill 0.3s ease; }
+  .c-teal rect { fill: var(--teal-fill); stroke: var(--teal-stroke); transition: all 0.3s ease; }
+  .c-teal .th { fill: var(--teal-text); transition: fill 0.3s ease; }
+  .c-purple rect { fill: var(--purple-fill); stroke: var(--purple-stroke); transition: all 0.3s ease; }
+  .c-purple .th { fill: var(--purple-text); transition: fill 0.3s ease; }
+  .c-green rect { fill: var(--green-fill); stroke: var(--green-stroke); transition: all 0.3s ease; }
+  .c-green .th { fill: var(--green-text); transition: fill 0.3s ease; }
+  .c-coral rect { fill: var(--coral-fill); stroke: var(--coral-stroke); transition: all 0.3s ease; }
+  .c-coral .th { fill: var(--coral-text); transition: fill 0.3s ease; }
+  .c-amber rect { fill: var(--amber-fill); stroke: var(--amber-stroke); transition: all 0.3s ease; }
+  .c-amber .th { fill: var(--amber-text); transition: fill 0.3s ease; }
+  .c-gray rect { fill: var(--gray-fill); stroke: var(--gray-stroke); transition: all 0.3s ease; }
+  .c-gray .th { fill: var(--gray-text); transition: fill 0.3s ease; }
+</style>
+<script>
+  function syncTheme() {
+    try {
+      const parentTheme = localStorage.getItem('theme');
+      document.documentElement.setAttribute('data-theme', parentTheme || 'dark');
+    } catch(e) {}
+  }
+  syncTheme();
+  window.addEventListener('storage', (e) => {
+    if (e.key === 'theme') syncTheme();
+  });
+</script>
+</head>
+<body>
+<h1>AI SMS Lead Agent — System Architecture</h1>
+<svg width="100%" viewBox="0 0 680 960" xmlns="http://www.w3.org/2000/svg">
+<defs>
+  <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+    <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </marker>
+</defs>
+
+<!-- LAYER 1: EXTERNAL -->
+<rect x="24" y="24" width="632" height="68" rx="12" fill="none" stroke="#b4b2a9" stroke-width="0.5" stroke-dasharray="4 3"/>
+<text class="ts" x="36" y="42">External systems</text>
+<g class="c-blue"><rect x="28" y="48" width="82" height="36" rx="8" stroke-width="0.5"/><text class="th" x="69" y="66" text-anchor="middle" dominant-baseline="central">Twilio</text></g>
+<g class="c-blue"><rect x="120" y="48" width="96" height="36" rx="8" stroke-width="0.5"/><text class="th" x="168" y="66" text-anchor="middle" dominant-baseline="central">WhatsApp</text></g>
+<g class="c-blue"><rect x="226" y="48" width="82" height="36" rx="8" stroke-width="0.5"/><text class="th" x="267" y="66" text-anchor="middle" dominant-baseline="central">GoHighLevel</text></g>
+<g class="c-blue"><rect x="318" y="48" width="82" height="36" rx="8" stroke-width="0.5"/><text class="th" x="359" y="66" text-anchor="middle" dominant-baseline="central">Airtable</text></g>
+<g class="c-blue"><rect x="410" y="48" width="82" height="36" rx="8" stroke-width="0.5"/><text class="th" x="451" y="66" text-anchor="middle" dominant-baseline="central">Calendly</text></g>
+<g class="c-blue"><rect x="502" y="48" width="70" height="36" rx="8" stroke-width="0.5"/><text class="th" x="537" y="66" text-anchor="middle" dominant-baseline="central">Slack</text></g>
+<g class="c-blue"><rect x="582" y="48" width="72" height="36" rx="8" stroke-width="0.5"/><text class="th" x="618" y="66" text-anchor="middle" dominant-baseline="central">G. Sheets</text></g>
+
+<!-- LAYER 2: INGESTION -->
+<rect x="24" y="116" width="632" height="68" rx="12" fill="none" stroke="#b4b2a9" stroke-width="0.5" stroke-dasharray="4 3"/>
+<text class="ts" x="36" y="134">Message ingestion</text>
+<g class="c-teal"><rect x="52" y="140" width="148" height="36" rx="8" stroke-width="0.5"/><text class="th" x="126" y="158" text-anchor="middle" dominant-baseline="central">Webhook handler</text></g>
+<g class="c-teal"><rect x="220" y="140" width="148" height="36" rx="8" stroke-width="0.5"/><text class="th" x="294" y="158" text-anchor="middle" dominant-baseline="central">Polling service</text></g>
+<g class="c-teal"><rect x="388" y="140" width="148" height="36" rx="8" stroke-width="0.5"/><text class="th" x="462" y="158" text-anchor="middle" dominant-baseline="central">Message parser</text></g>
+
+<!-- LAYER 3: ORCHESTRATOR -->
+<rect x="24" y="208" width="632" height="68" rx="12" fill="none" stroke="#b4b2a9" stroke-width="0.5" stroke-dasharray="4 3"/>
+<text class="ts" x="36" y="226">LangGraph orchestrator</text>
+<g class="c-purple"><rect x="72" y="232" width="156" height="36" rx="8" stroke-width="0.5"/><text class="th" x="150" y="250" text-anchor="middle" dominant-baseline="central">Supervisor agent</text></g>
+<g class="c-purple"><rect x="248" y="232" width="136" height="36" rx="8" stroke-width="0.5"/><text class="th" x="316" y="250" text-anchor="middle" dominant-baseline="central">Cost router</text></g>
+<g class="c-purple"><rect x="404" y="232" width="176" height="36" rx="8" stroke-width="0.5"/><text class="th" x="492" y="250" text-anchor="middle" dominant-baseline="central">Conversation state</text></g>
+
+<!-- LAYER 4: AGENTS -->
+<rect x="24" y="300" width="632" height="68" rx="12" fill="none" stroke="#b4b2a9" stroke-width="0.5" stroke-dasharray="4 3"/>
+<text class="ts" x="36" y="318">Specialized AI agents</text>
+<g class="c-green"><rect x="28" y="324" width="112" height="36" rx="8" stroke-width="0.5"/><text class="th" x="84" y="342" text-anchor="middle" dominant-baseline="central">Intent classifier</text></g>
+<g class="c-green"><rect x="150" y="324" width="134" height="36" rx="8" stroke-width="0.5"/><text class="th" x="217" y="342" text-anchor="middle" dominant-baseline="central">Conversation agent</text></g>
+<g class="c-green"><rect x="294" y="324" width="140" height="36" rx="8" stroke-width="0.5"/><text class="th" x="364" y="342" text-anchor="middle" dominant-baseline="central">Qualification scorer</text></g>
+<g class="c-green"><rect x="444" y="324" width="112" height="36" rx="8" stroke-width="0.5"/><text class="th" x="500" y="342" text-anchor="middle" dominant-baseline="central">Booking agent</text></g>
+<g class="c-coral"><rect x="566" y="324" width="106" height="36" rx="8" stroke-width="0.5"/><text class="th" x="619" y="342" text-anchor="middle" dominant-baseline="central">HITL router</text></g>
+
+<!-- LAYER 5: EXECUTOR -->
+<rect x="24" y="392" width="632" height="68" rx="12" fill="none" stroke="#b4b2a9" stroke-width="0.5" stroke-dasharray="4 3"/>
+<text class="ts" x="36" y="410">Action executor</text>
+<g class="c-amber"><rect x="40" y="416" width="136" height="36" rx="8" stroke-width="0.5"/><text class="th" x="108" y="434" text-anchor="middle" dominant-baseline="central">SMS sender</text></g>
+<g class="c-amber"><rect x="188" y="416" width="136" height="36" rx="8" stroke-width="0.5"/><text class="th" x="256" y="434" text-anchor="middle" dominant-baseline="central">CRM updater</text></g>
+<g class="c-amber"><rect x="336" y="416" width="136" height="36" rx="8" stroke-width="0.5"/><text class="th" x="404" y="434" text-anchor="middle" dominant-baseline="central">Notifications</text></g>
+<g class="c-amber"><rect x="484" y="416" width="152" height="36" rx="8" stroke-width="0.5"/><text class="th" x="560" y="434" text-anchor="middle" dominant-baseline="central">Action logger</text></g>
+
+<!-- LAYER 6: DATA -->
+<rect x="24" y="484" width="632" height="68" rx="12" fill="none" stroke="#b4b2a9" stroke-width="0.5" stroke-dasharray="4 3"/>
+<text class="ts" x="36" y="502">Data layer</text>
+<g class="c-gray"><rect x="30" y="508" width="156" height="36" rx="8" stroke-width="0.5"/><text class="th" x="108" y="526" text-anchor="middle" dominant-baseline="central">Supabase (PostgreSQL)</text></g>
+<g class="c-gray"><rect x="198" y="508" width="140" height="36" rx="8" stroke-width="0.5"/><text class="th" x="268" y="526" text-anchor="middle" dominant-baseline="central">Upstash Redis</text></g>
+<g class="c-gray"><rect x="350" y="508" width="140" height="36" rx="8" stroke-width="0.5"/><text class="th" x="420" y="526" text-anchor="middle" dominant-baseline="central">Google Sheets (audit)</text></g>
+<g class="c-gray"><rect x="502" y="508" width="154" height="36" rx="8" stroke-width="0.5"/><text class="th" x="579" y="526" text-anchor="middle" dominant-baseline="central">Suppression list</text></g>
+
+<!-- ARROWS -->
+<path d="M69 84 L69 100 L126 100 L126 140" stroke="#888780" stroke-width="1" marker-end="url(#arrow)" fill="none"/>
+<path d="M168 84 L168 100 L126 100" stroke="#888780" stroke-width="1" fill="none"/>
+<path d="M69 84 L69 100 L294 100 L294 140" stroke="#b4b2a9" stroke-width="1" stroke-dasharray="3 3" marker-end="url(#arrow)" fill="none"/>
+<path d="M168 84 L168 100 L294 100" stroke="#b4b2a9" stroke-width="1" stroke-dasharray="3 3" fill="none"/>
+<path d="M451 84 L451 108 L500 108 L500 324" stroke="#b4b2a9" stroke-width="1" stroke-dasharray="3 3" marker-end="url(#arrow)" fill="none"/>
+<line x1="200" y1="158" x2="220" y2="158" stroke="#888780" stroke-width="1" marker-end="url(#arrow)" fill="none"/>
+<line x1="368" y1="158" x2="388" y2="158" stroke="#888780" stroke-width="1" marker-end="url(#arrow)" fill="none"/>
+<path d="M462 176 L462 196 L150 196 L150 232" stroke="#888780" stroke-width="1" marker-end="url(#arrow)" fill="none"/>
+<line x1="228" y1="250" x2="248" y2="250" stroke="#888780" stroke-width="1" marker-end="url(#arrow)" fill="none"/>
+<line x1="384" y1="250" x2="404" y2="250" stroke="#888780" stroke-width="1" marker-end="url(#arrow)" fill="none"/>
+<path d="M316 268 L316 290 L84 290 L84 324" stroke="#888780" stroke-width="1" marker-end="url(#arrow)" fill="none"/>
+<path d="M316 268 L316 290 L217 290 L217 324" stroke="#888780" stroke-width="1" marker-end="url(#arrow)" fill="none"/>
+<path d="M316 268 L316 290 L364 290 L364 324" stroke="#888780" stroke-width="1" marker-end="url(#arrow)" fill="none"/>
+<path d="M316 268 L316 290 L500 290 L500 324" stroke="#888780" stroke-width="1" marker-end="url(#arrow)" fill="none"/>
+<path d="M316 268 L316 290 L619 290 L619 324" stroke="#888780" stroke-width="1" marker-end="url(#arrow)" fill="none"/>
+<path d="M84 360 L84 378 L217 378 L217 360" stroke="#b4b2a9" stroke-width="1" marker-end="url(#arrow)" fill="none"/>
+<path d="M84 360 L84 384 L364 384 L364 360" stroke="#b4b2a9" stroke-width="1" fill="none"/>
+<path d="M364 360 L364 390 L500 390 L500 360" stroke="#b4b2a9" stroke-width="1" marker-end="url(#arrow)" fill="none"/>
+<path d="M364 360 L364 390 L619 390 L619 360" stroke="#b4b2a9" stroke-width="1" fill="none"/>
+<path d="M500 360 L500 396 L404 396 L404 416" stroke="#888780" stroke-width="1" marker-end="url(#arrow)" fill="none"/>
+<path d="M619 360 L619 396 L404 396" stroke="#888780" stroke-width="1" fill="none"/>
+<path d="M619 396 L108 396 L108 416" stroke="#888780" stroke-width="1" fill="none"/>
+<path d="M619 396 L560 396 L560 416" stroke="#888780" stroke-width="1" fill="none"/>
+<path d="M619 396 L256 396 L256 416" stroke="#888780" stroke-width="1" fill="none"/>
+<path d="M108 452 L108 468 L16 468 L16 66 L28 66" stroke="#185FA5" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#arrow)" fill="none"/>
+<path d="M256 452 L256 466 L664 466 L664 66 L400 66" stroke="#185FA5" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#arrow)" fill="none"/>
+<path d="M404 452 L404 472 L537 472 L537 84" stroke="#185FA5" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#arrow)" fill="none"/>
+<path d="M560 452 L560 480 L420 480 L420 508" stroke="#b4b2a9" stroke-width="1" marker-end="url(#arrow)" fill="none"/>
+<path d="M560 452 L560 480 L108 480 L108 508" stroke="#b4b2a9" stroke-width="1" stroke-dasharray="3 3" marker-end="url(#arrow)" fill="none"/>
+<path d="M560 452 L560 480 L579 480 L579 508" stroke="#b4b2a9" stroke-width="1" stroke-dasharray="3 3" marker-end="url(#arrow)" fill="none"/>
+<path d="M108 508 L108 494 L150 494 L150 268" stroke="#b4b2a9" stroke-width="1" stroke-dasharray="3 3" marker-end="url(#arrow)" fill="none"/>
+<path d="M108 508 L108 494 L256 494 L256 452" stroke="#b4b2a9" stroke-width="1" stroke-dasharray="3 3" fill="none"/>
+<path d="M268 508 L268 494 L217 494 L217 360" stroke="#b4b2a9" stroke-width="1" stroke-dasharray="3 3" marker-end="url(#arrow)" fill="none"/>
+<path d="M268 508 L268 494 L108 494 L108 452" stroke="#b4b2a9" stroke-width="1" stroke-dasharray="3 3" fill="none"/>
+<path d="M579 508 L579 486 L108 486 L108 452" stroke="#b4b2a9" stroke-width="1" stroke-dasharray="3 3" fill="none"/>
+
+<!-- LEGEND -->
+<rect x="24" y="576" width="500" height="84" rx="10" fill="none" stroke="#d3d1c7" stroke-width="0.5"/>
+<line x1="44" y1="596" x2="80" y2="596" stroke="#888780" stroke-width="1" marker-end="url(#arrow)"/>
+<text class="ts" x="88" y="600">Main flow</text>
+<line x1="44" y1="618" x2="80" y2="618" stroke="#185FA5" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#arrow)"/>
+<text class="ts" x="88" y="622">Response back to Twilio / WhatsApp / CRM</text>
+<line x1="44" y1="640" x2="80" y2="640" stroke="#b4b2a9" stroke-width="1" stroke-dasharray="3 3" marker-end="url(#arrow)"/>
+<text class="ts" x="88" y="644">Data / cache / compliance flow</text>
+
+<!-- COLOR LEGEND -->
+<g class="c-blue"><rect x="24" y="676" width="12" height="12" rx="2" stroke-width="0.5"/></g><text class="ts" x="42" y="685">External</text>
+<g class="c-teal"><rect x="110" y="676" width="12" height="12" rx="2" stroke-width="0.5"/></g><text class="ts" x="128" y="685">Ingestion</text>
+<g class="c-purple"><rect x="210" y="676" width="12" height="12" rx="2" stroke-width="0.5"/></g><text class="ts" x="228" y="685">Orchestrator</text>
+<g class="c-green"><rect x="330" y="676" width="12" height="12" rx="2" stroke-width="0.5"/></g><text class="ts" x="348" y="685">AI agents</text>
+<g class="c-coral"><rect x="420" y="676" width="12" height="12" rx="2" stroke-width="0.5"/></g><text class="ts" x="438" y="685">HITL</text>
+<g class="c-amber"><rect x="502" y="676" width="12" height="12" rx="2" stroke-width="0.5"/></g><text class="ts" x="520" y="685">Executor</text>
+<g class="c-gray"><rect x="590" y="676" width="12" height="12" rx="2" stroke-width="0.5"/></g><text class="ts" x="608" y="685">Data</text>
+
+</svg>
+</body>
+</html>
