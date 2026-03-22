@@ -7,5 +7,5 @@
 
 # Generated HTML in content (build artifacts)
 # But keep project landing pages
-content/projects/*.html
+# content/projects/*.html
 QWEN.md
