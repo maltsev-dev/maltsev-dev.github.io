@@ -103,7 +103,7 @@ Browse by topic: [Tags](/tags/) · [Projects](/tags/project/) · [Archive](/arch
 
 ### Technical
 - [Codewars](https://www.codewars.com/users/chemyl) — Algorithm challenges
-- [Telegram](https://t.me/replicantDuke) — Quick messages
+- [Telegram](https://t.me/a_maltsev_dev) — Quick messages
 
 ### Resume
 - [Download CV](https://github.com/maltsev-dev/maltsev-dev.github.io/raw/main/static/CV_Anatoly_Maltsev.pdf) — PDF resume
