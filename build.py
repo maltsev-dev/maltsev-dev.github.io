@@ -304,6 +304,8 @@ class Post:
 
     def render_content(self) -> str:
         """Render markdown content to HTML"""
+        if self.metadata.get("raw_html"):
+            return self.content
         md = create_markdown_instance()
         html = md.convert(self.content)
         
@@ -414,7 +416,7 @@ def setup_jinja_env() -> Environment:
 
 def generate_post_html(post: Post, env: Environment, all_posts: List[Post]) -> str:
     """Generate HTML for a single post"""
-    template = env.get_template("post.html")
+    template = env.get_template(post.metadata.get("template", "post.html"))
     
     # Find adjacent posts for navigation
     post_index = next((i for i, p in enumerate(all_posts) if p.slug == post.slug), -1)
