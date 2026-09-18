@@ -1,48 +1,40 @@
-// Fade-in and reveal on scroll effects
+// Scroll reveal — elements brush in as they enter the viewport
 (function() {
-  'use strict';
+    'use strict';
 
-  // Check if user prefers reduced motion
-  function prefersReducedMotion() {
-    return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  }
-
-  function initScrollAnimations() {
-    if (prefersReducedMotion()) {
-      return; // Skip animation if user prefers reduced motion
+    function prefersReducedMotion() {
+        return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     }
 
-    // Select all elements with fade-in, reveal-left, or reveal-right classes
-    const animatedElements = document.querySelectorAll('.fade-in, .reveal-left, .reveal-right');
-
-    if (animatedElements.length === 0) {
-      return;
-    }
-
-    const observerOptions = {
-      root: null,
-      rootMargin: '0px 0px -100px 0px',
-      threshold: 0.1
-    };
-
-    const observer = new IntersectionObserver((entries, observer) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('visible');
-          observer.unobserve(entry.target);
+    function initScrollAnimations() {
+        if (prefersReducedMotion()) {
+            document.querySelectorAll('.fade-in, .reveal-left, .reveal-right')
+                .forEach(el => el.classList.add('visible'));
+            return;
         }
-      });
-    }, observerOptions);
 
-    animatedElements.forEach(el => {
-      observer.observe(el);
-    });
-  }
+        const animatedElements = document.querySelectorAll('.fade-in, .reveal-left, .reveal-right');
+        if (animatedElements.length === 0) return;
 
-  // Initialize when DOM is ready
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initScrollAnimations);
-  } else {
-    initScrollAnimations();
-  }
+        const observer = new IntersectionObserver((entries, obs) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    obs.unobserve(entry.target);
+                }
+            });
+        }, {
+            root: null,
+            rootMargin: '0px 0px -80px 0px',
+            threshold: 0.08
+        });
+
+        animatedElements.forEach(el => observer.observe(el));
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initScrollAnimations);
+    } else {
+        initScrollAnimations();
+    }
 })();
