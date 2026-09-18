@@ -1,50 +1,48 @@
 {% extends "base.html" %}
 
-{% block title %}{{ page.title }} - {{ site.title }}{% endblock %}
+{% block title %}{{ page.title }} — {{ site.title }}{% endblock %}
 
 {% block content %}
 <div class="project-landing">
-    <!-- Hero Section -->
-    <section class="project-hero">
-        <div class="container">
-            <a href="/projects/" class="back-button">
-                <span class="back-arrow">←</span> Back to Projects
-            </a>
-            <div class="project-icon-large">{{ page.extra.project_icon }}</div>
-            <h1 class="project-title">{{ page.title }}</h1>
-            <p class="project-tagline">{{ page.extra.tagline }}</p>
-            <div class="project-cta-group">
-                <a href="#contact" class="cta-button">{{ page.extra.cta_primary }}</a>
-                <a href="#contact" class="cta-button outline">{{ page.extra.cta_secondary }}</a>
-            </div>
-        </div>
-    </section>
+    <div class="container">
 
-    <!-- Main Content -->
-    <section class="project-content-section">
-        <div class="width-container">
+        <!-- Back -->
+        <div style="padding-bottom: 24px;">
+            <a href="/projects/" class="back-link">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                Back to Catalogue
+            </a>
+        </div>
+
+        <!-- Hero -->
+        <section style="border-bottom: var(--line); padding-bottom: 56px;">
+            <div class="hero-icon-wrapper">{{ page.extra.project_icon }}</div>
+            <h1 class="hero-title">{{ page.title }}</h1>
+            <p class="hero-subtitle">{{ page.extra.tagline }}</p>
+            <div class="hero-cta">
+                <a href="#contact" class="btn btn-primary btn-large">{{ page.extra.cta_primary }}</a>
+                <a href="#contact" class="btn btn-shu btn-large">{{ page.extra.cta_secondary }}</a>
+            </div>
+        </section>
+
+        <!-- Content -->
+        <section style="padding: 48px 0;">
             <div class="project-content">
                 {{ content | safe }}
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- CTA Section -->
-    <section class="cta-section" id="contact">
-        <div class="container">
-            <div class="cta-content">
-                <h2>Ready to Automate?</h2>
-                <p>Let's discuss which solution fits your needs and create a custom proposal</p>
-
-                <div class="cta-actions">
-                    <a href="mailto:mr.a.maltsev@gmail.com" class="cta-button outline">Email Me</a>
-                    <a href="https://t.me/a_maltsev_dev" target="_blank" class="cta-button outline">Telegram</a>
-                    <a href="https://www.linkedin.com/in/a-maltsev" class="cta-button outline">LinkedIn</a>
-                    <a href="https://www.upwork.com/freelancers/~017ad72fa11d4f3d91" class="cta-button outline">Upwork</a>
-                    <a href="/about/" class="cta-button outline">About</a>
-                </div>
+        <!-- CTA -->
+        <section class="cta-pro" id="contact">
+            <span class="kicker" style="justify-content: center;"><span class="marker">▲</span> Contact</span>
+            <h2>Ready to Automate?</h2>
+            <div class="cta-actions">
+                <a href="mailto:mr.a.maltsev@gmail.com" class="btn btn-primary">Email</a>
+                <a href="https://t.me/a_maltsev_dev" target="_blank" rel="noopener" class="btn btn-shu">Telegram</a>
+                <a href="https://www.upwork.com/freelancers/~017ad72fa11d4f3d91" class="btn">Upwork</a>
             </div>
-        </div>
-    </section>
+        </section>
+
+    </div>
 </div>
 {% endblock %}

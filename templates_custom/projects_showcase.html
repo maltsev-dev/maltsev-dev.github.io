@@ -1,276 +1,202 @@
 {% extends "base.html" %}
 
-{% block title %}Projects Showcase - {{ site.title }}{% endblock %}
+{% block title %}Catalogue — {{ site.title }}{% endblock %}
 
 {% block content %}
 <div class="projects-showcase">
-    <!-- Hero Section -->
-    <section class="showcase-hero">
-        <div class="container">
-            <p class="showcase-subtitle">Enterprise-grade AI agents and multi-agent systems that automate complex workflows, reduce costs, and accelerate decision-making</p>
+
+<!-- ───────────────────────── Manifesto ───────────────────────── -->
+<section class="showcase-hero">
+    <div class="container">
+        <p class="showcase-subtitle">
+            Enterprise-grade AI agents that automate workflows, reduce costs, and scale operations.
+        </p>
+    </div>
+</section>
+
+<!-- ───────────────────────── Project Cards ───────────────────────── -->
+<section class="section">
+    <div class="container">
+        <span class="kicker"><span class="marker">■</span> Solutions</span>
+        <h2 class="section-title">Issued Solutions</h2>
+
+        <div class="projects-grid">
+
+            <!-- 01 · Email Reply -->
+            <article class="project-card">
+                <div class="project-card-header">
+                    <div class="project-icon">●</div>
+                    <h3 class="project-title">AI Email Reply Agent</h3>
+                    <p class="project-tagline">Assisted decision system for cold outreach</p>
+                </div>
+                <div class="project-features">
+                    <h4>Capabilities</h4>
+                    <ul>
+                        <li>Real-time reply classification</li>
+                        <li>Draft responses with approval flow</li>
+                        <li>Stop-logic follow-up sequences</li>
+                        <li>Gmail & Calendar integration</li>
+                    </ul>
+                </div>
+                <div class="project-use-cases">
+                    <h4 class="use-case-label">Ideal For</h4>
+                    <div class="use-case-tags">
+                        <span class="use-case-tag">Sales</span>
+                        <span class="use-case-tag">Outreach</span>
+                        <span class="use-case-tag">SDR Teams</span>
+                    </div>
+                </div>
+                <div class="project-buttons">
+                    <a href="/projects/email-reply-agent/" class="btn btn-shu">Learn More →</a>
+                </div>
+            </article>
+
+            <!-- 02 · Support Triage -->
+            <article class="project-card">
+                <div class="project-card-header">
+                    <div class="project-icon">◆</div>
+                    <h3 class="project-title">AI Support Triage Agent</h3>
+                    <p class="project-tagline">Autonomous customer support across email & chat</p>
+                </div>
+                <div class="project-features">
+                    <h4>Capabilities</h4>
+                    <ul>
+                        <li>9-category classification, 90%+</li>
+                        <li>RAG over knowledge base</li>
+                        <li>Risk-based routing</li>
+                        <li>Shopify / WooCommerce integration</li>
+                    </ul>
+                </div>
+                <div class="project-use-cases">
+                    <h4 class="use-case-label">Ideal For</h4>
+                    <div class="use-case-tags">
+                        <span class="use-case-tag">Support</span>
+                        <span class="use-case-tag">E-commerce</span>
+                        <span class="use-case-tag">SaaS</span>
+                    </div>
+                </div>
+                <div class="project-buttons">
+                    <a href="/projects/support-triage-agent/" class="btn btn-shu">Learn More →</a>
+                </div>
+            </article>
+
+            <!-- 03 · Lead Qualification -->
+            <article class="project-card">
+                <div class="project-card-header">
+                    <div class="project-icon">▲</div>
+                    <h3 class="project-title">AI Lead Qualification Agent</h3>
+                    <p class="project-tagline">SMS / WhatsApp conversations that book meetings</p>
+                </div>
+                <div class="project-features">
+                    <h4>Capabilities</h4>
+                    <ul>
+                        <li>Multi-turn qualification (3–5)</li>
+                        <li>Auto-qualify thresholds</li>
+                        <li>Calendly / Cal.com sync</li>
+                        <li>TCPA / GDPR compliance</li>
+                    </ul>
+                </div>
+                <div class="project-use-cases">
+                    <h4 class="use-case-label">Ideal For</h4>
+                    <div class="use-case-tags">
+                        <span class="use-case-tag">Sales</span>
+                        <span class="use-case-tag">Real Estate</span>
+                        <span class="use-case-tag">Service</span>
+                    </div>
+                </div>
+                <div class="project-buttons">
+                    <a href="/projects/lead-qualification-agent/" class="btn btn-shu">Learn More →</a>
+                </div>
+            </article>
         </div>
-    </section>
+    </div>
+</section>
 
-    <!-- Projects Grid -->
-    <section class="projects-section">
-        <div class="width-container">
-            <h2 class="section-title">Available Solutions</h2>
-            <p class="section-subtitle">Choose from our proven AI automation systems</p>
+<!-- ───────────────────────── Positioning ───────────────────────── -->
+<section class="section">
+    <div class="container">
+        <span class="kicker"><span class="marker">●</span> Positioning</span>
+        <h2 class="section-title">Market Positioning</h2>
 
-            <div class="projects-grid">
-                <!-- Project Card 1: AI Email Reply Agent -->
-                <article class="project-card">
-                    <div class="project-card-header">
-                        <div class="project-icon">📧</div>
-                        <h3 class="project-title">AI Email Reply Agent</h3>
-                        <p class="project-tagline">Assisted decision system for cold outreach</p>
-                    </div>
+        <div class="positioning-grid">
 
-                    <div class="project-description">
-                        <p>AI-assisted email reply system that streamlines handling responses from cold outreach campaigns. Reduces repetitive manual work while ensuring consistency and fast response times.</p>
-                    </div>
-
-                    <div class="project-features">
-                        <h4>Key Capabilities</h4>
-                        <ul>
-                            <li>Real-time reply classification (Interested, Objection, Not Interested, etc.)</li>
-                            <li>AI-generated draft responses with human approval workflow</li>
-                            <li>Automated follow-up sequences with stop logic</li>
-                            <li>Gmail & Google Calendar integration</li>
-                            <li>Confidence scoring & human-in-the-loop escalation</li>
-                            <li>Safety controls: dry-run mode, duplicate prevention, unsubscribe handling</li>
-                        </ul>
-                    </div>
-
-                    <div class="project-use-cases">
-                        <h4>Ideal For</h4>
-                        <div class="use-case-tags">
-                            <span class="use-case-tag">Sales</span>
-                            <span class="use-case-tag">Outreach</span>
-                            <span class="use-case-tag">Lead Gen</span>
-                            <span class="use-case-tag">SDR Teams</span>
-                        </div>
-                    </div>
-
-                    <div class="project-buttons">
-                        <a href="/projects/email-reply-agent/" class="project-cta">Learn More</a>
-                        <a href="#contact" class="project-cta">Request Proposal</a>
-                    </div>
-                </article>
-
-                <!-- Project Card 2: AI Support Triage Agent -->
-                <article class="project-card">
-                    <div class="project-card-header">
-                        <div class="project-icon">🎫</div>
-                        <h3 class="project-title">AI Support Triage Agent</h3>
-                        <p class="project-tagline">Autonomous customer support across email & chat</p>
-                    </div>
-
-                    <div class="project-description">
-                        <p>AI agent that autonomously handles incoming support tickets across Freshchat/Intercom. Classifies issues, retrieves customer data, drafts or sends responses, and escalates complex cases—reducing manual workload by 40-60%.</p>
-                    </div>
-
-                    <div class="project-features">
-                        <h4>Key Capabilities</h4>
-                        <ul>
-                            <li>9-category ticket classification with 90%+ accuracy</li>
-                            <li>Order/customer data retrieval (Shopify, WooCommerce)</li>
-                            <li>Context-aware response generation with brand voice</li>
-                            <li>Risk-based routing: auto-send, draft for review, or escalate</li>
-                            <li>Knowledge base integration (RAG) for accurate answers</li>
-                            <li>Real-time analytics dashboard & cost tracking</li>
-                        </ul>
-                    </div>
-
-                    <div class="project-use-cases">
-                        <h4>Ideal For</h4>
-                        <div class="use-case-tags">
-                            <span class="use-case-tag">Support</span>
-                            <span class="use-case-tag">E-commerce</span>
-                            <span class="use-case-tag">SaaS</span>
-                            <span class="use-case-tag">Help Desk</span>
-                        </div>
-                    </div>
-
-                    <div class="project-buttons">
-                        <a href="/projects/support-triage-agent/" class="project-cta">Learn More</a>
-                        <a href="#contact" class="project-cta">Request Proposal</a>
-                    </div>
-                </article>
-
-                <!-- Project Card 3: AI Lead Qualification Agent -->
-                <article class="project-card">
-                    <div class="project-card-header">
-                        <div class="project-icon">💬</div>
-                        <h3 class="project-title">AI Lead Qualification Agent</h3>
-                        <p class="project-tagline">SMS/WhatsApp conversations that book meetings</p>
-                    </div>
-
-                    <div class="project-description">
-                        <p>AI agent that engages prospects in human-like SMS/WhatsApp conversations, qualifies them based on configurable criteria, books appointments, and notifies sales of hot leads—reducing qualification time by 70-80%.</p>
-                    </div>
-
-                    <div class="project-features">
-                        <h4>Key Capabilities</h4>
-                        <ul>
-                            <li>8-category intent classification (Interested, Price Inquiry, Not Interested, etc.)</li>
-                            <li>Multi-turn qualification conversations (3-5 dynamic questions)</li>
-                            <li>Lead scoring with auto-qualify/disqualify thresholds</li>
-                            <li>Calendar integration (Calendly, Cal.com, GoHighLevel)</li>
-                            <li>CRM sync (GoHighLevel, Airtable, Google Sheets)</li>
-                            <li>TCPA/GDPR compliance with suppression list management</li>
-                        </ul>
-                    </div>
-
-                    <div class="project-use-cases">
-                        <h4>Ideal For</h4>
-                        <div class="use-case-tags">
-                            <span class="use-case-tag">Sales</span>
-                            <span class="use-case-tag">Lead Gen</span>
-                            <span class="use-case-tag">Real Estate</span>
-                            <span class="use-case-tag">Service Business</span>
-                        </div>
-                    </div>
-
-                    <div class="project-buttons">
-                        <a href="/projects/lead-qualification-agent/" class="project-cta">Learn More</a>
-                        <a href="#contact" class="project-cta">Request Proposal</a>
-                    </div>
-                </article>
+            <div class="positioning-card">
+                <div class="positioning-header">
+                    <span class="positioning-icon">●</span>
+                    <h4>Freelancers</h4>
+                </div>
+                <p class="positioning-value">Higher investment</p>
+                <p class="positioning-reason">Freelance work often focuses on isolated features. I deliver complete systems with architecture, testing, and operational support.</p>
+                <ul class="positioning-features">
+                    <li>System-level architecture</li>
+                    <li>Reliability and testing strategy</li>
+                    <li>Documentation and maintainability</li>
+                    <li>Post-deployment support</li>
+                </ul>
             </div>
-        </div>
-    </section>
 
-    <!-- Market Positioning Section -->
-    <section class="market-positioning-section">
-        <div class="wide-container">
-            <h2 class="section-title">Market Positioning</h2>
-            <p class="section-subtitle">How this approach compares to common alternatives</p>
-
-            <div class="positioning-comparison">
-
-                <div class="positioning-card">
-                    <div class="positioning-header">
-                        <span class="positioning-icon">👤</span>
-                        <h4>Freelancers</h4>
-                    </div>
-                    <p class="positioning-value">Higher investment</p>
-                    <p class="positioning-reason">
-                        Typical freelance work focuses on isolated features or scripts. I design and deliver 
-                        complete, production-ready systems with clear architecture, testing, and operational support.
-                    </p>
-                    <ul class="positioning-features">
-                        <li>✓ System-level architecture</li>
-                        <li>✓ Reliability and testing strategy</li>
-                        <li>✓ Documentation and maintainability</li>
-                        <li>✓ Post-deployment support</li>
-                    </ul>
+            <div class="positioning-card featured">
+                <div class="positioning-badge">Best Fit</div>
+                <div class="positioning-header">
+                    <span class="positioning-icon">◆</span>
+                    <h4>My Approach</h4>
                 </div>
-
-                <div class="positioning-card featured">
-                    <div class="positioning-badge">Best Fit</div>
-                    <div class="positioning-header">
-                        <span class="positioning-icon">👨‍💻</span>
-                        <h4>My Approach</h4>
-                    </div>
-                    <p class="positioning-value">Balanced</p>
-                    <p class="positioning-reason">
-                        Senior-level engineering focused on system design, reliability, and long-term scalability — 
-                        delivering production-grade solutions without the overhead of large organizations.
-                    </p>
-                    <ul class="positioning-features">
-                        <li>✓ End-to-end system ownership</li>
-                        <li>✓ Architecture-first approach</li>
-                        <li>✓ AI and multi-agent systems expertise</li>
-                        <li>✓ Direct communication and fast iteration</li>
-                    </ul>
-                </div>
-
-                <div class="positioning-card">
-                    <div class="positioning-header">
-                        <span class="positioning-icon">🏢</span>
-                        <h4>Consulting Firms</h4>
-                    </div>
-                    <p class="positioning-value">Lower cost</p>
-                    <p class="positioning-reason">
-                        Large consulting firms provide structure but often introduce overhead, slower execution, 
-                        and indirect communication between decision-makers and engineers.
-                    </p>
-                    <ul class="positioning-features">
-                        <li>✓ Direct access to the engineer</li>
-                        <li>✓ Faster iteration cycles</li>
-                        <li>✓ Focus on implementation, not slides</li>
-                        <li>✓ Lean and efficient delivery</li>
-                    </ul>
-                </div>
-
-                <div class="positioning-card">
-                    <div class="positioning-header">
-                        <span class="positioning-icon">💼</span>
-                        <h4>In-House Teams</h4>
-                    </div>
-                    <p class="positioning-value">Faster to value</p>
-                    <p class="positioning-reason">
-                        Building an internal team requires significant time for hiring, onboarding, and alignment. 
-                        I provide immediate expertise and deliver results without long ramp-up cycles.
-                    </p>
-                    <ul class="positioning-features">
-                        <li>✓ No hiring or onboarding delay</li>
-                        <li>✓ Immediate senior-level execution</li>
-                        <li>✓ Flexible engagement model</li>
-                        <li>✓ Knowledge transfer when needed</li>
-                    </ul>
-                </div>
-
+                <p class="positioning-value">Balanced</p>
+                <p class="positioning-reason">Senior-level engineering on system design, reliability, and long-term scalability — production-grade solutions without firm overhead.</p>
+                <ul class="positioning-features">
+                    <li>End-to-end system ownership</li>
+                    <li>Architecture-first approach</li>
+                    <li>AI and multi-agent systems expertise</li>
+                    <li>Direct communication and fast iteration</li>
+                </ul>
             </div>
-        </div>
-    </section>
 
-    <!-- CTA Section -->
-    <section class="cta-section" id="contact">
-        <div class="container">
-            <div class="cta-content">
-                <h2>Ready to Automate?</h2>
-                <p>Let's discuss which solution fits your needs and create a custom proposal</p>
-
-                <div class="cta-actions">
-                    <a href="mailto:mr.a.maltsev@gmail.com" class="cta-button outline">Email Me</a>
-                    <a href="https://t.me/a_maltsev_dev" target="_blank" class="cta-button outline">Telegram</a>
-                    <a href="https://www.linkedin.com/in/a-maltsev" class="cta-button outline">LinkedIn</a>
-                    <a href="https://www.upwork.com/freelancers/~017ad72fa11d4f3d91" class="cta-button outline">Upwork</a>
-                    <a href="/about/" class="cta-button outline">About</a>
+            <div class="positioning-card">
+                <div class="positioning-header">
+                    <span class="positioning-icon">■</span>
+                    <h4>Consulting Firms</h4>
                 </div>
+                <p class="positioning-value">Lower cost</p>
+                <p class="positioning-reason">Large firms bring structure but also overhead, slower execution, and indirect communication between decision-makers and engineers.</p>
+                <ul class="positioning-features">
+                    <li>Direct access to the engineer</li>
+                    <li>Faster iteration cycles</li>
+                    <li>Focus on implementation, not slides</li>
+                    <li>Lean and efficient delivery</li>
+                </ul>
             </div>
+
+            <div class="positioning-card">
+                <div class="positioning-header">
+                    <span class="positioning-icon">▲</span>
+                    <h4>In-House Teams</h4>
+                </div>
+                <p class="positioning-value">Faster to value</p>
+                <p class="positioning-reason">Internal teams require significant time to hire, onboard, and align. I deliver senior-level expertise without the ramp-up.</p>
+                <ul class="positioning-features">
+                    <li>No hiring or onboarding delay</li>
+                    <li>Immediate senior execution</li>
+                    <li>Flexible engagement model</li>
+                    <li>Knowledge transfer when needed</li>
+                </ul>
+            </div>
+
         </div>
-    </section>
+    </div>
+</section>
+
+<!-- ───────────────────────── Contact ───────────────────────── -->
+<section class="cta-section" id="contact">
+    <div class="container">
+        <span class="kicker" style="justify-content: center;"><span class="marker">▲</span> Contact</span>
+        <h2>Ready to Automate?</h2>
+        <div class="cta-actions">
+            <a href="mailto:mr.a.maltsev@gmail.com" class="btn btn-primary">Email Me</a>
+            <a href="https://t.me/a_maltsev_dev" target="_blank" rel="noopener" class="btn btn-shu">Telegram</a>
+            <a href="https://www.upwork.com/freelancers/~017ad72fa11d4f3d91" class="btn">Upwork</a>
+        </div>
+    </div>
+</section>
+
 </div>
-
-<script>
-// Integration selector cart functionality
-document.addEventListener('DOMContentLoaded', function() {
-    const checkboxes = document.querySelectorAll('.integration-checkbox');
-    const selectedCount = document.getElementById('selected-count');
-    const selectedItems = document.getElementById('selected-items');
-    const proposalCart = document.getElementById('proposal-cart');
-
-    checkboxes.forEach(checkbox => {
-        checkbox.addEventListener('change', updateCart);
-    });
-
-    function updateCart() {
-        const checked = document.querySelectorAll('.integration-checkbox:checked');
-        const count = checked.length;
-        const items = Array.from(checked).map(cb => cb.value).join(', ');
-
-        selectedCount.textContent = count;
-        selectedItems.textContent = items;
-
-        if (count > 0) {
-            proposalCart.classList.add('active');
-        } else {
-            proposalCart.classList.remove('active');
-        }
-    }
-});
-</script>
 {% endblock %}

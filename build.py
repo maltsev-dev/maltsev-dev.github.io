@@ -25,11 +25,11 @@ SASS_DIR = BASE_DIR / "sass"
 TEMPLATES_DIR = BASE_DIR / "templates_custom"
 
 SITE_CONFIG = {
-    "title": "AI Operational Systems",
+    "title": "Maltsev · Agentic Engineering",
     "base_url": "https://maltsev-dev.github.io",
     "author": "A.Maltsev",
-    "logo_text": "Automate. Scale. Win.",
-    "accent_color": "orange",
+    "logo_text": "maltsev · dev",
+    "accent_color": "vermilion",
     "posts_per_page": 10,
 }
 

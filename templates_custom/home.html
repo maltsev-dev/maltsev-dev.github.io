@@ -1,120 +1,173 @@
 {% extends "base.html" %}
 
-{% block title %}{{ site.title }} - a_maltsev {% endblock %}
+{% block title %}{{ site.title }}{% endblock %}
 
 {% block content %}
 <div class="home-page">
 
-<!-- Hero Section -->
-<section class="home-hero">
+<!-- ───────────────────────── Hero — Hinomaru ───────────────────────── -->
+<section class="hero">
+    <div class="hero-grid">
+        <div class="hero-content">
+            <h1 class="hero-title">
+                Build <span class="accent">AI Systems</span><br>
+                That Handle Work — Not Just Support It
+            </h1>
+            <p class="hero-subtitle">
+                AI-powered operational systems that replace repetitive work,
+                cut costs, and scale without adding headcount.
+            </p>
+            <div class="hero-cta">
+                <button id="book-call" class="btn btn-primary btn-large">Book a Demo →</button>
+                <a href="/projects/" class="btn btn-large">See Catalogue</a>
+            </div>
+        </div>
+
+        <div class="hero-sun" aria-hidden="true">
+            <svg viewBox="0 0 200 200">
+                <!-- 16 rays -->
+                <g class="sun-rays">
+                    <line x1="100" y1="10" x2="100" y2="30"/>
+                    <line x1="100" y1="170" x2="100" y2="190"/>
+                    <line x1="10" y1="100" x2="30" y2="100"/>
+                    <line x1="170" y1="100" x2="190" y2="100"/>
+                    <line x1="33" y1="33" x2="47" y2="47"/>
+                    <line x1="153" y1="153" x2="167" y2="167"/>
+                    <line x1="33" y1="167" x2="47" y2="153"/>
+                    <line x1="153" y1="47" x2="167" y2="33"/>
+                    <line x1="64" y1="14" x2="69" y2="33"/>
+                    <line x1="136" y1="14" x2="131" y2="33"/>
+                    <line x1="64" y1="186" x2="69" y2="167"/>
+                    <line x1="136" y1="186" x2="131" y2="167"/>
+                    <line x1="14" y1="64" x2="33" y2="69"/>
+                    <line x1="14" y1="136" x2="33" y2="131"/>
+                    <line x1="186" y1="64" x2="167" y2="69"/>
+                    <line x1="186" y1="136" x2="167" y2="131"/>
+                </g>
+                <circle class="sun-ring" cx="100" cy="100" r="78"/>
+                <circle class="sun-circle" cx="100" cy="100" r="42"/>
+            </svg>
+        </div>
+    </div>
+</section>
+
+<!-- ───────────────────────── Why — section marker ● ───────────────────────── -->
+<section class="section">
     <div class="container">
-        <h1 class="hero-title">
-            Build AI Systems That Handle Work — Not Just Support It
-        </h1>
-        <p class="hero-subtitle">
-            I design and implement AI-powered operational systems that automate repetitive workflows,
-            reduce costs, and accelerate results — without increasing headcount.
-        </p>
-        <div class="hero-cta">
-            <button id="book-call" class="cta-button outline">Book a Demo</button>
-            <a href="https://docs.google.com/forms/d/e/1FAIpQLSfWmMhGtQeBOORza_sq9zQCqQ73fINg7k8kipJACfZBV0lMDQ/viewform?usp=header" class="cta-button outline" target="_blank" rel="noopener">Survey</a>
-            <a href="/projects/" class="cta-button outline">See Projects</a>
-        </div>
-    </div>
-</section>
+        <span class="kicker"><span class="marker">●</span> Principles</span>
+        <h2 class="section-title">Why Businesses Choose AI Agents</h2>
 
-<!-- Why AI Automation -->
-<section class="home-why">
-    <div class="width-container">
-        <h2 class="section-title reveal-left">Why Businesses Choose AI Agents</h2>
         <div class="why-grid">
-            <div class="why-card reveal-left">
-                <div class="why-icon">⏱️</div>
+            <article class="why-card reveal-left">
+                <div class="why-num">№ 01</div>
                 <h3>Instant Response</h3>
-                <p>Autonomous agents react instantly to emails, messages, and support requests — no delays, no missed opportunities.</p>
-            </div>
-            <div class="why-card reveal-right">
-                <div class="why-icon">💰</div>
+                <p>Agents react the moment something arrives — no delays, no missed opportunities.</p>
+            </article>
+            <article class="why-card reveal-right">
+                <div class="why-num">№ 02</div>
                 <h3>Cost Reduction</h3>
-                <p>Replace manual, repetitive tasks with AI workflows and free up human resources for strategic work.</p>
-            </div>
-            <div class="why-card reveal-left">
-                <div class="why-icon">📈</div>
+                <p>Replace manual, repetitive tasks with AI workflows. Reclaim human time for real work.</p>
+            </article>
+            <article class="why-card reveal-left">
+                <div class="why-num">№ 03</div>
                 <h3>Scalable Operations</h3>
-                <p>Systems grow with your business: handle more volume without adding headcount or complexity.</p>
-            </div>
-            <div class="why-card reveal-right">
-                <div class="why-icon">🎯</div>
+                <p>Handle more volume without proportional headcount or complexity.</p>
+            </article>
+            <article class="why-card reveal-right">
+                <div class="why-num">№ 04</div>
                 <h3>Predictable Outcomes</h3>
-                <p>Well-architected AI workflows reduce human error and ensure consistent, measurable results.</p>
-            </div>
+                <p>Well-architected workflows reduce error and deliver consistent, measurable results.</p>
+            </article>
         </div>
     </div>
 </section>
 
-    <!-- Featured Agents / Agentic Systems -->
-    <!-- <section class="home-agents">
-        <div class="container">
-            <h2 class="section-title reveal-left">Agentic Systems</h2>
-            <p class="section-subtitle reveal-right">Coordinated AI agents that automate your most labor-intensive operations</p> -->
+<!-- ───────────────────────── Catalogue highlight — section marker ◆ ───────────────────────── -->
+<section class="section">
+    <div class="container">
+        <span class="kicker"><span class="marker">◆</span> Catalogue</span>
+        <h2 class="section-title">Solutions, Issued</h2>
 
-            <!-- <div class="agents-grid">
-                <a href="/projects/#customer-support" class="agent-card reveal-left">
-                    <div class="agent-icon">💬</div>
-                    <h3>Customer Support Agent</h3>
-                    <p>Resolve tickets automatically across channels while maintaining service quality</p>
-                    <span class="agent-link">Learn more →</span>
-                </a>
-                <a href="/projects/#competitor" class="agent-card reveal-right">
-                    <div class="agent-icon">📊</div>
-                    <h3>Competitor Agent</h3>
-                    <p>Monitor competitor activity and generate actionable pricing recommendations</p>
-                    <span class="agent-link">Learn more →</span>
-                </a>
-                <a href="/projects/#insight" class="agent-card reveal-left">
-                    <div class="agent-icon">📈</div>
-                    <h3>Insight Agent</h3>
-                    <p>Forecast demand, detect anomalies, and anticipate stockouts</p>
-                    <span class="agent-link">Learn more →</span>
-                </a>
-                <a href="/projects/#invoice" class="agent-card reveal-right">
-                    <div class="agent-icon">📝</div>
-                    <h3>Invoice Agent</h3>
-                    <p>Automate invoice processing and reconciliation with minimal supervision</p>
-                    <span class="agent-link">Learn more →</span>
-                </a>
-            </div> -->
+        <div class="projects-grid">
+            <article class="project-card">
+                <div class="project-card-header">
+                    <div class="project-icon">●</div>
+                    <h3 class="project-title">Email Reply Agent</h3>
+                    <p class="project-tagline">Assisted decision system for cold outreach</p>
+                </div>
+                <div class="project-features">
+                    <h4>Capabilities</h4>
+                    <ul>
+                        <li>Real-time reply classification</li>
+                        <li>Draft responses with approval flow</li>
+                        <li>Stop-logic follow-up sequences</li>
+                        <li>Gmail & Calendar integration</li>
+                    </ul>
+                </div>
+                <div class="project-buttons">
+                    <a href="/projects/" class="btn btn-shu">Learn More →</a>
+                </div>
+            </article>
 
-            <!-- <div class="agents-cta reveal-left">
-                <a href="/projects/" class="cta-button outline">View All 6 Agents</a>
-            </div>
+            <article class="project-card">
+                <div class="project-card-header">
+                    <div class="project-icon">◆</div>
+                    <h3 class="project-title">Support Triage Agent</h3>
+                    <p class="project-tagline">Autonomous customer support across email & chat</p>
+                </div>
+                <div class="project-features">
+                    <h4>Capabilities</h4>
+                    <ul>
+                        <li>9-category classification, 90%+</li>
+                        <li>RAG over knowledge base</li>
+                        <li>Risk-based routing</li>
+                        <li>Cost & latency tracking</li>
+                    </ul>
+                </div>
+                <div class="project-buttons">
+                    <a href="/projects/" class="btn btn-shu">Learn More →</a>
+                </div>
+            </article>
+
+            <article class="project-card">
+                <div class="project-card-header">
+                    <div class="project-icon">▲</div>
+                    <h3 class="project-title">Lead Qualification Agent</h3>
+                    <p class="project-tagline">SMS / WhatsApp conversations that book meetings</p>
+                </div>
+                <div class="project-features">
+                    <h4>Capabilities</h4>
+                    <ul>
+                        <li>Multi-turn qualification (3–5)</li>
+                        <li>Auto-qualify thresholds</li>
+                        <li>Calendly / Cal.com sync</li>
+                        <li>TCPA / GDPR compliance</li>
+                    </ul>
+                </div>
+                <div class="project-buttons">
+                    <a href="/projects/" class="btn btn-shu">Learn More →</a>
+                </div>
+            </article>
         </div>
-    </section> -->
 
-    <!-- Latest from Blog -->
-    <!-- {% if all_posts %}
-    <section class="home-blog">
-        <div class="container">
-            <h2 class="section-title reveal-left">Latest Insights</h2>
-            <p class="section-subtitle reveal-right">Thoughts on system design, AI agents, and building scalable operations</p>
-
-            <div class="blog-grid">
-                {% for post in all_posts[:3] %}
-                <article class="blog-card reveal-left">
-                    <h3><a href="/{{ post.url_path }}.html">{{ post.title }}</a></h3>
-                    <p class="blog-meta"><time>{{ post.date }}</time></p>
-                    <p class="blog-excerpt">{{ post.summary[:150] if post.summary else post.content[:200] | striptags }}...</p>
-                    <a href="/{{ post.url_path }}.html" class="read-more">Read more →</a>
-                </article>
-                {% endfor %}
-            </div>
-
-            <div class="blog-cta reveal-left">
-                <a href="/archive/" class="cta-button outline">View All Posts</a>
-            </div>
+        <div style="text-align: center; margin-top: 36px;">
+            <a href="/projects/" class="btn btn-large">Open Catalogue →</a>
         </div>
-    </section>
-    {% endif %} -->
+    </div>
+</section>
+
+<!-- ───────────────────────── Contact — section marker ▲ ───────────────────────── -->
+<section class="section">
+    <div class="container" style="text-align: center;">
+        <span class="kicker" style="justify-content: center;"><span class="marker">▲</span> Contact</span>
+        <h2 class="section-title">Issued, not assembled.</h2>
+        <div class="cta-actions">
+            <a href="mailto:mr.a.maltsev@gmail.com" class="btn btn-primary btn-large">Email</a>
+            <a href="https://t.me/a_maltsev_dev" target="_blank" rel="noopener" class="btn btn-shu btn-large">Telegram</a>
+            <a href="https://www.linkedin.com/in/a-maltsev" target="_blank" rel="noopener" class="btn btn-large">LinkedIn</a>
+        </div>
+    </div>
+</section>
 
 </div>
 
@@ -124,6 +177,7 @@
 <script type="text/javascript">
 document.addEventListener("DOMContentLoaded", function() {
     var btn = document.getElementById("book-call");
+    if (!btn) return;
     btn.addEventListener("click", function(e) {
         e.preventDefault();
         Calendly.showPopupWidget("https://calendly.com/mr-a-maltsev/30min");

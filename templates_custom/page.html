@@ -1,14 +1,15 @@
 {% extends "base.html" %}
 
-{% block title %}{{ page.title }} - {{ site.title }}{% endblock %}
+{% block title %}{{ page.title }} — {{ site.title }}{% endblock %}
 
 {% block content %}
 <div class="container">
     <article class="page-content">
         <header class="page-header">
+            <p class="hero-eyebrow">№ Page</p>
             <h1 class="page-title">{{ page.title }}</h1>
         </header>
-        
+
         <div class="page-body">
             {{ content | safe }}
         </div>

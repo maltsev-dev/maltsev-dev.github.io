@@ -10,3 +10,6 @@
 # content/projects/*.html
 QWEN.md
 CLAUDE.md
+.claude/
+.claude-flow/
+tmp/

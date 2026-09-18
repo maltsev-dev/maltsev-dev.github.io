@@ -1,34 +1,29 @@
 base_url = "https://maltsev-dev.github.io"
-title = "dev_stories"
+title = "Maltsev · Agentic Engineering"
 compile_sass = true
 
 taxonomies = [{ name = "tags" }]
-
-#build_search_index = true
 
 [markdown]
 highlight_code = true
 highlight_theme = "boron"
 
 [extra]
-accent_color = "orange"
-logo_text = "Research. Build. Evolve."
-
-# The logo link - defaults to base_url.
-#logo_home_link = "/take/me/away!"
+accent_color = "vermilion"
+logo_text = "maltsev · dev"
 
 copyright_html = """
 <div class="copyright">
     <span>© 2026 A.Maltsev</span>
     <span class="copyright-theme-sep"></span>
-    <span><img src="https://visitor-badge.laobi.icu/badge?page_id=maltsev-dev.github.io&right_color=orange" alt="Visitors"></span>
+    <span><img src="https://visitor-badge.laobi.icu/badge?page_id=maltsev-dev.github.io&right_color=e14d2a" alt="Visitors"></span>
 </div>
 """
 author = "maltsev-dev"
 menu_items = [
-    { name = "archive", url = "$BASE_URL/archive" },
-    { name = "projects", url = "$BASE_URL/tags/project/" },
-    { name = "about me", url = "$BASE_URL/about" },
+    { name = "catalogue", url = "$BASE_URL/projects/" },
+    { name = "archive",   url = "$BASE_URL/archive" },
+    { name = "about",     url = "$BASE_URL/about" },
 ]
 
 enable_post_view_navigation = false
