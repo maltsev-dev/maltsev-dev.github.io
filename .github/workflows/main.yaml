@@ -21,6 +21,10 @@ jobs:
   build-and-deploy:
     name: Build and Deploy
     runs-on: ubuntu-latest
+    # deploy-pages creates the deployment against this environment; without it
+    # the API rejects the deployment with "Missing environment".
+    environment:
+      name: github-pages
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
