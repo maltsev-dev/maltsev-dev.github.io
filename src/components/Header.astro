@@ -15,10 +15,10 @@ const THEMES = [
 ];
 
 const SOURCES = [
-  { href: '/projects/', label: 'Projects', key: '1', desc: 'shipped systems' },
-  { href: '/experience/', label: 'Experience', key: '2', desc: 'the road so far' },
-  { href: '/about/', label: 'Profile', key: '3', desc: 'who and what I do' },
-  { href: '/contact/', label: 'Contact', key: '4', desc: 'write to me' },
+  { href: '/experience/', label: 'Experience', key: '1', desc: 'the road so far' },
+  { href: '/freelance/', label: 'Work Now', key: '2', desc: 'services and scope' },
+  { href: '/projects/', label: 'Projects', key: '3', desc: 'shipped systems' },
+  { href: '/about/', label: 'Profile', key: '4', desc: 'who and what I do' },
 ];
 
 const isActive = (href: string) => currentPath.startsWith(href);
@@ -63,7 +63,7 @@ const isActive = (href: string) => currentPath.startsWith(href);
 
     <div class="menu">
       <button class="menu-btn" data-menu="system" aria-expanded="false" aria-haspopup="true">
-        Theme <span class="caret" aria-hidden="true">▾</span>
+        System <span class="caret" aria-hidden="true">▾</span>
       </button>
       <div class="dropdown dropdown-right" data-panel="system" hidden>
         <p class="dropdown-title">Appearance</p>
@@ -79,21 +79,13 @@ const isActive = (href: string) => currentPath.startsWith(href);
           ))
         }
         <div class="dd-sep"></div>
-        <button class="dd-item" data-action="crt">
-          <span class="fig" aria-hidden="true">◐</span>
+        <a class="dd-item" href="/llm.txt">
+          <span class="fig" aria-hidden="true">≡</span>
           <span>
-            Scanlines
-            <span class="desc" data-crt-label>on</span>
+            llms.txt
+            <span class="desc">for agents</span>
           </span>
-        </button>
-        <button class="dd-item" data-action="palette">
-          <span class="fig" aria-hidden="true">⌘</span>
-          <span>
-            Command palette
-            <span class="desc">find anything</span>
-          </span>
-          <kbd>Ctrl K</kbd>
-        </button>
+        </a>
       </div>
     </div>
 
@@ -160,6 +152,39 @@ const isActive = (href: string) => currentPath.startsWith(href);
           <path
             d="M21.94 4.3 19.2 19.1c-.2 1.06-.83 1.32-1.68.82l-4.66-3.44-2.25 2.17c-.25.25-.46.46-.94.46l.33-4.78
                8.7-7.84c.38-.34-.08-.53-.59-.19L6.98 13.1 2.4 11.7c-1-.31-1.02-1 .21-1.48L20.55 2.9c.83-.3 1.56.2 1.39 1.4Z"
+          ></path>
+        </svg>
+      </a>
+
+      <a
+        class="social-link"
+        href="mailto:mr.a.maltsev@gmail.com"
+        aria-label="Email — mr.a.maltsev@gmail.com"
+        title="mr.a.maltsev@gmail.com"
+      >
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true">
+          <path
+            fill-rule="evenodd"
+            d="M6 4h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2ZM4 6.8l8 6 8-6v1.6l-8 6-8-6V6.8Z"
+            clip-rule="evenodd"
+          ></path>
+        </svg>
+      </a>
+
+      <!-- `download` is same-origin, so the browser saves the file instead of
+           navigating to it. Drop the PDF at static/resume.pdf. -->
+      <a
+        class="social-link"
+        href="/resume.pdf"
+        download="Anatolii-Maltsev-resume.pdf"
+        aria-label="Profile as PDF"
+        title="Profile as PDF"
+      >
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true">
+          <path
+            fill-rule="evenodd"
+            d="M6 2h8l5 5v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2ZM14 2v4a1 1 0 0 0 1 1h4L14 2ZM7 12h8v1.5H7V12Zm0 3.5h5V17H7v-1.5Z"
+            clip-rule="evenodd"
           ></path>
         </svg>
       </a>

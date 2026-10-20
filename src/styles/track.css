@@ -75,13 +75,13 @@
 
 
 /* --------------------------------------------------------------------------
-   The wheel mode, scoped to the career page.
+   The career page, when the frame can afford it.
 
-   The page does not scroll, so the runway has nothing to carry and the sticky
-   frame has nothing to stick to: the wrapper is exactly one viewport tall, the
-   hero takes what it needs and the track takes the rest. `100dvh` rather than
-   `100vh` so a mobile browser's collapsing toolbar cannot push the rail off the
-   bottom.
+   The page scrolls the ordinary way: the runway is the scroll distance that
+   carries the row sideways, and when the runway runs out the page simply
+   continues down to the skills section below it. The hero is left full size for
+   the same reason — it is no longer sharing a viewport with the cards, so
+   there is nothing to trim it for.
 
    Both conditions must match `isHorizontal()` in the script. Below this width
    the cards are narrower than their own text; under reduced motion the travel
@@ -89,47 +89,16 @@
    -------------------------------------------------------------------------- */
 @media (min-width: 52.1rem) and (prefers-reduced-motion: no-preference) {
   .exp-page {
-    /* The card width, named once: the grid track and the centring padding above
+    /* The card width, named once: the grid track and the centring padding below
        must agree, or the last card lands off-centre at the end of the travel. */
     --card-w: clamp(19rem, 46vw, 34rem);
-    display: flex;
-    flex-direction: column;
-    height: calc(100dvh - 1.9rem - 3rem);
-    overflow: hidden;
   }
 
-  /* The hero shares one viewport with the track, so it is trimmed to a caption:
-     the default 3rem of air above the eyebrow and a display-size h1 would cost
-     more height than a whole card. */
-  .exp-page .hero {
-    flex: 0 0 auto;
-    padding-block: 0.9rem 1rem;
-  }
-
-  .exp-page .hero .eyebrow {
-    margin-bottom: 0.7rem;
-  }
-
-  .exp-page .hero h1 {
-    font-size: clamp(1.5rem, 2.6vw, 2.1rem);
-    margin-bottom: 0.5rem;
-  }
-
+  /* Double the measure of the page's other ledes: the text sits above a wide
+     row of cards here, so the column of copy that would normally hold it back
+     is narrower than the thing it introduces. */
   .exp-page .lede {
-    font-size: 0.92rem;
-    line-height: 1.5;
-  }
-
-  .exp-page .track-scroll {
-    flex: 1;
-    min-height: 0;
-    height: auto;
-  }
-
-  .exp-page .track {
-    position: static;
-    height: 100%;
-    min-height: 0;
+    max-width: 120ch;
   }
 
   /* The row is a grid, not a flex line, and that is what makes the cards equal
@@ -144,10 +113,11 @@
     grid-auto-columns: var(--card-w);
     align-items: stretch;
     height: auto;
-    /* Half the leftover width on each side, so the first card starts centred
-       and — the padding being symmetric — so does the last at the end of the
-       travel. A row that starts hard against the edge would leave the opening
-       panel half off-screen and light its neighbour instead. */
+    /* Half the leftover width on each side, so the last card lands centred at
+       the end of the travel. The head is symmetrical only so the row is one
+       width at both ends; the script spends it as a forward offset that unwinds
+       across the travel, so the row opens flush against the page margin instead
+       of sitting half a card in with a hole to its left. */
     padding: 0 max(clamp(1rem, 4vw, 3rem), calc((100% - var(--card-w)) / 2)) 4rem;
   }
 
@@ -195,47 +165,21 @@
   margin-bottom: 0.9rem;
 }
 
+/* The thread sentence, between the employer line and the bullets. A step
+   smaller than the role heading it sits under and than the copy it introduces:
+   it is connective tissue, not the point of the card. */
 .track-body {
   color: var(--fort);
-  margin-bottom: 1rem;
-}
-
-.track-projects {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  gap: 0.5rem;
-}
-
-.track-projects li {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: 0.6rem;
-  align-items: start;
-  padding: 0.5rem 0.7rem;
-  border: var(--filet) solid var(--grid);
-  border-left: var(--trait) solid var(--braise);
-  background: var(--papier);
   font-size: 0.88rem;
-}
-
-.track-projects strong {
-  display: block;
-  font-family: var(--font-display);
-  font-weight: 400;
-  color: var(--fort);
-}
-
-.track-projects span {
-  color: var(--encre);
+  line-height: 1.5;
+  margin-bottom: 0.8rem;
 }
 
 /* ----- One stop: a role, who it was at, what was done ------------------
    A stop carries more copy than the old three-part summary did, so its text
-   runs a step smaller and the bullets are boxed like the project rows above —
-   the two are read as the same kind of thing, one being work and one the
-   detail of a job. */
+   runs a step smaller and the bullets are boxed — they are read as the detail
+   of a job, in the same vocabulary the pyramid uses for the detail of a skill.
+   The skill pyramid itself lives in skills.css. */
 .track-span {
   color: var(--encre);
 }
@@ -262,7 +206,7 @@
 
 .track-points {
   list-style: none;
-  margin: 0;
+  margin: 0 0 0.9rem;
   padding: 0;
   display: grid;
   gap: 0.45rem;
@@ -297,12 +241,18 @@
 /* Skills, as chips. They are the scannable tail of the card — what a reader
    skims for when the bullets are too much to read — so they carry the accent
    the bullets do not, and sit on the floor of the card in a single row band. */
+/* `auto` on the top margin rather than a fixed one: the row's grid makes every
+   card the height of the tallest, so the shorter ones have slack to spend, and
+   this spends it above the chips. That puts the skill band along one line down
+   the row instead of following each card's copy — the same reason
+   `.panel-foot` sits on the floor of a project card. The 0.9rem of air in the
+   no-slack case comes from `.track-points` above. */
 .track-skills {
   list-style: none;
   display: flex;
   flex-wrap: wrap;
   gap: 0.35rem;
-  margin: 0.9rem 0 0;
+  margin: auto 0 0;
   padding: 0;
 }
 
@@ -331,51 +281,12 @@
   color: var(--encre) !important;
 }
 
-/* A panel is pinned to the viewport height, so on a short screen (a laptop
-   with the browser chrome open) the bullets are what overflows. Tightening
-   the type and the gaps keeps the whole stop readable instead of clipping
-   the last line. */
-/* A card is pinned to the height the viewport can spare, so on a short screen —
-   a laptop with the browser chrome open — it is the type that gives way. Two
-   steps, because the difference between 900px and 700px of window is the
-   difference between trimming and compressing. */
-@media (max-height: 48rem) {
-  /* The hero gives up its air first — it is a caption above the cards, and the
-     cards are what the page is for. */
-  .exp-page .hero {
-    padding-block: 0.6rem 0.7rem;
-  }
-
-  .exp-page .hero .eyebrow {
-    margin-bottom: 0.5rem;
-  }
-
-  .exp-page .hero h1 {
-    font-size: clamp(1.3rem, 2.2vw, 1.7rem);
-    margin-bottom: 0.35rem;
-  }
-
-  .exp-page .lede {
-    font-size: 0.85rem;
-    line-height: 1.4;
-  }
-
-  /* The rail folds onto one line — rung and year side by side — so it stops
-     costing the cards a third of a row of height. */
-  .exp-page .branches {
-    bottom: 0.7rem;
-  }
-
-  .exp-page .branch-list li {
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-  }
-
-  .exp-page .track-row {
-    padding-bottom: 3rem;
-  }
-
+/* The frame is one viewport tall and clips, so a card that cannot fit its
+   window is cut off rather than scrolled past — the runway only travels the row
+   sideways. Below about a laptop's worth of height the type gives way instead:
+   one step, because the page now scrolls and has height to spend, and only the
+   shortest windows need the cards made smaller to fit. */
+@media (max-height: 46rem) {
   .track-panel {
     padding: clamp(0.75rem, 1.6vw, 1rem);
   }
@@ -388,6 +299,15 @@
   .track-org {
     font-size: 0.84rem;
     margin-bottom: 0.4rem;
+  }
+
+  /* The thread sentence gives way with the rest of the type. It is connective
+     tissue, and on a window that cannot spare it the bullets are the better
+     thing to keep whole. */
+  .track-body {
+    font-size: 0.8rem;
+    line-height: 1.4;
+    margin-bottom: 0.6rem;
   }
 
   .track-points {
@@ -403,49 +323,9 @@
     padding: 0.4rem 0.6rem;
   }
 
-  .track-skills {
-    margin-top: 0.6rem;
-  }
-
   .track-skills li {
     font-size: 0.62rem;
     padding: 0.1rem 0.4rem;
-  }
-}
-
-/* The last step, for a window barely taller than the chrome and the rail. */
-@media (max-height: 46rem) {
-  .exp-page .track-row {
-    padding-bottom: 2.1rem;
-  }
-
-  .track-panel {
-    padding: 0.7rem;
-  }
-
-  .track-points {
-    gap: 0.3rem;
-  }
-
-  .track-points li {
-    padding: 0.34rem 0.55rem;
-  }
-
-  .track-points p {
-    font-size: 0.72rem;
-    line-height: 1.38;
-  }
-
-  .track-skills {
-    margin-top: 0.5rem;
-  }
-}
-
-/* Under 40rem the lede is the first thing to go: it is the only part of the
-   page that is nice to have rather than necessary. */
-@media (max-height: 40rem) {
-  .exp-page .lede {
-    display: none;
   }
 }
 
@@ -468,12 +348,6 @@
   text-transform: uppercase;
   color: var(--encre);
   pointer-events: none;
-}
-
-.branches-count {
-  margin: 0;
-  white-space: nowrap;
-  color: var(--fort);
 }
 
 .branch-list {
@@ -593,34 +467,95 @@
 /* ==========================================================================
    Projects track
 
-   Same travel as the career track above, more panels and no rail — the
-   position readout is enough, and twelve rungs would not fit. Runway height
-   comes from --panels, set on the element from the data: a fixed 340vh tuned
-   for four panels would whip a twelve-panel row past in the same scroll, so
-   each panel costs the reader roughly the same distance instead.
+   Same travel as the career track above, more panels and no rail — the position
+   readout is enough, and twelve rungs would not fit. Same wheel mode too: the
+   page does not scroll, so the runway carries no height and the sticky frame
+   has nothing to stick to. `.prj-page` is the one-viewport wrapper, exactly as
+   `.exp-page` is on the career page — the two pages share nothing but the rule
+   they each needed written out for themselves.
    ========================================================================== */
 
 .projects-track {
-  height: calc(var(--panels, 4) * 62vh + 70vh);
+  height: auto;
 }
 
-/* The row becomes a grid for the same reason the career track does: a flex line
-   can only stretch or shrink to content, and stretching would make a two-line
-   panel as tall as the frame with a hole where its content should be. Grid
-   items in one row all take the tallest, so the cards stay equal and each one
-   is only as big as the copy in it needs.
-
-   Scoped to the sideways layout on purpose: below this width the row is the
-   stacked flex column set up at the top of this file, and a grid would keep the
-   panels in one travelling column that runs off the side of the screen. */
+/* Both conditions must match `isHorizontal()` in the script: below this width
+   the cards are narrower than their own text; under reduced motion the travel
+   is precisely the thing being taken away. */
 @media (min-width: 52.1rem) and (prefers-reduced-motion: no-preference) {
-  .projects-track .track-row {
+  .prj-page {
+    /* The card width, named once: the grid track and the centring padding must
+       agree, or the last card lands off-centre at the end of the travel. */
+    --card-w: clamp(20rem, 52vw, 36rem);
+    display: flex;
+    flex-direction: column;
+    height: calc(100dvh - 1.9rem - 3rem);
+    overflow: hidden;
+  }
+
+  /* Twelve panels need more room than four, so the hero is trimmed harder than
+     the career page's: the heading drops to a caption's weight and every gap
+     above the cards is measured in lines, not rems. */
+  .prj-page .hero {
+    flex: 0 0 auto;
+    padding-block: 0.5rem 0.6rem;
+  }
+
+  .prj-page .hero .eyebrow {
+    margin-bottom: 0.4rem;
+  }
+
+  .prj-page .hero h1 {
+    font-size: clamp(1.3rem, 2.2vw, 1.8rem);
+    margin-bottom: 0.35rem;
+  }
+
+  .prj-page .lede {
+    font-size: 0.9rem;
+    line-height: 1.45;
+  }
+
+  .prj-page .recurring {
+    margin-top: 0.7rem;
+  }
+
+  .prj-page .track-scroll {
+    flex: 1;
+    min-height: 0;
+    height: auto;
+  }
+
+  .prj-page .track {
+    position: static;
+    height: 100%;
+    min-height: 0;
+    justify-content: flex-start;
+  }
+
+  /* The row becomes a grid for the same reason the career track does: a flex
+     line can only stretch or shrink to content, and stretching would make a
+     two-line panel as tall as the frame with a hole where its content should
+     be. Grid items in one row all take the same height, so the cards stay equal
+     whatever mix of summaries they hold.
+
+     That height is the tallest card's, not the frame's: a row that filled the
+     frame left a short card with a hand's width of empty paper under its last
+     line, and twelve panels is the wrong place to spend height the copy cannot
+     use. What the cards do not need goes below them instead of inside them —
+     with the row anchored to the top so none of it lands between the heading
+     and the first card. `.track-skills` and `.panel-foot` keep their auto top
+     margins, so the leftover inside the tallest card still puts the chips and
+     the arrow along one line down the row. */
+  .prj-page .track-row {
     display: grid;
     grid-auto-flow: column;
-    grid-auto-columns: clamp(20rem, 52vw, 36rem);
+    grid-auto-columns: var(--card-w);
     align-items: stretch;
     height: auto;
-    padding-block: 1rem 4rem;
+    /* Only the ends are padded: the leading half is what the script spends as the
+       row's forward offset at rest, and the row needs no strip at its foot —
+       the readout is pinned to the frame's own bottom, well below the cards. */
+    padding: 1.2rem max(clamp(1rem, 4vw, 3rem), calc((100% - var(--card-w)) / 2)) 1.2rem;
   }
 }
 
@@ -655,15 +590,18 @@
   color: var(--braise);
 }
 
-/* Position readout, bottom-left of the frame. Hidden from assistive tech: it
-   repeats what the panels themselves say. */
+/* Position readout along the foot of the frame, the bar stretched between the
+   two counters: a progress bar the width of the frame is a ruler the reader can
+   look down, where a fixed stub only says "somewhere in the middle". Hidden from
+   assistive tech: it repeats what the panels themselves say. */
 .panel-hud {
   position: absolute;
   left: clamp(1rem, 4vw, 3rem);
+  right: clamp(1rem, 4vw, 3rem);
   bottom: 1rem;
   display: flex;
   align-items: center;
-  gap: 0.6rem;
+  gap: 0.9rem;
   font-family: var(--font-mono);
   font-size: 0.7rem;
   letter-spacing: 0.12em;
@@ -671,9 +609,15 @@
   pointer-events: none;
 }
 
+/* Both counters are two digits, so a fixed width keeps the bar's ends level
+   whatever the panel count grows to. */
+.panel-hud > span:not(.panel-hud-bar) {
+  min-width: 2ch;
+}
+
 .panel-hud-bar {
   display: block;
-  width: clamp(5rem, 14vw, 10rem);
+  flex: 1;
   height: var(--trait-fin);
   background: var(--grid);
 }
@@ -708,12 +652,10 @@
   padding: 0.15rem 0.5rem;
 }
 
-/* Stacked, the panels no longer travel and the readout has nothing to count. */
-@media (max-width: 52rem) {
-  .projects-track {
-    height: auto;
-  }
-
+/* Stacked — narrow, or reduced motion, where the row is the plain column set up
+   at the top of this file — the panels no longer travel and the readout has
+   nothing to count. Shown anyway it would sit at 01/12 for the whole page. */
+@media (max-width: 52rem), (prefers-reduced-motion: reduce) {
   .panel-hud {
     display: none;
   }

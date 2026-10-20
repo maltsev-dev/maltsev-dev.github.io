@@ -10,13 +10,18 @@ interface Panel extends Milestone {
 }
 
 // One track, two sources: the deep-dive cases (each with a page of its own) and
-// the milestone history. Cases lead — they are the entry points — and the
-// milestones follow newest first.
+// the milestone history.
+//
+// Calendar order, newest first. What is being built now leads — `period:
+// 'Current'` is the top of the list — and the case studies follow it, since
+// their source entries carry no dates to interleave with the history. The rest
+// is the milestone list, already newest first.
 //
 // A panel is an <a> only when it has somewhere to go. A milestone without an
 // href renders as an <article>, so the track never shows a link that leads
 // nowhere.
 const panels: Panel[] = [
+  ...MILESTONES.filter((m) => m.period === 'Current').map((m) => ({ ...m, linked: !!m.href })),
   ...cases.map((p) => ({
     linked: true,
     slug: p.data.slug,
@@ -26,7 +31,7 @@ const panels: Panel[] = [
     tags: p.data.tags,
     href: `/projects/${p.data.slug}/`,
   })),
-  ...MILESTONES.map((m) => ({ ...m, linked: !!m.href })),
+  ...MILESTONES.filter((m) => m.period !== 'Current').map((m) => ({ ...m, linked: !!m.href })),
 ];
 
 // The chips under the subtitle are the skills that recur: counted across every
@@ -44,6 +49,9 @@ const RECURRING = [...counts.entries()]
 ---
 
 <Base title="Projects" description="Case studies in agentic AI and automation.">
+  <!-- One viewport, no vertical scroll: the wheel drives the row sideways, the
+       same as /experience/ but through this page's own wrapper. -->
+  <div class="prj-page">
   <section class="hero">
     <span class="eyebrow" data-reveal>Catalogue</span>
     <h1 data-reveal data-reveal-delay="60">Projects</h1>
@@ -62,13 +70,7 @@ const RECURRING = [...counts.entries()]
     }
   </section>
 
-  <!--
-    The same sideways track as /experience/: the page scrolls down and the row
-    travels across it. Runway height scales with the panel count, so a longer
-    row does not travel in the same distance — every panel still costs the
-    reader about the same amount of scrolling.
-  -->
-  <div class="track-scroll projects-track" data-track-scroll style={`--panels: ${panels.length}`}>
+  <div class="track-scroll projects-track" data-track-scroll data-track-mode="wheel">
     <div class="track" data-track>
       <div class="track-row" data-track-row>
         {
@@ -108,6 +110,7 @@ const RECURRING = [...counts.entries()]
         <span>{String(panels.length).padStart(2, '0')}</span>
       </div>
     </div>
+  </div>
   </div>
 
   <script>

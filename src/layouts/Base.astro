@@ -4,6 +4,7 @@ import '../styles/global.css';
 import '../styles/animation.css';
 import '../styles/os.css';
 import '../styles/track.css';
+import '../styles/skills.css';
 import Header from '../components/Header.astro';
 import StatusBar from '../components/StatusBar.astro';
 import LetterModal from '../components/LetterModal.astro';
@@ -44,7 +45,6 @@ const paletteItems = [
   { label: 'Profile', href: '/about/', group: 'Page' },
   { label: 'Writing', href: '/blog/', group: 'Page' },
   { label: 'Freelance', href: '/freelance/', group: 'Page' },
-  { label: 'Contact', href: '/contact/', group: 'Page' },
   ...PROJECTS.map((p) => ({ label: p.data.title, href: `/projects/${p.data.slug}/`, group: 'Project' })),
   ...POSTS.map((p) => ({ label: p.data.title, href: `/blog/${p.id}/`, group: 'Post' })),
 ];

@@ -6,36 +6,15 @@ import AiStack from '../components/AiStack.astro';
 const posts = (await getCollection('posts')).sort((a, b) =>
   (b.data.date ?? '').localeCompare(a.data.date ?? '')
 );
-const projects = await getCollection('projects');
 const recent = posts.slice(0, 3);
 
 // The homepage is a directory, not a summary: the figure shows what the work
 // is, and the column beside it opens each part of the site.
 const SECTIONS = [
-  {
-    n: '01',
-    href: '/projects/',
-    title: 'Projects',
-    desc: `${projects.length} shipped systems — agents, embedded, automation.`,
-  },
-  {
-    n: '02',
-    href: '/experience/',
-    title: 'Experience',
-    desc: 'Where the work came from, and what each stage taught.',
-  },
-  {
-    n: '03',
-    href: '/about/',
-    title: 'Profile',
-    desc: 'Background, focus areas, and how I work.',
-  },
-  {
-    n: '04',
-    href: '/contact/',
-    title: 'Contact',
-    desc: 'Open for a small number of engagements.',
-  },
+  { n: '01', href: '/experience/', title: 'Experience' },
+  { n: '02', href: '/freelance/', title: 'Work Now' },
+  { n: '03', href: '/projects/', title: 'Projects' },
+  { n: '04', href: '/about/', title: 'Profile' },
 ];
 
 ---
@@ -63,7 +42,6 @@ const SECTIONS = [
             <span class="dir-num">{s.n}</span>
             <span class="dir-body">
               <strong>{s.title}</strong>
-              <span>{s.desc}</span>
             </span>
             <span class="dir-go" aria-hidden="true">→</span>
           </a>

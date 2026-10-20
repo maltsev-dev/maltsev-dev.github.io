@@ -8,7 +8,6 @@ const STATIC_ROUTES = [
   '/experience/',
   '/about/',
   '/freelance/',
-  '/contact/',
 ];
 
 export async function GET(context) {

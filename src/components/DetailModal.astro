@@ -1,0 +1,196 @@
+---
+// One dialog, many panels. Every panel is rendered up front and the script
+// shows the one that was asked for, so the copy stays in the template next to
+// the markup instead of being duplicated as strings in JavaScript. Same shape
+// as the stage dialog in AiStack: backdrop, Escape, focus trapped inside,
+// focus returned to the trigger.
+export interface DetailPanel {
+  id: string;
+  title: string;
+  /** Short line under the title — a category or an audience. */
+  gloss?: string;
+  /** Opening paragraph. */
+  body?: string;
+  /** Labelled facts, rendered as a two-column definition list. */
+  rows?: [string, string][];
+  /** Marks the last row of `rows` as a tool list rather than prose. */
+  stack?: string;
+}
+
+interface Props {
+  id: string;
+  panels: DetailPanel[];
+}
+
+const { id, panels } = Astro.props;
+
+const idFor = (panel: string) => `${id}-t-${panel}`;
+---
+
+<div class="dlg" id={id} data-dialog={id} hidden role="dialog" aria-modal="true">
+  <div class="dlg-backdrop" data-close-dialog></div>
+
+  <div class="dlg-box" role="document">
+    {
+      panels.map((p) => (
+        <section class="dlg-panel" data-panel={p.id} hidden aria-labelledby={idFor(p.id)}>
+          <div class="dlg-head">
+            <span id={idFor(p.id)}>{p.title}</span>
+            <button type="button" class="dlg-x" data-close-dialog aria-label={`Close ${p.title}`}>
+              ✕
+            </button>
+          </div>
+
+          <div class="dlg-body">
+            {p.gloss && <p class="dlg-gloss">{p.gloss}</p>}
+            {p.body && <p class="dlg-lede">{p.body}</p>}
+
+            {p.rows && p.rows.length > 0 && (
+              <dl class="dlg-facts">
+                {p.rows.map(([label, value]) => (
+                  <Fragment>
+                    <dt>{label}</dt>
+                    <dd class={label === p.stack ? 'dlg-stack' : undefined}>{value}</dd>
+                  </Fragment>
+                ))}
+              </dl>
+            )}
+          </div>
+        </section>
+      ))
+    }
+  </div>
+</div>
+
+<style>
+  .dlg {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: clamp(1rem, 4vw, 3rem);
+  }
+
+  .dlg[hidden] {
+    display: none;
+  }
+
+  .dlg-backdrop {
+    position: absolute;
+    inset: 0;
+    /* --papier, not --encre: --encre is the light amber of this palette, and a
+       backdrop built from it washes the whole page orange. */
+    background: color-mix(in srgb, var(--papier) 78%, transparent);
+    backdrop-filter: blur(3px);
+    animation: fade-in 180ms ease both;
+  }
+
+  .dlg-box {
+    position: relative;
+    width: min(38rem, 100%);
+    max-height: calc(100vh - 2rem);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    background: var(--papier);
+    border: var(--trait) solid var(--braise);
+    box-shadow: var(--ombre);
+    animation: letter-in 260ms cubic-bezier(0.2, 0.9, 0.2, 1) both;
+  }
+
+  .dlg-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.7rem 1rem;
+    background: var(--rouille);
+    border-bottom: var(--filet) solid var(--braise);
+    font-family: var(--font-mono);
+    font-size: 0.74rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--fort);
+  }
+
+  .dlg-x {
+    background: none;
+    border: var(--filet) solid transparent;
+    color: var(--fort);
+    padding: 0.1rem 0.4rem;
+    line-height: 1;
+  }
+
+  .dlg-x:hover {
+    border-color: var(--braise);
+  }
+
+  .dlg-body {
+    padding: 1.1rem 1rem 1.3rem;
+  }
+
+  .dlg-gloss {
+    margin: 0 0 0.7rem;
+    font-size: 0.8rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--braise);
+  }
+
+  .dlg-lede {
+    margin: 0;
+    color: var(--fort);
+  }
+
+  .dlg-lede + .dlg-facts {
+    margin-top: 1.1rem;
+  }
+
+  /* Same column split as the service cards on the page, so a fact reads the
+     same way in the dialog as it did in the grid the dialog was opened from. */
+  .dlg-facts {
+    display: grid;
+    grid-template-columns: 5.25rem 1fr;
+    gap: 0.6rem 0.75rem;
+    margin: 0;
+    padding-top: 1rem;
+    border-top: var(--filet) solid var(--grid);
+  }
+
+  .dlg-facts dt {
+    font-size: 0.7rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--braise);
+    padding-top: 0.15rem;
+  }
+
+  .dlg-facts dd {
+    margin: 0;
+    color: var(--fort);
+  }
+
+  .dlg-facts dd.dlg-stack {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+  }
+
+  @media (max-width: 30rem) {
+    .dlg-facts {
+      grid-template-columns: 1fr;
+      gap: 0.15rem;
+    }
+
+    .dlg-facts dd {
+      margin-bottom: 0.55rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .dlg-backdrop,
+    .dlg-box {
+      animation: none;
+    }
+  }
+</style>

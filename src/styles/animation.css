@@ -210,7 +210,8 @@
 }
 
 /* Cards sit slightly tilted until hovered, so the grid reads as physical. */
-.card-grid[data-anim='tilt'] .card {
+.card-grid[data-anim='tilt'] .card,
+.card-row[data-anim='tilt'] .card {
   transition:
     transform 260ms cubic-bezier(0.2, 0.9, 0.2, 1),
     box-shadow 260ms ease;
@@ -400,36 +401,6 @@
   }
 }
 
-/* Home → Contact. Same edge, but stepped and hazed: `steps()` breaks the wipe
-   into discrete blocks so it reads as matter coming apart rather than as a
-   card being turned. Still no particles — those need a canvas, and that is the
-   next step, not this one. os.js selects this with `data-vt="grand"`, because
-   the pseudo-elements live in the *incoming* document and it cannot see where
-   the visitor came from. */
-:root[data-vt='grand'] {
-  --vt-dur: 560ms;
-}
-
-:root[data-vt='grand']::view-transition-old(root) {
-  animation:
-    vt-haze 280ms ease-out both,
-    vt-out var(--vt-dur) steps(6, end) both;
-}
-
-:root[data-vt='grand']::view-transition-new(root) {
-  animation: vt-in calc(var(--vt-dur) + 140ms) steps(6, end) 140ms both;
-}
-
-/* Separate animation from the wipe above because it touches different
-   properties — combining them into one keyframe set would make the blur
-   inherit `steps()` too. */
-@keyframes vt-haze {
-  to {
-    opacity: 0.4;
-    filter: blur(6px);
-  }
-}
-
 /* ----- Reduced motion ---------------------------------------------------
    Every animated property is neutralised in one place. This block must stay
    last in the cascade so it wins over the animations above it.
@@ -465,6 +436,7 @@
 
   .card,
   .card-grid[data-anim='tilt'] .card,
+  .card-row[data-anim='tilt'] .card,
   .btn,
   .btn::before {
     transition: none !important;

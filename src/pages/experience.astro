@@ -1,5 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
+import { SKILL_TIERS } from '../data/skills';
 
 // Presented as a commit log: each stop is one entry with a hash, a branch and a
 // date. The hash-shaped values are decoration — they identify a panel, nothing
@@ -15,6 +16,13 @@ interface Stop {
   href?: string;
   /** The part of the LinkedIn title after the first separator. */
   tagline?: string;
+  /**
+   * A sentence or two between the employer line and the bullets: what the step
+   * was, and what it handed to the next one. The bullets are what was done —
+   * this is the thread running through them, and the reason six stops read as
+   * one career instead of six vacancies. Nothing here that the points
+   * underneath do not already support.
+   */
   body?: string;
   points: string[];
   skills: string[];
@@ -55,7 +63,7 @@ const STOPS: Stop[] = [
     org: 'NullRun',
     href: 'https://nullrun.io',
     tagline: 'Runtime authorization for AI agents',
-    body: 'Cloud SaaS for AI agent security, policy enforcement and execution governance.',
+    body: 'Cloud SaaS for AI agent security, policy enforcement and execution governance — the problem that kept turning up on client work, built once as a product instead of again for each engagement.',
     points: [
       'Founder and lead engineer behind NullRun — the architecture, the policy model and the public API.',
       'Backend systems, SDK development and cloud infrastructure, end to end.',
@@ -73,6 +81,7 @@ const STOPS: Stop[] = [
     role: 'Applied AI Engineer',
     org: 'Freelance',
     tagline: 'LLM systems, RAG & agentic workflows · Automation at scale',
+    body: 'The step out of a reporting line: briefs instead of a backlog, and clients asking for agents rather than for scripts. Where the toolkit stopped being a list of tools and became a way of working — and where the specialisation above it on the pyramid started to be worth something.',
     points: [
       'Transformed SMB workflows into AI-powered systems, taking projects from vague requirements to production-ready — cutting manual work by 40–80%.',
       'Built LLM systems on RAG pipelines and multi-agent orchestration; integrated Google APIs and OAuth and automated document-heavy processes end-to-end.',
@@ -90,6 +99,7 @@ const STOPS: Stop[] = [
     role: 'Senior SDET',
     org: 'PashaPay',
     tagline: 'Mobile & backend test automation',
+    body: 'Senior, and no longer only writing tests. The app and the services behind it ended up under one framework, one set of standards and one owner — the point where a test engineer starts designing the system that does the testing, and where the framing changes from running the work to owning it.',
     points: [
       'Designed and built integration, e2e and load test automation frameworks from scratch, covering mobile and backend services.',
       'Owned test architecture across the full SDLC — technical design through deployment and release validation.',
@@ -107,6 +117,7 @@ const STOPS: Stop[] = [
     role: 'Senior SDET',
     org: 'Alfa-Bank',
     tagline: 'Backend test automation',
+    body: 'Automation moved inward, into the platform itself. The suites had to keep their throughput under production load, and for the first time the work sat with core engineering, security and infrastructure as colleagues rather than as the QA team taking their requirements.',
     points: [
       'Engineered and optimized automated test suites for backend services, improving throughput and stability under production load.',
       'Partnered with core engineering, security and infrastructure teams to validate integration of distributed system components.',
@@ -124,6 +135,7 @@ const STOPS: Stop[] = [
     role: 'SDET',
     org: 'Sportmaster',
     tagline: 'Performance & quality engineering',
+    body: 'Still writing tests, but no longer only writing them. Performance became the first thing to own outright, and peer review the first say in how the team worked — the difference between a tester who found defects and an engineer who removed the reason for them.',
     points: [
       'Identified and mitigated performance bottlenecks in service integrations, hardening systems against high-load conditions.',
       'Built test automation and quality documentation frameworks, establishing repeatable engineering standards.',
@@ -140,6 +152,7 @@ const STOPS: Stop[] = [
     span: '1 yr 2 mos',
     role: 'QA Automation Engineer',
     org: 'Sberbank',
+    body: 'Where it starts. Reading a banking system closely enough to find what could break in it, and writing the checks that would go on finding it — the habit every later step is built on, and the reason the frameworks that came after had something to generalise from.',
     points: [
       'Analyzed complex banking systems to surface functional risks and edge cases, translating findings into automated coverage.',
       'Designed and implemented automated test scripts validating core product functionality, improving release reliability.',
@@ -151,30 +164,41 @@ const STOPS: Stop[] = [
   },
 ];
 
-const TOOLS = [
-  ['Languages', 'Python · Rust · TypeScript · C'],
-  ['Agents', 'Tool calling · MCP · orchestration · evals'],
-  ['Embedded', 'ESP32 · STM32 · nRF52 · RP2040'],
-  ['Infra', 'Redis · Postgres · Docker · CI pipelines'],
-  ['Practice', 'Property-based testing · SDET'],
-];
+/**
+ * The whole skill set, stacked as a pyramid: the widest tier at the bottom is
+ * what everything else is built on, and each tier above it is narrower and more
+ * specific. Ordering is the point — a flat list of twenty-three equal chips says
+ * nothing about where a skill sits.
+ *
+ * It lives in data/skills.ts rather than here because every skill now carries
+ * three facts behind it — the jobs it was used on, its certifications, the
+ * projects it shipped in — and the page shows those twice: on hover, and in the
+ * table below the pyramid. One dataset, two presentations, so they cannot
+ * disagree about a number. The chips themselves stay bare: the counts belong in
+ * the card, not smeared across the shape the pyramid is drawing.
+ */
+const CARD_DATA = Object.fromEntries(
+  SKILL_TIERS.flatMap((tier) => tier.skills.map((skill) => [skill.id, skill]))
+);
 ---
 
 <Base title="Experience" description="Where I have worked and what I built.">
-  <!-- One viewport, no vertical scroll: the wheel drives the row sideways. See
-       the .exp-page rules in track.css and track.js. -->
+  <!--
+    The page reads in two directions. The top half moves sideways: scrolling down
+    travels the row of stops left to right, through seven years, and the runway
+    ends where the last one does. The page then carries on down into the skills,
+    which is the half that wants reading rather than skimming.
+  -->
   <div class="exp-page">
   <section class="hero">
     <span class="eyebrow"><span class="pulse-dot"></span>Experience</span>
     <h1 data-anim="type">The road so far</h1>
     <p class="lede">
-      Seven years, six stops — from QA automation on banking systems to building
-      authorization infrastructure for agents. Scroll, or use the arrow keys: the
-      work travels sideways, each stop coming into focus in turn.
+      Seven years, six stops — from QA automation on banking systems to building authorization infrastructure for agents. Scroll, and the work travels sideways, each stop coming into focus in turn; at the end of the road the toolkit it all went into is below.
     </p>
   </section>
 
-  <div class="track-scroll" data-track-scroll data-track-mode="wheel">
+  <div class="track-scroll" data-track-scroll>
     <div class="track" data-track>
       <div class="track-row" data-track-row>
       {
@@ -214,58 +238,93 @@ const TOOLS = [
           </article>
         ))
       }
+      </div>
 
-      <article class="track-panel">
-        <p class="track-meta">
-          <span class="track-hash">--graph</span>
-          <span class="track-chip">toolkit</span>
-        </p>
-        <h2>What I reach for</h2>
-        <ul class="track-projects">
+      <!--
+        The career rail: the five rungs of the history, oldest first. It reads the
+        opposite way to the track — the track starts at the present, this starts at
+        the first job — so the fill depletes as the reader travels back through
+        time. Hidden from assistive tech: it repeats the dates already on each card.
+      -->
+      <div class="branches" data-branches aria-hidden="true">
+        <ol class="branch-list">
           {
-            TOOLS.map(([label, value]) => (
-              <li>
-                <span aria-hidden="true">·</span>
-                <div>
-                  <strong>{label}</strong>
-                  <span>{value}</span>
-                </div>
+            STAGES.map((stage) => (
+              <li data-stage={stage.id}>
+                <i class="branch-node" />
+                <b>{stage.name}</b>
+                <span>{stage.since}</span>
               </li>
             ))
           }
-        </ul>
-      </article>
-    </div>
-
-    <!--
-      The career rail: the five rungs of the history, oldest first. It reads the
-      opposite way to the track — the track starts at the present, this starts at
-      the first job — so the fill is anchored to the right end and depletes as
-      the reader travels back through time. Hidden from assistive tech: it
-      repeats the dates already on each panel.
-    -->
-    <div class="branches" data-branches aria-hidden="true">
-      <p class="branches-count">
-        <span data-hud-current>01</span> / {String(STOPS.length + 1).padStart(2, '0')}
-      </p>
-
-      <ol class="branch-list">
-        {
-          STAGES.map((stage) => (
-            <li data-stage={stage.id}>
-              <i class="branch-node" />
-              <b>{stage.name}</b>
-              <span>{stage.since}</span>
-            </li>
-          ))
-        }
-      </ol>
-    </div>
+        </ol>
+      </div>
     </div>
   </div>
-  </div>
+
+  <!--
+    The skills. One presentation, and it is the pyramid: the shape of the whole
+    toolkit, which is the question the six stops above only hint at — where a
+    skill sits. The three facts behind each one are on the chip itself, on hover,
+    on focus or on tap; a table of the same twenty-three rows said the same
+    things at three screens of scroll, and the pyramid was the better read.
+  -->
+  <section class="skills" id="skills" data-skills>
+    <div class="skills-head">
+      <span class="eyebrow"><span class="pulse-dot"></span>Toolkit</span>
+      <h2>What the seven years added up to</h2>
+      <p>Twenty-three skills in five tiers, widest at the base. Hover any one — or tap it, where there is no pointer — to see how many jobs it was used on, what certifies it, and where it shipped.</p>
+    </div>
+
+    <div class="skill-pyramid">
+      {
+        SKILL_TIERS.map((tier) => (
+          <div class="skill-tier">
+            <p class="skill-tier-name">
+              {tier.label}
+              <span class="skill-tier-count">{tier.skills.length} skills</span>
+            </p>
+            <ul class="skill-chips">
+              {tier.skills.map((skill) => {
+                // A skill with no job, no credential and no project behind it has
+                // nothing to open. It is still on the pyramid — it is part of the
+                // toolkit — but it carries no `data-skill`, so it is not a chip
+                // that answers to the pointer, and no card is ever opened for it.
+                // Nothing is shown rather than something empty.
+                const hasFacts =
+                  skill.jobs.length > 0 ||
+                  skill.certs.length > 0 ||
+                  skill.projects.length > 0;
+
+                return (
+                  <li>
+                    <button
+                      class:list={['skill-chip', !hasFacts && 'is-quiet']}
+                      type="button"
+                      data-skill={hasFacts ? skill.id : undefined}
+                      aria-describedby={hasFacts ? 'skill-card' : undefined}
+                    >
+                      {skill.name}
+                    </button>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        ))
+      }
+    </div>
+
+    <!-- The same data as the chips, for skills.js to read. -->
+    <script id="skills-data" type="application/json" set:html={JSON.stringify(CARD_DATA)} is:inline />
+  </section>
+
+  <!-- One hover card for the whole section, moved to whichever chip is hovered. -->
+  <div class="skill-card" id="skill-card" data-skill-card role="tooltip"></div>
 
   <script>
     import '../scripts/track.js';
+    import '../scripts/skills.js';
   </script>
+  </div>
 </Base>

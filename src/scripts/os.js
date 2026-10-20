@@ -117,8 +117,11 @@
         span.textContent = c;
         // 16ms per glyph is faster than a frame budget allows at the tail of
         // a long line, so characters land in bursts. 28ms keeps the stagger
-        // legible while staying inside a comfortable frame.
-        span.style.animationDelay = i * 28 + 'ms';
+        // legible while staying inside a comfortable frame — but only while
+        // the heading is short. A long one at a fixed 28ms takes seconds to
+        // finish typing, so the step shrinks to hold the whole run near ~1.1s.
+        var step = Math.min(28, Math.max(6, 1100 / text.length));
+        span.style.animationDelay = i * step + 'ms';
         node.appendChild(span);
       });
     });
@@ -140,6 +143,94 @@
         },
         { passive: true }
       );
+    });
+  })();
+
+  // ---- Horizontal card rows ----------------------------------------------
+  // A row of cards that scrolls sideways, with no scrollbar to invite the
+  // gesture, so the wheel over the row is what moves it: the reader keeps
+  // scrolling down the page as usual, and whatever their pointer is over
+  // travels sideways instead. The fade at the end that still has content is
+  // the standing hint that there is more, since nothing else says so.
+  (function cardRows() {
+    var rows = document.querySelectorAll('.card-row');
+    if (!rows.length) return;
+
+    function maxScroll(row) {
+      return row.scrollWidth - row.clientWidth;
+    }
+
+    function update(row) {
+      var max = maxScroll(row);
+      row.classList.toggle('is-scrollable', max > 1);
+      row.classList.toggle('at-start', row.scrollLeft <= 1);
+      row.classList.toggle('at-end', max <= 1 || row.scrollLeft >= max - 1);
+    }
+
+    rows.forEach(function (row) {
+      var settle = 0;
+      var calm = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+      // A wheel notch is not a card. A notch is worth about a hundred pixels,
+      // a card is nearer three hundred, and the row snaps to cards -- so at one
+      // to one a notch would move the strip and snap it straight back, and the
+      // row would look frozen. Scaling up makes a notch land on the next card,
+      // which is what the reader meant by turning the wheel. Firefox reports
+      // lines and some setups report pages rather than pixels.
+      var PER_PIXEL = 3;
+      var PER_LINE = 120;
+      var PER_PAGE = 1;
+
+      function toPixels(e) {
+        var d = Math.abs(e.deltaY) >= Math.abs(e.deltaX) ? e.deltaY : e.deltaX;
+        if (e.deltaMode === 1) d *= PER_LINE;              // lines
+        else if (e.deltaMode === 2) d *= row.clientWidth * PER_PAGE; // pages
+        else d *= PER_PIXEL;
+        return d;
+      }
+
+      function release() {
+        row.classList.remove('is-auto');
+        // Nudge the row to where it already is so the browser evaluates snap
+        // again now that it is back on, and eases onto the nearest card. This
+        // is the settle at the end of a swipe; without it the row would sit
+        // between two cards, which reads as a misaligned layout.
+        row.scrollTo({ left: row.scrollLeft, behavior: calm.matches ? 'auto' : 'smooth' });
+      }
+
+      // Not passive: claiming the wheel is what keeps the page from scrolling
+      // vertically at the same time.
+      row.addEventListener('wheel', function (e) {
+        var max = maxScroll(row);
+
+        // Nothing sideways to show. Leave the event alone so the page scrolls
+        // down, which is what the reader was trying to do.
+        if (max <= 1) return;
+
+        var d = toPixels(e);
+        if (!d) return;
+
+        var next = row.scrollLeft + d;
+        // At either end there is nothing left to hand over to the row, so give
+        // the wheel back to the page rather than swallowing it.
+        if ((d < 0 && row.scrollLeft <= 0) || (d > 0 && row.scrollLeft >= max)) return;
+
+        e.preventDefault();
+
+        row.scrollLeft = Math.max(0, Math.min(max, next));
+
+        // Snap is off while the wheel is turning the row, because proximity
+        // snapping would tug each notch back toward the nearest card and the
+        // strip would judder instead of travelling.
+        row.classList.add('is-auto');
+        clearTimeout(settle);
+        settle = setTimeout(release, 140);
+      }, { passive: false });
+
+      window.addEventListener('resize', function () { update(row); }, { passive: true });
+
+      update(row);
+      row.addEventListener('scroll', function () { update(row); }, { passive: true });
     });
   })();
 
@@ -457,8 +548,8 @@
     }
   })();
 
-  // "Résumé" on the contact page opens the browser print dialog, which is how
-  // a visitor gets a PDF: print, then "save as PDF".
+  // Opens the browser print dialog, which is how a visitor gets a PDF from a
+  // page: print, then "save as PDF".
   (function printResource() {
     var el = document.querySelector('[data-print]');
     if (!el) return;
@@ -551,6 +642,15 @@
           if (!entry.isIntersecting) return;
           entry.target.classList.add('is-in');
           io.unobserve(entry.target);
+          // A reveal target can contain other reveal targets -- a horizontal
+          // card row holds a card per post. The cards to the right of the row
+          // are clipped by the scroller, so they never intersect on their own
+          // and would sit at opacity 0 until the reader happened to scroll
+          // that way. Reveal the whole row the moment the row is reached.
+          entry.target.querySelectorAll('[data-reveal]').forEach(function (child) {
+            child.classList.add('is-in');
+            io.unobserve(child);
+          });
         });
       },
       // A generous bottom margin and a low threshold: on horizontal pages the
@@ -588,96 +688,6 @@
     // nothing to listen for there and the page loads as it always has.
     if (!('onpagereveal' in window) || !('onpageswap' in window)) return;
 
-    var FLAG = 'vt-grand';
-    var PENDING = 'vt-pending';
-    // A pending click older than this cannot belong to the navigation that is
-    // starting right now, however it was triggered.
-    var PENDING_TTL = 2000;
-
-    var strip = function (p) {
-      return p.replace(/\/+$/, '');
-    };
-
-    function readFlag() {
-      try {
-        return sessionStorage.getItem(FLAG) === '1';
-      } catch (e) {
-        return false;
-      }
-    }
-
-    function clearFlag() {
-      try {
-        sessionStorage.removeItem(FLAG);
-      } catch (e) {
-        /* storage blocked — the default transition stands */
-      }
-    }
-
-    // The destination is recorded from the click, not from the navigation
-    // event. `pageswap` fires on the outgoing document, which by then only
-    // knows where it is going, not where it came from — and Chrome's
-    // NavigationActivation carries `entry`, `from` and `navigationType`, but no
-    // destination URL to compare against.
-    //
-    // Recording it on every plain same-origin click means the value is always
-    // fresh for the navigation that follows, including one started from the
-    // command palette or the keyboard.
-    document.addEventListener('click', function (e) {
-      if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
-      var a = e.target.closest && e.target.closest('a[href]');
-      if (!a || a.target === '_blank' || a.hasAttribute('download')) return;
-
-      var path;
-      try {
-        var url = new URL(a.href, location.href);
-        if (url.origin !== location.origin) return;
-        path = url.pathname;
-      } catch (err) {
-        return;
-      }
-
-      var isGrand = strip(location.pathname) === '' && strip(path) === '/contact';
-      try {
-        if (isGrand) sessionStorage.setItem(PENDING, String(Date.now()));
-        else sessionStorage.removeItem(PENDING);
-      } catch (err) {
-        /* storage blocked — fall back to the default transition */
-      }
-    }, true);
-
-    // `pageswap` fires only when a transition is genuinely starting, which is
-    // what makes the recorded click safe to promote: a click that turned out
-    // not to navigate leaves nothing behind, because there is no `pageswap` to
-    // promote it. A traversal — Back/Forward — is rejected on `navigationType`
-    // and by the timestamp, and gets the plain transition.
-    window.addEventListener('pageswap', function (e) {
-      var promote = false;
-      var kind = e.activation && e.activation.navigationType;
-      var stamp = 0;
-
-      try {
-        stamp = Number(sessionStorage.getItem(PENDING)) || 0;
-        sessionStorage.removeItem(PENDING);
-      } catch (err) {
-        /* storage blocked — fall back to the default transition */
-      }
-
-      // Chrome reports a plain link navigation as 'push', not 'link' — a
-      // traversal (Back/Forward) is 'traverse' and a reload is 'reload', and
-      // neither is the Home → Contact move.
-      if ((kind === 'push' || kind === 'replace') && stamp && Date.now() - stamp < PENDING_TTL) {
-        promote = true;
-      }
-
-      try {
-        if (promote) sessionStorage.setItem(FLAG, '1');
-        else sessionStorage.removeItem(FLAG);
-      } catch (err) {
-        /* storage blocked — the default transition stands */
-      }
-    });
-
     window.addEventListener('pagereveal', function () {
       var fold = window.innerHeight + 120;
       var i;
@@ -698,10 +708,6 @@
         letters[i].style.opacity = '1';
         letters[i].style.transform = 'none';
       }
-
-      var grand = readFlag();
-      clearFlag();
-      if (grand) html.dataset.vt = 'grand';
     });
   })();
 
@@ -912,7 +918,7 @@
   })();
 
   // ---- Number shortcuts --------------------------------------------------
-  // 1..4 jump to the files listed in the File menu. Ignored while a field has
+  // 1..5 jump to the pages listed in the Sources menu. Ignored while a field has
   // focus, so typing "2024" into the message box does not navigate away.
   (function shortcuts() {
     var targets = Array.prototype.slice.call(document.querySelectorAll('[data-goto]'));
@@ -959,10 +965,20 @@
 
     var panels = Array.prototype.slice.call(modal.querySelectorAll('[data-stage-panel]'));
     var closers = Array.prototype.slice.call(modal.querySelectorAll('[data-close-stage]'));
+    var box = modal.querySelector('.stage-modal-box');
     var lastFocus = null;
 
     var FOCUSABLE =
       'a[href], button:not([disabled]), input, select, textarea, [tabindex]:not([tabindex="-1"])';
+
+    // All ten panels live in the DOM at once and nine of them are hidden, so
+    // the selector alone returns the close button of every stage. Trap on those
+    // and first and last are buttons of panels that cannot be reached, which
+    // lets Tab walk straight out of an open dialog. Keep what is on screen.
+    function focusables() {
+      return Array.prototype.slice.call(modal.querySelectorAll(FOCUSABLE))
+        .filter(function (el) { return el.getClientRects().length > 0; });
+    }
 
     function isOpen() {
       return !modal.hidden;
@@ -984,6 +1000,10 @@
       panels.forEach(function (p) { p.hidden = p !== panel; });
       modal.hidden = false;
       document.body.style.overflow = 'hidden';
+      // The box is the scroller and it is shared by all ten panels, so without
+      // this the second stage opens halfway down, where the previous one was
+      // left scrolled.
+      if (box) box.scrollTop = 0;
 
       var first = panel.querySelector(FOCUSABLE);
       if (first) first.focus();
@@ -1004,7 +1024,7 @@
 
       if (e.key !== 'Tab') return;
 
-      var items = Array.prototype.slice.call(modal.querySelectorAll(FOCUSABLE));
+      var items = focusables();
       if (!items.length) return;
       var first = items[0];
       var last = items[items.length - 1];

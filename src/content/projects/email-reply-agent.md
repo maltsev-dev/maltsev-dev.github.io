@@ -1,7 +1,7 @@
 ---
 title: "AI Email Reply Agent"
 slug: "email-reply-agent"
-description: "Resolves inbound cold-outreach replies in minutes: classifies, drafts a response and books the meeting."
+description: "Resolves inbound cold-outreach replies in minutes. It classifies the reply, drafts a response in the sender's own words, and books the meeting — so no lead goes quiet in an inbox."
 tags: ["LLM", "Gmail", "React"]
 ---
 

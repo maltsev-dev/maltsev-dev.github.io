@@ -1,7 +1,7 @@
 ---
 title: "AI Lead Qualification Agent"
 slug: "lead-qualification-agent"
-description: "Qualifies inbound leads over SMS and WhatsApp, then books the appointment and flags it to sales."
+description: "Qualifies inbound leads over SMS and WhatsApp, then books the appointment and flags it to sales. Every thread is answered in seconds, and the calendar fills without anyone touching it."
 tags: ["LLM", "WhatsApp", "CRM"]
 ---
 

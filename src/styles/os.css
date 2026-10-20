@@ -1142,9 +1142,11 @@
   color: var(--encre);
 }
 
+/* Wide on purpose: the paragraph is the substance of the panel, and 60ch left
+   it as a narrow ribbon with the rest of the column empty. */
 .stage-body {
   margin: 0 0 0.9rem;
-  max-width: 60ch;
+  max-width: 120ch;
   color: var(--fort);
 }
 
@@ -1264,11 +1266,6 @@
   font-size: clamp(1.15rem, 2.6vw, 1.6rem);
   color: var(--fort);
   line-height: 1.15;
-}
-
-.dir-body span {
-  font-size: 0.86rem;
-  color: var(--encre);
 }
 
 .dir-go {
@@ -1677,9 +1674,13 @@
   transition: background 140ms ease, color 140ms ease;
 }
 
+/* A tint, not an inversion. Filling the block with solid accent turned its own
+   box-drawing glyphs dark and the block read as two nested rectangles; a low
+   alpha fill over the page colour keeps the frame one frame and lifts the
+   label off the background. */
 .stack-zone.is-hot {
-  background: var(--braise);
-  color: var(--papier);
+  background: color-mix(in srgb, var(--braise) 26%, transparent);
+  color: var(--fort);
 }
 
 /* Lines arrive one at a time when the figure first scrolls into view.
@@ -1788,9 +1789,12 @@
 
 .stage-modal-box {
   position: relative;
-  width: min(46rem, 100%);
+  /* 56rem, not 46: the widest stage diagram is 102 columns and the panel has to
+     hold it at a readable monospace size without scrolling on a laptop. */
+  width: min(56rem, 100%);
   max-height: calc(100vh - 2rem);
   overflow-y: auto;
+  overscroll-behavior: contain;
   background: var(--papier);
   border: var(--trait) solid var(--braise);
   box-shadow: var(--ombre);
@@ -1860,14 +1864,119 @@
   color: var(--fort);
 }
 
-.stage-modal-detail p {
-  margin: 0 0 0.8rem;
-  max-width: 62ch;
-  line-height: 1.65;
+/* The per-stage diagram. It is the same drawing as the block in the big
+   figure, so it keeps --font-art and keeps its columns: a proportional font
+   would shear the frames apart. Wide diagrams scroll horizontally inside the
+   panel rather than shrinking to unreadable — at 0.7rem a monospace column is
+   about 6.6px, so even the 102-column observability trace fits the 56rem box
+   and only a phone needs the scrollbar. */
+/* The diagrams run 13 to 35 lines. Left at full height the tall ones push the
+   prose — the part that says how I actually work — a screen and a half down, so
+   the box is capped and the two long diagrams scroll inside it. Capped in rem
+   rather than lh so the cap holds even where the lh unit is unsupported. */
+.stage-modal-art {
+  margin: 0 0 1.1rem;
+  padding: 0.85rem 0.9rem;
+  overflow: auto;
+  overscroll-behavior: contain;
+  max-height: 19rem;
+  background: color-mix(in srgb, var(--rouille) 22%, var(--papier));
+  border: var(--filet) solid var(--braise);
+  color: var(--fort);
+  font-family: var(--font-art);
+  font-size: 0.66rem;
+  line-height: 1.3;
+  font-variant-ligatures: none;
+  tab-size: 2;
 }
 
-.stage-modal-detail p:last-child {
-  margin-bottom: 0;
+.stage-modal-art code {
+  font-family: var(--font-art);
+  font-variant-ligatures: none;
+}
+
+/* Two columns on a wide panel, one on a phone. The columns are independent so
+   a long list does not leave a ragged hole next to a short one. */
+.stage-modal-cols {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
+  gap: 1.1rem 1.8rem;
+  align-items: start;
+}
+
+.stage-modal-sec {
+  min-width: 0;
+}
+
+.stage-modal-h {
+  margin: 0 0 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--braise);
+}
+
+.stage-modal-list {
+  margin: 0;
+  padding-left: 1.1rem;
+  font-size: 0.88rem;
+  line-height: 1.6;
+}
+
+.stage-modal-list li + li {
+  margin-top: 0.5rem;
+}
+
+.stage-modal-list b {
+  font-weight: 600;
+  color: var(--fort);
+}
+
+.stage-modal-list code {
+  padding: 0.05em 0.3em;
+  background: color-mix(in srgb, var(--rouille) 40%, var(--papier));
+  font-family: var(--font-mono);
+  font-size: 0.86em;
+  color: var(--fort);
+  overflow-wrap: break-word;
+}
+
+.stage-modal-num {
+  /* The counter rather than a glyph: it keeps the marker in the text colour of
+     the list and matches the numbering used in the section headings. */
+  list-style: decimal;
+  padding-left: 1.25rem;
+}
+
+.stage-modal-num li::marker {
+  color: var(--braise);
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+}
+
+/* The checklist is a list of things to do, not a list of claims, so nothing
+   here is ticked — the box is drawn in CSS rather than typed as a character. */
+.stage-modal-check {
+  padding-left: 0;
+  list-style: none;
+}
+
+.stage-modal-check li {
+  position: relative;
+  padding-left: 1.5rem;
+}
+
+.stage-modal-check li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.42em;
+  width: 0.62em;
+  height: 0.62em;
+  border: var(--filet) solid var(--braise);
+  background: color-mix(in srgb, var(--papier) 70%, transparent);
 }
 
 .stack.is-live .stack-scan {

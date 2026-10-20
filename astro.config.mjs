@@ -15,5 +15,10 @@ export default defineConfig({
   build: {
     format: 'directory',
   },
+  // The contact page is gone; its URL is the one people have bookmarked and
+  // linked to, so it lands on the profile instead of a 404.
+  redirects: {
+    '/contact': '/about',
+  },
   integrations: [mdx()],
 });

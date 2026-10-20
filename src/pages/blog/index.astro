@@ -34,9 +34,21 @@ for (const post of posts) {
           <span class="card-meta">{list.length} posts</span>
         </div>
 
-        <div class="card-grid" data-anim="tilt">
+        <div
+          class="card-row"
+          data-anim="tilt"
+          data-reveal
+          tabindex="0"
+          role="group"
+          aria-label={`Posts from ${year}`}
+        >
           {list.map((post, i) => (
-            <a class="card" href={`/blog/${post.id}/`} data-reveal data-reveal-delay={i * 40}>
+            <a
+              class="card"
+              href={`/blog/${post.id}/`}
+              data-reveal
+              data-reveal-delay={Math.min(i, 4) * 40}
+            >
               <span class="card-meta">{post.data.date}</span>
               <h3>{post.data.title}</h3>
               <div class="tag-row">

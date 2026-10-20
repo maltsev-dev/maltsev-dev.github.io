@@ -1,7 +1,7 @@
 ---
 title: "AI Support Triage Agent"
 slug: "support-triage-agent"
-description: "Resolves 40-60% of support tickets on its own — the rest are routed to a human with the context attached."
+description: "Resolves 40-60% of support tickets on its own. The rest are routed to a human with the context already attached, so nobody opens a blank ticket."
 tags: ["RAG", "Intercom", "React"]
 ---
 

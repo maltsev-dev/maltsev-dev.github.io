@@ -359,6 +359,122 @@ blockquote {
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr));
 }
 
+/* ----- Card row ---------------------------------------------------------
+   One horizontal line of cards that scrolls sideways, used by the blog index
+   where each year is a single strip rather than a grid.
+
+   The row bleeds past the text column so a card can be cut at the edge, which
+   is what tells a reader the year holds more posts than fit. The negative
+   margin and the matching padding cancel out, so the first and last card
+   still line up with the column when the strip is scrolled to either end.
+   ---------------------------------------------------------------------- */
+.card-row {
+  display: flex;
+  gap: 1.25rem;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x proximity;
+  scroll-padding-inline: clamp(1rem, 4vw, 3rem);
+  margin-inline: calc(-1 * clamp(1rem, 4vw, 3rem));
+  padding-inline: clamp(1rem, 4vw, 3rem);
+  --edge-fade: 3.5rem;
+  /* No scrollbar: the wheel is what moves this row, and a bar under it would
+     advertise a control that is not the one being used. The cue that remains is
+     the card cut off at the edge plus the fade. The row is still focusable, so
+     arrow keys scroll it for anyone who cannot use a pointer. */
+  padding-block: 0.35rem 0.4rem;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+/* While the wheel is turning the row, snapping would tug each notch back
+   toward the nearest card and the strip would judder instead of travelling.
+   Snap applies once the reader stops. */
+.card-row.is-auto {
+  scroll-snap-type: none;
+}
+
+/* Keyboard focus has to remain findable now that the scrollbar is gone: it is
+   the only visible indication that the row can be scrolled without a pointer,
+   so it gets an outline in the row's own colour. */
+.card-row:focus-visible {
+  outline: var(--trait) solid var(--braise);
+  outline-offset: 2px;
+}
+
+/* A fade at the end of the row that still has content behind it. Chromium
+   draws an overlay scrollbar that occupies no space and fades itself out, so
+   without this the only cue is a card cut at the viewport edge, which reads
+   as a page that ran out rather than a row with more to show. The classes are
+   set by the cardRowEdges module in os.js, which drops the fade as the row
+   reaches each end. */
+.card-row.is-scrollable {
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    #000 var(--edge-fade),
+    #000 calc(100% - var(--edge-fade)),
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    #000 var(--edge-fade),
+    #000 calc(100% - var(--edge-fade)),
+    transparent 100%
+  );
+}
+
+.card-row.is-scrollable.at-start {
+  -webkit-mask-image: linear-gradient(
+    to right,
+    #000 0,
+    #000 calc(100% - var(--edge-fade)),
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to right,
+    #000 0,
+    #000 calc(100% - var(--edge-fade)),
+    transparent 100%
+  );
+}
+
+.card-row.is-scrollable.at-end {
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    #000 var(--edge-fade),
+    #000 100%
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    #000 var(--edge-fade),
+    #000 100%
+  );
+}
+
+/* The cards keep a fixed width: the strip is a line of posts, not a grid
+   that reflows. */
+.card-row > .card {
+  flex: 0 0 18rem;
+  max-width: 82vw;
+  scroll-snap-align: start;
+}
+
+.card-row::-webkit-scrollbar {
+  display: none;
+}
+
+.card-row::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.card-row::-webkit-scrollbar-thumb {
+  background: var(--braise);
+}
+
 .card {
   display: flex;
   flex-direction: column;

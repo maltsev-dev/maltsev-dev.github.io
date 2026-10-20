@@ -1,99 +1,134 @@
 ---
 import Base from '../layouts/Base.astro';
 
+/*
+  The Profile page answers "who is this and what are they like to work with",
+  not "what have they shipped" — the projects and the career have pages of
+  their own. So what is left below is method and what is on the desk right
+  now, kept deliberately short: the page is a portrait, not a CV.
+*/
 
-// What I actually sell. Kept separate from the panels below so the service
-// list can be edited without touching the narrative.
-const SERVICES = [
-  {
-    title: 'AI agents, productionised',
-    body: 'Given an existing business process, I wire the model, tools and APIs into it and deliver a workflow that runs unattended and stays auditable.',
-    tags: ['orchestration', 'tool calling', 'MCP', 'evals'],
-  },
-  {
-    title: 'Automation & integrations',
-    body: 'The unglamorous half: reliable pipelines, retries, rate limits and observability. Usually where the real project cost lives.',
-    tags: ['APIs', 'queues', 'observability'],
-  },
-  {
-    title: 'Agent control plane',
-    body: 'NullRun — a runtime authorization layer for agents. Controls tool execution, approvals, budgets and policy, so autonomy does not mean losing the plot.',
-    tags: ['NullRun', 'approvals', 'policy'],
-  },
-  {
-    title: 'Embedded & systems Rust',
-    body: 'Firmware for nRF52, STM32, ESP32 and RP2040 — drivers and on-device logic, plus the test harnesses that keep them honest.',
-    tags: ['no_std', 'drivers', 'testing'],
-  },
-  {
-    title: 'Quality engineering',
-    body: 'Seven years of it in fintech. Property-based tests, integration pipelines, and observability that tells you what actually broke.',
-    tags: ['property testing', 'CI', 'SDET'],
-  },
-  {
-    title: 'Technical audit',
-    body: 'A focused review before you commit to a rebuild — including an honest recommendation when the answer is "do not rebuild this".',
-    tags: ['review', 'architecture'],
-  },
-];
-
-// The agentic structure, assembled as the reader scrolls. Each stage is a
-// panel; the rail beside it tracks which one is in view.
-const STAGES = [
+// How the work actually runs. Reuses the scroll-assembled rail the page
+// already had: each panel slides in from its own side as it is reached, and
+// the rail between them fills.
+const METHOD = [
   {
     n: '01',
-    title: 'Intake',
-    lead: 'Everything lands in one queue first.',
-    body: 'Before any model runs, the input is normalised, deduplicated and rate-limited. Most reports of "the AI did something strange" turn out to be three messages that were never three messages.',
-    marks: ['email', 'sms', 'chat', 'forms'],
+    title: 'Start with the failure',
+    lead: 'Understand what breaks before deciding what to build.',
+    body: 'Every engagement starts with the actual problem: a failed workflow, an unreliable agent, or an automation that cannot be trusted in production. The goal is not to add AI to a process. It is to identify the failure, understand its cause, and build the right solution.',
+    marks: ['failure', 'cause', 'scope'],
   },
   {
     n: '02',
-    title: 'Agents',
-    lead: 'Narrow scope per agent, not one generalist.',
-    body: 'Support, invoice, insight, store-ops, SMM — each a specialist with its own tools. Narrow scope means a failure is diagnosable, and the fix stays local.',
-    marks: ['classify', 'route', 'retry', 'escalate'],
+    title: 'Narrow beats clever',
+    lead: 'One responsibility. Explicit tools. Defined boundaries.',
+    body: 'An agent that does everything is difficult to reason about, test, and control. I design systems around clear responsibilities, minimal tool access, and explicit execution boundaries. When something fails, the cause should be traceable, the fix should be contained, and the rest of the system should keep working.',
+    marks: ['one responsibility', 'explicit tools', 'boundaries'],
   },
   {
     n: '03',
-    title: 'Control',
-    lead: 'Autonomy without losing the plot.',
-    body: 'Tool execution runs against a policy layer: approvals, budgets, one credential per domain, and an action log. Bounded work proceeds on its own; anything sensitive waits for a human.',
-    marks: ['approvals', 'budgets', 'policy', 'audit log'],
+    title: 'Bound everything',
+    lead: 'Autonomy with explicit limits.',
+    body: 'Every agent operates within defined budgets, timeouts, iteration caps, and tool permissions. Sensitive actions require approval. Every execution leaves a trace. Routine work runs autonomously; consequential actions stay behind explicit control gates. Autonomy should expand only as far as the system can reliably support it.',
+    marks: ['budgets', 'timeouts', 'approval'],
   },
   {
     n: '04',
-    title: 'Evaluate',
-    lead: 'If it is not scored, it is not shipped.',
-    body: 'Every run is logged and scored. Work repairing AI-generated code has grown sharply — because someone has to own the output, and that is the part I keep.',
-    marks: ['scoring', 'traces', 'regression'],
+    title: 'Measure what matters',
+    lead: 'If you cannot evaluate it, you cannot trust it in production.',
+    body: 'Every run should produce evidence: traces, outcomes, failures, and measurable quality signals. Evaluations become regression tests that catch degradation before deployment, not reports that nobody reads. AI-generated output is not finished when it looks correct. It is finished when it has been tested, its failure modes are understood, and someone takes responsibility for what ships.',
+    marks: ['traces', 'evals', 'regression'],
+  },
+];
+
+// Right now. Three questions, answered plainly. Each answer is a list rather
+// than a run-on sentence — a single line of five items is unreadable.
+const NOW = [
+  {
+    k: 'doing',
+    items: [
+      'AI agent reliability audit & fix',
+      'RAG quality & access-control audit',
+      'AI workflow & CRM integration',
+      'MCP server & secure tool integration',
+      'Production readiness & architecture review',
+    ],
+  },
+  {
+    k: 'founding',
+    items: ['NullRun — runtime authorization for agents', 'Agentic Audit'],
+  },
+  {
+    k: 'writing',
+    items: ['agents', 'authorization, and the systems underneath them'],
   },
 ];
 ---
 
-<Base title="Profile" description="Who I am, what I build, and the structure behind it." rail>
-  <section class="hero hero-scroll">
-    <span class="eyebrow" data-reveal><span class="pulse-dot"></span>Profile</span>
-    <h1 data-reveal data-reveal-delay="60" data-anim="type">I build agents that survive production.</h1>
-    <p class="lede" data-reveal data-reveal-delay="120">
-      Seven years of automation and quality engineering at Sberbank, Alfa-Bank
-      and PashaPay — where a silent failure is expensive — before going
-      independent. Now I build and productionize AI systems for other people.
-    </p>
+<Base
+  title="Profile"
+  description="How I work, what I care about, and what is on the desk right now."
+  rail
+>
+  <section class="hero hero-scroll about-hero">
+    <div class="about-head">
+      <span class="eyebrow" data-reveal><span class="pulse-dot"></span>Anatolii Maltsev</span>
+      <h1 data-reveal data-reveal-delay="60" data-anim="type">8 years building systems that do real work</h1>
+    </div>
+
+
+<div class="about-lead">
+  <p class="lede" data-reveal data-reveal-delay="120">
+    My focus is what happens beyond the happy path.
+  </p>
+  <ul class="about-points" data-reveal data-reveal-delay="150">
+    <li>Failures — whether they are detected, traced, and understood.</li>
+    <li>Permissions — what an agent is allowed to access and execute.</li>
+    <li>Recovery — how a system handles failure and resumes safely.</li>
+    <li>Boundaries — what keeps autonomous execution under control.</li>
+  </ul>
+  <p class="lede" data-reveal data-reveal-delay="180">
+    If a system can take action, its actions must be traceable, its failures
+    diagnosable, and its execution controllable.
+  </p>
+</div>
+
+
+    <!--
+      One image per theme, swapped in CSS rather than JS: the background-image
+      rule that matches the active theme is the only one that applies, so the
+      browser fetches exactly one file and the switcher changes the picture
+      with no reflow and no flash. role="img" with a label carries the meaning,
+      since a background image has no alt of its own.
+    -->
+    <figure class="portrait" data-reveal data-reveal-delay="140">
+      <div
+        class="portrait-art"
+        role="img"
+        aria-label="Dithered pixel portrait of me at a desk with a cat, a CRT showing the current theme's palette, and a browser window running a test matrix."
+      ></div>
+      <figcaption>
+        <span class="portrait-kicker">
+          chaotic engineer · plant lover · cat person · cyclist · photographer ·
+          political exile · solo founder
+        </span>
+      </figcaption>
+    </figure>
   </section>
 
-  <!-- ---- The agentic structure, assembled on scroll ---- -->
-  <section class="section" id="structure">
-    <div class="sticky-head">
-      <h2 data-anim="underline">How the work is put together</h2>
-      <div class="rule-progress"><i></i></div>
+  <!-- ---- How the work runs ---- -->
+  <section class="section" id="method">
+    <div class="sticky-head about-sticky">
+      <span class="about-sticky-kicker">Method · four rules</span>
+      <h2 data-anim="underline">How I work</h2>
     </div>
 
     <div class="assemble" data-assemble>
       <div class="assemble-rail" aria-hidden="true"><i data-rail-fill></i></div>
 
       {
-        STAGES.map((s) => (
+        METHOD.map((s) => (
           <article class="stage" data-stage>
             <div class="stage-num">{s.n}</div>
             <div class="stage-main">
@@ -112,34 +147,307 @@ const STAGES = [
     </div>
   </section>
 
-  <!-- ---- Services ---- -->
-  <section class="section" id="services">
-    <div class="sticky-head">
-      <h2 data-anim="underline">What I do</h2>
-      <div class="rule-progress"><i></i></div>
-    </div>
-
-    <div class="card-grid" data-anim="tilt">
-      {
-        SERVICES.map((s, i) => (
-          <div class="card" data-reveal data-reveal-delay={i * 60}>
-            <h3>{s.title}</h3>
-            <p>{s.body}</p>
-            <div class="tag-row">
-              {s.tags.map((t) => (
-                <span class="tag">{t}</span>
-              ))}
-            </div>
-          </div>
-        ))
-      }
-    </div>
-  </section>
-
+  <!-- ---- Right now, over the artwork ---- -->
   <section class="section">
-    <div class="btn-row">
-      <a class="btn btn-primary" href="/projects/">See the work</a>
-      <a class="btn" href="/contact/">Write to me</a>
+    <div class="now" data-reveal>
+      <div class="now-art" aria-hidden="true"></div>
+      <div class="now-body">
+        <h2 class="now-title">Right now</h2>
+        <dl class="now-list">
+          {
+            NOW.map((n) => (
+              <div class="now-row">
+                <dt>{n.k}</dt>
+                <dd>
+                  <ul class="now-items">
+                    {n.items.map((it) => (
+                      <li>{it}</li>
+                    ))}
+                  </ul>
+                </dd>
+              </div>
+            ))
+          }
+        </dl>
+      </div>
     </div>
   </section>
 </Base>
+
+<style>
+  /* Everything here is scoped to this page, so it lives with the page rather
+     than in os.css. The tokens are the site's; only the arrangement is new. */
+
+  /* ----- Hero: copy beside the portrait --------------------------------- */
+  /* Three rows. The headline spans the full width so it can be set as one
+     line — in a 1fr column it would wrap into a ragged stack no matter what
+     size it is given. Below the headline the bullets take a narrow column and
+     the picture takes the rest. */
+  .about-hero {
+    display: grid;
+    gap: clamp(1.2rem, 3vw, 2.2rem);
+    align-items: center;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.9fr);
+  }
+
+  .about-head {
+    grid-column: 1 / -1;
+    /* Sized against its own container, not the viewport. The cap is set by
+       the narrowest desktop content width (~1340px), where 2.9rem leaves the
+       line about 8% of headroom even at a pessimistic 0.5em per glyph; below
+       that the cqw term keeps the same margin, and the floor takes over on a
+       phone, where wrapping is the right answer anyway. */
+    container-type: inline-size;
+  }
+
+  .about-head h1 {
+    font-size: clamp(1.5rem, 3.8cqw, 2.9rem);
+  }
+
+  /* The subtitle is the accent colour, so the headline reads as the headline
+     and this reads as commentary under it. */
+  .about-lead .lede {
+    color: var(--encre);
+  }
+
+  .about-points {
+    display: grid;
+    gap: 0.4rem;
+    margin: 0.2rem 0 1rem;
+    padding: 0;
+    list-style: none;
+  }
+
+  .about-points li {
+    position: relative;
+    padding-left: 1.1rem;
+    font-size: 0.95rem;
+    color: var(--fort);
+  }
+
+  .about-points li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.62em;
+    width: 0.5rem;
+    height: var(--trait);
+    background: var(--braise);
+  }
+
+  .portrait {
+    margin: 0;
+    border: var(--trait) solid var(--braise);
+    box-shadow: var(--ombre);
+    background: var(--papier);
+  }
+
+  /* The artwork itself. One rule per theme, so only the matching file is
+     ever fetched — see the note in the markup. */
+  .portrait-art {
+    aspect-ratio: 1400 / 671;
+    background-size: cover;
+    background-position: center;
+    /* Dithered art at 1:1 on a hidpi screen is soft; a touch of contrast
+       keeps the dot pattern from washing out against the panel. */
+    filter: contrast(1.04);
+    image-rendering: auto;
+  }
+
+  :root[data-theme='phosphore'] .portrait-art {
+    background-image: url('/images/profile/desk-phosphore.webp');
+  }
+
+  :root[data-theme='acidule'] .portrait-art {
+    background-image: url('/images/profile/desk-acidule.webp');
+  }
+
+  :root[data-theme='pierre'] .portrait-art {
+    background-image: url('/images/profile/desk-pierre.webp');
+  }
+
+  .portrait figcaption {
+    padding: 0.7rem 0.9rem;
+    border-top: var(--filet) solid var(--braise);
+    background: var(--papier);
+  }
+
+  /* A list of selves, not a caption: monospaced but not shouted, and left in
+     sentence case so the dots do the separating instead of the capitals. */
+  .portrait-kicker {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    letter-spacing: 0.01em;
+    color: var(--fort);
+    text-wrap: balance;
+  }
+
+  /* ---- The sticky marker over the assemble block ------------------------ */
+  /* It sticks, so it has to earn it. A bare heading on an opaque slab reads
+     as a leftover — it chops the panels off with a hard edge every time one
+     slides underneath. A kicker gives it a job, a hairline gives it an edge to
+     die out along, and the background fades rather than cuts. */
+  .about-sticky {
+    display: grid;
+    gap: 0.45rem;
+    padding-block: 0.8rem 1.1rem;
+    margin-bottom: 1.4rem;
+    background: linear-gradient(
+      to bottom,
+      var(--papier) 0%,
+      var(--papier) 68%,
+      transparent 100%
+    );
+  }
+
+  .about-sticky-kicker {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--braise);
+  }
+
+  .about-sticky::after {
+    content: '';
+    height: var(--trait);
+    background: linear-gradient(to right, var(--braise), transparent 78%);
+  }
+
+  /* ---- Right now, over the artwork ------------------------------------- */
+  .now {
+    position: relative;
+    border: var(--trait) solid var(--braise);
+    box-shadow: var(--ombre);
+    overflow: hidden;
+    background: var(--papier);
+  }
+
+  /* Same per-theme art as the hero, pushed far back so the type stays the
+     subject. The gradient does the work: opaque under the text, gone by the
+     time it reaches the right-hand side. */
+  .now-art {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center right;
+    opacity: 0.32;
+  }
+
+  :root[data-theme='phosphore'] .now-art {
+    background-image: url('/images/profile/desk-phosphore.webp');
+  }
+
+  :root[data-theme='acidule'] .now-art {
+    background-image: url('/images/profile/desk-acidule.webp');
+  }
+
+  :root[data-theme='pierre'] .now-art {
+    background-image: url('/images/profile/desk-pierre.webp');
+  }
+
+  .now-art::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    /* Stays opaque under the whole text column now that the column is wider:
+       the art is a texture at the right-hand edge, not a background the type
+       has to survive on. */
+    background: linear-gradient(
+      100deg,
+      var(--papier) 0%,
+      color-mix(in srgb, var(--papier) 90%, transparent) 62%,
+      color-mix(in srgb, var(--papier) 35%, transparent) 86%,
+      transparent 100%
+    );
+  }
+
+  .now-body {
+    position: relative;
+    padding: clamp(1.3rem, 3.4vw, 2.2rem);
+    max-width: 46rem;
+  }
+
+  .now-title {
+    margin: 0 0 1rem;
+    font-size: clamp(1.4rem, 3.4vw, 2rem);
+  }
+
+  .now-list {
+    margin: 0;
+    display: grid;
+    gap: 0.1rem;
+  }
+
+  .now-row {
+    display: grid;
+    grid-template-columns: minmax(5.5rem, auto) 1fr;
+    align-items: start;
+    gap: 0.4rem 1.2rem;
+    padding: 0.7rem 0;
+    border-top: var(--filet) solid var(--grid);
+  }
+
+  .now-row dt {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--braise);
+  }
+
+  .now-row dd {
+    margin: 0;
+    color: var(--fort);
+  }
+
+  /* Numbered like the stages above, so the three answers read as three short
+     lists rather than three sentences with commas in them. */
+  .now-items {
+    display: grid;
+    gap: 0.35rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    counter-reset: now-item;
+  }
+
+  .now-items li {
+    display: grid;
+    grid-template-columns: 1.6rem 1fr;
+    gap: 0.2rem;
+    counter-increment: now-item;
+  }
+
+  .now-items li::before {
+    content: counter(now-item, decimal-leading-zero);
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--braise);
+    padding-top: 0.15em;
+  }
+
+  /* ----- Narrower screens ------------------------------------------------ */
+  @media (max-width: 56rem) {
+    .about-hero {
+      grid-template-columns: 1fr;
+    }
+
+    /* Stacked, the picture leads — but the headline still has to come first,
+       so it is ordered ahead of it explicitly. */
+    .about-head {
+      order: -2;
+    }
+
+    .portrait {
+      order: -1;
+    }
+  }
+
+  @media (max-width: 34rem) {
+    .now-row {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
