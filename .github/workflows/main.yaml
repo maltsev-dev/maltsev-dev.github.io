@@ -12,6 +12,10 @@ concurrency:
 
 permissions:
   contents: read
+  # deploy-pages v4 mints a short-lived OIDC token to authenticate against the
+  # Pages API; without these two the deploy step fails on `id-token: write`.
+  pages: write
+  id-token: write
 
 jobs:
   build-and-deploy:
