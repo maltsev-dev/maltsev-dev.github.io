@@ -27,7 +27,21 @@ const { id, panels } = Astro.props;
 const idFor = (panel: string) => `${id}-t-${panel}`;
 ---
 
-<div class="dlg" id={id} data-dialog={id} hidden role="dialog" aria-modal="true">
+<!--
+  aria-labelledby starts on the first panel and is repointed at whichever panel
+  is opened by dialogs.js. A dialog with role=dialog and no accessible name is
+  announced to a screen reader as a bare "dialog", which tells the visitor
+  nothing about what just opened over the page.
+-->
+<div
+  class="dlg"
+  id={id}
+  data-dialog={id}
+  hidden
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby={idFor(panels[0].id)}
+>
   <div class="dlg-backdrop" data-close-dialog></div>
 
   <div class="dlg-box" role="document">

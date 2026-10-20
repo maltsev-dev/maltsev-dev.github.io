@@ -47,6 +47,11 @@
         p.hidden = p !== panel;
       });
       modal.hidden = false;
+      // Re-point the dialog's accessible name at the panel now on screen. The
+      // markup ships a default, but ten panels share one dialog and only the
+      // open one can describe it.
+      var titleId = panel.querySelector('[id]') && panel.querySelector('[id]').id;
+      if (titleId) modal.setAttribute('aria-labelledby', titleId);
       document.body.style.overflow = 'hidden';
       // The box is the scroller and is shared by every panel, so without this
       // the second item opens halfway down, where the last one was left.

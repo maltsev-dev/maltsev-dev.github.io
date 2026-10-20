@@ -22,7 +22,7 @@ A great starting point for:
 
 ---
 
-### 🧰 Stack & Tools
+## 🧰 Stack & Tools
 
 * 🦀 **Rust** (Solana smart contract logic)
 * ⚓ **Anchor** (framework for Solana programs)

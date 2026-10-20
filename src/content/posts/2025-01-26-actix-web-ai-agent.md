@@ -5,7 +5,7 @@ tags: ["rust", "actix_web", "open_ai", "project"]
 ---
 Actix-web AI Agent. Built with 🤎 in Rust  
 [Effortless Backend Prototyping with Rust](https://www.linkedin.com/pulse/effortless-backend-prototyping-rust-anatolii-maltsev-hvvce/?trackingId=lGXFeD6ET%2ByFSocPHYS9qg%3D%3D)  
-[![Documentation](https://img.shields.io/badge/Documentation-Click_here-blue)](https://maltsev-dev.github.io/rest_on/)
+[![Documentation](https://img.shields.io/badge/Documentation-Click_here-blue)](https://github.com/maltsev-dev/rest_on)
 
 <!-- more -->
 ---
@@ -116,7 +116,7 @@ After generating the backend code, you can
 
 ### &emsp;&emsp;&emsp; 1. **Console Output**
 
-![](/images/console_output.png)
+![Terminal screenshot of the AI agent taking a request for a US viral-news website, planning the solution and external API endpoints, prompting for review of the generated AI-written code, then building and testing the web server](/images/console_output.png)
 
 ### &emsp;&emsp;&emsp; 2. **Generated [main] Example**
 

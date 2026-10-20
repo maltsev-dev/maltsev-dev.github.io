@@ -20,7 +20,7 @@ Instead of changing the voltage, the **duty cycle** changes:
 
 This control method is efficient and causes almost no losses.  
 
-### Brief
+## Brief
 
 - mainly used to control the power supplied to the device.
 - in some cases it can be used to transmit information for configuring the device.
@@ -30,11 +30,11 @@ It has 2 main parameters
 * **Frequency** (switching frequency, `Hz`),
 * **Duty cycle** (percentage of time in "HIGH" state, from `0% `to `100%`).
 
-![](/images/emb/pwm.png)
+![Chart of PWM duty cycles from 0% to 100%, showing the on-time pulse width and the resulting average voltage for each](/images/emb/pwm.png)
 
 ---
 
-### Duty cycle
+## Duty cycle
 - Percentage of time during which the **signal is active**
     * signal with 20% duty cycle is active 20% of the time
     * signal with 50% duty cycle is active 50% of the time
@@ -45,18 +45,18 @@ It has 2 main parameters
     * Automatic (for example, using feedback on the output voltage in a pulse power supply)
     * Software (using some kind of intelligent system that changes the pulse width depending on external logic or parameters)
 
-![](/images/emb/pwm_duty_cycle.png)
+![Square wave diagrams comparing 50%, 75% and 25% duty cycles, with the on and off portions of each pulse labelled](/images/emb/pwm_duty_cycle.png)
 
 
-#### Average voltage level
+### Average voltage level
 PWM - often used to vary power by changing the `average voltage level` across a load.
 * average load = `peak voltage`(5V) * `duty cycle`(20%) = 1V
 
-![](/images/emb/pwm_average_voltage.png)
+![Comparison of 5V PWM signals at 80%, 50% and 20% duty cycle, giving average voltages of 4V, 2.5V and 1V across the load](/images/emb/pwm_average_voltage.png)
 
 ---
 
-### Switching Frequency
+## Switching Frequency
 - Switching frequency, which is defined as the reciprocal of the time between the leading edges of the voltage pulses.
 - The required switching frequency depends on the load or application area
     * can be from `10H`z to several `kHz`
@@ -66,7 +66,7 @@ PWM - often used to vary power by changing the `average voltage level` across a 
 
 ---
 
-### Examples of PWM Systems
+## Examples of PWM Systems
 | System | Description |
 | ---------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
 | **1. Visual Devices** | ● Screen brightness control (high frequency to avoid flickering)<br>● RGB LED color control |

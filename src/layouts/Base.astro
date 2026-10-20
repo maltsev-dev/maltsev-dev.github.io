@@ -22,7 +22,7 @@ interface Props {
 const {
   title = 'Maltsev · Agentic Engineering',
   description = 'AI operational systems, agentic engineering, embedded and distributed systems — built to carry real work.',
-  image = '/static/favicon.png',
+  image = '/og.png',
   type = 'website',
   rail = false,
 } = Astro.props;
@@ -63,8 +63,20 @@ const paletteItems = [
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
+    <!--
+      The image path is site-rooted. It used to be `/static/favicon.png`, which
+      is where the file sits in the repo — but static/ IS the public dir, so the
+      built site serves it at `/favicon.png`. Every page was advertising a URL
+      that 404s, and every chat and social preview of the site rendered with no
+      image at all.
+    -->
     <meta property="og:image" content={new URL(image, Astro.site)} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Maltsev — agentic engineering that carries real work" />
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content={new URL(image, Astro.site)} />
+    <meta name="twitter:image:alt" content="Maltsev — agentic engineering that carries real work" />
     <title>{fullTitle}</title>
 
     <!--

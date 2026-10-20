@@ -139,7 +139,7 @@ After fine-tuning, the model consistently reaches **92–96% accuracy** on the t
 Before quantization, the `.keras` model is evaluated to establish a **baseline**.  
 For binary classification, the most informative visualization is the **confusion matrix**, which exposes class-specific failure modes.  
 
-![](/images/model_matrix.png)
+![Classification report and confusion matrix for the FP32 model, separating the no_person and person classes with precision, recall and F1 scores](/images/model_matrix.png)
 
 These FP32 results are later compared against the INT8 version to measure acceptable degradation.
 Once the baseline met expectations, I moved on to model compression.

@@ -227,7 +227,19 @@ LINES.forEach((segs, row) => {
     script shows the right one, so the copy lives next to the drawing instead
     of being duplicated in JavaScript. Same shape as LetterModal: backdrop,
     focus trap, Escape, focus returned to the trigger. */}
-<div class="stage-modal" id="stageModal" hidden role="dialog" aria-modal="true">
+<!--
+  aria-labelledby points at the first stage's title and is repointed by os.js
+  whenever another stage opens: ten panels share this one dialog, so only the
+  panel on screen can give it a name.
+-->
+<div
+  class="stage-modal"
+  id="stageModal"
+  hidden
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby={`stage-title-${ZONES[0].id}`}
+>
   <div class="stage-modal-backdrop" data-close-stage></div>
   <div class="stage-modal-box" role="document">
     {
@@ -248,7 +260,7 @@ LINES.forEach((segs, row) => {
             </ul>
             <div class="stage-modal-cols">
               <section class="stage-modal-sec">
-                <h3 class="stage-modal-h">Key aspects</h3>
+                <h2 class="stage-modal-h">Key aspects</h2>
                 <ul class="stage-modal-list">
                   {z.key.map(([label, text]) => (
                     <li>
@@ -259,7 +271,7 @@ LINES.forEach((segs, row) => {
                 </ul>
               </section>
               <section class="stage-modal-sec">
-                <h3 class="stage-modal-h">Pro tips and best practices</h3>
+                <h2 class="stage-modal-h">Pro tips and best practices</h2>
                 <ul class="stage-modal-list">
                   {z.tips.map(([label, text]) => (
                     <li>
@@ -270,7 +282,7 @@ LINES.forEach((segs, row) => {
                 </ul>
               </section>
               <section class="stage-modal-sec">
-                <h3 class="stage-modal-h">Pitfalls</h3>
+                <h2 class="stage-modal-h">Pitfalls</h2>
                 <ol class="stage-modal-list stage-modal-num">
                   {z.pitfalls.map(([label, text]) => (
                     <li>
@@ -281,7 +293,7 @@ LINES.forEach((segs, row) => {
                 </ol>
               </section>
               <section class="stage-modal-sec">
-                <h3 class="stage-modal-h">Production checklist</h3>
+                <h2 class="stage-modal-h">Production checklist</h2>
                 <ul class="stage-modal-list stage-modal-check">
                   {z.check.map((text) => (
                     <li>

@@ -63,7 +63,7 @@ Ideal for Rust learners and enthusiasts exploring terminal UI development.
 
 ### 🖼️ Demo
 
-![](/media/tui_inventory_app.gif)
+![Terminal recording of the inventory app being launched and navigated with the keyboard to add, list and delete products](/media/tui_inventory_app.gif)
 
 ---
 

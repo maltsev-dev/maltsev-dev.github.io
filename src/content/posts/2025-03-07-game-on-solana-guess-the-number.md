@@ -21,7 +21,7 @@ A great demo for:
 
 ---
 
-### ⚙️ Stack
+## ⚙️ Stack
 
 * 🦀 Rust (smart contract logic)
 * ⚓ Anchor (for building & testing Solana programs)

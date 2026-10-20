@@ -12,13 +12,13 @@ This means that the peripheral device can be accessed in the same way as regular
 <!-- more -->
 ---
 
-### How does it work inside CPU?
+## How does it work inside CPU?
 1. The CPU has a single **address bus**, which is used to access both RAM and MMIO devices.
 2. When the CPU accesses an address that belongs to the MMIO area:
     - In this case, the control logic understands that this is not ordinary memory, but a device register.
     - Signals go to the **periphery**, not to **RAM/ROM**.
 
-### 🧷 Key features
+## 🧷 Key features
 * It is necessary to work through `volatile`, so that the compiler does not optimize access to the device.
 * Addresses and devices are specified by the platform manufacturer (e.g. `ARM Cortex-M`, `x86`)
 
@@ -116,7 +116,7 @@ This means that the peripheral device can be accessed in the same way as regular
 
 
 
-### 🔸 volatile
+## 🔸 volatile
 Compilers like to optimize code: if a variable doesn't change in the current context, they can **not re-read it**.  
 * The device can change the register itself  
 * The variable can change in another context  
@@ -139,7 +139,7 @@ read_volatile(ptr)
 };
 ```
 
-### 🔸 atomic
+## 🔸 atomic
 * Provides **atomic** access to data (e.g. counters, flags).
 * Suitable for thread synchronization on multiprocessor systems.
 * Can be used without locks (lock-free).
@@ -159,7 +159,7 @@ fn main() {
 ```
 
 
-### 🔸 mutex
+## 🔸 mutex
 * Provides mutual exclusion.
 * Suitable for **large objects** consisting of many variables or structures.
 * More commonly used in multitasking systems (`RTOS`, `OS`).

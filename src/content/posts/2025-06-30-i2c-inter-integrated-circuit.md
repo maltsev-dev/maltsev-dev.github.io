@@ -8,7 +8,7 @@ tags: ["embedded", "basic", "sp"]
 A technical introduction to the **I2C** - low-speed two-wire master-slave serial protocol.  
 **I2C** is widely used for short-distance data transmission over a data bus (`SDA`) with a clock synchronization line (`SCL`).  
 
-![](/images/emb/i2c_header.png)
+![Master and slave chips connected by the two I2C lines: SDA for data and SCL for the clock](/images/emb/i2c_header.png)
 
 <!-- more -->
 ---
@@ -20,7 +20,7 @@ Both the master and slave can transmit data.
 Usually operates in `half-duplex` (at any given moment, only send or receive data can occur) mode at different clock frequencies.  
 Message exchange occurs in `frames`.
 
-![](/images/emb/i2c_design.png)
+![Diagram of the I2C bus topology: one master and several slaves share the SDA and SCL lines, each pulled up to VCC by its own resistor](/images/emb/i2c_design.png)
 
 Two wires are used -
 * **SCL** - serial clock signal
@@ -30,7 +30,7 @@ In addition, the wires are connected to the `Vcc` supply using one `pull-up` res
 
 ### &emsp;&emsp;&emsp; SDA Frame Format
 
-![](/images/emb/i2c_message_frame.png)
+![Diagram of an I2C message frame showing the start condition, 7-bit slave address, R/W bit, acknowledge bit, data bytes and stop condition](/images/emb/i2c_message_frame.png)
 
 1. master capture **SDA** bus with `start condition`
 2. via **SDA** is sent `slave address` which master wants to communicate
@@ -81,7 +81,7 @@ After the stop condition - the bus becomes inactive and there is no clock signal
 And any node on the bus can use the start condition to take over the bus and start a new communication.  
 
 ### &emsp;&emsp;&emsp; Synchronization of data and clock pulses
-![](/images/emb/i2c_sync.png)
+![Timing diagram of I2C data and clock: SDA changes state only while SCL is low, and data is sampled in the middle of each clock pulse](/images/emb/i2c_sync.png)
 
 * data is always read in the `middle` of the clock pulse and never in the intervals between them.  
 This is necessary, because switching **SDA** at a `high(1)` level of the **SCL** signal would mean the `beginning` or `end` of the data transfer. (start / stop condition)
@@ -95,7 +95,7 @@ This is necessary, because switching **SDA** at a `high(1)` level of the **SCL**
 3. When the drain is `opened`, the line goes `high(1)` because now its connected to the power supply (`+Vcc`)
 
 When the lines are not in use, they are `high(1)` voltage, that is why **I2C** is called an open drain system
-![](/images/emb/i2c_open_drain.png)
+![Schematic of the I2C open-drain arrangement: the SDA or SCL line connects to ground through an open transistor and is pulled up to VCC by a resistor](/images/emb/i2c_open_drain.png)
 
 ### &emsp;&emsp;&emsp; Pull- Up resistor
 - Pulling down to **low(0)** faster than pull up to `idle` **high(1)**

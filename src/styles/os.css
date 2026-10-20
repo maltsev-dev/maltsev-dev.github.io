@@ -807,6 +807,26 @@
   color: var(--fort);
 }
 
+/* Touch targets. The strip is deliberately slim — 20px of button — so the hit
+   area is grown with an overlay instead of with padding, which would change
+   the layout of every page's header. A finger aims at a box, not a glyph. */
+@media (pointer: coarse) {
+  .status-cta {
+    position: relative;
+  }
+
+  .status-cta::after {
+    content: '';
+    position: absolute;
+    inset: -0.75rem -0.5rem;
+  }
+
+  .social-link {
+    width: 2.75rem;
+    height: 2.75rem;
+  }
+}
+
 /* ----- Homepage directory blocks ---------------------------------------
    The homepage is a set of doors, not a summary: full-height panels that open
    a section. They take the whole width because there is nothing beside them.
@@ -1401,6 +1421,23 @@
   margin: 0;
   flex: 1;
   min-width: 12rem;
+}
+
+/* Per-field error, injected by the submit handler in os.js. The field already
+   carries required/minlength, so the input is the thing that turns red; the
+   message underneath says why. */
+.field-error {
+  margin: 0.35rem 0 0;
+  font-size: 0.78rem;
+  line-height: 1.35;
+  color: var(--flag, var(--braise));
+}
+
+.letter-body .field input[aria-invalid='true'],
+.letter-body .field textarea[aria-invalid='true'],
+.letter-body .field select[aria-invalid='true'] {
+  border-color: var(--flag, var(--braise));
+  outline-color: var(--flag, var(--braise));
 }
 
 @media (prefers-reduced-motion: reduce) {

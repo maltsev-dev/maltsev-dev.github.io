@@ -11,7 +11,7 @@ An experiment using [wasm-bindgen](https://crates.io/crates/wasm-bindgen) to cre
 
 [📚 GitHub Repository]](https://github.com/maltsev-dev/tax_app_webassembly)
 
-<h3 style="text-align:center; margin-bottom:8px;">Tools</h3>
+<h2 style="text-align:center; margin-bottom:8px;">Tools</h2>
 <p align="center" style="margin:0; padding:0;">
   <img style="display:inline-block; vertical-align:middle;"
        src="https://img.shields.io/badge/rust-1.83.0%20-green" alt="Rust Version"/>
@@ -21,7 +21,7 @@ An experiment using [wasm-bindgen](https://crates.io/crates/wasm-bindgen) to cre
        src="https://github.com/chemyl/tax_app_webassembly/actions/workflows/rust.yml/badge.svg" alt="Build Status"/>
 </p>
 
-### How to build and run:
+## How to build and run:
 
 * Create a library crate:
 
@@ -56,10 +56,10 @@ An experiment using [wasm-bindgen](https://crates.io/crates/wasm-bindgen) to cre
   http-server .
   ```
 
-![](/media/wasm_tax_app.gif)
+![Browser recording of the WebAssembly tax calculator page, where a USD income is entered into a numeric field and the Calculate Tax button returns the result](/media/wasm_tax_app.gif)
 
 ---
 
-#### **License**
+### **License**
 
 This project is licensed under the [MIT License](https://github.com/maltsev-dev/tax_app_webassembly?tab=MIT-1-ov-file).

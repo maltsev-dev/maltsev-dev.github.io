@@ -64,7 +64,7 @@ The **main stages** of this project are:
 
 
 ## &emsp;&emsp;&emsp; Project architecture (high-level plan)
-![](/images/nurse_high_level_arch.png)
+![High-level architecture flow diagram of the project: MCU handles frame capture, processing and inference, sends predictions over an MQTT telemetry queue to the backend for authentication and storage, and on to the frontend dashboards](/images/nurse_high_level_arch.png)
 
 
 ## &emsp;&emsp;&emsp; How the article series will be structured

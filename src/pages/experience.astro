@@ -288,9 +288,9 @@ const CARD_DATA = Object.fromEntries(
               {tier.skills.map((skill) => {
                 // A skill with no job, no credential and no project behind it has
                 // nothing to open. It is still on the pyramid — it is part of the
-                // toolkit — but it carries no `data-skill`, so it is not a chip
-                // that answers to the pointer, and no card is ever opened for it.
-                // Nothing is shown rather than something empty.
+                // toolkit — but there is no card to show, so it is not a button.
+                // A <button> that opens nothing is a control that lies: a keyboard
+                // visitor tabs onto it, presses Enter and the page does not move.
                 const hasFacts =
                   skill.jobs.length > 0 ||
                   skill.certs.length > 0 ||
@@ -298,14 +298,18 @@ const CARD_DATA = Object.fromEntries(
 
                 return (
                   <li>
-                    <button
-                      class:list={['skill-chip', !hasFacts && 'is-quiet']}
-                      type="button"
-                      data-skill={hasFacts ? skill.id : undefined}
-                      aria-describedby={hasFacts ? 'skill-card' : undefined}
-                    >
-                      {skill.name}
-                    </button>
+                    {hasFacts ? (
+                      <button
+                        class="skill-chip"
+                        type="button"
+                        data-skill={skill.id}
+                        aria-describedby="skill-card"
+                      >
+                        {skill.name}
+                      </button>
+                    ) : (
+                      <span class="skill-chip is-quiet">{skill.name}</span>
+                    )}
                   </li>
                 );
               })}

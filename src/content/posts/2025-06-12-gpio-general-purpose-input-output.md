@@ -8,7 +8,7 @@ tags: ["rust", "embedded", "basic", "gpio"]
 <!-- more -->
 ---
 
-### GPIO
+## GPIO
 
 GPIO stands for general purpose input/output. It is a type of pin found on an integrated circuit that does not have a specific function.  
 While most pins have a dedicated purpose, such as sending a signal to a certain component, the function of a **GPIO pin is customizable** and can be controlled by the software.  
@@ -18,7 +18,7 @@ It can work as:
 📤 Output (controls something - LED, relay, motor)  
 🔄 Sometimes - both as an input and as an output (push-pull)  
 
-### Pin 
+## Pin 
 **Pin Mode** : Each port bit of the general-purpose I/O (GPIO) ports can be individually configured by software in several modes:
 * input or output
 * analog
@@ -27,12 +27,12 @@ It can work as:
 * Input : no `pull-up` and no `pull-down` or pull-up or pull-down
 * Output : `push-pull` or `open-drain` with pull-up or pull-down capability
 * Alternate function : push-pull or open-drain with pull-up or pull-down capability.  
-![](/images/emb/gpio_design_1.png)
+![Table of GPIO pin modes and their characteristics, listing input, output, analog and alternate function variants with pull-up, pull-down, push-pull and open-drain options](/images/emb/gpio_design_1.png)
 
-### GPIO Design
+## GPIO Design
 
 Each GPIO pin of the microcontroller consists of **three key components**:  
-![](/images/emb/gpio_design.png)
+![Block diagram of a GPIO pin showing its three key components: the enable line, the output buffer driving the pin, and the input buffer reading from it](/images/emb/gpio_design.png)
 
 1.  **Enable Line**
 
@@ -48,9 +48,9 @@ Each GPIO pin of the microcontroller consists of **three key components**:
 * Allows to output logic levels to an external pin
 
 When the signal `0` comes out, control goes through the `NMOS` transistor and no logical one is supplied to the pin.  
-![](/images/emb/output_buffer_zero.png)
+![Schematic of the GPIO output buffer driving a logic 0: the NMOS gate is high, the PMOS is off, and the pin sinks current to ground](/images/emb/output_buffer_zero.png)
 When the signal `1` comes out, control goes through the `PMOS` transistor and a logical one is supplied to the pin.  
-![](/images/emb/output_buffer_one.png)
+![Schematic of the GPIO output buffer driving a logic 1: the PMOS gate is low, the NMOS is off, and the pin sources current from VCC](/images/emb/output_buffer_one.png)
 
 3. **Input Buffer**
 
@@ -59,11 +59,11 @@ When the signal `1` comes out, control goes through the `PMOS` transistor and a 
 * Used to read logic level or generate interrupts
 
 When a `0` signal is received on the pin, control passes through the `NMOS` transistor and goes to `GND`  
-![](/images/emb/input_buffer_zero.png)
+![Schematic of the GPIO input buffer reading a logic 0: the NMOS conducts so the pin level passes through to ground and is read as 0](/images/emb/input_buffer_zero.png)
 When a `1` signal is received on the pin, control passes through the `PMOS` transistor and is powered from `+VCC`  
-![](/images/emb/input_buffer_one.png)
+![Schematic of the GPIO input buffer reading a logic 1: the PMOS conducts so the pin is powered from VCC and is read as 1](/images/emb/input_buffer_one.png)
 
-### ⚙️ GPIO Modes
+## ⚙️ GPIO Modes
 
 * **By default** all GPIOs on most microcontrollers are configured in **Input mode**.
 * In this mode they are **not connected to either Vcc or GND** - the pin is in the **High Impedance (Hi-Z)** state.

@@ -73,11 +73,11 @@ Example usage:
 cargo run -p cli -- .\images\original_image.img -w 60 --height 75 --colors 16 -m needlepoint -o out.svg
 ---
 
-![](/images/original_image.jpg)
+![Source raster image: a circular Japanese-style landscape with a coral sun, snow-capped mountain, teal pine trees and red camellia flowers](/images/original_image.jpg)
 
 ---
 
-![](/images/converted_image.png)
+![Generated SVG cross-stitch chart: the landscape redrawn on a stitch grid with a numbered 16-colour legend down the left side](/images/converted_image.png)
 
 This makes the system:
 - scriptable,

@@ -21,7 +21,7 @@ Typical peripherals include:
 
 Most microcontrollers, regardless of brand or architecture, include a core set of these essential peripherals.
 
-![](/images/emb/mcu_peripherals.png)
+![Block diagram of an MCU with arrows pointing out to the typical peripheral blocks around it: timers, PWM, DAC/ADC, GPIO, SPI and I2C](/images/emb/mcu_peripherals.png)
 
 ---
 

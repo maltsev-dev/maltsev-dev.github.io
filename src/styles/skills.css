@@ -162,6 +162,17 @@
   background: none;
 }
 
+/* 27px is fine for a pointer and too small for a thumb. Only the coarse-
+   pointer case grows, so the desktop pyramid keeps its proportions. */
+@media (pointer: coarse) {
+  .skill-chips button.skill-chip {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.75rem;
+    padding-inline: 0.8rem;
+  }
+}
+
 /* ----- The hover card ----------------------------------------------------
    One card, moved to whatever chip is under the pointer. It is the name of the
    skill and how much stands behind it — three numbers at most, and fewer than

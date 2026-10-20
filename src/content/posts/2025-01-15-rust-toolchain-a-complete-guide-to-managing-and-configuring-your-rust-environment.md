@@ -10,7 +10,7 @@ This practical guide will help you quickly master the essentials of the Rust too
 <!-- more -->
 ---
 
-### &emsp;&emsp;&emsp; 1. rustup
+## &emsp;&emsp;&emsp; 1. rustup
 For those who want to start using Rust in their projects, please start here.
   - the basic [Rust](https://www.rust-lang.org/) setup is managed by the `rustup` utility.
 
@@ -52,7 +52,7 @@ x86_64-pc-windows-msvc
 C:\..\stable-x86_64-pc-windows-msvc\bin\rustc.exe
 ```
 
-### &emsp;&emsp;&emsp; 2. Channels
+## &emsp;&emsp;&emsp; 2. Channels
 - Rust is developed in 3 parallel branches
   - **stable** — the most reliable, updated every `6 weeks`
   - **beta** — a “preview” of the next stable, updated every 6 weeks
@@ -78,7 +78,7 @@ C:\..\stable-x86_64-pc-windows-msvc\bin\rustc.exe
     rustup install 1.74.0-x86_64-pc-windows-msvc 
 ```
 
-### &emsp;&emsp;&emsp; 3. Override & Profiling
+## &emsp;&emsp;&emsp; 3. Override & Profiling
 
 - Set `default` toolchain for the system
 ```bash
@@ -105,7 +105,7 @@ lto = "fat"
 panic = "abort"
 ```
 
-### &emsp;&emsp;&emsp; 4. Components
+## &emsp;&emsp;&emsp; 4. Components
 - Each installed toolchain can be upgraded with `components`
 ```bash
     rustup component add clippy fmt rust-src rust-analyzer
@@ -128,7 +128,7 @@ panic = "abort"
    rustup component remove clippy
 ```
 
-### &emsp;&emsp;&emsp; 5. Best Practice
+## &emsp;&emsp;&emsp; 5. Best Practice
 - To ensure that the program runs identically on different machines, it is recommended to use the `rust-toolchain.toml` file.
 ```toml
 [toolchain]

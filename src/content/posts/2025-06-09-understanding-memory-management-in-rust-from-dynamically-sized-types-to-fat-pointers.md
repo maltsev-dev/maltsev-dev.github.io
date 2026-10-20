@@ -37,7 +37,7 @@ The kernel will map segments to the allocated memory at startup, the number of s
 Since memory is allocated `lazily`, the kernel and hardware will do the mapping to physical addresses in RAM `only on the first access`.  
 From the point of view of the **process**, it sees a solid range of memory from `0` to the maximum value.  
 
-![](/images/rust_memory/rust_memory_1.png)
+![Map of a process's virtual address space, with code, data, stack and heap regions laid out from the executable file's segments](/images/rust_memory/rust_memory_1.png)
 
 * Some **segment metadata** of executable file:   
 ```linker-script
@@ -76,7 +76,7 @@ All threads share **one common heap**.
 The *heap* memory address starts close to zero (after code and data) and **grows upwards**⬆️.  
 The *heap* can grow to huge sizes (theoretically up to `128 TB`).  
 
-![](/images/rust_memory/rust_memory_stack_vs_heap.png)
+![Memory layout comparing the per-thread stack, which grows downwards from high addresses, with the shared heap, which grows upwards from low addresses](/images/rust_memory/rust_memory_stack_vs_heap.png)
 
 ---
 
@@ -90,7 +90,7 @@ Only variables with a `fixed size` and whose `size is known at compile` time can
 
 Allocation and deallocation on the *stack* requires only increasing or decreasing the hight of the `stack pointer` and is fast, since **no system calls are required**.  
 
-![](/images/rust_memory/rust_memory_stack.png)
+![Stack diagram of main() calling add_one(), showing a stack frame per function, the stack pointer, and the saved return address 0x23f](/images/rust_memory/rust_memory_stack.png)
 
 1. First, a `stack frame` is created for the main function, all local variables with known sizes are placed in it.  
 2. The `main()` calls another function, for which its own `stack frame` is created with enough memory to store its data.
@@ -105,7 +105,7 @@ Rust uses `malloc` from the standard `C` library, `libc`, to work with memory. U
 Allocating and working with memory on the *heap* is **slow** primarily because of **system calls** to `libc` and the allocator searching for a suitable place for the data.  
 To reduce the number of system calls, `memory allocator` requests memory in blocks.  
 
-![](/images/rust_memory/rust_memory_heap.png)
+![Stack and heap diagram of heap() allocating the value 23 on the heap, with the pointer 0x5f21 stored in variable b on the stack](/images/rust_memory/rust_memory_heap.png)
 
 1. The main `stack frame` is created for the `main()` function
 2. A nested `stack frame` is created for the `heap()` function
@@ -119,7 +119,7 @@ To reduce the number of system calls, `memory allocator` requests memory in bloc
 
 ### &emsp; Integer 
 
-![](/images/rust_memory/rust_memory_integers.png)
+![Table of Rust integer types from i8 to u128 and their sizes in bytes, all stored entirely on the stack](/images/rust_memory/rust_memory_integers.png)
 Stored entirely on *stack*.
 Signed and unsigned numbers indicate how many `bit` they can store.  
 | i8 / u8 | i16 / u16 | i32 / u32 | i64 / u64 | i128 / u128 | f32 / f64 | isize / usize      |
@@ -137,7 +137,7 @@ A type consists of a **fixed set** of values ​​of **diffrent types**.
 If all composite types are stored on a *stack*, then the entire tuple is stored on a *stack*.  
 The size of all composite types is in order, but with alignment taken into account.  
 `Alignment` is performed by the compiler so that *CPUs* can read data more efficiently.  
-![](/images/rust_memory/rust_memory_tuple.png)
+![Memory layout of a (char, u8, i32) tuple showing 9 bytes of data padded by alignment to 12 bytes](/images/rust_memory/rust_memory_tuple.png)
 
 * sum of sizes of types = `9`
 * sum of size including alignment = 12
@@ -155,7 +155,7 @@ align_of::<(char, u8, i32)>();  // 4
 * `&&T` **shared** reference to reference and also takes 1 machine word.  
 * `&mut T` **unique** references have the same layout in memory.  
 
-![](/images/rust_memory/rust_memory_references.png)
+![Diagram of shared &T, shared-to-shared &&T, and unique &mut T references, each one machine word holding the address of the original variable](/images/rust_memory/rust_memory_references.png)
 
 ### &emsp; Array
 
@@ -188,7 +188,7 @@ let s2: [i32] = v[0..2];
 Usually a **slice reference** is used - which can be placed on the *stack*.  
 `&[T]` - **fat pointer** 2 pointers - `ptr` + `len`
 
-![](/images/rust_memory/rust_memory_slices.png)
+![Slice diagram showing array and vector slices as fat pointers made of a data pointer and a length](/images/rust_memory/rust_memory_slices.png)
 
 ``` rust
 let a: [i32; 3] = [55, 66, 77];
@@ -210,7 +210,7 @@ Thus, although the `[T]` type itself does not contain length information, this i
 String is a `Vec<u8>` where each value is a separate **Unicode** character in `UTF-8` encoding.  
 Like a vector, String stores 3 pointers to *stack* (`ptr`, `cap`, `len`)
 
-![](/images/rust_memory/rust_memory_strings.png)
+![String diagram showing ptr, cap and len stored on the stack while the UTF-8 bytes live on the heap](/images/rust_memory/rust_memory_strings.png)
 
 
 ``` rust
@@ -257,7 +257,7 @@ There are **3 types** of structs in Rust
 **Struct** have a memory representation similar to **tuple**  
 A struct with named fields puts `pointers` and `copy types` next to each other on the *stack*.  
 If the vector inside the nums field has elements, they will be allocated on the *heap*.  
-![](/images/rust_memory/rust_memory_struct.png)
+![Struct layout showing pointers and copy types stored next to each other on the stack while the vector's elements sit on the heap](/images/rust_memory/rust_memory_struct.png)
 
 ### &emsp; Enum
 
@@ -292,7 +292,7 @@ enum Data{
 }
 ```
 
-![](/images/rust_memory/rust_memory_enum.png)
+![Enum layout showing how the compiler adds an integer discriminant tag so all variants share the size of the largest one](/images/rust_memory/rust_memory_enum.png)
 
 
 ### &emsp; Enum with Box
@@ -306,7 +306,7 @@ enum Data{
 }
 ```
 In this case, the amount of memory required for this option is halved.  
-![](/images/rust_memory/rust_memory_enum_with_box.png)
+![Enum layout with Box, where the stack holds only a pointer and the vector's ptr, cap and len live on the heap, halving the variant size](/images/rust_memory/rust_memory_enum_with_box.png)
 
 In the *stack* of the function call, memory will be allocated for `ptr`, to store the memory address to which the vector points.  
 The Heap will store (`ptr`, `cap`, `len`), necessary for representing the vector. At the same time, if the vector contains values, they will also be stored in the *heap*.  
@@ -332,7 +332,7 @@ For values ​​that require *heap* allocation. For example, a vector of heap-a
 * the actual bytes used to store the string values ​​will be allocated somewhere else in the *heap*, and pointers to this memory will be stored in the **string headers**.
 * in the `stack-frame`, will be allocated 3 `usize` for the variable `v` to store the vector header. This variable is responsible for clearing the memory on the *heap*, this happens in the `drop()` function at the end of the scope.
 
-![](/images/rust_memory/rust_memory_vec_string.png)
+![Heap and stack layout of a vector of strings, with each string header stored in the vector's buffer and the character bytes allocated separately](/images/rust_memory/rust_memory_vec_string.png)
 
 In the case where it is necessary to assign the value of the vector `v` to another variable, the ownership is transferred to the new variable and it is now responsible for clearing the allocated memory on the *heap*. It is written 3 machine words, which represented `v`  
 If it is necessary to create a variable that will own a **full copy of the vector data** with a new allocation of data on the *heap*, it is necessary to explicitly call the `clone()` method.  
@@ -356,7 +356,7 @@ let v: Rc<Vec<String> = Rc::new(vec![
 let v2 = v.clone();
 ```
 
-![](/images/rust_memory/rust_memory_rc.png)
+![Rc reference counting diagram showing v and v2 as separate stack pointers to one shared heap allocation with a counter incremented by clone() and freed at zero](/images/rust_memory/rust_memory_rc.png)
 
 * when a vector is wrapped in `Rc`, the 3 `usize` that represent the vector headers are allocated on the *heap* along with extra memory to hold the `reference counter` to that value.
 * on the *stack* function, the variable `v` will consist of 1 `usize`, which will hold the memory allocation address for `Rc`.
@@ -371,14 +371,14 @@ let v2 = v.clone();
 `Sync` marks a type as safe to **share by reference** between threads (i.e. T is Sync)
 `Rc` - is not send\sync because if multiple threads have `Rc` - an attempt to increment a shared counter may result in a `data race`.  
 
-![](/images/rust_memory/rust_memory_rc_multithread.png)
+![Diagram of two threads sharing an Rc, where a non-atomic counter increment races and makes the type neither Send nor Sync](/images/rust_memory/rust_memory_rc_multithread.png)
 
 ### &emsp; Arc
 If you need `shared data between threads` - you need to use `Atomic Reference Counter (Arc)`.  
 It works the same way as `Rc`, but changing the counter is an **atomic operation**, which can be safely performed from multiple threads.  
 However, you have to pay a little performance for atomicity.  
 By default, `Arc` is immutable, even if multiple threads have a pointer to the same data - they are **not allowed to change it**.  
-![](/images/rust_memory/rust_memory_arc_multithread.png)
+![Diagram of two threads sharing an Arc, whose atomic reference counter safely tracks both owners while the data stays immutable](/images/rust_memory/rust_memory_arc_multithread.png)
 
 ### &emsp; Mutex
 If you need `mutable access` to shared data between multiple threads - you can wrap `Mutex` inside `Arc`.  
@@ -416,7 +416,7 @@ use std::io::Write;
 
 In memory, `Trait Object` is a **fat pointer** of two pointers (`data pointer` + `vtable pointer`)  
 
-![](/images/rust_memory/rust_memory_fat_pointer.png)
+![Trait object diagram showing a fat pointer made of a data pointer to the Vec<u8> and a vtable pointer to the shared method table](/images/rust_memory/rust_memory_fat_pointer.png)
 
 * `data pointer` - a pointer to the actual values, in this case, a pointer to a `Vec<u8>`.  
 * `vtable pointer` - a pointer to a table representing the value type. The table is generated once at compile time and is shared by **all objects of that type**.  

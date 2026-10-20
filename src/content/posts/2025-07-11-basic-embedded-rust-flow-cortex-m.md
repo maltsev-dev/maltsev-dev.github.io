@@ -97,16 +97,16 @@ tags: ["rust", "embedded", "basic"]
 </tbody>
 </table>
 
-### 📌 1. Project Setup
+## 📌 1. Project Setup
 
-#### ✅ Project Creation
+### ✅ Project Creation
 
 ```bash
 cargo new --bin my_project
 cd my_project
 ```
 
-#### ✅ Add target and toolchain
+### ✅ Add target and toolchain
 
 Create file `rust-toolchain.toml`:
 
@@ -133,7 +133,7 @@ rustflags = [
 runner = "elf2uf2-rs -d"   # или другой, см. ниже
 ```
 
-##### QEMU Runner
+#### QEMU Runner
 
 ```toml
 runner = """
@@ -145,12 +145,12 @@ runner = """
 """
 ```
 
-##### probe-rs Runner
+#### probe-rs Runner
 ```toml
 runner = "probe-rs run"
 ```
 
-##### 🧩 Embed.toml configuration
+#### 🧩 Embed.toml configuration
 To run via `probe-rs`
 Create `Embed.toml` file in the project root:
 ```toml
@@ -173,7 +173,7 @@ cargo embed --chip rp2040 — specify the chip manually
 ```
 
 
-#### ✅ Linking and Memory
+### ✅ Linking and Memory
 
 create file `memory.x` file in the project root
 
@@ -189,7 +189,7 @@ MEMORY
 
 ---
 
-### 📌 2. Panic Handler
+## 📌 2. Panic Handler
 
 Without defining `#[panic_handler]` the project will not compile.
 
@@ -204,7 +204,7 @@ fn panic(_info: &PanicInfo) -> ! {
 
 ---
 
-### 📌 3. Main Function
+## 📌 3. Main Function
 
 add dependencies:
 
@@ -224,7 +224,7 @@ fn main() -> ! {
 
 ---
 
-### 📌 4. Text output: Semihosting
+## 📌 4. Text output: Semihosting
 
 To output messages to the host (usually via `QEMU` or debug probe):
 
@@ -247,7 +247,7 @@ fn main() -> ! {
 
 ---
 
-### 📌 5. Interrupts / Exceptions (e.g. SysTick)
+## 📌 5. Interrupts / Exceptions (e.g. SysTick)
 
 ```rust
 use cortex_m_rt::exception;
@@ -261,7 +261,7 @@ fn SysTick() {
 
 ---
 
-### 🔄 Summary of steps
+## 🔄 Summary of steps
 
 1. **Initialize project**: `cargo new`, configure `.cargo/config.toml`, `memory.x`, `rust-toolchain.toml`
 2. **Add dependencies**: `cortex-m`, `cortex-m-rt`, `cortex-m-semihosting`

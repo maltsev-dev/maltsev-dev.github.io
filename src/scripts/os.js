@@ -880,6 +880,68 @@
 
     if (!form) return;
 
+    // The form carries `novalidate`, so the browser will not stop a bad submit
+    // and the mailto would go out with an empty body. The same constraints are
+    // therefore enforced here, before anything is handed to the mail client.
+    function problemsFor(values) {
+      var out = [];
+      if (!values.email) {
+        out.push({ field: 'l-email', text: 'Your email is required.' });
+      } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email)) {
+        out.push({ field: 'l-email', text: 'That does not look like an email address.' });
+      }
+      if (!values.message) {
+        out.push({ field: 'l-message', text: 'A message is required.' });
+      } else if (values.message.length < 10) {
+        out.push({ field: 'l-message', text: 'Please write at least 10 characters.' });
+      }
+      return out;
+    }
+
+    // The error text is announced by the same live region as the success text,
+    // so a screen reader hears it without focus having to move.
+    function reportProblems(list) {
+      list.forEach(function (p) {
+        var input = document.getElementById(p.field);
+        if (!input) return;
+        input.setAttribute('aria-invalid', 'true');
+        var holder = input.closest('.field');
+        var note = holder && holder.querySelector('.field-error');
+        if (!note) {
+          note = document.createElement('p');
+          note.className = 'field-error';
+          holder.appendChild(note);
+        }
+        note.id = p.field + '-error';
+        note.textContent = p.text;
+        input.setAttribute('aria-describedby', note.id);
+      });
+      if (status) {
+        status.textContent =
+          list.length === 1
+            ? 'One field needs fixing before this can be sent.'
+            : list.length + ' fields need fixing before this can be sent.';
+      }
+      var first = document.getElementById(list[0].field);
+      if (first) first.focus();
+    }
+
+    function clearProblems() {
+      form.querySelectorAll('.field-error').forEach(function (n) { n.remove(); });
+      form.querySelectorAll('[aria-invalid]').forEach(function (i) {
+        i.removeAttribute('aria-invalid');
+        i.removeAttribute('aria-describedby');
+      });
+      if (status) status.textContent = '';
+    }
+
+    // Clear a field's error as soon as it is edited — leaving the message up
+    // while the reader fixes it is noise.
+    form.addEventListener('input', function (e) {
+      if (!e.target.hasAttribute('aria-invalid')) return;
+      clearProblems();
+    });
+
     form.addEventListener('submit', function (e) {
       e.preventDefault();
 
@@ -898,6 +960,14 @@
       var kind = String(data.get('kind') || '').trim();
       var timeline = String(data.get('timeline') || '').trim();
       var message = String(data.get('message') || '').trim();
+
+      clearProblems();
+
+      var problems = problemsFor({ email: email, message: message });
+      if (problems.length) {
+        reportProblems(problems);
+        return;
+      }
 
       var title = '[' + (kind || 'Project') + '] ' + (subject || 'New enquiry');
       var body =
@@ -999,6 +1069,9 @@
       lastFocus = opener || document.activeElement;
       panels.forEach(function (p) { p.hidden = p !== panel; });
       modal.hidden = false;
+      // Ten panels share this dialog; only the one on screen can name it.
+      var heading = panel.querySelector('[id]');
+      if (heading) modal.setAttribute('aria-labelledby', heading.id);
       document.body.style.overflow = 'hidden';
       // The box is the scroller and it is shared by all ten panels, so without
       // this the second stage opens halfway down, where the previous one was

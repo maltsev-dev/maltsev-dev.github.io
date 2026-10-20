@@ -8,7 +8,7 @@ tags: ["java", "android", "project"]
 <!-- more -->
 ---
 
-### 🔧 Overview
+## 🔧 Overview
 
 This tool simplifies managing Android Virtual Devices (AVDs) by providing a user-friendly GUI to create and launch emulators.  
 It automatically downloads missing emulator system images as needed and supports multiple simultaneous running emulators.  
@@ -16,7 +16,7 @@ The interface displays the list of active emulators along with their connection 
 
 ---
 
-### 🛠️ Technologies & Tools
+## 🛠️ Technologies & Tools
 
 * **Java 21**
 * **Java Swing** for desktop UI
@@ -29,7 +29,7 @@ The interface displays the list of active emulators along with their connection 
 
 ---
 
-### 🚀 Features
+## 🚀 Features
 
 * **Automatic download** of emulator system images if missing, ensuring Google Play support
 * Supports creating emulators with API levels from **22 to 33**
@@ -39,7 +39,7 @@ The interface displays the list of active emulators along with their connection 
 
 ---
 
-### ⚙️ How to Use
+## ⚙️ How to Use
 
 1. Configure the paths to the Android SDK tools (`avdmanager`, `sdkmanager`, `emulator`) within the application settings.
 2. Launch the application and select desired emulator parameters.
@@ -48,7 +48,7 @@ The interface displays the list of active emulators along with their connection 
 
 ---
 
-### 🎥 Demo
+## 🎥 Demo
 
 <video controls width="720">
 <source src="/media/java_swing_android_emulator_launcher.webm" type="video/webm" />
@@ -56,6 +56,6 @@ The interface displays the list of active emulators along with their connection 
 
 ---
 
-### 📄 License
+## 📄 License
 
 This project is licensed under the **MIT License**.

@@ -16,12 +16,14 @@ venv/
 .eggs/
 
 # One-off scripts and audit artifacts from the Astro migration, all kept at the
-# repo root with a leading underscore. The two the build depends on stay tracked.
+# repo root with a leading underscore. The three the build depends on stay tracked.
 # (`python _audit_links_astro.py` gates the deploy; `_gen_redirects.py` writes
-# the legacy-URL stubs in static/.)
+# the legacy-URL stubs in static/; `_gen_og.mjs` draws static/og.png, which is
+# committed as a binary — the generator has to be in the repo to change it.)
 /_*
 !/_audit_links_astro.py
 !/_gen_redirects.py
+!/_gen_og.mjs
 
 # A single-line HTML fragment an audit script dumped here. It looks like Markdown
 # but is a slice of about.astro; src/pages/ is the source.

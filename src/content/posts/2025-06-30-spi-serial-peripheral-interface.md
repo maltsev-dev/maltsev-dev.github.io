@@ -6,7 +6,7 @@ tags: ["embedded", "basic", "sp"]
 A technical introduction to the **SPI** - low-speed four-wire master-slave full-duplex serial protocol.  
 **SPI** is widely used as a faster alternative to UART/I2C for transferring data between an intelligent controller and a less intelligent peripheral device.
 
-![](/images/emb/spi_header.png)
+![Master and slave chips wired with the four SPI lines: MOSI, MISO, SCLK and SS/CS](/images/emb/spi_header.png)
 <!-- more -->
 ---
 
@@ -18,7 +18,7 @@ Message exchange occurs in `frames`.
 **SPI** has no agreement on frame formats, number of transmitted bits and voltage levels
 
  ### &emsp;&emsp;&emsp; SPI Design
-![](/images/emb/spi_design.png)
+![Timing diagram of an SPI transfer from master to slave: CS held low while SCLK pulses, MOSI carries outgoing bits and MISO carries incoming ones](/images/emb/spi_design.png)
 
 * the `CS`(Chip Select)/`SS`(Slave Celect) channel is used to select the slave
 * clock signals on the `SCLK` line are used for synchronization
@@ -56,7 +56,7 @@ This can be a `fixed number`, or a specified number that the master will respond
 2. `high(1)` at idle, active at `low(0)` level (`CPOL = 1.` "inverted") (Leading (first edge)- `falling`)
 CPOL indicates which of these options is used
 
-![](/images/emb/spi_cpol.png)
+![Clock polarity waveforms for CPOL 0 and CPOL 1, marking the leading and trailing edges of the SCLK pulse](/images/emb/spi_cpol.png)
 
 For both types of clock pulse polarity, you can focus on
 1. leading edge of the clock pulse (Leading (first edge))
@@ -67,7 +67,7 @@ For both types of clock pulse polarity, you can focus on
 1. `CPHA - 0` means that data will be read on the `rising` edge of each clock signal
 2. `CPHA - 1` means that data will be read on the `falling` edge of each clock signal
 
-![](/images/emb/spi_cpha.png)
+![Clock phase timing diagrams for CPHA 0 and CPHA 1, showing where data is sampled relative to the clock edges](/images/emb/spi_cpha.png)
 
 #### SPI Mode 
 The operation of the master and slave must be coordinated via the **SPI** operating mode.  
@@ -78,17 +78,17 @@ The mode is an integer combination of CPOL and CPHA
 | 1 | 0 | 1|
 | 2 | 1 | 0 |
 | 3 | 1 | 1|
-![](/images/emb/spi_mode.png)
+![SPI mode 3 timing example combining CPOL 1 idle-high clock with CPHA 1 sampling on the trailing edge](/images/emb/spi_mode.png)
 
 #### Multi-slave configuratuion
 1. **Independent Slaves** 
-![](/images/emb/spi_multislave_independent.png)
+![Diagram of independent SPI slaves: the master shares MOSI, MISO and clock but drives a separate CS line to each slave](/images/emb/spi_multislave_independent.png)
 * In this configuration, the master has a `separate CS` line for **each slave**.  
 * The remaining channels are shared on the bus.  
 The method is relatively simple until there are many slaves. 
 
 2. **Cooperative Slaves / Daisy Chain**
-![](/images/emb/spi_multislave_coop_slaves.png)
+![Diagram of daisy-chained SPI slaves: one shared CS line selects both, and MOSI and MISO pass from slave to slave in series](/images/emb/spi_multislave_coop_slaves.png)
 * With this configuration, the master has `only one CS line`, which is used by all slave devices.
 * With this configuration, data on **MOSI** is always sent to the `first slave`, and data transfer to another slave occurs through **MISO** of the first slave that received data on **MOSI**, and so on to transfer data to the next slave.
 * If a slave wants to send data to the master through its **MISO** channel, it also sends it to the `next slave` in the chain, and so on until it reaches the `last one`, whose **MISO** channel is not connected to the next slave, but is connected to the `master`.  

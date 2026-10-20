@@ -57,7 +57,7 @@ Ideal for Rust developers looking to:
 
 ### 🖼️ Demo
 
-![](/media/tui_pomodoro_app.gif)
+![Terminal recording of the Pomodoro timer window counting down a 25-minute session, with keyboard shortcuts to adjust the time, start or stop it, and exit](/media/tui_pomodoro_app.gif)
 
 ---
 

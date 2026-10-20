@@ -9,7 +9,7 @@ tags: ["rust", "actix_web", "project"]
 ---
 
 [📚 GitHub Repository](https://github.com/maltsev-dev/raw_web_server)
-<h3 style="text-align:center; margin-bottom:8px;">Tools</h3>
+<h2 style="text-align:center; margin-bottom:8px;">Tools</h2>
 <p align="center" style="margin:0; padding:0;">
   <img style="display:inline-block; vertical-align:middle;"
        src="https://img.shields.io/badge/rust-1.83.0%20-green" alt="Rust Version"/>

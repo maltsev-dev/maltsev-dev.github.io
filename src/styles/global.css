@@ -20,6 +20,9 @@
   --encre: #ffa02e;
   --creme: #ffe2b0;
   --fort: #ffe2b0;
+  /* Form errors need their own token: --braise is an accent, tuned to read as
+     a border or a shadow, not to carry 12px text at 4.5:1 on the dark paper. */
+  --erreur: #ff9a6b;
   --theme-color: #14100a;
 }
 
@@ -31,6 +34,7 @@
   --encre: #faa4b5;
   --creme: #fff183;
   --fort: #fff183;
+  --erreur: #ffb3a0;
   --theme-color: #01141d;
 }
 
@@ -42,6 +46,7 @@
   --encre: #3d3124;
   --creme: #fffdf7;
   --fort: #241c12;
+  --erreur: #a32c0c;
   --theme-color: #f4efe6;
 }
 
@@ -75,6 +80,14 @@
 *::before,
 *::after {
   box-sizing: border-box;
+}
+
+/* The UA sheet gives `[hidden]` `display: none`, which any later class rule
+   silently outranks — that is how an empty link marked `hidden` stayed in the
+   tab order and was announced to screen readers on every page. Nothing may
+   un-hide an element that asked to be hidden. */
+[hidden] {
+  display: none !important;
 }
 
 html {
