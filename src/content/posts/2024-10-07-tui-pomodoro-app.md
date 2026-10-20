@@ -57,7 +57,7 @@ Ideal for Rust developers looking to:
 
 ### 🖼️ Demo
 
-{{ img(src = "/media/tui_pomodoro_app.gif") }}
+![](/media/tui_pomodoro_app.gif)
 
 ---
 

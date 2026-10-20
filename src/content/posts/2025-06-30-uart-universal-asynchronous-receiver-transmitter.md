@@ -6,7 +6,7 @@ tags: ["embedded", "basic", "sp"]
 A technical introduction to the **UART** - low-speed two-wire asynchronous multi-duplex serial protocol.  
 **UART** The earliest serial protocol. Still commonly used in modern electronics.
 
-{{ img(src = "/images/emb/uart_header.png") }}
+![](/images/emb/uart_header.png)
 <!-- more -->
 ---
 
@@ -32,7 +32,7 @@ In this configuration, data exchange can be:
     * `data` bits
     * `parity` bit (optional)
 * When data is not transmitted (`idle`) the line is in `high(1)` state
-{{ img(src = "/images/emb/uart_design.png") }}
+![](/images/emb/uart_design.png)
 
 #### Start / Stop
 The transmitter must inform the receiver that the data is ready to be transmitted.  

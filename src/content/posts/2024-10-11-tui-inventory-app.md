@@ -63,7 +63,7 @@ Ideal for Rust learners and enthusiasts exploring terminal UI development.
 
 ### 🖼️ Demo
 
-{{ img(src = "/media/tui_inventory_app.gif") }}
+![](/media/tui_inventory_app.gif)
 
 ---
 

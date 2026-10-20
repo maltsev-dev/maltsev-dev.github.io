@@ -30,7 +30,7 @@ It has 2 main parameters
 * **Frequency** (switching frequency, `Hz`),
 * **Duty cycle** (percentage of time in "HIGH" state, from `0% `to `100%`).
 
-{{ img(src = "/images/emb/pwm.png") }}
+![](/images/emb/pwm.png)
 
 ---
 
@@ -45,14 +45,14 @@ It has 2 main parameters
     * Automatic (for example, using feedback on the output voltage in a pulse power supply)
     * Software (using some kind of intelligent system that changes the pulse width depending on external logic or parameters)
 
-{{ img(src = "/images/emb/pwm_duty_cycle.png") }}
+![](/images/emb/pwm_duty_cycle.png)
 
 
 #### Average voltage level
 PWM - often used to vary power by changing the `average voltage level` across a load.
 * average load = `peak voltage`(5V) * `duty cycle`(20%) = 1V
 
-{{ img(src = "/images/emb/pwm_average_voltage.png") }}
+![](/images/emb/pwm_average_voltage.png)
 
 ---
 

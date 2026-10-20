@@ -56,7 +56,7 @@ An experiment using [wasm-bindgen](https://crates.io/crates/wasm-bindgen) to cre
   http-server .
   ```
 
-{{ img(src = "/media/wasm_tax_app.gif") }}
+![](/media/wasm_tax_app.gif)
 
 ---
 

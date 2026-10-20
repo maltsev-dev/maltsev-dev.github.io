@@ -37,7 +37,7 @@ The kernel will map segments to the allocated memory at startup, the number of s
 Since memory is allocated `lazily`, the kernel and hardware will do the mapping to physical addresses in RAM `only on the first access`.  
 From the point of view of the **process**, it sees a solid range of memory from `0` to the maximum value.  
 
-{{ img(src = "/images/rust_memory/rust_memory_1.png") }}
+![](/images/rust_memory/rust_memory_1.png)
 
 * Some **segment metadata** of executable file:   
 ```linker-script
@@ -76,7 +76,7 @@ All threads share **one common heap**.
 The *heap* memory address starts close to zero (after code and data) and **grows upwards**⬆️.  
 The *heap* can grow to huge sizes (theoretically up to `128 TB`).  
 
-{{ img(src = "/images/rust_memory/rust_memory_stack_vs_heap.png") }}
+![](/images/rust_memory/rust_memory_stack_vs_heap.png)
 
 ---
 
@@ -90,7 +90,7 @@ Only variables with a `fixed size` and whose `size is known at compile` time can
 
 Allocation and deallocation on the *stack* requires only increasing or decreasing the hight of the `stack pointer` and is fast, since **no system calls are required**.  
 
-{{ img(src = "/images/rust_memory/rust_memory_stack.png") }}
+![](/images/rust_memory/rust_memory_stack.png)
 
 1. First, a `stack frame` is created for the main function, all local variables with known sizes are placed in it.  
 2. The `main()` calls another function, for which its own `stack frame` is created with enough memory to store its data.
@@ -105,7 +105,7 @@ Rust uses `malloc` from the standard `C` library, `libc`, to work with memory. U
 Allocating and working with memory on the *heap* is **slow** primarily because of **system calls** to `libc` and the allocator searching for a suitable place for the data.  
 To reduce the number of system calls, `memory allocator` requests memory in blocks.  
 
-{{ img(src = "/images/rust_memory/rust_memory_heap.png") }}
+![](/images/rust_memory/rust_memory_heap.png)
 
 1. The main `stack frame` is created for the `main()` function
 2. A nested `stack frame` is created for the `heap()` function
@@ -119,7 +119,7 @@ To reduce the number of system calls, `memory allocator` requests memory in bloc
 
 ### &emsp; Integer 
 
-{{ img(src = "/images/rust_memory/rust_memory_integers.png") }}
+![](/images/rust_memory/rust_memory_integers.png)
 Stored entirely on *stack*.
 Signed and unsigned numbers indicate how many `bit` they can store.  
 | i8 / u8 | i16 / u16 | i32 / u32 | i64 / u64 | i128 / u128 | f32 / f64 | isize / usize      |
@@ -137,7 +137,7 @@ A type consists of a **fixed set** of values ​​of **diffrent types**.
 If all composite types are stored on a *stack*, then the entire tuple is stored on a *stack*.  
 The size of all composite types is in order, but with alignment taken into account.  
 `Alignment` is performed by the compiler so that *CPUs* can read data more efficiently.  
-{{ img(src = "/images/rust_memory/rust_memory_tuple.png") }}
+![](/images/rust_memory/rust_memory_tuple.png)
 
 * sum of sizes of types = `9`
 * sum of size including alignment = 12
@@ -155,7 +155,7 @@ align_of::<(char, u8, i32)>();  // 4
 * `&&T` **shared** reference to reference and also takes 1 machine word.  
 * `&mut T` **unique** references have the same layout in memory.  
 
-{{ img(src = "/images/rust_memory/rust_memory_references.png") }}
+![](/images/rust_memory/rust_memory_references.png)
 
 ### &emsp; Array
 
@@ -188,7 +188,7 @@ let s2: [i32] = v[0..2];
 Usually a **slice reference** is used - which can be placed on the *stack*.  
 `&[T]` - **fat pointer** 2 pointers - `ptr` + `len`
 
-{{ img(src = "/images/rust_memory/rust_memory_slices.png") }}
+![](/images/rust_memory/rust_memory_slices.png)
 
 ``` rust
 let a: [i32; 3] = [55, 66, 77];
@@ -210,7 +210,7 @@ Thus, although the `[T]` type itself does not contain length information, this i
 String is a `Vec<u8>` where each value is a separate **Unicode** character in `UTF-8` encoding.  
 Like a vector, String stores 3 pointers to *stack* (`ptr`, `cap`, `len`)
 
-{{ img(src = "/images/rust_memory/rust_memory_strings.png") }}
+![](/images/rust_memory/rust_memory_strings.png)
 
 
 ``` rust
@@ -257,7 +257,7 @@ There are **3 types** of structs in Rust
 **Struct** have a memory representation similar to **tuple**  
 A struct with named fields puts `pointers` and `copy types` next to each other on the *stack*.  
 If the vector inside the nums field has elements, they will be allocated on the *heap*.  
-{{ img(src = "/images/rust_memory/rust_memory_struct.png") }}
+![](/images/rust_memory/rust_memory_struct.png)
 
 ### &emsp; Enum
 
@@ -292,7 +292,7 @@ enum Data{
 }
 ```
 
-{{ img(src = "/images/rust_memory/rust_memory_enum.png") }}
+![](/images/rust_memory/rust_memory_enum.png)
 
 
 ### &emsp; Enum with Box
@@ -306,7 +306,7 @@ enum Data{
 }
 ```
 In this case, the amount of memory required for this option is halved.  
-{{ img(src = "/images/rust_memory/rust_memory_enum_with_box.png") }}
+![](/images/rust_memory/rust_memory_enum_with_box.png)
 
 In the *stack* of the function call, memory will be allocated for `ptr`, to store the memory address to which the vector points.  
 The Heap will store (`ptr`, `cap`, `len`), necessary for representing the vector. At the same time, if the vector contains values, they will also be stored in the *heap*.  
@@ -332,7 +332,7 @@ For values ​​that require *heap* allocation. For example, a vector of heap-a
 * the actual bytes used to store the string values ​​will be allocated somewhere else in the *heap*, and pointers to this memory will be stored in the **string headers**.
 * in the `stack-frame`, will be allocated 3 `usize` for the variable `v` to store the vector header. This variable is responsible for clearing the memory on the *heap*, this happens in the `drop()` function at the end of the scope.
 
-{{ img(src = "/images/rust_memory/rust_memory_vec_string.png") }}
+![](/images/rust_memory/rust_memory_vec_string.png)
 
 In the case where it is necessary to assign the value of the vector `v` to another variable, the ownership is transferred to the new variable and it is now responsible for clearing the allocated memory on the *heap*. It is written 3 machine words, which represented `v`  
 If it is necessary to create a variable that will own a **full copy of the vector data** with a new allocation of data on the *heap*, it is necessary to explicitly call the `clone()` method.  
@@ -356,7 +356,7 @@ let v: Rc<Vec<String> = Rc::new(vec![
 let v2 = v.clone();
 ```
 
-{{ img(src = "/images/rust_memory/rust_memory_rc.png") }}
+![](/images/rust_memory/rust_memory_rc.png)
 
 * when a vector is wrapped in `Rc`, the 3 `usize` that represent the vector headers are allocated on the *heap* along with extra memory to hold the `reference counter` to that value.
 * on the *stack* function, the variable `v` will consist of 1 `usize`, which will hold the memory allocation address for `Rc`.
@@ -371,14 +371,14 @@ let v2 = v.clone();
 `Sync` marks a type as safe to **share by reference** between threads (i.e. T is Sync)
 `Rc` - is not send\sync because if multiple threads have `Rc` - an attempt to increment a shared counter may result in a `data race`.  
 
-{{ img(src = "/images/rust_memory/rust_memory_rc_multithread.png") }}
+![](/images/rust_memory/rust_memory_rc_multithread.png)
 
 ### &emsp; Arc
 If you need `shared data between threads` - you need to use `Atomic Reference Counter (Arc)`.  
 It works the same way as `Rc`, but changing the counter is an **atomic operation**, which can be safely performed from multiple threads.  
 However, you have to pay a little performance for atomicity.  
 By default, `Arc` is immutable, even if multiple threads have a pointer to the same data - they are **not allowed to change it**.  
-{{ img(src = "/images/rust_memory/rust_memory_arc_multithread.png") }}
+![](/images/rust_memory/rust_memory_arc_multithread.png)
 
 ### &emsp; Mutex
 If you need `mutable access` to shared data between multiple threads - you can wrap `Mutex` inside `Arc`.  
@@ -416,7 +416,7 @@ use std::io::Write;
 
 In memory, `Trait Object` is a **fat pointer** of two pointers (`data pointer` + `vtable pointer`)  
 
-{{ img(src = "/images/rust_memory/rust_memory_fat_pointer.png") }}
+![](/images/rust_memory/rust_memory_fat_pointer.png)
 
 * `data pointer` - a pointer to the actual values, in this case, a pointer to a `Vec<u8>`.  
 * `vtable pointer` - a pointer to a table representing the value type. The table is generated once at compile time and is shared by **all objects of that type**.  

@@ -27,12 +27,12 @@ It can work as:
 * Input : no `pull-up` and no `pull-down` or pull-up or pull-down
 * Output : `push-pull` or `open-drain` with pull-up or pull-down capability
 * Alternate function : push-pull or open-drain with pull-up or pull-down capability.  
-{{ img(src = "/images/emb/gpio_design_1.png") }}
+![](/images/emb/gpio_design_1.png)
 
 ### GPIO Design
 
 Each GPIO pin of the microcontroller consists of **three key components**:  
-{{ img(src = "/images/emb/gpio_design.png") }}
+![](/images/emb/gpio_design.png)
 
 1.  **Enable Line**
 
@@ -48,9 +48,9 @@ Each GPIO pin of the microcontroller consists of **three key components**:
 * Allows to output logic levels to an external pin
 
 When the signal `0` comes out, control goes through the `NMOS` transistor and no logical one is supplied to the pin.  
-{{ img(src = "/images/emb/output_buffer_zero.png") }}
+![](/images/emb/output_buffer_zero.png)
 When the signal `1` comes out, control goes through the `PMOS` transistor and a logical one is supplied to the pin.  
-{{ img(src = "/images/emb/output_buffer_one.png") }}
+![](/images/emb/output_buffer_one.png)
 
 3. **Input Buffer**
 
@@ -59,9 +59,9 @@ When the signal `1` comes out, control goes through the `PMOS` transistor and a 
 * Used to read logic level or generate interrupts
 
 When a `0` signal is received on the pin, control passes through the `NMOS` transistor and goes to `GND`  
-{{ img(src = "/images/emb/input_buffer_zero.png") }}
+![](/images/emb/input_buffer_zero.png)
 When a `1` signal is received on the pin, control passes through the `PMOS` transistor and is powered from `+VCC`  
-{{ img(src = "/images/emb/input_buffer_one.png") }}
+![](/images/emb/input_buffer_one.png)
 
 ### ⚙️ GPIO Modes
 

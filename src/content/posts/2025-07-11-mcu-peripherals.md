@@ -21,7 +21,7 @@ Typical peripherals include:
 
 Most microcontrollers, regardless of brand or architecture, include a core set of these essential peripherals.
 
-{{ img(src = "/images/emb/mcu_peripherals.png") }}
+![](/images/emb/mcu_peripherals.png)
 
 ---
 

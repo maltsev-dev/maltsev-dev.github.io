@@ -116,7 +116,7 @@ After generating the backend code, you can
 
 ### &emsp;&emsp;&emsp; 1. **Console Output**
 
-{{ img(src = "/images/console_output.png") }}
+![](/images/console_output.png)
 
 ### &emsp;&emsp;&emsp; 2. **Generated [main] Example**
 

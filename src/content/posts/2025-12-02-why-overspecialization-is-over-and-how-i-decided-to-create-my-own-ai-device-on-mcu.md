@@ -64,7 +64,7 @@ The **main stages** of this project are:
 
 
 ## &emsp;&emsp;&emsp; Project architecture (high-level plan)
-{{ img(src = "/images/nurse_high_level_arch.png") }}
+![](/images/nurse_high_level_arch.png)
 
 
 ## &emsp;&emsp;&emsp; How the article series will be structured

@@ -73,11 +73,11 @@ Example usage:
 cargo run -p cli -- .\images\original_image.img -w 60 --height 75 --colors 16 -m needlepoint -o out.svg
 ---
 
-{{ img(src = "/images/original_image.jpg") }}
+![](/images/original_image.jpg)
 
 ---
 
-{{ img(src = "/images/converted_image.png") }}
+![](/images/converted_image.png)
 
 This makes the system:
 - scriptable,

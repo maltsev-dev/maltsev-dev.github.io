@@ -13,7 +13,7 @@ Understanding their unique properties is essential to grasp how everyday devices
 
 ## &emsp;&emsp;&emsp; Conductor
 
-{{ img(src = "/images/basic electronics/copper_atom.png") }}
+![](/images/basic%20electronics/copper_atom.png)
 
     - The nucleus of a copper atom has 29 protons(+) (positive charge).
     - There are 29 electrons(-) revolving around the nucleus (negative charge).
@@ -35,7 +35,7 @@ And the flow of these free electrons is called **Current**
 
 ## &emsp;&emsp;&emsp; Insulators
 
-{{ img(src = "/images/basic electronics/neon_atom.png") }}
+![](/images/basic%20electronics/neon_atom.png)
 
 The atomic structure of neon is a good insulator.
 The net charge of the nucleus is +8, so the **external attraction** felt by the valence electrons is **very large.**  
@@ -50,7 +50,7 @@ In solid materials, the heat generated will char the material.
 
 ## &emsp;&emsp;&emsp; Semiconductors
 
-{{ img(src = "/images/basic electronics/silicon_atom.png") }}
+![](/images/basic%20electronics/silicon_atom.png)
 
 A semiconductor is an element that **is neither a good conductor nor a good insulator.**  
 The **best semiconductors** have 4 valence electrons.  
@@ -62,7 +62,7 @@ Since the number of valence electrons of silicon is 4, this makes it in the midd
 
 ## &emsp;&emsp;&emsp; Silicon crystals
 
-{{ img(src = "/images/basic electronics/silicon_crystals.png") }}
+![](/images/basic%20electronics/silicon_crystals.png)
 
 When silicon atoms combine to form a crystal, they arrange themselves into a **systematic structure**  
 In this case, each silicon atom **begins to share its valence electrons with the 4** valence orbits of the neighboring 4 atoms.  
@@ -74,7 +74,7 @@ Because of the sharing, the **valence electrons are now not owned by any one ato
 These shared valence electrons are **attracted by neighboring atoms** with equal and opposite forces, causing them to form a connection.  
 The following figure illustrates the concept of covalent bonds, with each straight line representing one shared electron.
 
-{{ img(src = "/images/basic electronics/covalent_bonds.png) }}
+![](/images/basic%20electronics/covalent_bonds.png)
 
 This opposite attraction holds the silicon atoms together and gives them strength.
 
@@ -84,7 +84,7 @@ These vibrations **remove an electron from its valence orbit**, causing it to fl
 The loss of an electron creates a vacancy in the valence orbit called a **Hole**  
 This **hole acts as a positive charge**, since the loss of an electron produces a **positive ion**.
 
-{{ img(src = "/images/basic electronics/electron_holes.png") }}
+![](/images/basic%20electronics/electron_holes.png)
 
 When a free electron comes close to a hole, **it is attracted to it and falls into it**.  
 The process of merging a free electron and a hole is called **Recombination.**
@@ -93,7 +93,7 @@ The process of merging a free electron and a hole is called **Recombination.**
 ## &emsp;&emsp;&emsp; Flow of free electrons and holes
 If you connect a battery across a clean silicon crystal, the thermal energy will produce a free electron and a hole.
 
-{{ img(src = "/images/basic electronics/flow_of_free_electrons_and_holes.gif") }}
+![](/images/basic%20electronics/flow_of_free_electrons_and_holes.gif)
 
 The applied voltage causes the free **electrons to move to the left** and the **holes to the right.**  
 When the free electrons reach the **left end of the crystal**, they enter the outer wire and **flow toward the positive terminal of the battery.**
@@ -124,12 +124,12 @@ Silicon doped to increase the number of free electrons is called an **n-type sem
 
 Phosphorus atom diagram-
 
-{{ img(src = "/images/basic electronics/phosphorus_atom.png") }}
+![](/images/basic%20electronics/phosphorus_atom.png)
 
 In an n-type semiconductor, the pentavalent atom is in the middle, and 4 silicon atoms surround it.  
 A 5-valence orbital can hold **no more than 8 electrons.**  
 When the valence orbits intersect, the silicon atoms share 1 electron with the phosphorus orbital, thereby releasing **1 free electron** from the phosphorus valence orbital
-{{ img(src = "/images/basic electronics/semiconductor_n_type.png") }}
+![](/images/basic%20electronics/semiconductor_n_type.png)
 
 Each 5-valence atom in a silicon crystal releases 1 free electron, such impurities are called **donor impurities**  
 In an n-semiconductor, there are more free electrons than holes, so free electrons are called **major carriers**, and holes **minor**.
@@ -141,12 +141,12 @@ For this, **3-valent impurities** (aluminum, boron, gallium) are added
 
 Boron atom diagram -
 
-{{ img(src = "/images/basic electronics/boron_atom.png") }}
+![](/images/basic%20electronics/boron_atom.png)
 
 In a p-type doped crystal, the 3-valent atom is in the middle, on its valence orbit there will be **only 7 electrons** (3 of its own + 1 from each silicon atom).  
 Consequently, on the valence orbit of each 3-valent atom there appears a **hole**.
 
-{{ img(src = "/images/basic electronics/semiconductor_p_type.png") }}
+![](/images/basic%20electronics/semiconductor_p_type.png)
 
 In these types of semiconductors, holes are now called majority **carriers**, and electrons are called **minor**.  
 A 3-valent atom is also called an **acceptor atom**, since each hole it contributes can accept a free electron during recombination.

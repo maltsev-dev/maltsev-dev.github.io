@@ -27,7 +27,7 @@ I chose the XIAO ESP32-S3 Sense for three reasons:
 3. 2.4GHz Wi-Fi with multiple power consumption modes.  
 In addition to the chip, I needed a breadboard for easy prototyping, cables, an LCM1602 OLED 16x2 display (I²C), and a simple pull-up button with a resistor.
 ## Conceptual connection diagram
-{{ img(src = "/images/nurse_high_level_design.png") }}
+![](/images/nurse_high_level_design.png)
 
 
 ## &emsp;&emsp;&emsp; DevJournal: The Journey from Idea to Working Prototype

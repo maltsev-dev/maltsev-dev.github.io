@@ -49,13 +49,13 @@ These functions are defined in the `IVT` (interrupt vector table).
 Here we see the vector table of our `Cortex-M3`. It shows each interrupt and its corresponding location in memory.  
 When the system starts, the initialization code specifies the necessary functions in the `IVT`.  
 
-{{ img(src = "/images/emb/interrupt_vec_table.png") }}
+![](/images/emb/interrupt_vec_table.png)
 
 ---
 
 ## How the CPU handles interrupts
 At a high level:
-{{ img(src = "/images/emb/processing_an_interrupt.png") }}
+![](/images/emb/processing_an_interrupt.png)
 
 1. When an interrupt is triggered, the CPU receives a signal to handle it. The CPU will probably be busy with some other work. However, we want it to continue where it left off after handling the interrupt.
 2. To do this, the CPU saves the current execution state, which includes the registers and the current address of the current instruction.

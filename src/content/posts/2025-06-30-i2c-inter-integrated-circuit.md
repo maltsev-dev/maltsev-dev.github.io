@@ -8,7 +8,7 @@ tags: ["embedded", "basic", "sp"]
 A technical introduction to the **I2C** - low-speed two-wire master-slave serial protocol.  
 **I2C** is widely used for short-distance data transmission over a data bus (`SDA`) with a clock synchronization line (`SCL`).  
 
-{{ img(src = "/images/emb/i2c_header.png") }}
+![](/images/emb/i2c_header.png)
 
 <!-- more -->
 ---
@@ -20,7 +20,7 @@ Both the master and slave can transmit data.
 Usually operates in `half-duplex` (at any given moment, only send or receive data can occur) mode at different clock frequencies.  
 Message exchange occurs in `frames`.
 
-{{ img(src = "/images/emb/i2c_design.png") }}
+![](/images/emb/i2c_design.png)
 
 Two wires are used -
 * **SCL** - serial clock signal
@@ -30,7 +30,7 @@ In addition, the wires are connected to the `Vcc` supply using one `pull-up` res
 
 ### &emsp;&emsp;&emsp; SDA Frame Format
 
-{{ img(src = "/images/emb/i2c_message_frame.png") }}
+![](/images/emb/i2c_message_frame.png)
 
 1. master capture **SDA** bus with `start condition`
 2. via **SDA** is sent `slave address` which master wants to communicate
@@ -81,7 +81,7 @@ After the stop condition - the bus becomes inactive and there is no clock signal
 And any node on the bus can use the start condition to take over the bus and start a new communication.  
 
 ### &emsp;&emsp;&emsp; Synchronization of data and clock pulses
-{{ img(src = "/images/emb/i2c_sync.png") }}
+![](/images/emb/i2c_sync.png)
 
 * data is always read in the `middle` of the clock pulse and never in the intervals between them.  
 This is necessary, because switching **SDA** at a `high(1)` level of the **SCL** signal would mean the `beginning` or `end` of the data transfer. (start / stop condition)
@@ -95,7 +95,7 @@ This is necessary, because switching **SDA** at a `high(1)` level of the **SCL**
 3. When the drain is `opened`, the line goes `high(1)` because now its connected to the power supply (`+Vcc`)
 
 When the lines are not in use, they are `high(1)` voltage, that is why **I2C** is called an open drain system
-{{ img(src = "/images/emb/i2c_open_drain.png") }}
+![](/images/emb/i2c_open_drain.png)
 
 ### &emsp;&emsp;&emsp; Pull- Up resistor
 - Pulling down to **low(0)** faster than pull up to `idle` **high(1)**
