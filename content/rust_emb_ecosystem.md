@@ -128,7 +128,7 @@ In the Rust ecosystem for **ARM based MCU**, a set of key crates is allocated, d
 |:--------|:-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | [cortex-m](https://crates.io/crates/cortex-m) | Used as a foundation in most **HAL** and **BSP** crates for **MCU** based on Cortex-M (`STM32`, `nRF`, `RP2040`, etc.). |
 | [cortex-m-rt](https://crates.io/crates/cortex-m-rt) | Minimal runtime (execution environment) for Rust programs under no_std.<br/>Necessary for most bare-metal projects. |
-| [cortex-m-semihosting](cortex-m-semihosting) | Utilities for interacting with the debugger via semihosting.<br/>Suitable for outputting debug information without `UART` and without additional hardware. |
+| [cortex-m-semihosting](https://crates.io/crates/cortex-m-semihosting) | Utilities for interacting with the debugger via semihosting.<br/>Suitable for outputting debug information without `UART` and without additional hardware. |
 | [cortex-a](https://crates.io/crates/cortex-a) | for **ARM Cortex-A** cores (eg Raspberry Pi in bare metal mode)
 
 Often these crates are not imported directly because the target **HAL**, for example crate `rp2040-hal` itself already depends on `cortex-m`, `cortex-m-rt` and uses them under the hood.

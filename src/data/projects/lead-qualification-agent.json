@@ -1,0 +1,134 @@
+{
+  "tagline": "Your leads are texting. You're not replying fast enough.",
+  "lead": "AI that responds instantly via SMS & WhatsApp, qualifies leads, and books meetings — automatically.",
+  "fit": "For teams getting 50+ inbound leads/month (ads, forms, funnels)",
+  "trust": "SMS / WhatsApp automation • LLM-driven • CRM-ready",
+  "metrics": [
+    {
+      "value": "<2 min",
+      "label": "Response Time"
+    },
+    {
+      "value": "70%",
+      "label": "Less Manual Work"
+    },
+    {
+      "value": "+40–70%",
+      "label": "More Meetings"
+    }
+  ],
+  "problem": {
+    "sub": "Speed is everything — and you're losing it",
+    "cards": [
+      {
+        "icon": "●",
+        "text": "No instant response when leads come in"
+      },
+      {
+        "icon": "¦",
+        "text": "Sales wastes time on unqualified leads"
+      },
+      {
+        "icon": "●",
+        "text": "Hot prospects go cold within minutes"
+      },
+      {
+        "icon": "●",
+        "text": "Follow-ups fall through the cracks"
+      }
+    ]
+  },
+  "solution": {
+    "sub": "A real-time qualification system that never sleeps",
+    "cards": [
+      {
+        "icon": "◆",
+        "title": "Instant Messaging",
+        "text": "Replies via SMS / WhatsApp within seconds"
+      },
+      {
+        "icon": "◆",
+        "title": "Smart Qualification",
+        "text": "Dynamic questions filter serious buyers"
+      },
+      {
+        "icon": "◆",
+        "title": "Lead Scoring",
+        "text": "Scores based on responses and behavior"
+      },
+      {
+        "icon": "¦",
+        "title": "Auto-Booking",
+        "text": "Meetings scheduled without friction"
+      }
+    ]
+  },
+  "results": {
+    "sub": "From slow + reactive ? fast + predictable",
+    "cards": [
+      {
+        "before": "5–10 min",
+        "after": "<2 min",
+        "label": "Response speed"
+      },
+      {
+        "before": "Manual",
+        "after": "Automated",
+        "label": "Qualification"
+      },
+      {
+        "before": "Cold",
+        "after": "Warm",
+        "label": "Lead engagement"
+      },
+      {
+        "before": "Lost",
+        "after": "Captured",
+        "label": "Pipeline coverage"
+      }
+    ],
+    "highlight": "▲ Most teams qualify leads 2–3x faster and book more meetings without expanding sales teams"
+  },
+  "flow": {
+    "sub": "Acts like a 24/7 SDR inside your messaging channels",
+    "steps": [
+      {
+        "n": "1",
+        "title": "Lead Enters",
+        "text": "Form submission or ad click triggers instantly"
+      },
+      {
+        "n": "2",
+        "title": "Instant Outreach",
+        "text": "AI starts conversation via SMS / WhatsApp"
+      },
+      {
+        "n": "3",
+        "title": "Smart Qualification",
+        "text": "Dynamic questions filter serious buyers"
+      },
+      {
+        "n": "4",
+        "title": "Conversion",
+        "text": "Books meeting or routes to sales instantly"
+      }
+    ]
+  },
+  "risk": {
+    "sub": "This is already happening in your pipeline",
+    "cards": []
+  },
+  "pricing": {
+    "pairs": [
+      {
+        "price": "$5k – $7k",
+        "label": "One-time setup"
+      },
+      {
+        "price": "$200–500",
+        "label": "Monthly running"
+      }
+    ],
+    "note": "◆ 1–2 closed deals usually cover the full system cost"
+  }
+}

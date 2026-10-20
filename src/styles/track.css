@@ -1,0 +1,720 @@
+/* ==========================================================================
+   Sideways track
+
+   A clipped frame holding a row of panels that travels sideways. Two modes, and
+   the classes below serve both:
+
+   - By default the page scrolls down and the row's travel is the scroll
+     distance, held by the runway. /projects/ works this way.
+   - Inside `.exp-page` the page does not scroll at all: the wrapper is one
+     viewport tall and the wheel feeds the row directly. See scripts/track.js.
+
+   Why a transform rather than overflow-x: a real horizontal scroller drags its
+   own scrollbar, fights the wheel, and prints badly.
+
+   Inactive panels sit at low opacity and the current one is lit, so the reader
+   always knows where they are without any panel disappearing.
+   ========================================================================== */
+
+/* The runway. Its height is the scroll distance available to traverse the whole
+   row: without it the row reaches its end while the track is still on screen
+   and further scrolling does nothing. */
+.track-scroll {
+  position: relative;
+  height: 460vh;
+}
+
+/* The visible frame: pinned for the length of the runway, and clipped so the
+   row travelling past its edges is hidden rather than overflowing the page. It
+   also hangs the row in its middle, so the row is only as tall as it needs to
+   be — the height of the tallest card. */
+.track {
+  position: sticky;
+  top: calc(1.9rem + 3rem);
+  height: calc(100vh - 1.9rem - 3rem);
+  min-height: 26rem;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.track-row {
+  display: flex;
+  align-items: stretch;
+  gap: clamp(1.5rem, 4vw, 4rem);
+  height: 100%;
+  padding-inline: clamp(1rem, 4vw, 3rem);
+  will-change: transform;
+}
+
+/* The career rail is decoration over a scrolling track; the exp-page override
+   below brings it back where the wheel mode needs it. */
+.branches {
+  display: none;
+}
+
+/* Each panel is a card of identical width and height. */
+.track-panel {
+  display: flex;
+  flex-direction: column;
+  padding: clamp(1rem, 2vw, 1.4rem);
+  border: var(--filet) solid var(--grid);
+  background: var(--papier);
+  opacity: 0.2;
+  transition: opacity 420ms cubic-bezier(0.3, 0, 0.2, 1),
+    border-color 420ms cubic-bezier(0.3, 0, 0.2, 1);
+}
+
+/* Exactly one panel is lit: the one at the centre of the screen. The rest drop
+   back far enough that the eye never has to choose between two of them. */
+.track-panel.is-current {
+  opacity: 1;
+  border-color: color-mix(in srgb, var(--braise) 55%, var(--grid));
+}
+
+
+/* --------------------------------------------------------------------------
+   The wheel mode, scoped to the career page.
+
+   The page does not scroll, so the runway has nothing to carry and the sticky
+   frame has nothing to stick to: the wrapper is exactly one viewport tall, the
+   hero takes what it needs and the track takes the rest. `100dvh` rather than
+   `100vh` so a mobile browser's collapsing toolbar cannot push the rail off the
+   bottom.
+
+   Both conditions must match `isHorizontal()` in the script. Below this width
+   the cards are narrower than their own text; under reduced motion the travel
+   is precisely the thing being taken away.
+   -------------------------------------------------------------------------- */
+@media (min-width: 52.1rem) and (prefers-reduced-motion: no-preference) {
+  .exp-page {
+    /* The card width, named once: the grid track and the centring padding above
+       must agree, or the last card lands off-centre at the end of the travel. */
+    --card-w: clamp(19rem, 46vw, 34rem);
+    display: flex;
+    flex-direction: column;
+    height: calc(100dvh - 1.9rem - 3rem);
+    overflow: hidden;
+  }
+
+  /* The hero shares one viewport with the track, so it is trimmed to a caption:
+     the default 3rem of air above the eyebrow and a display-size h1 would cost
+     more height than a whole card. */
+  .exp-page .hero {
+    flex: 0 0 auto;
+    padding-block: 0.9rem 1rem;
+  }
+
+  .exp-page .hero .eyebrow {
+    margin-bottom: 0.7rem;
+  }
+
+  .exp-page .hero h1 {
+    font-size: clamp(1.5rem, 2.6vw, 2.1rem);
+    margin-bottom: 0.5rem;
+  }
+
+  .exp-page .lede {
+    font-size: 0.92rem;
+    line-height: 1.5;
+  }
+
+  .exp-page .track-scroll {
+    flex: 1;
+    min-height: 0;
+    height: auto;
+  }
+
+  .exp-page .track {
+    position: static;
+    height: 100%;
+    min-height: 0;
+  }
+
+  /* The row is a grid, not a flex line, and that is what makes the cards equal
+     in height without being equal in content: items in a single grid row all
+     stretch to the tallest of them. A flex line can only offer stretch — which
+     makes a one-bullet card as tall as the frame, with a hole where its content
+     should be — or natural height, which leaves the cards ragged. The bottom
+     padding leaves the career rail its strip at the foot. */
+  .exp-page .track-row {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: var(--card-w);
+    align-items: stretch;
+    height: auto;
+    /* Half the leftover width on each side, so the first card starts centred
+       and — the padding being symmetric — so does the last at the end of the
+       travel. A row that starts hard against the edge would leave the opening
+       panel half off-screen and light its neighbour instead. */
+    padding: 0 max(clamp(1rem, 4vw, 3rem), calc((100% - var(--card-w)) / 2)) 4rem;
+  }
+
+  .exp-page .branches {
+    display: flex;
+  }
+}
+
+/* Commit-style header, echoing the git-log framing of the content. */
+.track-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  color: var(--braise);
+  margin-bottom: 0.5rem;
+}
+
+.track-hash {
+  color: var(--fort);
+}
+
+.track-chip {
+  border: var(--filet) solid var(--braise);
+  padding: 0.05rem 0.4rem;
+  font-size: 0.66rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.track-panel h2 {
+  margin: 0 0 0.2rem;
+  font-size: clamp(1.5rem, 3.6vw, 2.3rem);
+}
+
+.track-when {
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--encre);
+  margin-bottom: 0.9rem;
+}
+
+.track-body {
+  color: var(--fort);
+  margin-bottom: 1rem;
+}
+
+.track-projects {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.5rem;
+}
+
+.track-projects li {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.6rem;
+  align-items: start;
+  padding: 0.5rem 0.7rem;
+  border: var(--filet) solid var(--grid);
+  border-left: var(--trait) solid var(--braise);
+  background: var(--papier);
+  font-size: 0.88rem;
+}
+
+.track-projects strong {
+  display: block;
+  font-family: var(--font-display);
+  font-weight: 400;
+  color: var(--fort);
+}
+
+.track-projects span {
+  color: var(--encre);
+}
+
+/* ----- One stop: a role, who it was at, what was done ------------------
+   A stop carries more copy than the old three-part summary did, so its text
+   runs a step smaller and the bullets are boxed like the project rows above —
+   the two are read as the same kind of thing, one being work and one the
+   detail of a job. */
+.track-span {
+  color: var(--encre);
+}
+
+.track-stop h2 {
+  margin-bottom: 0.1rem;
+}
+
+/* Employer and the specialisation, on one line: the name is the part worth
+   scanning for, so it stays display weight while the tail recedes. It sits
+   directly under the role — the two belong together as the heading of the
+   card, and a full line between them reads as two separate facts. */
+.track-org {
+  font-size: 0.9rem;
+  color: var(--encre);
+  margin-bottom: 0.5rem;
+}
+
+.track-org em {
+  font-style: normal;
+  color: var(--encre);
+  opacity: 0.75;
+}
+
+.track-points {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.45rem;
+  align-content: start;
+}
+
+.track-points li {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.6rem;
+  align-items: start;
+  padding: 0.5rem 0.7rem;
+  border: var(--filet) solid var(--grid);
+  border-left: var(--trait) solid var(--braise);
+  /* Tinted, not flat: the card behind is the page colour, so an unpainted box
+     would disappear into it. */
+  background: color-mix(in srgb, var(--rouille) 20%, var(--papier));
+}
+
+.track-points > li > span {
+  color: var(--braise);
+  line-height: 1.5;
+}
+
+.track-points p {
+  margin: 0;
+  font-size: 0.84rem;
+  line-height: 1.5;
+  color: var(--fort);
+}
+
+/* Skills, as chips. They are the scannable tail of the card — what a reader
+   skims for when the bullets are too much to read — so they carry the accent
+   the bullets do not, and sit on the floor of the card in a single row band. */
+.track-skills {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin: 0.9rem 0 0;
+  padding: 0;
+}
+
+.track-skills li {
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  /* --fort, not --creme: on the light ramp creme is near-white and the chip
+     tint is a pale red, so creme would wash out. --fort is cream on the dark
+     ramps and near-black on the light one, and reads on both. */
+  color: var(--fort);
+  background: color-mix(in srgb, var(--braise) 22%, var(--papier));
+  border: var(--filet) solid var(--braise);
+  padding: 0.15rem 0.5rem;
+}
+
+/* The "+N" the source profile collapsed the remaining skills into — kept, so
+   the card does not claim a shorter list than the profile actually holds. It
+   is deliberately not a chip: it is a count, not a skill. */
+.track-skill-more {
+  background: none !important;
+  border-style: dashed !important;
+  border-color: var(--grid) !important;
+  color: var(--encre) !important;
+}
+
+/* A panel is pinned to the viewport height, so on a short screen (a laptop
+   with the browser chrome open) the bullets are what overflows. Tightening
+   the type and the gaps keeps the whole stop readable instead of clipping
+   the last line. */
+/* A card is pinned to the height the viewport can spare, so on a short screen —
+   a laptop with the browser chrome open — it is the type that gives way. Two
+   steps, because the difference between 900px and 700px of window is the
+   difference between trimming and compressing. */
+@media (max-height: 48rem) {
+  /* The hero gives up its air first — it is a caption above the cards, and the
+     cards are what the page is for. */
+  .exp-page .hero {
+    padding-block: 0.6rem 0.7rem;
+  }
+
+  .exp-page .hero .eyebrow {
+    margin-bottom: 0.5rem;
+  }
+
+  .exp-page .hero h1 {
+    font-size: clamp(1.3rem, 2.2vw, 1.7rem);
+    margin-bottom: 0.35rem;
+  }
+
+  .exp-page .lede {
+    font-size: 0.85rem;
+    line-height: 1.4;
+  }
+
+  /* The rail folds onto one line — rung and year side by side — so it stops
+     costing the cards a third of a row of height. */
+  .exp-page .branches {
+    bottom: 0.7rem;
+  }
+
+  .exp-page .branch-list li {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .exp-page .track-row {
+    padding-bottom: 3rem;
+  }
+
+  .track-panel {
+    padding: clamp(0.75rem, 1.6vw, 1rem);
+  }
+
+  .track-panel h2 {
+    font-size: clamp(1.25rem, 2.4vw, 1.7rem);
+    margin-bottom: 0.1rem;
+  }
+
+  .track-org {
+    font-size: 0.84rem;
+    margin-bottom: 0.4rem;
+  }
+
+  .track-points {
+    gap: 0.35rem;
+  }
+
+  .track-points p {
+    font-size: 0.78rem;
+    line-height: 1.45;
+  }
+
+  .track-points li {
+    padding: 0.4rem 0.6rem;
+  }
+
+  .track-skills {
+    margin-top: 0.6rem;
+  }
+
+  .track-skills li {
+    font-size: 0.62rem;
+    padding: 0.1rem 0.4rem;
+  }
+}
+
+/* The last step, for a window barely taller than the chrome and the rail. */
+@media (max-height: 46rem) {
+  .exp-page .track-row {
+    padding-bottom: 2.1rem;
+  }
+
+  .track-panel {
+    padding: 0.7rem;
+  }
+
+  .track-points {
+    gap: 0.3rem;
+  }
+
+  .track-points li {
+    padding: 0.34rem 0.55rem;
+  }
+
+  .track-points p {
+    font-size: 0.72rem;
+    line-height: 1.38;
+  }
+
+  .track-skills {
+    margin-top: 0.5rem;
+  }
+}
+
+/* Under 40rem the lede is the first thing to go: it is the only part of the
+   page that is nice to have rather than necessary. */
+@media (max-height: 40rem) {
+  .exp-page .lede {
+    display: none;
+  }
+}
+
+/* ----- Career rail ------------------------------------------------------
+   The five rungs of the history, pinned to the foot of the frame and running
+   the same way the track does: Founder at the left, QA at the right. The fill
+   grows from the left as the reader moves back through the years. It replaces
+   the plain progress bar: the bar said how far, this says where.
+   ------------------------------------------------------------------------- */
+.branches {
+  position: absolute;
+  left: clamp(1rem, 4vw, 3rem);
+  right: clamp(1rem, 4vw, 3rem);
+  bottom: 1rem;
+  align-items: center;
+  gap: clamp(1rem, 3vw, 2.5rem);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--encre);
+  pointer-events: none;
+}
+
+.branches-count {
+  margin: 0;
+  white-space: nowrap;
+  color: var(--fort);
+}
+
+.branch-list {
+  position: relative;
+  flex: 1;
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* Every rung gets an equal slice, so the first and last nodes land a fixed
+   distance in from the ends instead of wherever their labels happen to end —
+   that is what lets the rail span node to node by percentage. */
+.branch-list li {
+  position: relative;
+  flex: 1;
+  display: grid;
+  justify-items: center;
+  gap: 0.3rem;
+  color: var(--encre);
+  transition: color 320ms cubic-bezier(0.3, 0, 0.2, 1);
+}
+
+/* The rail itself: a hairline across, with the travelled part drawn over it in
+   the accent. It runs the same way the track does — Founder at the left, QA at
+   the right — so the fill grows from the left as the reader moves back through
+   the history. With five rungs the nodes sit at 10% and 90%, so the rail is
+   inset to match. */
+.branch-list::before,
+.branch-list::after {
+  content: '';
+  position: absolute;
+  top: 0.3rem;
+  left: 10%;
+  height: var(--trait-fin);
+}
+
+.branch-list::before {
+  width: 80%;
+  background: var(--grid);
+}
+
+.branch-list::after {
+  left: 10%;
+  width: calc(var(--track-progress, 0) * 80%);
+  background: var(--braise);
+}
+
+.branch-list b {
+  font-weight: 500;
+}
+
+.branch-list span {
+  font-size: 0.62rem;
+  opacity: 0.7;
+}
+
+.branch-node {
+  width: 0.6rem;
+  height: 0.6rem;
+  background: var(--papier);
+  border: var(--trait-fin) solid var(--grid);
+  transition: background 320ms cubic-bezier(0.3, 0, 0.2, 1),
+    border-color 320ms cubic-bezier(0.3, 0, 0.2, 1);
+}
+
+/* The rung the reader is standing on. */
+.branch-list li.is-on {
+  color: var(--fort);
+}
+
+.branch-list li.is-on .branch-node {
+  background: var(--braise);
+  border-color: var(--braise);
+}
+
+/* On a light ramp the accent is a dark red, so the node fills with it and the
+   label goes to the near-black ink instead of the accent. */
+:root[data-theme='pierre'] .branch-list li.is-on {
+  color: var(--fort);
+}
+
+/* Without the travel — reduced motion, or a viewport too narrow for cards
+   wider than their own text — the track is a plain vertical list. */
+@media (prefers-reduced-motion: reduce), (max-width: 52rem) {
+  .track-panel {
+    transition: none;
+  }
+
+  .track-scroll {
+    height: auto;
+  }
+
+  .track {
+    position: static;
+    display: block;
+    height: auto;
+    overflow: visible;
+  }
+
+  .track-row {
+    flex-direction: column;
+    height: auto;
+    transform: none !important;
+    gap: 0;
+  }
+
+  .track-panel {
+    flex: 0 0 auto;
+    width: 100%;
+    opacity: 1;
+    margin-bottom: 1rem;
+  }
+}
+
+/* ==========================================================================
+   Projects track
+
+   Same travel as the career track above, more panels and no rail — the
+   position readout is enough, and twelve rungs would not fit. Runway height
+   comes from --panels, set on the element from the data: a fixed 340vh tuned
+   for four panels would whip a twelve-panel row past in the same scroll, so
+   each panel costs the reader roughly the same distance instead.
+   ========================================================================== */
+
+.projects-track {
+  height: calc(var(--panels, 4) * 62vh + 70vh);
+}
+
+/* The row becomes a grid for the same reason the career track does: a flex line
+   can only stretch or shrink to content, and stretching would make a two-line
+   panel as tall as the frame with a hole where its content should be. Grid
+   items in one row all take the tallest, so the cards stay equal and each one
+   is only as big as the copy in it needs.
+
+   Scoped to the sideways layout on purpose: below this width the row is the
+   stacked flex column set up at the top of this file, and a grid would keep the
+   panels in one travelling column that runs off the side of the screen. */
+@media (min-width: 52.1rem) and (prefers-reduced-motion: no-preference) {
+  .projects-track .track-row {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: clamp(20rem, 52vw, 36rem);
+    align-items: stretch;
+    height: auto;
+    padding-block: 1rem 4rem;
+  }
+}
+
+.panel-project {
+  justify-content: flex-start;
+  gap: 0.6rem;
+  text-decoration: none;
+  color: inherit;
+}
+
+.panel-project h2 {
+  font-size: clamp(1.4rem, 3vw, 2.1rem);
+  margin-bottom: 0.2rem;
+}
+
+.panel-body {
+  color: var(--fort);
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+/* Sits on the floor of the panel so the arrows of the linked panels line up
+   down the row rather than following each summary's length. */
+.panel-foot {
+  margin-top: auto;
+  padding-top: 1rem;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--braise);
+}
+
+/* Position readout, bottom-left of the frame. Hidden from assistive tech: it
+   repeats what the panels themselves say. */
+.panel-hud {
+  position: absolute;
+  left: clamp(1rem, 4vw, 3rem);
+  bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  color: var(--encre);
+  pointer-events: none;
+}
+
+.panel-hud-bar {
+  display: block;
+  width: clamp(5rem, 14vw, 10rem);
+  height: var(--trait-fin);
+  background: var(--grid);
+}
+
+.panel-hud-bar i {
+  display: block;
+  height: 100%;
+  width: calc(var(--track-progress, 0) * 100%);
+  background: var(--braise);
+}
+
+/* The recurring-skills chips under the lede. Same chip as a panel's skills so
+   the two read as one vocabulary, at rest rather than at the foot of a card. */
+.recurring {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin: 1.6rem 0 0;
+  padding: 0;
+  max-width: 62ch;
+}
+
+.recurring li {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fort);
+  background: color-mix(in srgb, var(--braise) 22%, var(--papier));
+  border: var(--filet) solid var(--braise);
+  padding: 0.15rem 0.5rem;
+}
+
+/* Stacked, the panels no longer travel and the readout has nothing to count. */
+@media (max-width: 52rem) {
+  .projects-track {
+    height: auto;
+  }
+
+  .panel-hud {
+    display: none;
+  }
+}

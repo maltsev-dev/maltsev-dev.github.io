@@ -3,20 +3,25 @@
     'use strict';
 
     function prefersReducedMotion() {
-        return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        return !!(window.matchMedia &&
+                  window.matchMedia('(prefers-reduced-motion: reduce)').matches);
     }
 
     function initScrollAnimations() {
-        if (prefersReducedMotion()) {
-            document.querySelectorAll('.fade-in, .reveal-left, .reveal-right')
-                .forEach(el => el.classList.add('visible'));
+        var animatedElements = document.querySelectorAll('.fade-in, .reveal-left, .reveal-right');
+        if (animatedElements.length === 0) return;
+
+        var revealAll = function () {
+            animatedElements.forEach(function (el) { el.classList.add('visible'); });
+        };
+
+        // Either signal means "do not animate" — never leave content invisible.
+        if (prefersReducedMotion() || typeof IntersectionObserver === 'undefined') {
+            revealAll();
             return;
         }
 
-        const animatedElements = document.querySelectorAll('.fade-in, .reveal-left, .reveal-right');
-        if (animatedElements.length === 0) return;
-
-        const observer = new IntersectionObserver((entries, obs) => {
+        var observer = new IntersectionObserver((entries, obs) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     entry.target.classList.add('visible');

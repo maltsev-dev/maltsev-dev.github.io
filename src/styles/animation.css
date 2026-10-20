@@ -1,0 +1,487 @@
+/* ==========================================================================
+   Motion layer.
+
+   Kept in its own file so it can be dropped wholesale: the site reads as
+   static and complete with this import removed. Every rule here is additive —
+   it animates elements that are already laid out, so deleting the file cannot
+   break layout or hide content.
+
+   Nothing loops forever except the scanline drift, and that one is disabled
+   under reduced-motion along with everything else.
+   ========================================================================== */
+
+/* ----- Boot sequence -----------------------------------------------------
+   A one-shot console readout on first visit to the session. Drawn by JS into
+   #bootOverlay; this is only the styling and the exit transition.
+   ---------------------------------------------------------------------- */
+.boot-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: grid;
+  place-items: center;
+  background: var(--papier);
+  padding: 1.5rem;
+}
+
+.boot-overlay[hidden] {
+  display: none;
+}
+
+.boot-overlay.is-done {
+  animation: boot-out 520ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes boot-out {
+  to {
+    opacity: 0;
+    visibility: hidden;
+    clip-path: inset(0 0 100% 0);
+  }
+}
+
+.boot-box {
+  width: min(100%, 30rem);
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  line-height: 1.9;
+  color: var(--encre);
+  border: var(--filet) solid var(--braise);
+  background: var(--papier);
+  box-shadow: var(--ombre);
+  padding: 1rem 1.2rem;
+}
+
+.boot-line {
+  display: flex;
+  gap: 0.6rem;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.boot-line b {
+  color: var(--braise);
+  font-weight: 500;
+  flex-shrink: 0;
+}
+
+.boot-cursor {
+  display: inline-block;
+  width: 0.6em;
+  height: 1em;
+  background: var(--braise);
+  vertical-align: text-bottom;
+  animation: blink 900ms steps(2, jump-none) infinite;
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+/* Boot progress bar under the readout. */
+.boot-bar {
+  height: 0.75rem;
+  border: var(--filet) solid var(--braise);
+  margin-top: 0.9rem;
+  padding: 1px;
+}
+
+.boot-bar i {
+  display: block;
+  height: 100%;
+  width: 0;
+  background: var(--braise);
+  animation: boot-fill 1.5s steps(24, end) forwards;
+}
+
+@keyframes boot-fill {
+  to {
+    width: 100%;
+  }
+}
+
+/* ----- Scroll progress --------------------------------------------------- */
+.progress-rail {
+  position: fixed;
+  inset: 0 0 auto 0;
+  height: var(--trait);
+  z-index: 70;
+  background: var(--grid);
+}
+
+.progress-rail i {
+  display: block;
+  height: 100%;
+  width: 0;
+  background: var(--braise);
+  /* Driven from JS on scroll; the transition keeps it smooth without
+     running a rAF loop when the page is idle. */
+  transition: width 90ms linear;
+}
+
+/* ----- Heading entrance --------------------------------------------------
+   The hero headline wipes in as if typed. Letters stagger; the whole block is
+   already laid out, so removing this changes nothing but the motion.
+
+   The block itself stays block-level: it sits in normal flow under the hero
+   eyebrow, and an inline-block heading would pull itself up beside the
+   eyebrow instead of below it.
+   ---------------------------------------------------------------------- */
+[data-anim='type'] {
+  display: block;
+  white-space: pre-wrap;
+}
+
+[data-anim='type'] .ch {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(0.25em) rotate(2deg);
+  animation: ch-in 420ms cubic-bezier(0.2, 0.9, 0.25, 1) forwards;
+}
+
+@keyframes ch-in {
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Underline that draws itself beneath a heading on reveal. */
+[data-anim='underline'] {
+  position: relative;
+  display: inline-block;
+}
+
+[data-anim='underline']::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -0.12em;
+  width: 100%;
+  height: var(--trait);
+  background: var(--braise);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 620ms cubic-bezier(0.2, 0.9, 0.2, 1);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+
+[data-anim='underline'].is-in::after {
+  transform: scaleX(1);
+}
+
+/* ----- Cards ------------------------------------------------------------
+   A small lift on hover, plus a highlight that tracks the pointer. The
+   highlight is positioned with CSS custom properties set by JS.
+   ---------------------------------------------------------------------- */
+.card {
+  position: relative;
+  overflow: hidden;
+  transition:
+    transform 220ms cubic-bezier(0.2, 0.9, 0.2, 1),
+    box-shadow 220ms ease;
+}
+
+@media (hover: hover) {
+  .card:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 8px 8px 0 var(--braise);
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient(
+      16rem circle at var(--mx, 50%) var(--my, 50%),
+      color-mix(in srgb, var(--braise) 18%, transparent),
+      transparent 70%
+    );
+    opacity: 0;
+    transition: opacity 200ms ease;
+  }
+
+  .card:hover::before {
+    opacity: 1;
+  }
+}
+
+/* Cards sit slightly tilted until hovered, so the grid reads as physical. */
+.card-grid[data-anim='tilt'] .card {
+  transition:
+    transform 260ms cubic-bezier(0.2, 0.9, 0.2, 1),
+    box-shadow 260ms ease;
+}
+
+/* ----- Buttons ----------------------------------------------------------- */
+.btn {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--braise);
+  transform: translateY(101%);
+  transition: transform 200ms cubic-bezier(0.2, 0.9, 0.2, 1);
+  z-index: -1;
+}
+
+.btn:hover {
+  color: var(--papier);
+}
+
+.btn:hover::before {
+  transform: translateY(0);
+}
+
+/* z-index:-1 needs the button to establish a stacking context, otherwise the
+   pseudo-element slips behind the page background. */
+.btn {
+  isolation: isolate;
+}
+
+/* Press feedback: the whole block sinks into its own shadow. */
+.btn:active {
+  transform: translate(6px, 6px);
+  box-shadow: none;
+}
+
+/* ----- Tag / eyebrow pulse ----------------------------------------------- */
+.eyebrow {
+  position: relative;
+  overflow: hidden;
+}
+
+.eyebrow::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    100deg,
+    transparent 20%,
+    color-mix(in srgb, var(--creme) 55%, transparent) 50%,
+    transparent 80%
+  );
+  transform: translateX(-100%);
+  animation: sweep 3.6s ease-in-out infinite;
+}
+
+@keyframes sweep {
+  0%,
+  60% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* Status dot that blinks like a live indicator. */
+.pulse-dot {
+  display: inline-block;
+  width: 0.5em;
+  height: 0.5em;
+  background: var(--braise);
+  margin-right: 0.45em;
+  animation: pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.35;
+    transform: scale(0.72);
+  }
+}
+
+/* ----- Scanline drift ----------------------------------------------------
+   The CRT overlay gains a slow vertical drift. `position: fixed` + transform
+   only, so it never triggers layout.
+   ---------------------------------------------------------------------- */
+.crt::after {
+  animation: drift 9s linear infinite;
+}
+
+@keyframes drift {
+  from {
+    background-position-y: 0;
+  }
+  to {
+    background-position-y: 4px;
+  }
+}
+
+/* ----- Grid parallax -----------------------------------------------------
+   The page background drifts a few pixels against scroll. Transform-only, and
+   skipped entirely for reduced-motion.
+   ---------------------------------------------------------------------- */
+@media (prefers-reduced-motion: no-preference) {
+  body {
+    background-attachment: fixed;
+  }
+}
+
+/* ----- Page transitions --------------------------------------------------
+   Native cross-document view transitions: no router and no dependency, and
+   they cover every navigation on the site because all of them are full page
+   loads — header links, the command palette, Back/Forward, direct URLs.
+
+   The fixed chrome carries a name so it leaves the `root` snapshot and holds
+   still while the page underneath changes. Unnamed, it would travel with the
+   root animation and visibly re-render on every click.
+
+   The backgrounds stay unnamed and ride along in `root`. That is why the root
+   animation wipes with `clip-path` and never `transform` — a transform would
+   drag the full-bleed background layers and open a seam along the edge.
+   ---------------------------------------------------------------------- */
+@view-transition {
+  navigation: auto;
+}
+
+:root {
+  --vt-dur: 320ms;
+  --vt-ease: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.menu-bar {
+  view-transition-name: site-header;
+}
+
+.status-bar {
+  view-transition-name: site-status;
+}
+
+.progress-rail {
+  view-transition-name: site-progress;
+}
+
+.section-rail {
+  view-transition-name: site-section-rail;
+}
+
+::view-transition-image-pair(root) {
+  isolation: auto;
+}
+
+::view-transition-old(root) {
+  mix-blend-mode: normal;
+  animation: vt-out var(--vt-dur) var(--vt-ease) both;
+}
+
+::view-transition-new(root) {
+  mix-blend-mode: normal;
+  animation: vt-in calc(var(--vt-dur) + 120ms) var(--vt-ease) 60ms both;
+}
+
+/* Default navigation: the outgoing page wipes away from the top edge and the
+   incoming one opens from that same edge, so the two meet on one line rather
+   than dissolving through each other. */
+@keyframes vt-out {
+  to {
+    opacity: 0;
+    clip-path: inset(0 0 14% 0);
+  }
+}
+
+@keyframes vt-in {
+  from {
+    opacity: 0;
+    clip-path: inset(0 0 14% 0);
+  }
+}
+
+/* Home → Contact. Same edge, but stepped and hazed: `steps()` breaks the wipe
+   into discrete blocks so it reads as matter coming apart rather than as a
+   card being turned. Still no particles — those need a canvas, and that is the
+   next step, not this one. os.js selects this with `data-vt="grand"`, because
+   the pseudo-elements live in the *incoming* document and it cannot see where
+   the visitor came from. */
+:root[data-vt='grand'] {
+  --vt-dur: 560ms;
+}
+
+:root[data-vt='grand']::view-transition-old(root) {
+  animation:
+    vt-haze 280ms ease-out both,
+    vt-out var(--vt-dur) steps(6, end) both;
+}
+
+:root[data-vt='grand']::view-transition-new(root) {
+  animation: vt-in calc(var(--vt-dur) + 140ms) steps(6, end) 140ms both;
+}
+
+/* Separate animation from the wipe above because it touches different
+   properties — combining them into one keyframe set would make the blur
+   inherit `steps()` too. */
+@keyframes vt-haze {
+  to {
+    opacity: 0.4;
+    filter: blur(6px);
+  }
+}
+
+/* ----- Reduced motion ---------------------------------------------------
+   Every animated property is neutralised in one place. This block must stay
+   last in the cascade so it wins over the animations above it.
+   ---------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .boot-overlay,
+  .boot-cursor,
+  .boot-bar i,
+  .eyebrow::after,
+  .pulse-dot,
+  .crt::after {
+    animation: none !important;
+  }
+
+  .boot-bar i {
+    width: 100%;
+  }
+
+  .crt::after {
+    display: none;
+  }
+
+  [data-anim='type'] .ch {
+    opacity: 1;
+    transform: none;
+    animation: none !important;
+  }
+
+  [data-anim='underline']::after {
+    transform: scaleX(1);
+    transition: none;
+  }
+
+  .card,
+  .card-grid[data-anim='tilt'] .card,
+  .btn,
+  .btn::before {
+    transition: none !important;
+  }
+
+  .btn:active {
+    transform: none;
+    box-shadow: var(--ombre);
+  }
+
+  /* Collapse the page transition to a single frame. Cancelling the animations
+     outright is not an option: with no animation the outgoing snapshot stays
+     on screen for the full duration before the browser tears it down, which
+     reads as a freeze rather than as "no transition". */
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation-duration: 1ms !important;
+  }
+}

@@ -1,0 +1,41 @@
+---
+import { getCollection, render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('posts');
+  return posts.map((p) => ({ params: { slug: p.id }, props: { post: p } }));
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+
+---
+
+<Base title={post.data.title} description={post.data.title} type="article">
+  <!-- Read column, centred, so a long article is not glued to the left edge
+       on a wide screen. -->
+  <article class="prose article">
+    <p class="article-back">
+      <a href="/blog/">← Writing</a>
+    </p>
+
+    <h1>{post.data.title}</h1>
+
+    <p class="lead-meta">
+      <span>{post.data.date}</span>
+      {
+        post.data.tags.length > 0 && (
+          <>
+            <span class="lead-sep" aria-hidden="true">·</span>
+            <span>{post.data.tags.join(' · ')}</span>
+          </>
+        )
+      }
+    </p>
+
+    <hr />
+
+    <Content />
+  </article>
+</Base>

@@ -1,19 +1,14 @@
 #!/usr/bin/env python3
 import os
 import re
-import json
 import shutil
+import hashlib
 from pathlib import Path
 from datetime import datetime
 from typing import List, Dict, Any, Optional
-from urllib.parse import quote
 
 import markdown
-from markdown.extensions import fenced_code, tables, toc
-from pygments import highlight
-from pygments.lexers import get_lexer_by_name
-from pygments.formatters import HtmlFormatter
-from jinja2 import Environment, FileSystemLoader, pass_environment
+from jinja2 import Environment, FileSystemLoader
 
 
 # --- Configuration ---
@@ -21,25 +16,72 @@ BASE_DIR = Path(__file__).parent
 CONTENT_DIR = BASE_DIR / "content"
 OUTPUT_DIR = BASE_DIR / "public"
 STATIC_DIR = BASE_DIR / "static"
-SASS_DIR = BASE_DIR / "sass"
 TEMPLATES_DIR = BASE_DIR / "templates_custom"
 
 SITE_CONFIG = {
     "title": "Maltsev · Agentic Engineering",
+    "brand": "maltsev · dev",
     "base_url": "https://maltsev-dev.github.io",
     "author": "A.Maltsev",
     "logo_text": "maltsev · dev",
     "accent_color": "vermilion",
     "posts_per_page": 10,
+    # Absolute URL to a real, reachable image. Pointing og:image at
+    # github.com/<user>/favicon.png returns 404 and kills every social preview.
+    "og_image": "https://maltsev-dev.github.io/static/favicon.png",
+    "default_description": (
+        "AI operational systems, agentic engineering, "
+        "embedded and distributed systems — built to carry real work."
+    ),
 }
 
 
-# --- Custom Markdown Extension for Pygments ---
-class PygmentsFencedCodeExtension(fenced_code.FencedCodeExtension):
-    """Extension to use Pygments for code highlighting"""
-    
-    def run(self, lines: List[str]) -> List[str]:
-        return super().run(lines)
+# --- HTML post-processing -------------------------------------------------
+def _css_version() -> str:
+    """Content hash of the stylesheet, used to bust browser caches.
+
+    A hardcoded ?v= date silently ships stale CSS to anyone who loads the page
+    after a style change until the string is remembered to be bumped.
+    """
+    css = STATIC_DIR / "css" / "style.css"
+    if not css.exists():
+        return "0"
+    return hashlib.sha1(css.read_bytes()).hexdigest()[:10]
+
+
+def wrap_tables(html: str) -> str:
+    """Wrap every <table> in a horizontally scrollable box.
+
+    Tables keep their natural width on narrow screens; the wrapper scrolls
+    instead of the page clipping the right-hand columns.
+    """
+    if "<table" not in html:
+        return html
+    pattern = re.compile(r"<table\b.*?</table>", re.IGNORECASE | re.DOTALL)
+
+    def repl(match: "re.Match[str]") -> str:
+        return '<div class="table-scroll">' + match.group(0) + "</div>"
+
+    return pattern.sub(repl, html)
+
+
+def harden_media(html: str) -> str:
+    """Give embedded media attributes that stop it from hurting first paint.
+
+    width="720" in the source overrides any implicit sizing, so the element must
+    be constrained in CSS; preload="metadata" avoids pulling a 17 MB file before
+    the visitor presses play.
+    """
+    if "<video" not in html:
+        return html
+
+    def repl(match: "re.Match[str]") -> str:
+        tag = match.group(0)
+        if "preload=" not in tag:
+            tag = tag.replace("<video", '<video preload="metadata" playsinline', 1)
+        return tag
+
+    return re.sub(r"<video\b[^>]*>", repl, html, flags=re.IGNORECASE)
 
 
 def create_markdown_instance() -> markdown.Markdown:
@@ -114,6 +156,14 @@ class Post:
         # Extract summary (content before <!-- more -->)
         if "<!-- more -->" in self.content:
             self.summary = self.content.split("<!-- more -->")[0].strip()
+
+        # `render = false` in frontmatter means "keep the file, publish nothing".
+        # Without this the Hugo convention leaks an empty page into production.
+        self.should_render: bool = str(
+            self.metadata.get("render", True)
+        ).strip().lower() not in ("false", "0", "no")
+
+        self.description: str = str(self.metadata.get("description", "") or "").strip()
 
         # Generate URL path
         if "path" in self.metadata:
@@ -305,10 +355,10 @@ class Post:
     def render_content(self) -> str:
         """Render markdown content to HTML"""
         if self.metadata.get("raw_html"):
-            return self.content
+            return harden_media(wrap_tables(self.content))
         md = create_markdown_instance()
         html = md.convert(self.content)
-        
+
         # Fix image paths to use static directory
         html = re.sub(
             r'src="/images/',
@@ -320,7 +370,11 @@ class Post:
             f'src="{SITE_CONFIG["base_url"]}/static/media/',
             html
         )
-        
+
+        # Constrain wide tables and lazy-hydrate heavy media
+        html = wrap_tables(html)
+        html = harden_media(html)
+
         return html
     
     def __repr__(self):
@@ -330,13 +384,17 @@ class Post:
 def load_all_posts() -> List[Post]:
     """Load all posts from content directory"""
     posts = []
-    
+
     # Load posts from root content directory
-    for md_file in CONTENT_DIR.glob("*.md"):
+    for md_file in sorted(CONTENT_DIR.glob("*.md")):
         if md_file.name == "_index.md":
             continue
-        posts.append(Post(md_file))
-    
+        post = Post(md_file)
+        if not post.should_render:
+            print(f"[SKIP] {md_file.name} (render = false)")
+            continue
+        posts.append(post)
+
     # Sort by date (newest first)
     posts.sort(key=lambda p: p.date, reverse=True)
     return posts
@@ -348,8 +406,11 @@ def load_pages() -> Dict[str, Post]:
     pages = {}
 
     if pages_dir.exists():
-        for md_file in pages_dir.glob("*.md"):
+        for md_file in sorted(pages_dir.glob("*.md")):
             post = Post(md_file)
+            if not post.should_render:
+                print(f"[SKIP] pages/{md_file.name} (render = false)")
+                continue
             pages[post.url_path] = post
 
     return pages
@@ -410,6 +471,7 @@ def setup_jinja_env() -> Environment:
     env.filters['format_date'] = format_date_filter
     env.filters['format_date_short'] = format_date_short_filter
     env.globals['now'] = datetime.now
+    env.globals['css_version'] = _css_version()
 
     return env
 
@@ -532,14 +594,23 @@ def generate_404_html(env: Environment) -> str:
 
 # --- Build Functions ---
 def clean_output_dir():
-    """Remove and recreate output directory"""
+    """Remove and recreate output directory.
+
+    Silently rebuilding in place when the delete fails is worse than failing:
+    a page deleted from content/ keeps its old HTML in public/ forever, and the
+    stale copy gets deployed as if it were current.
+    """
     if OUTPUT_DIR.exists():
         try:
             shutil.rmtree(OUTPUT_DIR)
-        except PermissionError:
-            print("[WARN] Could not clean public directory (server may be running). Rebuilding in place...")
-    if not OUTPUT_DIR.exists():
-        OUTPUT_DIR.mkdir(parents=True)
+        except PermissionError as exc:
+            raise SystemExit(
+                f"[ERROR] Cannot clean {OUTPUT_DIR}\n"
+                f"         {exc}\n"
+                f"         A dev server is probably still serving it. "
+                f"Stop `python build.py --serve` and rebuild."
+            )
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
 
 def copy_static_files():
@@ -632,13 +703,23 @@ def build_site():
     projects_file.write_text(html, encoding='utf-8')
     print("[OK] Generated projects showcase page")
 
-    # Copy project landing pages (pre-built HTML)
+    # Project landing pages (authored HTML, rendered so they can use the same
+    # cache-busted stylesheet URL and site config as every other page)
     for slug, project_html in projects.items():
         project_output_dir = projects_dir / slug
         project_output_dir.mkdir(parents=True, exist_ok=True)
         project_file = project_output_dir / "index.html"
-        # Fix relative paths in HTML (e.g., /static/ -> ../static/ or keep absolute)
-        project_file.write_text(project_html, encoding='utf-8')
+        try:
+            rendered = env.from_string(project_html).render(
+                site=SITE_CONFIG,
+                css_version=_css_version(),
+                current_path=f"/projects/{slug}/",
+            )
+        except Exception as exc:  # keep a broken draft from killing the build
+            print(f"[WARN] projects/{slug}.html not rendered ({exc}); copying as-is")
+            rendered = project_html
+        rendered = harden_media(wrap_tables(rendered))
+        project_file.write_text(rendered, encoding='utf-8')
 
     print(f"[OK] Generated {len(projects)} project landing pages")
 

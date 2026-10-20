@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+
+# The legacy build.py generator's URLs. Each one has a stub page that
+# redirects; they exist to preserve inbound links, not to be indexed.
+Disallow: /archive/
+Disallow: /tags/
+Disallow: /page/
+
+Sitemap: https://maltsev-dev.github.io/sitemap.xml

@@ -12,7 +12,7 @@ Digital systems are based on the concept of **bits**, in addition to using bits 
 <!-- more -->
 ---
 
-# &emsp;&emsp;&emsp; Serial Protocol fundamentals
+## &emsp;&emsp;&emsp; Serial Protocol fundamentals
 
 ### Parallel transfer 
 The earliest protocols for transmitting data were mostly parallel.  

@@ -1,0 +1,53 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+
+const posts = (await getCollection('posts')).sort((a, b) =>
+  (b.data.date ?? '').localeCompare(a.data.date ?? '')
+);
+
+// Group by year so the archive stays scannable as it grows.
+const byYear = new Map<string, typeof posts>();
+for (const post of posts) {
+  const year = (post.data.date ?? '').slice(0, 4) || 'undated';
+  if (!byYear.has(year)) byYear.set(year, []);
+  byYear.get(year)!.push(post);
+}
+
+---
+
+<Base title="Blog" description="Notes on embedded Rust, agentic AI, and systems work.">
+  <section class="hero">
+    <span class="eyebrow" data-reveal>Notes</span>
+    <h1 data-reveal data-reveal-delay="60">Writing</h1>
+    <p class="lede" data-reveal data-reveal-delay="120">
+      {posts.length} notes on embedded Rust, agentic systems, and the parts that
+      break in production.
+    </p>
+  </section>
+
+  {
+    [...byYear.entries()].map(([year, list]) => (
+      <section class="section">
+        <div class="section-head">
+          <h2 data-reveal data-anim="underline">{year}</h2>
+          <span class="card-meta">{list.length} posts</span>
+        </div>
+
+        <div class="card-grid" data-anim="tilt">
+          {list.map((post, i) => (
+            <a class="card" href={`/blog/${post.id}/`} data-reveal data-reveal-delay={i * 40}>
+              <span class="card-meta">{post.data.date}</span>
+              <h3>{post.data.title}</h3>
+              <div class="tag-row">
+                {post.data.tags.slice(0, 3).map((t) => (
+                  <span class="tag">{t}</span>
+                ))}
+              </div>
+            </a>
+          ))}
+        </div>
+      </section>
+    ))
+  }
+</Base>

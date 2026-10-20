@@ -1,0 +1,156 @@
+---
+import { getCollection } from 'astro:content';
+import '../styles/global.css';
+import '../styles/animation.css';
+import '../styles/os.css';
+import '../styles/track.css';
+import Header from '../components/Header.astro';
+import StatusBar from '../components/StatusBar.astro';
+import LetterModal from '../components/LetterModal.astro';
+import Palette from '../components/Palette.astro';
+
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  type?: string;
+  /** Shows the fixed section rail down the right edge. */
+  rail?: boolean;
+}
+
+const {
+  title = 'Maltsev · Agentic Engineering',
+  description = 'AI operational systems, agentic engineering, embedded and distributed systems — built to carry real work.',
+  image = '/static/favicon.png',
+  type = 'website',
+  rail = false,
+} = Astro.props;
+
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const fullTitle = title === 'Maltsev · Agentic Engineering' ? title : `${title} · maltsev.dev`;
+
+// One index for the whole site, built here rather than per page: every route
+// gets the same complete list, and adding a post or project is picked up
+// automatically on the next build instead of needing six edits.
+const POSTS = (await getCollection('posts')).sort((a, b) =>
+  (b.data.date ?? '').localeCompare(a.data.date ?? '')
+);
+const PROJECTS = await getCollection('projects');
+
+const paletteItems = [
+  { label: 'Home', href: '/', group: 'Page' },
+  { label: 'Projects', href: '/projects/', group: 'Page' },
+  { label: 'Experience', href: '/experience/', group: 'Page' },
+  { label: 'Profile', href: '/about/', group: 'Page' },
+  { label: 'Writing', href: '/blog/', group: 'Page' },
+  { label: 'Freelance', href: '/freelance/', group: 'Page' },
+  { label: 'Contact', href: '/contact/', group: 'Page' },
+  ...PROJECTS.map((p) => ({ label: p.data.title, href: `/projects/${p.data.slug}/`, group: 'Project' })),
+  ...POSTS.map((p) => ({ label: p.data.title, href: `/blog/${p.id}/`, group: 'Post' })),
+];
+---
+
+<!doctype html>
+<html lang="en" data-theme="phosphore">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+
+    <meta property="og:site_name" content="Maltsev · Agentic Engineering" />
+    <meta property="og:type" content={type} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={new URL(image, Astro.site)} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <title>{fullTitle}</title>
+
+    <!--
+      Theme must be resolved before first paint, otherwise a visitor on a dark
+      theme sees the default ramp and then a jump. Render-blocking and
+      dependency-free; keep in sync with the ramps in global.css and the list
+      in Header.astro.
+
+      define:vars serialises the value to a string, so it has to be parsed back
+      into an object before use — `hasOwnProperty` against a string is always
+      false, which silently reset the stored theme on every navigation.
+    -->
+    <script is:inline define:vars={{ colors: JSON.stringify({
+      phosphore: '#14100a', acidule: '#01141d', pierre: '#f4efe6',
+    }) }}>
+      (function () {
+        try {
+          var ramps = JSON.parse(colors);
+          var id = localStorage.getItem('theme');
+          if (id && Object.prototype.hasOwnProperty.call(ramps, id)) {
+            document.documentElement.dataset.theme = id;
+            var m = document.querySelector('meta[name="theme-color"]');
+            if (m) m.setAttribute('content', ramps[id]);
+          }
+        } catch (e) { /* storage blocked — the default ramp stands */ }
+      })();
+    </script>
+    <meta name="theme-color" content="#14100a" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <!--
+      Reveal targets start at opacity 0 and are un-hidden by JS. Without this,
+      a visitor without JS sees blank gaps where the sections should be.
+    -->
+    <noscript>
+      <style>
+        [data-reveal] { opacity: 1 !important; transform: none !important; }
+      </style>
+    </noscript>
+  </head>
+
+  <body class="crt">
+    <!--
+      Boot readout. Painted by JS only, and only once per session: a second
+      visitor to another page should not sit through it again. Under
+      reduced-motion it is never painted at all.
+    -->
+    <div class="boot-overlay" id="bootOverlay" hidden aria-hidden="true">
+      <div class="boot-box">
+        <div id="bootLines"></div>
+        <div class="boot-bar"><i></i></div>
+      </div>
+    </div>
+
+    <div class="progress-rail" aria-hidden="true"><i id="progressBar"></i></div>
+
+    <!-- Idle background: a drifting grid and two slow accent blooms. Both are
+         fixed, pointer-events:none and transform-only, so they cost nothing
+         while reading. -->
+    <div class="bg-grid" aria-hidden="true"></div>
+    <div class="bg-glow" aria-hidden="true"></div>
+
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <StatusBar />
+    <Header currentPath={Astro.url.pathname} />
+
+    <main id="main" class="wrap" data-rail={rail ? 'on' : undefined}>
+      <slot />
+    </main>
+
+    {rail && <div class="section-rail" aria-hidden="true"><i id="railFill"></i></div>}
+
+    <LetterModal />
+    <Palette items={paletteItems} />
+
+    <script>
+      import '../scripts/os.js';
+    </script>
+  </body>
+</html>

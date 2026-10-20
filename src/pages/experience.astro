@@ -1,0 +1,271 @@
+---
+import Base from '../layouts/Base.astro';
+
+// Presented as a commit log: each stop is one entry with a hash, a branch and a
+// date. The hash-shaped values are decoration — they identify a panel, nothing
+// more. Replace or extend as the history changes; the page reads from here.
+interface Stop {
+  hash: string;
+  /** Employment type — the branch name in the log framing. */
+  kind: string;
+  when: string;
+  span: string;
+  role: string;
+  org: string;
+  href?: string;
+  /** The part of the LinkedIn title after the first separator. */
+  tagline?: string;
+  body?: string;
+  points: string[];
+  skills: string[];
+  /** Count of skills the source profile collapsed; rendered as a muted chip. */
+  more?: number;
+  /** Which rung of the career rail below the track this stop belongs to. */
+  stage: StageId;
+}
+
+/**
+ * The career rail at the foot of the track: the five rungs the history climbs,
+ * oldest first. The track itself runs the other way — it starts at the present
+ * and travels back — so this list is the only place the order is chronological.
+ */
+interface Stage {
+  id: StageId;
+  name: string;
+  since: string;
+}
+
+type StageId = 'founder' | 'independent' | 'sr-sdet' | 'sdet' | 'qa';
+
+const STAGES: Stage[] = [
+  { id: 'founder', name: 'Founder', since: '2026' },
+  { id: 'independent', name: 'Indie Expert', since: '2025' },
+  { id: 'sr-sdet', name: 'Sr SDET', since: '2023' },
+  { id: 'sdet', name: 'SDET', since: '2020' },
+  { id: 'qa', name: 'QA', since: '2019' },
+];
+
+const STOPS: Stop[] = [
+  {
+    hash: 'f7c21a9',
+    kind: 'self-employed',
+    when: 'Mar 2026 — now',
+    span: '8 mos',
+    role: 'Founder & Lead Engineer',
+    org: 'NullRun',
+    href: 'https://nullrun.io',
+    tagline: 'Runtime authorization for AI agents',
+    body: 'Cloud SaaS for AI agent security, policy enforcement and execution governance.',
+    points: [
+      'Founder and lead engineer behind NullRun — the architecture, the policy model and the public API.',
+      'Backend systems, SDK development and cloud infrastructure, end to end.',
+      'Developer experience and product direction.',
+    ],
+    skills: ['AI Agent Security', 'Platform Engineering'],
+    more: 2,
+    stage: 'founder',
+  },
+  {
+    hash: '4c8be17',
+    kind: 'freelance',
+    when: 'Dec 2025 — now',
+    span: '11 mos',
+    role: 'Applied AI Engineer',
+    org: 'Freelance',
+    tagline: 'LLM systems, RAG & agentic workflows · Automation at scale',
+    points: [
+      'Transformed SMB workflows into AI-powered systems, taking projects from vague requirements to production-ready — cutting manual work by 40–80%.',
+      'Built LLM systems on RAG pipelines and multi-agent orchestration; integrated Google APIs and OAuth and automated document-heavy processes end-to-end.',
+      'Delivered production-grade solutions across backend, frontend, infrastructure and system design — architecture through deployment.',
+    ],
+    skills: ['Agentic AI Development', 'LangGraph'],
+    more: 5,
+    stage: 'independent',
+  },
+  {
+    hash: 'a31d0be',
+    kind: 'contract',
+    when: 'Dec 2023 — Jul 2025',
+    span: '1 yr 8 mos',
+    role: 'Senior SDET',
+    org: 'PashaPay',
+    tagline: 'Mobile & backend test automation',
+    points: [
+      'Designed and built integration, e2e and load test automation frameworks from scratch, covering mobile and backend services.',
+      'Owned test architecture across the full SDLC — technical design through deployment and release validation.',
+      'Authored engineering documentation and testing standards adopted across multiple teams, improving consistency and onboarding speed.',
+    ],
+    skills: ['Test Automation', 'Quality Assurance'],
+    more: 2,
+    stage: 'sr-sdet',
+  },
+  {
+    hash: '5e2f904',
+    kind: 'full-time',
+    when: 'Dec 2021 — Aug 2023',
+    span: '1 yr 9 mos',
+    role: 'Senior SDET',
+    org: 'Alfa-Bank',
+    tagline: 'Backend test automation',
+    points: [
+      'Engineered and optimized automated test suites for backend services, improving throughput and stability under production load.',
+      'Partnered with core engineering, security and infrastructure teams to validate integration of distributed system components.',
+      'Drove test infrastructure improvements that reduced regression cycle time and increased release confidence.',
+    ],
+    skills: ['Test Automation', 'Quality Assurance'],
+    more: 2,
+    stage: 'sdet',
+  },
+  {
+    hash: '90b5e77',
+    kind: 'full-time',
+    when: 'Jun 2020 — Dec 2021',
+    span: '1 yr 7 mos',
+    role: 'SDET',
+    org: 'Sportmaster',
+    tagline: 'Performance & quality engineering',
+    points: [
+      'Identified and mitigated performance bottlenecks in service integrations, hardening systems against high-load conditions.',
+      'Built test automation and quality documentation frameworks, establishing repeatable engineering standards.',
+      'Conducted peer code reviews to enforce code quality, consistency and best practices across the team.',
+    ],
+    skills: ['Performance Testing', 'Test Automation'],
+    more: 2,
+    stage: 'sdet',
+  },
+  {
+    hash: 'c07d3aa',
+    kind: 'full-time',
+    when: 'May 2019 — Jun 2020',
+    span: '1 yr 2 mos',
+    role: 'QA Automation Engineer',
+    org: 'Sberbank',
+    points: [
+      'Analyzed complex banking systems to surface functional risks and edge cases, translating findings into automated coverage.',
+      'Designed and implemented automated test scripts validating core product functionality, improving release reliability.',
+      'Collaborated with development teams to integrate testing earlier in the workflow — the start of a shift toward test automation engineering.',
+    ],
+    skills: ['Test Automation', 'Quality Assurance'],
+    more: 1,
+    stage: 'qa',
+  },
+];
+
+const TOOLS = [
+  ['Languages', 'Python · Rust · TypeScript · C'],
+  ['Agents', 'Tool calling · MCP · orchestration · evals'],
+  ['Embedded', 'ESP32 · STM32 · nRF52 · RP2040'],
+  ['Infra', 'Redis · Postgres · Docker · CI pipelines'],
+  ['Practice', 'Property-based testing · SDET'],
+];
+---
+
+<Base title="Experience" description="Where I have worked and what I built.">
+  <!-- One viewport, no vertical scroll: the wheel drives the row sideways. See
+       the .exp-page rules in track.css and track.js. -->
+  <div class="exp-page">
+  <section class="hero">
+    <span class="eyebrow"><span class="pulse-dot"></span>Experience</span>
+    <h1 data-anim="type">The road so far</h1>
+    <p class="lede">
+      Seven years, six stops — from QA automation on banking systems to building
+      authorization infrastructure for agents. Scroll, or use the arrow keys: the
+      work travels sideways, each stop coming into focus in turn.
+    </p>
+  </section>
+
+  <div class="track-scroll" data-track-scroll data-track-mode="wheel">
+    <div class="track" data-track>
+      <div class="track-row" data-track-row>
+      {
+        STOPS.map((s) => (
+          <article class="track-panel track-stop" data-stage={s.stage}>
+            <p class="track-meta">
+              <span class="track-hash">{s.hash}</span>
+              <span class="track-chip">{s.kind}</span>
+              <span>{s.when}</span>
+              <span class="track-span">{s.span}</span>
+            </p>
+
+            <h2>{s.role}</h2>
+
+            <p class="track-org">
+              {s.href ? <a href={s.href} rel="noopener">{s.org}</a> : <span>{s.org}</span>}
+              {s.tagline && <em> — {s.tagline}</em>}
+            </p>
+
+            {s.body && <p class="track-body">{s.body}</p>}
+
+            <ul class="track-points">
+              {s.points.map((point) => (
+                <li>
+                  <span aria-hidden="true">◆</span>
+                  <p>{point}</p>
+                </li>
+              ))}
+            </ul>
+
+            <ul class="track-skills">
+              {s.skills.map((skill) => (
+                <li>{skill}</li>
+              ))}
+              {s.more && <li class="track-skill-more">+{s.more} more</li>}
+            </ul>
+          </article>
+        ))
+      }
+
+      <article class="track-panel">
+        <p class="track-meta">
+          <span class="track-hash">--graph</span>
+          <span class="track-chip">toolkit</span>
+        </p>
+        <h2>What I reach for</h2>
+        <ul class="track-projects">
+          {
+            TOOLS.map(([label, value]) => (
+              <li>
+                <span aria-hidden="true">·</span>
+                <div>
+                  <strong>{label}</strong>
+                  <span>{value}</span>
+                </div>
+              </li>
+            ))
+          }
+        </ul>
+      </article>
+    </div>
+
+    <!--
+      The career rail: the five rungs of the history, oldest first. It reads the
+      opposite way to the track — the track starts at the present, this starts at
+      the first job — so the fill is anchored to the right end and depletes as
+      the reader travels back through time. Hidden from assistive tech: it
+      repeats the dates already on each panel.
+    -->
+    <div class="branches" data-branches aria-hidden="true">
+      <p class="branches-count">
+        <span data-hud-current>01</span> / {String(STOPS.length + 1).padStart(2, '0')}
+      </p>
+
+      <ol class="branch-list">
+        {
+          STAGES.map((stage) => (
+            <li data-stage={stage.id}>
+              <i class="branch-node" />
+              <b>{stage.name}</b>
+              <span>{stage.since}</span>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+    </div>
+  </div>
+  </div>
+
+  <script>
+    import '../scripts/track.js';
+  </script>
+</Base>

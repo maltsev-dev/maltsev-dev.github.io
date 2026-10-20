@@ -1,0 +1,116 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import { MILESTONES, type Milestone } from '../../data/milestones';
+
+const cases = await getCollection('projects');
+
+interface Panel extends Milestone {
+  linked: boolean;
+}
+
+// One track, two sources: the deep-dive cases (each with a page of its own) and
+// the milestone history. Cases lead — they are the entry points — and the
+// milestones follow newest first.
+//
+// A panel is an <a> only when it has somewhere to go. A milestone without an
+// href renders as an <article>, so the track never shows a link that leads
+// nowhere.
+const panels: Panel[] = [
+  ...cases.map((p) => ({
+    linked: true,
+    slug: p.data.slug,
+    title: p.data.title,
+    period: 'Case study',
+    summary: p.data.description ?? '',
+    tags: p.data.tags,
+    href: `/projects/${p.data.slug}/`,
+  })),
+  ...MILESTONES.map((m) => ({ ...m, linked: !!m.href })),
+];
+
+// The chips under the subtitle are the skills that recur: counted across every
+// panel, so a stack that shows up twice is a thread worth naming, while a
+// one-off detail stays on the card where it belongs. Sorted alphabetically —
+// the reader is scanning for a name, not learning an order.
+const counts = new Map<string, number>();
+for (const p of panels) {
+  for (const t of p.tags) counts.set(t, (counts.get(t) ?? 0) + 1);
+}
+const RECURRING = [...counts.entries()]
+  .filter(([, n]) => n > 1)
+  .map(([t]) => t)
+  .sort((a, b) => a.localeCompare(b));
+---
+
+<Base title="Projects" description="Case studies in agentic AI and automation.">
+  <section class="hero">
+    <span class="eyebrow" data-reveal>Catalogue</span>
+    <h1 data-reveal data-reveal-delay="60">Projects</h1>
+    <p class="lede" data-reveal data-reveal-delay="120">
+      Production systems, not demos. Each one shipped, measured, and left running.
+    </p>
+
+    {
+      RECURRING.length > 0 && (
+        <ul class="recurring" data-reveal data-reveal-delay="180">
+          {RECURRING.map((t) => (
+            <li>{t}</li>
+          ))}
+        </ul>
+      )
+    }
+  </section>
+
+  <!--
+    The same sideways track as /experience/: the page scrolls down and the row
+    travels across it. Runway height scales with the panel count, so a longer
+    row does not travel in the same distance — every panel still costs the
+    reader about the same amount of scrolling.
+  -->
+  <div class="track-scroll projects-track" data-track-scroll style={`--panels: ${panels.length}`}>
+    <div class="track" data-track>
+      <div class="track-row" data-track-row>
+        {
+          panels.map((m) => {
+            const body = (
+              <>
+                <p class="track-meta">
+                  <span class="track-when">{m.period}</span>
+                </p>
+
+                <h2>{m.title}</h2>
+                <p class="panel-body">{m.summary}</p>
+
+                <ul class="track-skills">
+                  {m.tags.map((t) => (
+                    <li>{t}</li>
+                  ))}
+                </ul>
+
+                {m.href && <span class="panel-foot">{m.href === '/blog/' ? 'Read →' : 'Open →'}</span>}
+              </>
+            );
+            return m.linked ? (
+              <a class="track-panel panel-project" href={m.href}>
+                {body}
+              </a>
+            ) : (
+              <article class="track-panel panel-project">{body}</article>
+            );
+          })
+        }
+      </div>
+
+      <div class="panel-hud" aria-hidden="true">
+        <span data-hud-current>01</span>
+        <span class="panel-hud-bar"><i data-hud-bar /></span>
+        <span>{String(panels.length).padStart(2, '0')}</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    import '../../scripts/track.js';
+  </script>
+</Base>

@@ -1,16 +1,19 @@
 <!DOCTYPE html>
 
-<html lang="en">
+<html lang="en" data-theme="light">
 
 <head>
 
     <meta charset="UTF-8">
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light dark">
 
     <meta name="description" content="Recover lost revenue from inbound email replies automatically. AI that responds, qualifies, and books meetings.">
 
     <meta property="og:site_name" content="Maltsev · Agentic Engineering">
+
+    <meta property="og:description" content="Recover lost revenue from inbound email replies automatically. AI that responds, qualifies, and books meetings.">
 
     <meta property="og:type" content="website">
 
@@ -18,21 +21,36 @@
 
     <meta property="og:url" content="https://maltsev-dev.github.io/projects/email-reply-agent/">
 
-    <meta property="og:image" content="https://github.com/maltsev-dev/favicon.png">
+    <meta property="og:image" content="https://maltsev-dev.github.io/static/favicon.png">
 
     <title>AI Email Reply Agent — Maltsev · Agentic Engineering</title>
-
-
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
 
     <link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@400;500;600;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <script>
+    (function () {
+        var d = document.documentElement;
+        var stored = null;
+        try { stored = localStorage.getItem('theme'); } catch (e) {}
+        if (stored !== 'dark' && stored !== 'light') {
+            stored = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+                ? 'dark' : 'light';
+        }
+        d.setAttribute('data-theme', stored);
+    })();
+    </script>
 
+    <link rel="stylesheet"
+ href="/static/css/style.css?v={{ css_version }}">
 
-
-    
-
-    <link rel="stylesheet" href="/static/css/style.css?v=20260918g">
+    <noscript>
+        <style>
+            .fade-in, .reveal-left, .reveal-right { opacity: 1 !important; transform: none !important; }
+            .mobile-menu-toggle { display: none !important; }
+            .main-nav { display: flex !important; flex-wrap: wrap !important; }
+        </style>
+    </noscript>
 
 </head>
 
@@ -70,8 +88,6 @@
     </div>
 </header>
 
-
-
         <main class="content-wrapper">
 
             <!-- Hero Section -->
@@ -88,23 +104,17 @@
 
                     </h1>
 
-
-
                     <p class="hero-lead">
 
                         AI that replies in minutes, qualifies leads, and books meetings — without hiring SDRs.
 
                     </p>
 
-
-
                     <p class="hero-fit">
 
                         For B2B teams sending 1,000+ cold emails/month
 
                     </p>
-
-
 
                     <div class="metrics">
 
@@ -134,8 +144,6 @@
 
                     </div>
 
-
-
                     <div class="btn-group">
 
                         <a href="#contact" class="btn btn-primary">Get Response Audit</a>
@@ -143,8 +151,6 @@
                         <a href="#contact" class="btn btn-outline">See How It Works</a>
 
                     </div>
-
-
 
                     <p class="hero-trust">
 
@@ -156,8 +162,6 @@
 
             </div>
 
-
-
             <!-- PROBLEM -->
 
 <section class="section problem-section">
@@ -167,8 +171,6 @@
         <h2>The Problem</h2>
 
         <p class="section-sub">Your revenue is leaking inside the inbox</p>
-
-
 
         <div class="problem-grid">
 
@@ -180,8 +182,6 @@
 
             </div>
 
-
-
             <div class="problem-card">
 
                 <span class="problem-icon">●</span>
@@ -190,8 +190,6 @@
 
             </div>
 
-
-
             <div class="problem-card">
 
                 <span class="problem-icon">¦</span>
@@ -199,8 +197,6 @@
                 <p>Inbox becomes your revenue bottleneck</p>
 
             </div>
-
-
 
             <div class="problem-card">
 
@@ -216,10 +212,6 @@
 
 </section>
 
-
-
-
-
 <!-- SOLUTION -->
 
 <section class="section">
@@ -229,8 +221,6 @@
         <h2>The Solution</h2>
 
         <p class="section-sub">An AI layer that handles replies end-to-end</p>
-
-
 
         <div class="solution-grid">
 
@@ -244,8 +234,6 @@
 
             </div>
 
-
-
             <div class="solution-card">
 
                 <div class="solution-icon">◆</div>
@@ -256,8 +244,6 @@
 
             </div>
 
-
-
             <div class="solution-card">
 
                 <div class="solution-icon">◆</div>
@@ -267,8 +253,6 @@
                 <p>Natural responses that feel real</p>
 
             </div>
-
-
 
             <div class="solution-card">
 
@@ -286,10 +270,6 @@
 
 </section>
 
-
-
-
-
 <!-- RESULTS -->
 
 <section class="section results-section">
@@ -300,11 +280,7 @@
 
         <p class="section-sub">From chaos ? predictable pipeline</p>
 
-
-
         <div class="grid grid-2">
-
-
 
             <div class="card result-card">
 
@@ -322,8 +298,6 @@
 
             </div>
 
-
-
             <div class="card result-card">
 
                 <div class="result-metric">
@@ -340,8 +314,6 @@
 
             </div>
 
-
-
             <div class="card result-card">
 
                 <div class="result-metric">
@@ -357,8 +329,6 @@
                 <p>Lead coverage</p>
 
             </div>
-
-
 
             <div class="card result-card">
 
@@ -388,8 +358,6 @@
 
 </section>
 
-
-
     <!-- How It Works Section -->
 
 <section class="section">
@@ -399,8 +367,6 @@
         <h2 style="text-align:center;">How It Works</h2>
 
         <p style="text-align:center; color:#aaa;">Works like an invisible SDR inside your inbox</p>
-
-
 
         <div class="flow">
 
@@ -414,11 +380,7 @@
 
             </div>
 
-
-
             <div class="flow-arrow">→</div>
-
-
 
             <div class="flow-step">
 
@@ -430,11 +392,7 @@
 
             </div>
 
-
-
             <div class="flow-arrow">→</div>
-
-
 
             <div class="flow-step">
 
@@ -446,11 +404,7 @@
 
             </div>
 
-
-
             <div class="flow-arrow">→</div>
-
-
 
             <div class="flow-step">
 
@@ -468,10 +422,6 @@
 
 </section>
 
-
-
-
-
 <!-- Risk Section -->
 
 <section class="section risk-section">
@@ -481,8 +431,6 @@
         <h2 class="warning" style="text-align:center;">What happens if you do nothing?</h2>
 
         <p class="section-sub">Your potential customers are leaving for your competitors.</p>
-
-
 
         <div class="risk-grid">
 
@@ -494,8 +442,6 @@
 
             </div>
 
-
-
             <div class="risk-card">
 
                 <strong>▲ Silent revenue leak</strong>
@@ -504,8 +450,6 @@
 
             </div>
 
-
-
             <div class="risk-card">
 
                 <strong>▲ Paid leads wasted</strong>
@@ -513,8 +457,6 @@
                 <p>You already paid to acquire them</p>
 
             </div>
-
-
 
             <div class="risk-card">
 
@@ -536,10 +478,6 @@
 
 </section>
 
-
-
-
-
 <!-- Pricing Section -->
 
 <section class="section">
@@ -547,8 +485,6 @@
     <div class="container">
 
         <h2 style="text-align:center;">Pricing</h2>
-
-
 
         <div class="pricing-box">
 
@@ -562,11 +498,7 @@
 
                 </div>
 
-
-
                 <div class="divider"></div>
-
-
 
                 <div>
 
@@ -578,8 +510,6 @@
 
             </div>
 
-
-
             <div class="pricing-highlight">◆ One closed deal usually pays for the entire system
 
             </div>
@@ -590,8 +520,6 @@
 
 </section>
 
-
-
             <!-- CTA Section -->
 
             <section class="cta" id="contact">
@@ -601,8 +529,6 @@
                     <h2>Let's find where you're losing deals</h2>
 
                     <p>I'll analyze your reply flow and show exact gaps</p>
-
-
 
                     <div class="btn-group">
 
@@ -617,8 +543,6 @@
             </section>
 
         </main>
-
-
 
         <!-- Footer -->
 
@@ -646,8 +570,6 @@
 
     </div>
 
-
-
     <button class="theme-toggle" aria-label="Toggle theme" id="themeToggle">
         <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
             <circle cx="12" cy="12" r="5"/>
@@ -662,8 +584,6 @@
             <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
         </svg>
     </button>
-
-
 
     <script src="/static/js/theme.js"></script>
 

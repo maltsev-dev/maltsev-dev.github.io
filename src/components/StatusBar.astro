@@ -1,0 +1,21 @@
+---
+// Slim strip above the menu bar. Time and availability sit together on the
+// right edge. Availability opens the letter modal rather than navigating, so a
+// visitor who is ready to write does not have to find the Contact page first.
+---
+
+<div class="status-bar">
+  <div class="wrap">
+    <div class="status-right">
+      <span class="status-item clock">
+        <span class="k" aria-hidden="true">time</span>
+        <time id="clock" datetime="">—</time>
+      </span>
+
+      <button class="status-item status-cta" type="button" data-open-letter>
+        <span class="pulse-dot" aria-hidden="true"></span>
+        <span>available</span>
+      </button>
+    </div>
+  </div>
+</div>

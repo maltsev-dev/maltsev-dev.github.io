@@ -1,0 +1,93 @@
+---
+import Base from '../layouts/Base.astro';
+
+
+const SERVICES = [
+  {
+    title: 'Agentic systems',
+    body: 'Multi-agent workflows that do real operational work — qualify leads, triage tickets, answer inbound. Built with evaluation and rollback, not just prompts.',
+    tags: ['orchestration', 'evals', 'automation'],
+  },
+  {
+    title: 'Embedded Rust',
+    body: 'Firmware for ESP32, STM32, nRF52, RP2040. Memory-safe drivers, on-device logic, and test harnesses that catch regressions before they reach the board.',
+    tags: ['no_std', 'drivers', 'testing'],
+  },
+  {
+    title: 'Process automation',
+    body: 'The unglamorous work: replacing manual handoffs with reliable pipelines. Integrations, retries, observability, and the failure handling nobody budgets for.',
+    tags: ['pipelines', 'integrations', 'ops'],
+  },
+  {
+    title: 'Technical audit',
+    body: 'A focused review of an existing system before you invest in rebuilding it. You get a written assessment and an honest recommendation — including when the answer is «do not rebuild this».',
+    tags: ['review', 'architecture', 'advice'],
+  },
+];
+---
+
+<Base title="Freelance" description="Freelance engineering: agentic systems, embedded Rust, automation, and audits.">
+  <section class="hero">
+    <span class="eyebrow" data-reveal>Freelance</span>
+    <h1 data-reveal data-reveal-delay="60">Available for work</h1>
+    <p class="lede" data-reveal data-reveal-delay="120">
+      I take on a small number of engagements at a time — usually where AI
+      automation and systems reliability overlap, and where the problem is hard
+      enough that a template won't do.
+    </p>
+
+    <div class="btn-row" data-reveal data-reveal-delay="180">
+      <a class="btn btn-primary" href="/contact/">Get in touch</a>
+      <a class="btn" href="/projects/">See the work</a>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-head">
+      <h2 data-reveal data-anim="underline">What I take on</h2>
+    </div>
+
+    <div class="card-grid" data-anim="tilt">
+      {
+        SERVICES.map((s, i) => (
+          <div class="card" data-reveal data-reveal-delay={i * 60}>
+            <h3>{s.title}</h3>
+            <p>{s.body}</p>
+            <div class="tag-row">
+              {s.tags.map((t) => (
+                <span class="tag">{t}</span>
+              ))}
+            </div>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="section">
+    <h2 data-reveal data-anim="underline">How it works</h2>
+    <ol class="prose" data-reveal data-reveal-delay="60">
+      <li>
+        <strong>Scope call.</strong> Thirty minutes on what you're actually
+        trying to achieve. If I'm not the right person, you'll know by the end
+        of it.
+      </li>
+      <li>
+        <strong>Written proposal.</strong> Fixed scope, fixed price, explicit
+        deliverables. No open-ended hourly billing.
+      </li>
+      <li>
+        <strong>Build in the open.</strong> Weekly updates and a working
+        environment you can look at from week one — not a black box at the end.
+      </li>
+      <li>
+        <strong>Handover.</strong> Documented, tested, and yours. I leave when
+        the system runs without me.
+      </li>
+    </ol>
+
+    <div class="btn-row" data-reveal>
+      <a class="btn btn-primary" href="/contact/">Start a conversation</a>
+    </div>
+  </section>
+</Base>

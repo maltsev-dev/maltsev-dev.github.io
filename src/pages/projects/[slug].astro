@@ -1,0 +1,40 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import ProjectCase from '../../components/ProjectCase.astro';
+
+// The case bodies are parsed out of the legacy landing pages into JSON by
+// _parse_projects.py; the original HTML stays on disk untouched.
+//
+// Loaded through import.meta.glob rather than readFile: in a static build
+// import.meta.url points into dist/, so a runtime-relative read never
+// resolves and the case silently rendered empty.
+const cases = import.meta.glob('../../data/projects/*.json', { eager: true }) as Record<
+  string,
+  { default: Record<string, unknown> }
+>;
+
+export async function getStaticPaths() {
+  const projects = await getCollection('projects');
+  return projects.map((p) => ({ params: { slug: p.data.slug }, props: { project: p } }));
+}
+
+const { project } = Astro.props;
+
+const key = `../../data/projects/${project.data.slug}.json`;
+const data = cases[key]?.default ?? {};
+
+if (!cases[key]) {
+  console.error(`[projects] no case data for ${project.data.slug} (looked for ${key})`);
+}
+---
+
+<Base title={project.data.title} description={project.data.description}>
+  <div class="wrap-sub">
+    <p class="article-back">
+      <a href="/projects/">← Projects</a>
+    </p>
+
+    <ProjectCase data={data} />
+  </div>
+</Base>

@@ -1,0 +1,291 @@
+---
+// ASCII architecture of an AI automation system.
+//
+// The drawing is plain text lines so column alignment is exact and nothing
+// depends on font metrics beyond monospace. The figure is 119 columns wide
+// and every box edge, arrow and junction lands on a fixed column.
+//
+// LINES is a list of rows, and a row is a list of segments. Most rows are a
+// single segment; the row holding 06 / 07 / 08 has three, because those stages
+// sit side by side and each still needs its own box. Three rules keep the
+// drawing intact:
+//   - a segment with z: null is a connector, so hovering a stage lights its
+//     block only and never the paths around it;
+//   - it renders in --font-art, not --font-mono, because the Google Fonts
+//     subsets of JetBrains Mono have no box-drawing glyphs and a mixed advance
+//     width shears the whole drawing apart;
+//   - the glyphs live in <code>, which a global `code, pre, kbd` reset points
+//     at the UI font, so os.css re-asserts --font-art on `.stack-art code`.
+//
+// The glyphs stay non-interactive. A box drawn in text cannot be a button, so
+// RECTS measures each stage back out of LINES and the real <button>s are laid
+// over the drawing on top — that keeps the ASCII look and gives keyboard users
+// something focusable with an accessible name.
+const ZONES = [
+  {
+    id: 'backend',
+    name: '01 · BACKEND FOUNDATION',
+    desc: 'FastAPI, Pydantic, AsyncIO, Pytest. The service skeleton every later stage plugs into.',
+    stack: ['FastAPI', 'Pydantic', 'AsyncIO', 'Pytest'],
+    detail: [
+      'Every later stage is a module this service loads, so the boundaries between them are decided here rather than discovered halfway through a build.',
+      'Pydantic models those boundaries, which turns an invalid state into a failure at the edge instead of a wrong result three stages later.',
+      'Tests run against the real graph rather than a mock of it, so a transition nobody wired cannot pass unnoticed.',
+    ],
+  },
+  {
+    id: 'llm',
+    name: '02 · LLM API & TOOL CALLING',
+    desc: 'Structured outputs and streaming. Every tool call is schema-checked before it is allowed to run.',
+    stack: ['Structured Outputs', 'Streaming'],
+    detail: [
+      'A tool call is validated against its schema before it runs, so a malformed call is a validation error rather than a trace to unpick afterwards.',
+      'Streaming keeps the first token moving while the run continues, which is what makes a long tool call read as progress rather than a freeze.',
+    ],
+  },
+  {
+    id: 'agents',
+    name: '03 · AGENT ORCHESTRATION',
+    desc: 'LangGraph state machine. Explicit transitions, so a run can be replayed and compared step by step.',
+    stack: ['LangGraph', 'State Machine'],
+    detail: [
+      'Transitions are explicit, so a run can be replayed from any checkpoint and compared step by step against the run before it.',
+      'The graph is the unit of debugging: when a run goes wrong the question is which transition fired, and that question has an answer.',
+    ],
+  },
+  {
+    id: 'api',
+    name: '04 · API & BUSINESS INTEGRATIONS',
+    desc: 'REST, webhooks, OAuth 2.0, reconciliation. The layer where the agent meets the systems of record.',
+    stack: ['REST', 'Webhooks', 'OAuth 2.0', 'Reconciliation'],
+    detail: [
+      'Webhooks are handled as at-least-once delivery, because the network will deliver twice and the code has to assume it.',
+      'Reconciliation compares what the agent believes against what the system of record says, and repairs the difference on a schedule rather than waiting for someone to notice it.',
+    ],
+  },
+  {
+    id: 'rag',
+    name: '05 · RAG ENGINEERING',
+    desc: 'Hybrid search, reciprocal rank fusion, reranking. Retrieval quality before prompt quality.',
+    stack: ['Hybrid Search', 'RRF', 'Rerank'],
+    detail: [
+      'Neither signal wins alone: lexical search holds the rare identifier, dense search holds the paraphrase, and a query usually needs both.',
+      'Reciprocal rank fusion merges the two without hand-tuned weights, and the reranker makes the final ordering defensible rather than merely plausible.',
+    ],
+  },
+  {
+    id: 'reliability',
+    name: '06 · RELIABILITY & RESILIENCE',
+    desc: 'Circuit breakers and idempotency keys. An upstream failure degrades the run instead of cascading.',
+    stack: ['Circuit Breakers', 'Idempotency'],
+    detail: [
+      'A breaker on a failing dependency stops a run from spending its entire budget rediscovering an outage it cannot fix.',
+      'Idempotency keys are what make a retry safe, which is in turn what makes automatic retry worth having at all.',
+    ],
+  },
+  {
+    id: 'security',
+    name: '07 · SECURITY & AUTHORIZATION',
+    desc: 'Deterministic RBAC and a sandboxed tool runtime. Permissions decided in code, never by the model.',
+    stack: ['Deterministic RBAC', 'Sandbox'],
+    detail: [
+      'Permission is decided in code from the caller identity and never asked of the model, so a model cannot widen its own access by reasoning its way there.',
+      'Tool execution runs sandboxed, so a bad retrieval result cannot escalate into arbitrary code carrying service credentials.',
+    ],
+  },
+  {
+    id: 'eval',
+    name: '08 · EVALUATION & REGRESSION',
+    desc: 'Trajectory tests over golden datasets. Every prompt or model change is measured before it ships.',
+    stack: ['Trajectory Tests', 'Golden Datasets'],
+    detail: [
+      'Assertions cover the whole trajectory and not just the final answer, so a run that reaches the right answer by the wrong path still fails.',
+      'Golden datasets turn every prompt edit and model swap into a measurement with a number attached to it.',
+    ],
+  },
+  {
+    id: 'sql',
+    name: '09 · SQL & STATE PERSISTENCE',
+    desc: 'Postgres, Redis, checkpointing. Agent state survives a crash, a deploy and a restart.',
+    stack: ['Postgres', 'Redis', 'Checkpointing'],
+    detail: [
+      'A checkpoint after each transition is what makes a run resumable after a crash, a deploy or a restart, instead of starting over.',
+      'Redis carries the hot working set while Postgres stays the record of truth, so losing the cache is an inconvenience rather than an incident.',
+    ],
+  },
+  {
+    id: 'obs',
+    name: '10 · OBSERVABILITY',
+    desc: 'Tracing and OpenTelemetry. Every run is inspectable from first tool call to final answer.',
+    stack: ['Tracing', 'OpenTelemetry', 'Alerting'],
+    detail: [
+      'Every run is traceable end to end, with latency and cost attached to each span rather than aggregated into one total.',
+      'An alert is only actionable if it names the stage it fired in, which is why the trace id travels with the notification.',
+    ],
+  },
+];
+
+const LINES = [
+  [{ z: 'backend', t: '                                   ┌───────────────────────────────────────────────┐' }],
+  [{ z: 'backend', t: '                                   │            01. Backend Foundation             │' }],
+  [{ z: 'backend', t: '                                   │     FastAPI • Pydantic • AsyncIO • Pytest     │' }],
+  [{ z: 'backend', t: '                                   └───────────────────────┬───────────────────────┘' }],
+  [{ z: null, t: '                                                           │' }],
+  [{ z: null, t: '                   ┌───────────────────────────────────────┴───────────────────────────────────────┐' }],
+  [{ z: null, t: '                   ▼                                                                               ▼' }],
+  [{ z: 'llm', t: '┌─────────────────────────────────────┐' }],
+  [{ z: 'llm', t: '│     02. LLM API & Tool Calling      │' }],
+  [{ z: 'llm', t: '│   Structured Outputs • Streaming    │' }],
+  [{ z: 'llm', t: '└──────────────────┬──────────────────┘' }],
+  [{ z: 'sql', t: '                                                                                ┌─────────────────────────────────────┐' }],
+  [{ z: 'sql', t: '                                                                                │     09. SQL & State Persistence     │' }],
+  [{ z: 'sql', t: '                                                                                │  Postgres • Redis • Checkpointing   │' }],
+  [{ z: 'sql', t: '                                                                                └──────────────────┬──────────────────┘' }],
+  [{ z: null, t: '                   │' }],
+  [{ z: null, t: '                   ▼' }],
+  [{ z: 'agents', t: '┌─────────────────────────────────────┐' }],
+  [{ z: 'agents', t: '│       03. Agent Orchestration       │' }],
+  [{ z: 'agents', t: '│      LangGraph • State Machine      │' }],
+  [{ z: 'agents', t: '└──────────────────┬──────────────────┘' }],
+  [{ z: null, t: '                                                                                                   │' }],
+  [{ z: null, t: '                                                                                                   ▼' }],
+  [{ z: 'rag', t: '                                                                                ┌─────────────────────────────────────┐' }],
+  [{ z: 'rag', t: '                                                                                │         05. RAG Engineering         │' }],
+  [{ z: 'rag', t: '                                                                                │    Hybrid Search • RRF • Rerank     │' }],
+  [{ z: 'rag', t: '                                                                                └──────────────────┬──────────────────┘' }],
+  [{ z: null, t: '                   └───────────────────────────────────────┬───────────────────────────────────────┘' }],
+  [{ z: null, t: '                                                           │' }],
+  [{ z: null, t: '                                                           ▼' }],
+  [{ z: 'api', t: '┌─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┐' }],
+  [{ z: 'api', t: '│                                           04. API & Business Integrations                                           │' }],
+  [{ z: 'api', t: '│                                    REST • Webhooks • OAuth 2.0 • Reconciliation                                     │' }],
+  [{ z: 'api', t: '└──────────────────────────────────────────────────────────┬──────────────────────────────────────────────────────────┘' }],
+  [{ z: null, t: '                                                           │' }],
+  [{ z: null, t: '                   ┌───────────────────────────────────────┼───────────────────────────────────────┐' }],
+  [{ z: null, t: '                   ▼                                       ▼                                       ▼' }],
+  [{ z: 'reliability', t: '┌─────────────────────────────────────┐' }, { z: null, t: ' ' }, { z: 'security', t: '┌─────────────────────────────────────┐' }, { z: null, t: ' ' }, { z: 'eval', t: '┌─────────────────────────────────────┐' }],
+  [{ z: 'reliability', t: '│    06. Reliability & Resilience     │' }, { z: null, t: ' ' }, { z: 'security', t: '│    07. Security & Authorization     │' }, { z: null, t: ' ' }, { z: 'eval', t: '│     08. Evaluation & Regression     │' }],
+  [{ z: 'reliability', t: '│   Circuit Breakers • Idempotency    │' }, { z: null, t: ' ' }, { z: 'security', t: '│    Deterministic RBAC • Sandbox     │' }, { z: null, t: ' ' }, { z: 'eval', t: '│ Trajectory Tests • Golden Datasets  │' }],
+  [{ z: 'reliability', t: '└──────────────────┬──────────────────┘' }, { z: null, t: ' ' }, { z: 'security', t: '└──────────────────┬──────────────────┘' }, { z: null, t: ' ' }, { z: 'eval', t: '└──────────────────┬──────────────────┘' }],
+  [{ z: null, t: '                   └───────────────────────────────────────┼───────────────────────────────────────┘' }],
+  [{ z: null, t: '                                                           │' }],
+  [{ z: null, t: '                                                           ▼' }],
+  [{ z: 'obs', t: '                      ┌─────────────────────────────────────────────────────────────────────────┐' }],
+  [{ z: 'obs', t: '                      │                            10. Observability                            │' }],
+  [{ z: 'obs', t: '                      │                     Tracing • OpenTelemetry • Alert                     │' }],
+  [{ z: 'obs', t: '                      └─────────────────────────────────────────────────────────────────────────┘' }],
+];
+
+// Measure each stage back out of the drawing: which rows it spans and which
+// columns it covers. Derived rather than hand-written, so moving a box in
+// LINES moves its hit area with it instead of silently detaching.
+const RECTS = {};
+LINES.forEach((segs, row) => {
+  let col = 0;
+  segs.forEach((s) => {
+    if (s.z) {
+      const r = RECTS[s.z];
+      if (r) {
+        r.r1 = row;
+        r.c0 = Math.min(r.c0, col);
+        r.c1 = Math.max(r.c1, col + s.t.length - 1);
+      } else {
+        RECTS[s.z] = { r0: row, r1: row, c0: col, c1: col + s.t.length - 1 };
+      }
+    }
+    col += s.t.length;
+  });
+});
+---
+
+<div class="stack" data-stack>
+  <div class="stack-head">
+    <span class="stack-dot"></span>
+    <span class="stack-title">architecture</span>
+    <span class="stack-meta" data-stack-meta>click a stage</span>
+  </div>
+
+  <div class="stack-view">
+    {/* The drawing itself is hidden from assistive tech — it is 119 columns of
+        box-drawing characters, which reads as noise. The buttons below carry
+        the same information properly. They live inside the <pre> so they are
+        positioned in the same scrolling content box as the glyphs they cover,
+        and so they travel with the art when a narrow screen scrolls it. */}
+    <pre class="stack-art"><code aria-hidden="true">{
+      LINES.map((segs, row) =>
+        segs.flatMap((s, i) => {
+          const nl = i === segs.length - 1 ? '\n' : '';
+          if (!s.z) return [<span class="stack-line" data-row={row}>{s.t + nl}</span>];
+          // The leading spaces are column padding, not part of the stage. Left
+          // inside the highlight span they paint the fill from column 0 out to
+          // the box, so they go into their own plain span and the highlight
+          // starts where the box does. The parts come back as an array because
+          // JSX whitespace between elements would land in the <pre> as a real
+          // newline and break the row in two.
+          const m = /^(\s*)([\s\S]*)$/.exec(s.t);
+          const parts = [];
+          if (m[1]) parts.push(<span class="stack-line" data-row={row}>{m[1]}</span>);
+          parts.push(<span class="stack-zone" data-zone={s.z} data-row={row}>{m[2] + nl}</span>);
+          return parts;
+        })
+      )
+    }</code>{
+      ZONES.map((z) => {
+        const r = RECTS[z.id];
+        return (
+          <button
+            type="button"
+            class="stack-hit-box"
+            style={`--c0:${r.c0}; --r0:${r.r0}; --w:${r.c1 - r.c0 + 1}; --h:${r.r1 - r.r0 + 1}`}
+            data-open-stage={z.id}
+            data-zone={z.id}
+            aria-label={`${z.name.replace(/ · /, ' ')}. ${z.desc}`}
+          />
+        );
+      })
+    }</pre>
+  </div>
+
+  <div class="stack-read" id="stackRead" aria-live="polite">
+    <p class="stack-read-idle">Hover a stage, click it for detail.</p>
+    {
+      ZONES.map((z) => (
+        <p class="stack-read-item" data-read={z.id} hidden>
+          <strong>{z.name}</strong>
+          <span>{z.desc}</span>
+        </p>
+      ))
+    }
+  </div>
+
+  <span class="stack-scan" aria-hidden="true"></span>
+</div>
+
+{/* One dialog for all ten stages. Every panel is rendered up front and the
+    script shows the right one, so the copy lives next to the drawing instead
+    of being duplicated in JavaScript. Same shape as LetterModal: backdrop,
+    focus trap, Escape, focus returned to the trigger. */}
+<div class="stage-modal" id="stageModal" hidden role="dialog" aria-modal="true">
+  <div class="stage-modal-backdrop" data-close-stage></div>
+  <div class="stage-modal-box" role="document">
+    {
+      ZONES.map((z) => (
+        <section class="stage-modal-panel" data-stage-panel={z.id} hidden aria-labelledby={`stage-title-${z.id}`}>
+          <div class="stage-modal-head">
+            <span id={`stage-title-${z.id}`}>{z.name}</span>
+            <button type="button" class="stage-modal-x" data-close-stage aria-label={`Close ${z.name}`}>✕</button>
+          </div>
+          <div class="stage-modal-body">
+            <p class="stage-modal-lede">{z.desc}</p>
+            <ul class="stage-modal-stack">
+              {z.stack.map((s) => <li>{s}</li>)}
+            </ul>
+            <div class="stage-modal-detail">
+              {z.detail.map((d) => <p>{d}</p>)}
+            </div>
+          </div>
+        </section>
+      ))
+    }
+  </div>
+</div>

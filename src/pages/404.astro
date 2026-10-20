@@ -1,0 +1,17 @@
+---
+import Base from '../layouts/Base.astro';
+---
+
+<Base title="Not found" description="This page does not exist.">
+  <section class="hero">
+    <span class="eyebrow" data-reveal>Error 404</span>
+    <h1 data-reveal data-reveal-delay="60">No such file</h1>
+    <p class="lede" data-reveal data-reveal-delay="120">
+      The path you requested doesn't exist on this system.
+    </p>
+    <div class="btn-row" data-reveal data-reveal-delay="180">
+      <a class="btn btn-primary" href="/">Back to index</a>
+      <a class="btn" href="/blog/">Browse writing</a>
+    </div>
+  </section>
+</Base>

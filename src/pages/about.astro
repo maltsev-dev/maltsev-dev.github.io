@@ -1,0 +1,145 @@
+---
+import Base from '../layouts/Base.astro';
+
+
+// What I actually sell. Kept separate from the panels below so the service
+// list can be edited without touching the narrative.
+const SERVICES = [
+  {
+    title: 'AI agents, productionised',
+    body: 'Given an existing business process, I wire the model, tools and APIs into it and deliver a workflow that runs unattended and stays auditable.',
+    tags: ['orchestration', 'tool calling', 'MCP', 'evals'],
+  },
+  {
+    title: 'Automation & integrations',
+    body: 'The unglamorous half: reliable pipelines, retries, rate limits and observability. Usually where the real project cost lives.',
+    tags: ['APIs', 'queues', 'observability'],
+  },
+  {
+    title: 'Agent control plane',
+    body: 'NullRun — a runtime authorization layer for agents. Controls tool execution, approvals, budgets and policy, so autonomy does not mean losing the plot.',
+    tags: ['NullRun', 'approvals', 'policy'],
+  },
+  {
+    title: 'Embedded & systems Rust',
+    body: 'Firmware for nRF52, STM32, ESP32 and RP2040 — drivers and on-device logic, plus the test harnesses that keep them honest.',
+    tags: ['no_std', 'drivers', 'testing'],
+  },
+  {
+    title: 'Quality engineering',
+    body: 'Seven years of it in fintech. Property-based tests, integration pipelines, and observability that tells you what actually broke.',
+    tags: ['property testing', 'CI', 'SDET'],
+  },
+  {
+    title: 'Technical audit',
+    body: 'A focused review before you commit to a rebuild — including an honest recommendation when the answer is "do not rebuild this".',
+    tags: ['review', 'architecture'],
+  },
+];
+
+// The agentic structure, assembled as the reader scrolls. Each stage is a
+// panel; the rail beside it tracks which one is in view.
+const STAGES = [
+  {
+    n: '01',
+    title: 'Intake',
+    lead: 'Everything lands in one queue first.',
+    body: 'Before any model runs, the input is normalised, deduplicated and rate-limited. Most reports of "the AI did something strange" turn out to be three messages that were never three messages.',
+    marks: ['email', 'sms', 'chat', 'forms'],
+  },
+  {
+    n: '02',
+    title: 'Agents',
+    lead: 'Narrow scope per agent, not one generalist.',
+    body: 'Support, invoice, insight, store-ops, SMM — each a specialist with its own tools. Narrow scope means a failure is diagnosable, and the fix stays local.',
+    marks: ['classify', 'route', 'retry', 'escalate'],
+  },
+  {
+    n: '03',
+    title: 'Control',
+    lead: 'Autonomy without losing the plot.',
+    body: 'Tool execution runs against a policy layer: approvals, budgets, one credential per domain, and an action log. Bounded work proceeds on its own; anything sensitive waits for a human.',
+    marks: ['approvals', 'budgets', 'policy', 'audit log'],
+  },
+  {
+    n: '04',
+    title: 'Evaluate',
+    lead: 'If it is not scored, it is not shipped.',
+    body: 'Every run is logged and scored. Work repairing AI-generated code has grown sharply — because someone has to own the output, and that is the part I keep.',
+    marks: ['scoring', 'traces', 'regression'],
+  },
+];
+---
+
+<Base title="Profile" description="Who I am, what I build, and the structure behind it." rail>
+  <section class="hero hero-scroll">
+    <span class="eyebrow" data-reveal><span class="pulse-dot"></span>Profile</span>
+    <h1 data-reveal data-reveal-delay="60" data-anim="type">I build agents that survive production.</h1>
+    <p class="lede" data-reveal data-reveal-delay="120">
+      Seven years of automation and quality engineering at Sberbank, Alfa-Bank
+      and PashaPay — where a silent failure is expensive — before going
+      independent. Now I build and productionize AI systems for other people.
+    </p>
+  </section>
+
+  <!-- ---- The agentic structure, assembled on scroll ---- -->
+  <section class="section" id="structure">
+    <div class="sticky-head">
+      <h2 data-anim="underline">How the work is put together</h2>
+      <div class="rule-progress"><i></i></div>
+    </div>
+
+    <div class="assemble" data-assemble>
+      <div class="assemble-rail" aria-hidden="true"><i data-rail-fill></i></div>
+
+      {
+        STAGES.map((s) => (
+          <article class="stage" data-stage>
+            <div class="stage-num">{s.n}</div>
+            <div class="stage-main">
+              <h3 class="stage-title">{s.title}</h3>
+              <p class="stage-lead">{s.lead}</p>
+              <p class="stage-body">{s.body}</p>
+              <ul class="stage-marks">
+                {s.marks.map((m) => (
+                  <li>{m}</li>
+                ))}
+              </ul>
+            </div>
+          </article>
+        ))
+      }
+    </div>
+  </section>
+
+  <!-- ---- Services ---- -->
+  <section class="section" id="services">
+    <div class="sticky-head">
+      <h2 data-anim="underline">What I do</h2>
+      <div class="rule-progress"><i></i></div>
+    </div>
+
+    <div class="card-grid" data-anim="tilt">
+      {
+        SERVICES.map((s, i) => (
+          <div class="card" data-reveal data-reveal-delay={i * 60}>
+            <h3>{s.title}</h3>
+            <p>{s.body}</p>
+            <div class="tag-row">
+              {s.tags.map((t) => (
+                <span class="tag">{t}</span>
+              ))}
+            </div>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="btn-row">
+      <a class="btn btn-primary" href="/projects/">See the work</a>
+      <a class="btn" href="/contact/">Write to me</a>
+    </div>
+  </section>
+</Base>

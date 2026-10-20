@@ -1,0 +1,189 @@
+---
+// Renders a project case study from its parsed JSON (see _parse_projects.py).
+// Replaces the legacy 300-line Bootstrap-ish HTML blob with site components,
+// so the case studies follow the theme and read like the rest of the site.
+
+interface Metric {
+  value: string;
+  label: string;
+}
+
+interface Props {
+  data: {
+    tagline?: string;
+    lead?: string;
+    fit?: string;
+    trust?: string;
+    metrics?: Metric[];
+    problem?: { sub?: string; cards?: { icon: string; text: string }[] };
+    solution?: { sub?: string; cards?: { icon: string; title: string; text: string }[] };
+    results?: {
+      sub?: string;
+      cards?: { before: string; after: string; label: string }[];
+      highlight?: string;
+    };
+    flow?: { sub?: string; steps?: { n: string; title: string; text: string }[] };
+    risk?: { sub?: string; cards?: { title: string; text: string }[] };
+    pricing?: { pairs?: { price: string; label: string }[]; note?: string };
+  };
+}
+
+const { data } = Astro.props;
+
+const strip = (s?: string) =>
+  (s || '').replace(/^[▲◆●¦■]\s*/, '').trim();
+
+const has = (v: unknown[]) => Array.isArray(v) && v.length > 0;
+---
+
+<article class="case">
+  <!-- ---- Hero ---- -->
+  <header class="case-hero">
+    <span class="eyebrow">Case study</span>
+    <h1 class="case-tagline">{data.tagline}</h1>
+    {data.lead && <p class="lede">{data.lead}</p>}
+    {data.fit && <p class="case-fit">{data.fit}</p>}
+
+    {has(data.metrics || []) && (
+      <div class="case-metrics">
+        {data.metrics!.map((m) => (
+          <div class="case-metric">
+            <strong>{m.value}</strong>
+            <span>{m.label}</span>
+          </div>
+        ))}
+      </div>
+    )}
+
+    <div class="btn-row">
+      <a class="btn btn-primary" href="/contact/">Get a response audit</a>
+      <a class="btn" href="#how">See how it works</a>
+    </div>
+
+    {data.trust && <p class="case-trust">{data.trust}</p>}
+  </header>
+
+  <!-- ---- Problem ---- -->
+  {has(data.problem?.cards || []) && (
+    <section class="case-block">
+      <span class="lead-label">The problem</span>
+      <h2>What breaks today</h2>
+      {data.problem?.sub && <p class="case-sub">{data.problem.sub}</p>}
+
+      <ul class="case-list">
+        {data.problem!.cards!.map((c) => (
+          <li data-reveal>
+            <span class="case-bullet" aria-hidden="true">{c.icon}</span>
+            <span>{c.text}</span>
+          </li>
+        ))}
+      </ul>
+    </section>
+  )}
+
+  <!-- ---- Solution ---- -->
+  {has(data.solution?.cards || []) && (
+    <section class="case-block">
+      <span class="lead-label">The solution</span>
+      <h2>What replaces it</h2>
+      {data.solution?.sub && <p class="case-sub">{data.solution.sub}</p>}
+
+      <div class="card-grid" data-anim="tilt">
+        {data.solution!.cards!.map((c, i) => (
+          <div class="card" data-reveal data-reveal-delay={i * 60}>
+            <span class="card-glyph" aria-hidden="true">{c.icon}</span>
+            <h3>{c.title}</h3>
+            <p>{c.text}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+  )}
+
+  <!-- ---- Results: before / after ---- -->
+  {has(data.results?.cards || []) && (
+    <section class="case-block">
+      <span class="lead-label">After deployment</span>
+      <h2>What changes</h2>
+      {data.results?.sub && <p class="case-sub">{data.results.sub}</p>}
+
+      <div class="case-deltas">
+        {data.results!.cards!.map((c, i) => (
+          <div class="delta" data-reveal data-reveal-delay={i * 50}>
+            <span class="delta-before">{c.before}</span>
+            <span class="delta-arrow" aria-hidden="true">→</span>
+            <span class="delta-after">{c.after}</span>
+            <span class="delta-label">{c.label}</span>
+          </div>
+        ))}
+      </div>
+
+      {data.results?.highlight && (
+        <p class="case-highlight">{strip(data.results.highlight)}</p>
+      )}
+    </section>
+  )}
+
+  <!-- ---- Flow ---- -->
+  {has(data.flow?.steps || []) && (
+    <section class="case-block" id="how">
+      <span class="lead-label">How it works</span>
+      <h2>The pipeline</h2>
+      {data.flow?.sub && <p class="case-sub">{data.flow.sub}</p>}
+
+      <ol class="case-flow">
+        {data.flow!.steps!.map((s, i) => (
+          <li class="flow-step" data-reveal data-reveal-delay={i * 70}>
+            <span class="flow-n">{s.n}</span>
+            <strong>{s.title}</strong>
+            <span>{s.text}</span>
+          </li>
+        ))}
+      </ol>
+    </section>
+  )}
+
+  <!-- ---- Risk ---- -->
+  {has(data.risk?.cards || []) && (
+    <section class="case-block">
+      <span class="lead-label">If nothing changes</span>
+      <h2>The cost of waiting</h2>
+      {data.risk?.sub && <p class="case-sub">{data.risk.sub}</p>}
+
+      <div class="card-grid" data-anim="tilt">
+        {data.risk!.cards!.map((c, i) => (
+          <div class="card card-risk" data-reveal data-reveal-delay={i * 60}>
+            <h3>{strip(c.title)}</h3>
+            <p>{c.text}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+  )}
+
+  <!-- ---- Pricing ---- -->
+  {has(data.pricing?.pairs || []) && (
+    <section class="case-block">
+      <span class="lead-label">Investment</span>
+      <h2>Pricing</h2>
+
+      <div class="case-price">
+        {data.pricing!.pairs!.map((p) => (
+          <div class="price-cell">
+            <strong>{p.price}</strong>
+            <span>{p.label}</span>
+          </div>
+        ))}
+      </div>
+
+      {data.pricing?.note && <p class="case-highlight">{strip(data.pricing.note)}</p>}
+    </section>
+  )}
+
+  <section class="case-block">
+    <div class="btn-row">
+      <a class="btn btn-primary" href="/contact/">Discuss a similar build</a>
+      <a class="btn" href="/projects/">All projects</a>
+    </div>
+  </section>
+</article>

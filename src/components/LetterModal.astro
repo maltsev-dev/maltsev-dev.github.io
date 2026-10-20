@@ -1,0 +1,89 @@
+---
+// One shared letter form. Any element with [data-open-letter] opens it; the
+// Contact page uses the same instance rather than keeping a second copy of the
+// markup and the validation.
+---
+
+<div class="letter" id="letterModal" hidden role="dialog" aria-modal="true" aria-labelledby="letterTitle">
+  <div class="letter-backdrop" data-close-letter></div>
+
+  <div class="letter-box" role="document">
+    <div class="letter-head">
+      <span id="letterTitle">new message</span>
+      <button type="button" class="letter-x" data-close-letter aria-label="Close">✕</button>
+    </div>
+
+    <form id="contactForm" novalidate>
+      <div class="letter-body">
+        <div class="field">
+          <label for="l-email">Your email</label>
+          <input
+            id="l-email"
+            name="email"
+            type="email"
+            placeholder="you@company.com"
+            autocomplete="email"
+            required
+            maxlength="254"
+          />
+        </div>
+
+        <div class="field">
+          <label for="l-subject">Subject</label>
+          <input
+            id="l-subject"
+            name="subject"
+            type="text"
+            placeholder="Automation / Agent system / Embedded"
+            autocomplete="off"
+            maxlength="120"
+          />
+        </div>
+
+        <div class="field">
+          <label for="l-kind">Project type</label>
+          <select id="l-kind" name="kind">
+            <option value="Agentic AI">Agentic AI system</option>
+            <option value="Automation">Workflow automation</option>
+            <option value="Embedded">Embedded / firmware</option>
+            <option value="Audit">Technical audit</option>
+            <option value="Other">Something else</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="l-timeline">Timeline</label>
+          <select id="l-timeline" name="timeline">
+            <option value="soon">As soon as possible</option>
+            <option value="quarter">This quarter</option>
+            <option value="later">Later this year</option>
+            <option value="discuss">Let's discuss first</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="l-message">Message</label>
+          <textarea
+            id="l-message"
+            name="message"
+            rows="6"
+            required
+            minlength="10"
+            maxlength="5000"
+            placeholder="What are you trying to automate? What breaks today?"></textarea>
+        </div>
+
+        <!-- Honeypot: hidden from people, filled in by most bots. -->
+        <div class="hp" aria-hidden="true">
+          <label for="l-challenge">Leave this field empty</label>
+          <input id="l-challenge" name="challenge" type="text" tabindex="-1" autocomplete="off" />
+        </div>
+      </div>
+
+      <div class="letter-foot">
+        <button class="btn btn-primary" type="submit">Send</button>
+        <p class="form-status" id="formStatus" role="status" aria-live="polite"></p>
+      </div>
+    </form>
+  </div>
+</div>

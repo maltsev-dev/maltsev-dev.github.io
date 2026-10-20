@@ -1,0 +1,66 @@
+---
+interface Item {
+  label: string;
+  href: string;
+  group: string;
+}
+
+interface Props {
+  items: Item[];
+}
+
+const { items } = Astro.props;
+---
+
+<!--
+  Rendered on every page but inert until opened, so Ctrl+K works from anywhere
+  without a framework. Search is a plain substring filter over the static list.
+-->
+<div class="palette" id="palette" hidden role="dialog" aria-modal="true" aria-label="Command palette">
+  <div class="palette-box">
+    <label class="sr-only" for="paletteInput">Search</label>
+    <input
+      class="palette-input"
+      id="paletteInput"
+      type="search"
+      placeholder="Jump to…"
+      autocomplete="off"
+      role="combobox"
+      aria-expanded="true"
+      aria-controls="paletteList"
+    />
+
+    <ul class="palette-list" id="paletteList" role="listbox">
+      {
+        items.map((item, i) => (
+          <li
+            class="palette-item"
+            role="option"
+            id={`pal-${i}`}
+            data-label={item.label.toLowerCase()}
+            data-group={item.group.toLowerCase()}
+            aria-selected={i === 0 ? 'true' : 'false'}
+          >
+            <a href={item.href}>
+              <span class="palette-group">{item.group}</span>
+              <span>{item.label}</span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+
+    <p class="palette-empty" id="paletteEmpty" hidden>No match.</p>
+  </div>
+</div>
+
+<style>
+  .palette-group {
+    display: inline-block;
+    min-width: 5.5rem;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    opacity: 0.7;
+  }
+</style>

@@ -1,15 +1,51 @@
 /static/processed_images/**
 /public
-/venv/
-/__pycache__/
-/*.pyc
-.DS_Store
 
-# Generated HTML in content (build artifacts)
-# But keep project landing pages
-# content/projects/*.html
-QWEN.md
-CLAUDE.md
+# Astro build output. `npm run build` emits dist/, but verification runs used
+# dist-verifyN/ and friends; one rule covers the family.
+/dist*/
+
+node_modules/
+.astro/
+
+# Python leftovers from the legacy build.py generator
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.eggs/
+
+# One-off scripts and audit artifacts from the Astro migration, all kept at the
+# repo root with a leading underscore. The two the build depends on stay tracked.
+# (`python _audit_links_astro.py` gates the deploy; `_gen_redirects.py` writes
+# the legacy-URL stubs in static/.)
+/_*
+!/_audit_links_astro.py
+!/_gen_redirects.py
+
+# A single-line HTML fragment an audit script dumped here. It looks like Markdown
+# but is a slice of about.astro; src/pages/ is the source.
+/ELEMENTS.md
+
+# Local tooling / editor state
+.vscode/
+.idea/
 .claude/
 .claude-flow/
 tmp/
+
+# Agent notes that are not part of the site
+QWEN.md
+CLAUDE.md
+
+# Secrets and logs
+.env
+.env.*
+!.env.example
+*.log
+npm-debug.log*
+
+# OS cruft
+.DS_Store
+Thumbs.db
+desktop.ini

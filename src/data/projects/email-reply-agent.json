@@ -1,0 +1,151 @@
+{
+  "tagline": "You're losing deals in your inbox. We fix that — automatically.",
+  "lead": "AI that replies in minutes, qualifies leads, and books meetings — without hiring SDRs.",
+  "fit": "For B2B teams sending 1,000+ cold emails/month",
+  "trust": "Built on LLM pipelines • Production-ready • Used in real outreach flows",
+  "metrics": [
+    {
+      "value": "<5 min",
+      "label": "Response Time"
+    },
+    {
+      "value": "80%",
+      "label": "Less Manual Work"
+    },
+    {
+      "value": "+50%",
+      "label": "More Meetings"
+    }
+  ],
+  "problem": {
+    "sub": "Your revenue is leaking inside the inbox",
+    "cards": [
+      {
+        "icon": "●",
+        "text": "Replies sit for hours ? leads go cold"
+      },
+      {
+        "icon": "●",
+        "text": "Follow-ups are inconsistent or forgotten"
+      },
+      {
+        "icon": "¦",
+        "text": "Inbox becomes your revenue bottleneck"
+      },
+      {
+        "icon": "●",
+        "text": "SDRs drown in repetitive manual work"
+      }
+    ]
+  },
+  "solution": {
+    "sub": "An AI layer that handles replies end-to-end",
+    "cards": [
+      {
+        "icon": "◆",
+        "title": "Instant Reading",
+        "text": "Every reply analyzed the moment it arrives"
+      },
+      {
+        "icon": "◆",
+        "title": "Intent Detection",
+        "text": "Understands interest, sentiment, objections"
+      },
+      {
+        "icon": "◆",
+        "title": "Human-like Replies",
+        "text": "Natural responses that feel real"
+      },
+      {
+        "icon": "¦",
+        "title": "Auto-Booking",
+        "text": "Meetings scheduled without friction"
+      }
+    ]
+  },
+  "results": {
+    "sub": "From chaos ? predictable pipeline",
+    "cards": [
+      {
+        "before": "2–8h",
+        "after": "<5 min",
+        "label": "Response time"
+      },
+      {
+        "before": "Manual",
+        "after": "Automated",
+        "label": "Reply handling"
+      },
+      {
+        "before": "Missed",
+        "after": "Tracked",
+        "label": "Lead coverage"
+      },
+      {
+        "before": "Slow",
+        "after": "Instant",
+        "label": "Availability"
+      }
+    ],
+    "highlight": "▲ Most teams increase reply speed and book 30–50% more meetings without hiring SDRs"
+  },
+  "flow": {
+    "sub": "Works like an invisible SDR inside your inbox",
+    "steps": [
+      {
+        "n": "1",
+        "title": "Lead replies",
+        "text": "Inbound reply hits your inbox"
+      },
+      {
+        "n": "2",
+        "title": "Intent detected",
+        "text": "Interested, not now, wrong person, etc."
+      },
+      {
+        "n": "3",
+        "title": "AI responds",
+        "text": "Sends reply or queues for approval"
+      },
+      {
+        "n": "4",
+        "title": "Follow-ups run",
+        "text": "Automated based on conversation"
+      }
+    ]
+  },
+  "risk": {
+    "sub": "Your potential customers are leaving for your competitors.",
+    "cards": [
+      {
+        "title": "▲ Faster competitors win",
+        "text": "Leads go with whoever replies first"
+      },
+      {
+        "title": "▲ Silent revenue leak",
+        "text": "Pipeline decays without visibility"
+      },
+      {
+        "title": "▲ Paid leads wasted",
+        "text": "You already paid to acquire them"
+      },
+      {
+        "title": "▲ SDR burnout",
+        "text": "Repetitive replies kill productivity"
+      }
+    ]
+  },
+  "pricing": {
+    "pairs": [
+      {
+        "price": "$4k – $6k",
+        "label": "One-time setup"
+      },
+      {
+        "price": "$100–300",
+        "label": "Monthly running"
+      }
+    ],
+    "note": "◆ One closed deal usually pays for the entire system"
+  }
+}

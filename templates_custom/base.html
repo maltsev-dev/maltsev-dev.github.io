@@ -1,21 +1,63 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="{{ page.description if page and page.description else site.title + ' — AI operational systems, agentic engineering, embedded & distributed systems' }}">
+    <meta name="color-scheme" content="light dark">
+
+    {%- set page_description = (page.description if page and page.description)
+        or (page.summary if page and page.summary) or site.default_description -%}
+    {%- set page_title = (page.title if page and page.title) or site.title -%}
+
+    <meta name="description" content="{{ page_description|striptags|truncate(200, True, '') }}">
     <meta property="og:site_name" content="{{ site.title }}">
     <meta property="og:type" content="{% if page %}article{% else %}website{% endif %}">
-    <meta property="og:title" content="{% if page %}{{ page.title }}{% else %}{{ site.title }}{% endif %}">
+    <meta property="og:title" content="{{ page_title }}">
+    <meta property="og:description" content="{{ page_description|striptags|truncate(200, True, '') }}">
     <meta property="og:url" content="{{ site.base_url }}/{% if current_path %}{{ current_path }}{% endif %}">
-    <meta property="og:image" content="https://github.com/maltsev-dev/favicon.png">
-    <title>{% block title %}{{ site.title }}{% endblock %}</title>
+    <meta property="og:image" content="{{ site.og_image }}">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta name="twitter:card" content="summary_large_image">
+    <title>{% block title %}{{ page_title }}{% endblock %}</title>
+
+    <!--
+      Theme must be resolved BEFORE first paint, otherwise a dark-theme visitor
+      sees a light page and then a slow fade into dark (measured ~600ms of wrong
+      theme plus a 300ms transition). This inline block is deliberately
+      render-blocking and sits above the stylesheet. Keep it dependency-free
+      and synchronous, and keep it in sync with static/js/theme.js.
+    -->
+    <script>
+    (function () {
+        var d = document.documentElement;
+        var stored = null;
+        try { stored = localStorage.getItem('theme'); } catch (e) { /* storage blocked */ }
+        if (stored !== 'dark' && stored !== 'light') {
+            stored = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+                ? 'dark' : 'light';
+        }
+        d.setAttribute('data-theme', stored);
+    })();
+    </script>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@400;500;600;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/static/css/style.css?v=20260918g">
+    <link rel="stylesheet" href="/static/css/style.css?v={{ css_version }}">
     <link rel="shortcut icon" type="image/png" href="/static/favicon.png">
+
+    <!--
+      Scroll-reveal elements start at opacity:0 and are revealed by JS.
+      Without this, a no-JS visitor sees empty gaps where the cards should be.
+    -->
+    <noscript>
+        <style>
+            .fade-in, .reveal-left, .reveal-right { opacity: 1 !important; transform: none !important; }
+            .mobile-menu-toggle { display: none !important; }
+            .main-nav { display: flex !important; flex-wrap: wrap !important; }
+        </style>
+    </noscript>
 
     {% block extra_head %}{% endblock %}
 </head>
@@ -33,8 +75,9 @@
         {% include "components/footer.html" %}
     </div>
 
-    <button class="theme-toggle" aria-label="Toggle theme" id="themeToggle">
-        <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+    <button class="theme-toggle" id="themeToggle" type="button"
+            aria-label="Switch to dark theme" aria-pressed="false" title="Toggle theme">
+        <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true" focusable="false">
             <circle cx="12" cy="12" r="5"/>
             <g stroke-linecap="round">
                 <line x1="12" y1="2" x2="12" y2="4"/>
@@ -47,7 +90,7 @@
                 <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
             </g>
         </svg>
-        <svg class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <svg class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true" focusable="false">
             <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
         </svg>
     </button>

@@ -1,16 +1,19 @@
 <!DOCTYPE html>
 
-<html lang="en">
+<html lang="en" data-theme="light">
 
 <head>
 
     <meta charset="UTF-8">
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light dark">
 
     <meta name="description" content="AI Support Triage Agent - Resolve 40-60% of support tickets automatically. Reduce costs and respond instantly.">
 
     <meta property="og:site_name" content="Maltsev · Agentic Engineering">
+
+    <meta property="og:description" content="AI Support Triage Agent - Resolve 40-60% of support tickets automatically. Reduce costs and respond instantly.">
 
     <meta property="og:type" content="website">
 
@@ -18,21 +21,36 @@
 
     <meta property="og:url" content="https://maltsev-dev.github.io/projects/support-triage-agent/">
 
-    <meta property="og:image" content="https://github.com/maltsev-dev/favicon.png">
+    <meta property="og:image" content="https://maltsev-dev.github.io/static/favicon.png">
 
     <title>AI Support Triage Agent — Maltsev · Agentic Engineering</title>
-
-
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
 
     <link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@400;500;600;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <script>
+    (function () {
+        var d = document.documentElement;
+        var stored = null;
+        try { stored = localStorage.getItem('theme'); } catch (e) {}
+        if (stored !== 'dark' && stored !== 'light') {
+            stored = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+                ? 'dark' : 'light';
+        }
+        d.setAttribute('data-theme', stored);
+    })();
+    </script>
 
+    <link rel="stylesheet"
+ href="/static/css/style.css?v={{ css_version }}">
 
-
-    
-
-    <link rel="stylesheet" href="/static/css/style.css?v=20260918g">
+    <noscript>
+        <style>
+            .fade-in, .reveal-left, .reveal-right { opacity: 1 !important; transform: none !important; }
+            .mobile-menu-toggle { display: none !important; }
+            .main-nav { display: flex !important; flex-wrap: wrap !important; }
+        </style>
+    </noscript>
 
 </head>
 
@@ -70,8 +88,6 @@
     </div>
 </header>
 
-
-
         <main class="content-wrapper">
 
             <!-- Hero Section -->
@@ -88,23 +104,17 @@
 
                     </h1>
 
-
-
                     <p class="hero-lead">
 
                         AI that instantly classifies, responds, and resolves repetitive tickets — 24/7.
 
                     </p>
 
-
-
                     <p class="hero-fit">
 
                         For teams handling 500+ tickets/month (ecom, SaaS, marketplaces)
 
                     </p>
-
-
 
                     <div class="metrics">
 
@@ -134,8 +144,6 @@
 
                     </div>
 
-
-
                     <div class="btn-group">
 
                         <a href="#contact" class="btn btn-primary">Get Support Audit</a>
@@ -143,8 +151,6 @@
                         <a href="#contact" class="btn btn-outline">See System</a>
 
                     </div>
-
-
 
                     <p class="hero-trust">
 
@@ -156,8 +162,6 @@
 
             </div>
 
-
-
 <!-- Problem Section -->
 
 <section class="section problem-section">
@@ -167,8 +171,6 @@
         <h2>The Problem</h2>
 
         <p class="section-sub">You’re not lacking effort — your system doesn’t scale</p>
-
-
 
         <div class="problem-grid">
 
@@ -182,8 +184,6 @@
 
             </div>
 
-
-
             <div class="problem-card">
 
                 <span class="card-icon">◆</span>
@@ -194,8 +194,6 @@
 
             </div>
 
-
-
             <div class="problem-card">
 
                 <span class="card-icon">◆</span>
@@ -205,8 +203,6 @@
                 <p>More tickets = more hires = rising costs</p>
 
             </div>
-
-
 
             <div class="problem-card">
 
@@ -224,8 +220,6 @@
 
 </section>
 
-
-
 <!-- Solution Section -->
 
 <section class="section">
@@ -235,8 +229,6 @@
         <h2>The Solution</h2>
 
         <p class="section-sub">Resolve the majority of tickets instantly — without adding headcount</p>
-
-
 
         <div class="solution-grid">
 
@@ -250,8 +242,6 @@
 
             </div>
 
-
-
             <div class="solution-card">
 
                 <span class="card-icon">◆</span>
@@ -261,8 +251,6 @@
                 <p>Generates accurate answers from your knowledge base</p>
 
             </div>
-
-
 
             <div class="solution-card">
 
@@ -274,8 +262,6 @@
 
             </div>
 
-
-
             <div class="solution-card">
 
                 <span class="card-icon">◆</span>
@@ -286,15 +272,11 @@
 
             </div>
 
-
-
         </div>
 
     </div>
 
 </section>
-
-
 
 <!-- Results Section -->
 
@@ -306,11 +288,7 @@
 
         <p class="section-sub">From overloaded support ? scalable system</p>
 
-
-
         <div class="grid grid-2">
-
-
 
             <div class="card result-card">
 
@@ -328,8 +306,6 @@
 
             </div>
 
-
-
             <div class="card result-card">
 
                 <div class="result-metric">
@@ -345,8 +321,6 @@
                 <p>Tier-1 handling</p>
 
             </div>
-
-
 
             <div class="card result-card">
 
@@ -364,8 +338,6 @@
 
             </div>
 
-
-
             <div class="card result-card">
 
                 <div class="result-metric">
@@ -382,11 +354,7 @@
 
             </div>
 
-
-
         </div>
-
-
 
         <div class="result-highlight">
 
@@ -400,8 +368,6 @@
 
 </section>
 
-
-
 <!-- HOW IT WORKS -->
 
 <section class="section">
@@ -411,8 +377,6 @@
         <h2 style="text-align:center;">How It Works</h2>
 
         <p style="text-align:center; color:#aaa;">>Acts like a Tier-1 support agent that never sleeps</p>
-
-
 
         <div class="flow">
 
@@ -426,11 +390,7 @@
 
             </div>
 
-
-
             <div class="flow-arrow">→</div>
-
-
 
             <div class="flow-step">
 
@@ -441,8 +401,6 @@
                     <p>Refund, shipping, technical issue, etc.</p>
 
             </div>
-
-
 
             <div class="flow-arrow">→</div>
 
@@ -455,8 +413,6 @@
                     <p>Orders, knowledge base, policies</p>
 
             </div>
-
-
 
             <div class="flow-arrow">→</div>
 
@@ -476,10 +432,6 @@
 
 </section>
 
-
-
-
-
 <!-- RISK / URGENCY -->
 
 <section class="section risk-section">
@@ -489,8 +441,6 @@
         <h2 class="warning" style="text-align:center;">What happens if you do nothing?</h2>
 
         <p class="section-sub">Support becomes your growth bottleneck</p>
-
-
 
         <div class="risk-grid">
 
@@ -502,8 +452,6 @@
 
             </div>
 
-
-
             <div class="risk-card">
 
                 <span class="risk-icon">▲</span>
@@ -512,8 +460,6 @@
 
             </div>
 
-
-
             <div class="risk-card">
 
                 <span class="risk-icon">▲</span>
@@ -521,8 +467,6 @@
                 <p>Top agents burn out and leave</p>
 
             </div>
-
-
 
             <div class="risk-card">
 
@@ -534,8 +478,6 @@
 
         </div>
 
-
-
         <div class="risk-highlight">
 
             <span>Slow support = lost customers. Every day.</span>
@@ -546,8 +488,6 @@
 
 </section>
 
-
-
 <!-- Pricing Section -->
 
 <section class="section">
@@ -555,8 +495,6 @@
     <div class="container">
 
         <h2 style="text-align:center;">Pricing</h2>
-
-
 
         <div class="pricing-box">
 
@@ -570,11 +508,7 @@
 
                 </div>
 
-
-
                 <div class="divider"></div>
-
-
 
                 <div>
 
@@ -586,8 +520,6 @@
 
             </div>
 
-
-
             <div class="pricing-highlight">◆ Typically pays back in 1–2 months from cost savings alone
 
             </div>
@@ -598,8 +530,6 @@
 
 </section>
 
-
-
             <!-- CTA Section -->
 
             <section class="cta" id="contact">
@@ -609,8 +539,6 @@
                     <h2>Let's reduce your support load</h2>
 
                     <p>I'll analyze your ticket flow and show the automation potential</p>
-
-
 
                     <div class="btn-group">
 
@@ -625,8 +553,6 @@
             </section>
 
         </main>
-
-
 
         <!-- Footer -->
 
@@ -654,8 +580,6 @@
 
     </div>
 
-
-
     <button class="theme-toggle" aria-label="Toggle theme" id="themeToggle">
         <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
             <circle cx="12" cy="12" r="5"/>
@@ -670,8 +594,6 @@
             <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
         </svg>
     </button>
-
-
 
     <script src="/static/js/theme.js"></script>
 

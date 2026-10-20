@@ -1,0 +1,67 @@
+---
+// Placeholder diagram. Flow, labels and copy are provisional — swap the markup
+// here rather than the animation, which keys off stable hooks:
+//   [data-node]   a stage box
+//   .flow-dot     a travelling packet (lives inside the SVG so it scales with
+//                 the viewBox instead of drifting at small widths)
+//   #diagramReadout the detail panel
+const STAGES = [
+  { id: 'in', title: 'Inbound', desc: 'Email · SMS · tickets arrive in one queue' },
+  { id: 'class', title: 'Classify', desc: 'Intent, urgency and language detected' },
+  { id: 'agents', title: 'Agents', desc: 'Specialised agents pick up the work' },
+  { id: 'tools', title: 'Tools', desc: 'CRM, calendar, database — via typed contracts' },
+  { id: 'out', title: 'Action', desc: 'Reply sent, lead booked, ticket closed' },
+];
+
+// Connector geometry, shared by the wire and the packet that rides it.
+const WIRES = [
+  { d: 'M128 130 H196', delay: '0s' },
+  { d: 'M300 130 H368', delay: '-1.1s' },
+  { d: 'M472 130 H540', delay: '-2.2s' },
+];
+---
+
+<div class="diagram" data-diagram>
+  <div class="diagram-stage">
+    <svg viewBox="0 0 640 260" role="img" aria-labelledby="diagramTitle diagramDesc">
+      <title id="diagramTitle">AI automation pipeline</title>
+      <desc id="diagramDesc">
+        Inbound messages are classified, routed to specialist agents, which call
+        external tools, and finish as a completed action.
+      </desc>
+
+      <g class="diagram-wires">
+        {WIRES.map((w) => <path class="diagram-line" d={w.d} />)}
+      </g>
+
+      <g class="diagram-packets">
+        {WIRES.map((w) => <circle class="flow-dot" r="4" style={`offset-path: path('${w.d}'); animation-delay: ${w.delay}`} />)}
+      </g>
+
+      <g class="diagram-nodes">
+        {
+          STAGES.map((s, i) => (
+            <g class="diagram-node" data-node={s.id} tabindex="0" role="button">
+              <rect x={8 + i * 144} y="98" width="104" height="64" />
+              <text x={60 + i * 144} y="134">
+                {s.title}
+              </text>
+            </g>
+          ))
+        }
+      </g>
+    </svg>
+  </div>
+
+  <div class="diagram-panel" id="diagramReadout" aria-live="polite">
+    {
+      STAGES.map((s, i) => (
+        <p class="diagram-text" data-text={s.id} hidden={i !== 0}>
+          <strong>{s.title}</strong>
+          <span>{s.desc}</span>
+        </p>
+      ))
+    }
+    <p class="diagram-hint">Hover or focus a stage to inspect it.</p>
+  </div>
+</div>

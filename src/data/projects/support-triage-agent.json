@@ -1,0 +1,96 @@
+{
+  "tagline": "Your support team is drowning in tickets. We take 60% of them off their plate.",
+  "lead": "AI that instantly classifies, responds, and resolves repetitive tickets — 24/7.",
+  "fit": "For teams handling 500+ tickets/month (ecom, SaaS, marketplaces)",
+  "trust": "Works with Intercom • Freshchat • Email • Shopify • WooCommerce",
+  "metrics": [
+    {
+      "value": "<15 min",
+      "label": "Response Time"
+    },
+    {
+      "value": "60%",
+      "label": "Auto-resolved"
+    },
+    {
+      "value": "-50%",
+      "label": "Support Cost"
+    }
+  ],
+  "problem": {
+    "sub": "You’re not lacking effort — your system doesn’t scale",
+    "cards": []
+  },
+  "solution": {
+    "sub": "Resolve the majority of tickets instantly — without adding headcount",
+    "cards": []
+  },
+  "results": {
+    "sub": "From overloaded support ? scalable system",
+    "cards": [
+      {
+        "before": "4–12h",
+        "after": "<15 min",
+        "label": "Response time"
+      },
+      {
+        "before": "Manual",
+        "after": "Automated",
+        "label": "Tier-1 handling"
+      },
+      {
+        "before": "Overloaded",
+        "after": "Scalable",
+        "label": "Support capacity"
+      },
+      {
+        "before": "Reactive",
+        "after": "Instant",
+        "label": "Customer experience"
+      }
+    ],
+    "highlight": "▲ Most teams reduce workload by 40–60% without hiring"
+  },
+  "flow": {
+    "sub": ">Acts like a Tier-1 support agent that never sleeps",
+    "steps": [
+      {
+        "n": "1",
+        "title": "Ticket Arrives",
+        "text": "Email or chat (Intercom, Freshchat, etc.)"
+      },
+      {
+        "n": "2",
+        "title": "Intent Detection",
+        "text": "Refund, shipping, technical issue, etc."
+      },
+      {
+        "n": "3",
+        "title": "Data Retrieval",
+        "text": "Orders, knowledge base, policies"
+      },
+      {
+        "n": "4",
+        "title": "Resolution",
+        "text": "Instant reply or smart escalation"
+      }
+    ]
+  },
+  "risk": {
+    "sub": "Support becomes your growth bottleneck",
+    "cards": []
+  },
+  "pricing": {
+    "pairs": [
+      {
+        "price": "$5k – $7k",
+        "label": "One-time setup"
+      },
+      {
+        "price": "$150–400",
+        "label": "Monthly running"
+      }
+    ],
+    "note": "◆ Typically pays back in 1–2 months from cost savings alone"
+  }
+}

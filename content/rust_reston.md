@@ -13,7 +13,7 @@ Actix-web AI Agent. Built with 🤎 in Rust
 <!-- more -->
 ---
 
-# &emsp;&emsp;&emsp; **RestOn**
+## &emsp;&emsp;&emsp; **RestOn**
 [📚 rest_on](https://github.com/maltsev-dev/rest_on)
 
 RestOn is an advanced tool that leverages the power of OpenAI's GPT to automate the generation of backend code for your projects and prototypes.

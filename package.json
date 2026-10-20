@@ -1,0 +1,17 @@
+{
+  "name": "maltsev-dev",
+  "type": "module",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/mdx": "^4.0.3",
+    "@astrojs/rss": "^4.0.9",
+    "astro": "^5.1.1"
+  }
+}
