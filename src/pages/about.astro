@@ -77,23 +77,17 @@ const NOW = [
       <h1 data-reveal data-reveal-delay="60" data-anim="type">8 years building systems that do real work</h1>
     </div>
 
-
-<div class="about-lead">
-  <p class="lede" data-reveal data-reveal-delay="120">
-    My focus is what happens beyond the happy path.
-  </p>
-  <ul class="about-points" data-reveal data-reveal-delay="150">
-    <li>Failures — whether they are detected, traced, and understood.</li>
-    <li>Permissions — what an agent is allowed to access and execute.</li>
-    <li>Recovery — how a system handles failure and resumes safely.</li>
-    <li>Boundaries — what keeps autonomous execution under control.</li>
-  </ul>
-  <p class="lede" data-reveal data-reveal-delay="180">
-    If a system can take action, its actions must be traceable, its failures
-    diagnosable, and its execution controllable.
-  </p>
-</div>
-
+    <div class="about-lead">
+      <p class="lede" data-reveal data-reveal-delay="120">
+        My focus is what happens beyond the happy path.
+      </p>
+      <ul class="about-points" data-reveal data-reveal-delay="150">
+        <li>Failures — whether they are detected, traced, and understood.</li>
+        <li>Permissions — what an agent is allowed to access and execute.</li>
+        <li>Recovery — how a system handles failure and resumes safely.</li>
+        <li>Boundaries — what keeps autonomous execution under control.</li>
+      </ul>
+    </div>
 
     <!--
       One image per theme, swapped in CSS rather than JS: the background-image
@@ -115,6 +109,47 @@ const NOW = [
         </span>
       </figcaption>
     </figure>
+
+    <!--
+      The habits underneath the focus. The list above says what the work is
+      about; this one says how it gets done, and the two are the same claim
+      from two sides: a system is only as trustworthy as the process that
+      produced it. That is why the closing line comes after both.
+    -->
+    <div class="about-method" data-reveal data-reveal-delay="160">
+      <div class="about-method-head">
+        <span class="about-method-kicker">How the work gets done</span>
+        <p class="about-method-lead">
+          Looking past the happy path is only worth something if the way the
+          work is done can be repeated and checked. Four habits keep it that
+          way.
+        </p>
+      </div>
+
+      <ul class="about-method-list">
+        <li>
+          <span class="about-method-title">Test-Driven Development</span>
+          <span class="about-method-text">Write tests first, always.</span>
+        </li>
+        <li>
+          <span class="about-method-title">Systematic over ad-hoc</span>
+          <span class="about-method-text">Process over guessing.</span>
+        </li>
+        <li>
+          <span class="about-method-title">Complexity reduction</span>
+          <span class="about-method-text">Simplicity as the primary goal.</span>
+        </li>
+        <li>
+          <span class="about-method-title">Evidence over claims</span>
+          <span class="about-method-text">Verify before declaring success.</span>
+        </li>
+      </ul>
+    </div>
+
+    <p class="about-conclusion" data-reveal data-reveal-delay="180">
+      If a system can take action, its actions must be traceable, its failures
+      diagnosable, and its execution controllable.
+    </p>
   </section>
 
   <!-- ---- How the work runs ---- -->
@@ -179,24 +214,42 @@ const NOW = [
      than in os.css. The tokens are the site's; only the arrangement is new. */
 
   /* ----- Hero: copy beside the portrait --------------------------------- */
-  /* Three rows. The headline spans the full width so it can be set as one
+  /* Four rows. The headline spans the full width so it can be set as one
      line — in a 1fr column it would wrap into a ragged stack no matter what
      size it is given. Below the headline the bullets take a narrow column and
-     the picture takes the rest. */
-  .about-hero {
+     the picture takes the rest; the method strip and the closing line run
+     across the full width underneath.
+
+     The `hero` class is also a rail panel, and the rail rule
+     (`[data-rail='on'] > .hero`) turns it into a flex column. Both selectors
+     have the same specificity, so the page has to name itself twice to be
+     heard: without `.hero` in front, the rail wins and the grid never
+     happens. */
+  .hero.about-hero {
     display: grid;
     gap: clamp(1.2rem, 3vw, 2.2rem);
     align-items: center;
+    /* The rail gives the hero a screen-height panel and centres its content.
+       `safe` keeps that centring without letting a hero taller than the
+       panel push its own headline off the top of the screen. */
+    align-content: safe center;
     grid-template-columns: minmax(0, 1fr) minmax(0, 1.9fr);
   }
 
   .about-head {
     grid-column: 1 / -1;
+    grid-row: 1;
     /* Sized against its own container, not the viewport. The cap is set by
        the narrowest desktop content width (~1340px), where 2.9rem leaves the
        line about 8% of headroom even at a pessimistic 0.5em per glyph; below
        that the cqw term keeps the same margin, and the floor takes over on a
-       phone, where wrapping is the right answer anyway. */
+       phone, where wrapping is the right answer anyway.
+
+       The container is safe here only because the hero is a grid: the item
+       stretches to the row, so the inline size the query reads is the full
+       width. As a flex item it sized itself from its content — and content
+       that cannot be measured is zero — which is what collapsed the headline
+       into a one-letter column. */
     container-type: inline-size;
   }
 
@@ -206,6 +259,11 @@ const NOW = [
 
   /* The subtitle is the accent colour, so the headline reads as the headline
      and this reads as commentary under it. */
+  .about-lead {
+    grid-column: 1;
+    grid-row: 2;
+  }
+
   .about-lead .lede {
     color: var(--encre);
   }
@@ -236,6 +294,8 @@ const NOW = [
   }
 
   .portrait {
+    grid-column: 2;
+    grid-row: 2;
     margin: 0;
     border: var(--trait) solid var(--braise);
     box-shadow: var(--ombre);
@@ -270,6 +330,83 @@ const NOW = [
     padding: 0.7rem 0.9rem;
     border-top: var(--filet) solid var(--braise);
     background: var(--papier);
+  }
+
+  /* ---- The method strip, under the focus -------------------------------- */
+  /* A band across the full width: the left column says what the habits are
+     for, the right one lists them two by two. A hairline separates it from
+     the portrait above so the two blocks do not read as one long column. */
+  .about-method {
+    grid-column: 1 / -1;
+    grid-row: 3;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 2.1fr);
+    gap: 0.8rem clamp(1rem, 3vw, 2.6rem);
+    align-items: start;
+    padding-top: clamp(1rem, 2.4vw, 1.6rem);
+    border-top: var(--filet) solid var(--grid);
+  }
+
+  .about-method-kicker {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--braise);
+  }
+
+  .about-method-lead {
+    margin: 0;
+    max-width: 34ch;
+    font-size: 0.98rem;
+    color: var(--fort);
+  }
+
+  .about-method-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.9rem clamp(1rem, 2.6vw, 2rem);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  /* Each habit gets a rule in the accent colour, the same marker the focus
+     list uses, so the two lists are visibly the same kind of thing. */
+  .about-method-list li {
+    display: grid;
+    gap: 0.1rem;
+    padding-left: 0.9rem;
+    border-left: var(--trait) solid var(--braise);
+  }
+
+  .about-method-title {
+    font-family: var(--font-display);
+    font-size: 0.98rem;
+    letter-spacing: 0.01em;
+    color: var(--encre);
+  }
+
+  .about-method-text {
+    font-size: 0.9rem;
+    color: var(--fort);
+  }
+
+  /* ---- The closing line -------------------------------------------------- */
+  /* The sentence the page argues for, so it gets the size: it is set larger
+     than the commentary around it and given its own rule. */
+  .about-conclusion {
+    grid-column: 1 / -1;
+    grid-row: 4;
+    margin: 0;
+    max-width: 52ch;
+    padding-top: clamp(0.9rem, 2.2vw, 1.4rem);
+    border-top: var(--filet) solid var(--grid);
+    font-size: clamp(1.1rem, 2.1vw, 1.45rem);
+    line-height: 1.45;
+    color: var(--encre);
   }
 
   /* A list of selves, not a caption: monospaced but not shouted, and left in
@@ -430,8 +567,19 @@ const NOW = [
 
   /* ----- Narrower screens ------------------------------------------------ */
   @media (max-width: 56rem) {
-    .about-hero {
+    .hero.about-hero {
       grid-template-columns: 1fr;
+    }
+
+    /* One column: the explicit rows would put the copy and the picture in
+       the same row, so the placement is handed back to the flow. */
+    .about-head,
+    .about-lead,
+    .portrait,
+    .about-method,
+    .about-conclusion {
+      grid-column: 1 / -1;
+      grid-row: auto;
     }
 
     /* Stacked, the picture leads — but the headline still has to come first,
@@ -443,10 +591,18 @@ const NOW = [
     .portrait {
       order: -1;
     }
+
+    .about-method {
+      grid-template-columns: 1fr;
+    }
   }
 
   @media (max-width: 34rem) {
     .now-row {
+      grid-template-columns: 1fr;
+    }
+
+    .about-method-list {
       grid-template-columns: 1fr;
     }
   }

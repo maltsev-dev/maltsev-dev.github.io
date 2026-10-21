@@ -14,7 +14,7 @@
  * - `jobs` counts the six stops on /experience/. A skill counts for a job when
  *   that job names it or the work it did plainly required it. Nothing is
  *   counted twice for one engagement, and a skill with no jobs is not zero —
- *   it is only that it has not been billed to one yet (Rust, C++, TinyML and
+ *   it is only that it has not been billed to one yet (C++, TinyML and
  *   the rest were shipped as work of my own).
  * - `certs` are the licences and certifications from the profile. Only
  *   credentials whose own skill list names this skill are attached, so the
@@ -22,8 +22,9 @@
  *   one judgement call: the profile lists them under Solana, which is not one
  *   of the twenty-three, so they sit on Smart Contracts — the titles in the
  *   card say plainly what they are.
- * - `projects` are the milestones on /projects/ and the blog posts behind
- *   them, named the short way they are usually called.
+ * - `projects` are the milestones on /projects/, the blog posts behind them
+ *   and the shipped work those posts document, named the short way they are
+ *   usually called.
  */
 
 export interface Certificate {
@@ -117,6 +118,11 @@ const CERTS = {
     title: 'Unreal Engine 5 · C++ Developer',
     issued: 'Aug 2024',
   },
+  ue5cppGameplay: {
+    issuer: 'Udemy',
+    title: 'Unreal Engine 5 · C++ Gameplay Programming',
+    issued: 'Aug 2024',
+  },
   ctfl: {
     issuer: 'ISTQB',
     title: 'Certified Tester Foundation Level',
@@ -152,7 +158,7 @@ export const SKILL_TIERS: SkillTier[] = [
       {
         id: 'rust',
         name: 'Rust',
-        jobs: [],
+        jobs: ['Freelance'],
         certs: [
           CERTS.rustWebServers,
           CERTS.substrate,
@@ -160,21 +166,27 @@ export const SKILL_TIERS: SkillTier[] = [
           CERTS.solanaBuild,
           CERTS.solanaBuilder,
         ],
-        projects: ['Dev-Nurse', 'RestOn'],
+        projects: [
+          'Dev-Nurse',
+          'RestOn',
+          'Actix-web server',
+          'TUI Pomodoro',
+          'Wasm tax calculator',
+        ],
       },
       {
         id: 'cpp',
         name: 'C++',
         jobs: [],
-        certs: [CERTS.ue5cpp],
-        projects: ['UE5 shooter'],
+        certs: [CERTS.ue5cpp, CERTS.ue5cppGameplay],
+        projects: ['UE5 shooter', 'Dungeon Raider'],
       },
       {
         id: 'java',
-        name: 'Core Java',
-        jobs: [],
+        name: 'Java',
+        jobs: QA_JOBS,
         certs: [CERTS.javaCore],
-        projects: ['Emulator launcher'],
+        projects: ['Emulator launcher', 'HTML scraper', 'API scraper'],
       },
     ],
   },
@@ -206,8 +218,8 @@ export const SKILL_TIERS: SkillTier[] = [
       {
         id: 'tmap',
         name: 'TMAP',
-        jobs: [],
-        certs: [],
+        jobs: QA_JOBS,
+        certs: [CERTS.ctfl],
         projects: [],
       },
     ],
@@ -249,7 +261,7 @@ export const SKILL_TIERS: SkillTier[] = [
         name: 'Smart Contracts',
         jobs: [],
         certs: [CERTS.solanaSchool, CERTS.solanaBuild, CERTS.solanaBuilder],
-        projects: [],
+        projects: ['Solana counter', 'Guess the number', 'Anchor CPI'],
       },
     ],
   },
