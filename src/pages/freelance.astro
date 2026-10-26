@@ -141,6 +141,7 @@ const STEPS = [
     </p>
 
     <div class="btn-row" data-reveal data-reveal-delay="180">
+      <button type="button" class="btn" data-open-letter>Start a conversation</button>
       <a class="btn" href="/projects/">See the work</a>
     </div>
   </section>
@@ -220,6 +221,27 @@ const STEPS = [
     </ol>
   </section>
 
+  <!--
+    The close. Until this existed the only way to get in touch from this page
+    was the `available` chip in the status bar — a 24px status indicator that
+    reads as a label rather than as a way in. The page is titled "Available
+    for work" and ends with nothing that starts the work.
+  -->
+  <section class="section close-cta">
+    <div class="close-inner">
+      <h2 data-reveal data-anim="underline">Start a conversation</h2>
+      <p data-reveal data-reveal-delay="60">
+        Tell me what you are trying to build and where it is stuck. Half an hour
+        on a call is enough for both of us to know whether this is work I should
+        be doing — and I will say so if it is not.
+      </p>
+      <div class="btn-row" data-reveal data-reveal-delay="120">
+        <button type="button" class="btn" data-open-letter>Write a message</button>
+        <a class="btn" href="mailto:mr.a.maltsev@gmail.com">Email directly</a>
+      </div>
+    </div>
+  </section>
+
   <DetailModal id="serviceModal" panels={SERVICE_PANELS} />
   <DetailModal id="projectModal" panels={PROJECT_PANELS} />
 
@@ -288,7 +310,7 @@ const STEPS = [
     display: block;
     margin-top: 0.4rem;
     font-family: var(--font-mono);
-    font-size: 0.68rem;
+    font-size: 0.75rem;
     font-weight: 400;
     letter-spacing: 0.14em;
     text-transform: uppercase;
@@ -364,6 +386,25 @@ const STEPS = [
 
   .step-body {
     margin: 0.4rem 0 0;
+    color: var(--fort);
+  }
+
+  /* ----- Close ------------------------------------------------------------
+     The block that says what to do next. It is the only thing on the page
+     that asks for anything, so it is set apart: a rule above it, a measure
+     that reads as a paragraph rather than as a banner, and the two ways in
+     side by side — the form and the plain address, so the page still works
+     with the script blocked.
+     ---------------------------------------------------------------------- */
+  .close-cta {
+    border-top: var(--trait) solid var(--braise);
+  }
+
+  .close-inner {
+    max-width: 42rem;
+  }
+
+  .close-inner p {
     color: var(--fort);
   }
 

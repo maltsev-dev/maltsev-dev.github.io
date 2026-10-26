@@ -102,6 +102,14 @@
   // ---- Headline typing ---------------------------------------------------
   // Wraps each character in a span so CSS can stagger them. Uses the original
   // text as the accessible name, so the split never reaches a screen reader.
+  //
+  // The characters are grouped into words first. A character span is an
+  // inline-block, and an inline-block is an atomic inline box — the browser
+  // is free to break the line between any two of them, so splitting a
+  // heading per character lets it break mid-word once the line fills
+  // ("Systems that carry real w" / "ork." on a phone). The word wrapper is
+  // one inline-block with white-space: nowrap, so the only break points
+  // left are the spaces between words.
   (function typewriter() {
     var nodes = document.querySelectorAll('[data-anim="type"]');
     if (!nodes.length || reduceMotion) return;
@@ -111,18 +119,37 @@
       node.setAttribute('aria-label', text);
       node.textContent = '';
 
-      Array.prototype.forEach.call(text, function (c, i) {
-        var span = document.createElement('span');
-        span.className = 'ch';
-        span.textContent = c;
-        // 16ms per glyph is faster than a frame budget allows at the tail of
-        // a long line, so characters land in bursts. 28ms keeps the stagger
-        // legible while staying inside a comfortable frame — but only while
-        // the heading is short. A long one at a fixed 28ms takes seconds to
-        // finish typing, so the step shrinks to hold the whole run near ~1.1s.
-        var step = Math.min(28, Math.max(6, 1100 / text.length));
-        span.style.animationDelay = i * step + 'ms';
-        node.appendChild(span);
+      var step = Math.min(28, Math.max(6, 1100 / text.length));
+      var index = 0;
+
+      // Split on spaces and keep the spaces themselves, so the rendered text
+      // is byte-for-byte the text that was there before.
+      text.split(/(\s+)/).forEach(function (chunk) {
+        if (!chunk) return;
+
+        if (/^\s+$/.test(chunk)) {
+          node.appendChild(document.createTextNode(chunk));
+          return;
+        }
+
+        var word = document.createElement('span');
+        word.className = 'word';
+
+        Array.prototype.forEach.call(chunk, function (c) {
+          var span = document.createElement('span');
+          span.className = 'ch';
+          span.textContent = c;
+          // 16ms per glyph is faster than a frame budget allows at the tail of
+          // a long line, so characters land in bursts. 28ms keeps the stagger
+          // legible while staying inside a comfortable frame — but only while
+          // the heading is short. A long one at a fixed 28ms takes seconds to
+          // finish typing, so the step shrinks to hold the whole run near ~1.1s.
+          span.style.animationDelay = index * step + 'ms';
+          index++;
+          word.appendChild(span);
+        });
+
+        node.appendChild(word);
       });
     });
   })();
@@ -234,6 +261,27 @@
     });
   })();
 
+  // ---- Mobile nav strip ---------------------------------------------------
+  // The flat fallback nav is wider than a phone, so it scrolls sideways. It
+  // needs the same cues the card rows have, and the same JS-set classes to
+  // put them on: the strip only overflows on the narrowest screens, so a
+  // fixed fade would dim the last link on a screen where nothing is hidden.
+  (function quickNav() {
+    var strip = document.querySelector('.menu-quick');
+    if (!strip) return;
+
+    function update() {
+      var max = strip.scrollWidth - strip.clientWidth;
+      strip.classList.toggle('is-scrollable', max > 1);
+      strip.classList.toggle('at-start', strip.scrollLeft <= 1);
+      strip.classList.toggle('at-end', max <= 1 || strip.scrollLeft >= max - 1);
+    }
+
+    window.addEventListener('resize', function () { update(); }, { passive: true });
+    strip.addEventListener('scroll', function () { update(); }, { passive: true });
+    update();
+  })();
+
   // ---- Clock --------------------------------------------------------------
   // Reads the visitor's clock, so it shows their local time rather than the
   // build machine's. Updated on the minute boundary, not on a fixed interval,
@@ -338,6 +386,7 @@
       document.querySelectorAll('[data-set-theme]').forEach(function (b) {
         b.setAttribute('aria-checked', b.dataset.setTheme === id ? 'true' : 'false');
       });
+      syncRadios();
     }
 
     // Keep the radio state honest on load.
@@ -345,6 +394,55 @@
     document.querySelectorAll('[data-set-theme]').forEach(function (b) {
       b.setAttribute('aria-checked', b.dataset.setTheme === current ? 'true' : 'false');
     });
+
+    // The three themes are one of three, so the group behaves like the radio
+    // group its markup now says it is: the arrow keys move between the themes
+    // and pick one, and only the selected one is in the tab order. Tab used to
+    // walk through all three before reaching the llms.txt link under them.
+    var themeRadios = Array.prototype.slice.call(
+      document.querySelectorAll('[data-theme-group] [role="radio"]')
+    );
+
+    function syncRadios() {
+      var checked = null;
+      themeRadios.forEach(function (r) {
+        var on = r.getAttribute('aria-checked') === 'true';
+        r.tabIndex = on ? 0 : -1;
+        if (on) checked = r;
+      });
+      // Nothing is selected — the first radio takes the tab stop so the group
+      // is still reachable.
+      if (!checked && themeRadios.length) themeRadios[0].tabIndex = 0;
+    }
+
+    syncRadios();
+
+    var themeGroup = document.querySelector('[data-theme-group]');
+    if (themeGroup) {
+      themeGroup.addEventListener('keydown', function (e) {
+        var i = themeRadios.indexOf(document.activeElement);
+        if (i < 0) return;
+
+        var next = null;
+        if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
+          next = themeRadios[(i + 1) % themeRadios.length];
+        } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
+          next = themeRadios[(i - 1 + themeRadios.length) % themeRadios.length];
+        } else if (e.key === 'Home') {
+          next = themeRadios[0];
+        } else if (e.key === 'End') {
+          next = themeRadios[themeRadios.length - 1];
+        }
+        if (!next) return;
+
+        e.preventDefault();
+        // Choosing with the keyboard must not close the dropdown: the visitor
+        // is picking between three themes, and the menu closing after the
+        // first arrow press would take the other two away.
+        setTheme(next.dataset.setTheme);
+        next.focus();
+      });
+    }
   })();
 
   // ---- Scroll-linked effects ---------------------------------------------
@@ -1130,6 +1228,15 @@
     var reads = Array.prototype.slice.call(root.querySelectorAll('[data-read]'));
     var idle = root.querySelector('.stack-read-idle');
     var meta = root.querySelector('[data-stack-meta]');
+
+    // The hint has to name the gesture the device actually has. A phone has
+    // no hover, so the read-out below the diagram never appears there and the
+    // only path to a stage's description is a tap straight into the dialog.
+    if (idle) {
+      idle.textContent = window.matchMedia('(hover: hover)').matches
+        ? 'Hover a stage, click it for detail.'
+        : 'Tap a stage for detail.';
+    }
 
     // Stagger index for the assemble animation, written once. A row can hold
     // several spans (the 06 / 07 / 08 stage sits side by side), so the delay

@@ -18,7 +18,7 @@
   color: var(--fort);
   border-bottom: var(--filet) solid var(--braise);
   font-family: var(--font-mono);
-  font-size: 0.74rem;
+  font-size: 0.75rem;
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
@@ -48,7 +48,10 @@
 }
 
 .status-item .k {
-  opacity: 0.65;
+  /* The label is a whole text run on the accent bar. At 0.65 it measured
+     3.78:1 in phosphore and 3.82:1 in acidule; 0.85 keeps it quieter than the
+     clock it labels and clears 4.5:1 in all three themes. */
+  opacity: 0.85;
   margin-right: 0.35rem;
 }
 
@@ -84,12 +87,17 @@
 .menu-brand {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 0.5rem;
   padding: 0.5rem 0;
   text-decoration: none;
   font-family: var(--font-display);
   font-size: 1.05rem;
   color: var(--fort);
+  /* "A|M" is 41px wide in the display face — one pixel under the 44px
+     platform minimum for a tap target. The floor costs nothing and the mark
+     stays centred in it. */
+  min-width: 44px;
 }
 
 .menu-brand .brand-mark {
@@ -115,6 +123,10 @@
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--encre);
+  /* 40px tall before. The bar's own height comes from the brand mark, so
+     growing the buttons to the 44px platform minimum costs no vertical
+     space in the header. */
+  min-height: 44px;
 }
 
 .menu-btn:hover,
@@ -151,7 +163,7 @@
   margin: 0 0 0.3rem;
   padding: 0 0.5rem;
   font-family: var(--font-mono);
-  font-size: 0.68rem;
+  font-size: 0.75rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--braise);
@@ -180,14 +192,14 @@
 
 .dd-item .fig {
   font-family: var(--font-mono);
-  font-size: 0.7rem;
+  font-size: 0.75rem;
   opacity: 0.65;
   flex-shrink: 0;
 }
 
 .dd-item .desc {
   display: block;
-  font-size: 0.72rem;
+  font-size: 0.75rem;
   opacity: 0.75;
   text-transform: uppercase;
   letter-spacing: 0.06em;
@@ -196,10 +208,31 @@
 .dd-item kbd {
   margin-left: auto;
   font-family: var(--font-mono);
-  font-size: 0.7rem;
+  font-size: 0.75rem;
   border: var(--filet) solid currentColor;
   padding: 0 0.25rem;
   flex-shrink: 0;
+}
+
+/* The theme list is a radio group. The selected theme has to look selected:
+   the state was carried by aria-checked alone, so the list read the same
+   whichever theme was on. The mark is filled instead of hollow, and the row
+   is tinted — the accent colour carries the tint rather than the text, so
+   the label keeps the contrast it already had in every theme. */
+.dd-item[role='radio'] .fig::before {
+  content: '◆';
+}
+
+.dd-item[role='radio'][aria-checked='true'] .fig::before {
+  content: '●';
+}
+
+.dd-item[role='radio'][aria-checked='true'] .fig {
+  opacity: 1;
+}
+
+.dd-item[role='radio'][aria-checked='true'] {
+  background: color-mix(in srgb, var(--braise) 14%, transparent);
 }
 
 .dd-sep {
@@ -215,7 +248,17 @@
 }
 
 /* Flat fallback list: only used on narrow screens, where dropdowns are
-   replaced by an always-visible scrollable row. */
+   replaced by an always-visible scrollable row.
+
+   The strip is wider than a phone — five links in a box that fits three — so
+   it scrolls sideways, and it needs the same cues every other horizontal
+   scroller on the site has. Without them the last visible word is sliced at
+   the viewport edge, which reads as a broken layout rather than as "there is
+   more". The fade at the edge that still has content behind it says it, the
+   snap makes the strip stop on a link rather than between two, and the
+   scrollbar stays hidden because the fade is the cue. The classes are set by
+   the quickNav module in os.js: the strip only overflows on the narrowest
+   screens, so the fade cannot be a fixed rule. */
 .menu-quick {
   display: none;
   gap: 0.35rem;
@@ -223,6 +266,67 @@
   margin: 0;
   padding: 0 0 0.5rem;
   overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x proximity;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  --edge-fade: 2.5rem;
+}
+
+.menu-quick::-webkit-scrollbar {
+  display: none;
+}
+
+.menu-quick > li {
+  flex: 0 0 auto;
+  scroll-snap-align: start;
+}
+
+.menu-quick.is-scrollable {
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    #000 var(--edge-fade),
+    #000 calc(100% - var(--edge-fade)),
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    #000 var(--edge-fade),
+    #000 calc(100% - var(--edge-fade)),
+    transparent 100%
+  );
+}
+
+.menu-quick.is-scrollable.at-start {
+  -webkit-mask-image: linear-gradient(
+    to right,
+    #000 0,
+    #000 calc(100% - var(--edge-fade)),
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to right,
+    #000 0,
+    #000 calc(100% - var(--edge-fade)),
+    transparent 100%
+  );
+}
+
+.menu-quick.is-scrollable.at-end {
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    #000 var(--edge-fade),
+    #000 100%
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    #000 var(--edge-fade),
+    #000 100%
+  );
 }
 
 @media (max-width: 52rem) {
@@ -298,7 +402,7 @@
 
 .tl-when {
   font-family: var(--font-mono);
-  font-size: 0.74rem;
+  font-size: 0.75rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--braise);
@@ -345,7 +449,7 @@
 
 .footer-col h2 {
   font-family: var(--font-mono);
-  font-size: 0.7rem;
+  font-size: 0.75rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--braise);
@@ -379,7 +483,7 @@
   padding-top: 0.9rem;
   border-top: var(--filet) solid var(--grid);
   font-family: var(--font-mono);
-  font-size: 0.72rem;
+  font-size: 0.75rem;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--fort);
@@ -607,7 +711,7 @@
 .diagram-hint {
   margin: 0.35rem 0 0;
   font-family: var(--font-mono);
-  font-size: 0.7rem;
+  font-size: 0.75rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--grid);
@@ -631,7 +735,7 @@
   gap: 1rem;
   flex-wrap: wrap;
   font-family: var(--font-mono);
-  font-size: 0.74rem;
+  font-size: 0.75rem;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--fort);
@@ -670,8 +774,11 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 2rem;
-  height: 2rem;
+  /* 32px was under the 44px platform minimum and the 24px WCAG 2.2 AA floor
+     was the only thing it cleared. The glyph stays 18px; the box grows around
+     it, and the header has the width for it. */
+  width: 44px;
+  height: 44px;
   color: var(--encre);
   transition: color 160ms ease, transform 160ms ease;
 }
@@ -801,13 +908,18 @@
   padding: 0;
   cursor: pointer;
   transition: color 160ms ease;
+  /* 20px tall was under the WCAG 2.2 AA floor of 24px (SC 2.5.8) — and this
+     button is the primary conversion path on /freelance/, where it is the only
+     way into the contact dialog. */
+  min-height: 24px;
+  padding-block: 0.25rem;
 }
 
 .status-cta:hover {
   color: var(--fort);
 }
 
-/* Touch targets. The strip is deliberately slim — 20px of button — so the hit
+/* Touch targets. The strip is deliberately slim — 24px of button — so the hit
    area is grown with an overlay instead of with padding, which would change
    the layout of every page's header. A finger aims at a box, not a glyph. */
 @media (pointer: coarse) {
@@ -820,11 +932,6 @@
     position: absolute;
     inset: -0.75rem -0.5rem;
   }
-
-  .social-link {
-    width: 2.75rem;
-    height: 2.75rem;
-  }
 }
 
 /* ----- Homepage directory blocks ---------------------------------------
@@ -833,6 +940,37 @@
    ---------------------------------------------------------------------- */
 .home-hero {
   padding-block: clamp(2.5rem, 9vh, 6rem) clamp(1.5rem, 4vh, 3rem);
+}
+
+/* On a wide screen the headline and the lede stacked in the left half and the
+   right half of the band was empty — 700px of nothing between the hero and
+   the diagram, which read as an unfinished page rather than as air. The two
+   sit side by side instead: the headline takes the room, the lede takes a
+   fixed column beside it, and the eyebrow runs over the top of both.
+   Below the breakpoint they stack as before, because a lede beside a
+   headline only works where there is width for both. */
+@media (min-width: 62rem) {
+  .home-hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 30rem);
+    column-gap: clamp(2rem, 5vw, 5rem);
+    align-items: end;
+  }
+
+  /* The eyebrow is an inline label; as a grid item it would stretch across
+     the whole band and its sweep would run the width of the screen. */
+  .home-hero .eyebrow {
+    grid-column: 1 / -1;
+    justify-self: start;
+  }
+
+  .home-hero h1 {
+    margin-bottom: 0;
+  }
+
+  .home-hero .lede {
+    margin-bottom: 0;
+  }
 }
 
 .big-blocks {
@@ -871,7 +1009,7 @@
 .big-file {
   grid-area: file;
   font-family: var(--font-mono);
-  font-size: 0.72rem;
+  font-size: 0.75rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--braise);
@@ -995,7 +1133,7 @@
 .stop-when {
   display: inline-block;
   font-family: var(--font-mono);
-  font-size: 0.72rem;
+  font-size: 0.75rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--braise);
@@ -1162,11 +1300,16 @@
   color: var(--encre);
 }
 
-/* Wide on purpose: the paragraph is the substance of the panel, and 60ch left
-   it as a narrow ribbon with the rest of the column empty. */
+/* The panel is 1200px wide and the paragraph used to fill all of it — 150
+   characters on a line, well past the 45–90 that reading research puts a
+   comfortable measure at. `ch` is the width of a zero, not of an average
+   character, so 120ch is 1200px here and the ribbon of empty column to the
+   right of every line was the tell. 42rem is about 78 characters: still wide
+   enough to hold the panel's shape, short enough to find the next line's
+   start. */
 .stage-body {
   margin: 0 0 0.9rem;
-  max-width: 120ch;
+  max-width: 42rem;
   color: var(--fort);
 }
 
@@ -1181,7 +1324,7 @@
 
 .stage-marks li {
   font-family: var(--font-mono);
-  font-size: 0.72rem;
+  font-size: 0.75rem;
   letter-spacing: 0.06em;
   color: var(--fort);
   border: var(--filet) solid var(--braise);
@@ -1386,7 +1529,7 @@
   background: var(--rouille);
   border-bottom: var(--filet) solid var(--braise);
   font-family: var(--font-mono);
-  font-size: 0.74rem;
+  font-size: 0.75rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--fort);
@@ -1607,7 +1750,7 @@
   background: var(--rouille);
   border-bottom: var(--filet) solid var(--braise);
   font-family: var(--font-mono);
-  font-size: 0.7rem;
+  font-size: 0.75rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--fort);
@@ -1626,7 +1769,9 @@
 
 .stack-meta {
   margin-left: auto;
-  opacity: 0.7;
+  /* Same reasoning as .stack-read-idle: 0.7 put "CLICK A STAGE" at 4.14:1 on
+     the accent bar. */
+  opacity: 0.85;
 }
 
 /* The art's metrics live here, not on the <pre>, so the hit buttons below can
@@ -1644,8 +1789,14 @@
      and raised a scrollbar at 1440. The floor is the point below which the
      labels stop being readable, so narrow columns scroll instead; the ceiling
      only stops the art ballooning on very wide screens, and has to stay high
-     enough that the column value wins wherever it applies. */
-  font-size: clamp(0.52rem, calc((100cqw - 2.7rem) / 69.74), 0.9rem);
+     enough that the column value wins wherever it applies.
+
+     The floor was 0.52rem — 8px on a phone, where the stage names, the arrows
+     and the box borders all stop being readable and the drawing turns into
+     texture. 0.7rem puts the smallest the art ever gets at 11px; past that
+     the row scrolls sideways, which is what the art was already doing on a
+     phone anyway. */
+  font-size: clamp(0.7rem, calc((100cqw - 2.7rem) / 69.74), 0.9rem);
   line-height: 1.32;
 }
 
@@ -1760,7 +1911,10 @@
 }
 
 .stack-read-idle {
-  opacity: 0.55;
+  /* Dimming a whole line with opacity takes the text with it: at 0.55 the
+     amber on the dark read-out panel lands at 3.18:1, under the 4.5:1 floor.
+     0.85 keeps the hint quieter than the live readout and still passes. */
+  opacity: 0.85;
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
@@ -1896,7 +2050,7 @@
   border: var(--filet) solid var(--braise);
   background: color-mix(in srgb, var(--rouille) 45%, var(--papier));
   font-family: var(--font-mono);
-  font-size: 0.72rem;
+  font-size: 0.75rem;
   letter-spacing: 0.04em;
   color: var(--fort);
 }
@@ -1921,7 +2075,7 @@
   border: var(--filet) solid var(--braise);
   color: var(--fort);
   font-family: var(--font-art);
-  font-size: 0.66rem;
+  font-size: 0.75rem;
   line-height: 1.3;
   font-variant-ligatures: none;
   tab-size: 2;
@@ -1948,7 +2102,7 @@
 .stage-modal-h {
   margin: 0 0 0.5rem;
   font-family: var(--font-mono);
-  font-size: 0.72rem;
+  font-size: 0.75rem;
   font-weight: 500;
   letter-spacing: 0.12em;
   text-transform: uppercase;

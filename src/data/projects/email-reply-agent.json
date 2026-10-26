@@ -22,7 +22,7 @@
     "cards": [
       {
         "icon": "●",
-        "text": "Replies sit for hours ? leads go cold"
+        "text": "Replies sit for hours → leads go cold"
       },
       {
         "icon": "●",
@@ -64,7 +64,7 @@
     ]
   },
   "results": {
-    "sub": "From chaos ? predictable pipeline",
+    "sub": "From chaos → predictable pipeline",
     "cards": [
       {
         "before": "2–8h",

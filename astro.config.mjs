@@ -21,4 +21,16 @@ export default defineConfig({
     '/contact': '/about',
   },
   integrations: [mdx()],
+  // Code blocks ship with both a light and a dark Shiki theme and let CSS
+  // pick one per site theme. A single baked-in `github-dark` kept a #24292e
+  // slab on the light `pierre` page and left every token without its own
+  // colour inheriting the page's ink — dark on dark, unreadable. The dark
+  // theme is `github-dark-default` rather than `github-dark` because the
+  // latter's comment grey (#6a737d on #24292e) is 3.05:1 and fails AA.
+  markdown: {
+    shikiConfig: {
+      themes: { light: 'github-light', dark: 'github-dark-default' },
+      defaultColor: false,
+    },
+  },
 });

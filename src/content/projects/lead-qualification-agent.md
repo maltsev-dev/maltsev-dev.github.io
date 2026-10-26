@@ -191,7 +191,7 @@ tags: ["LLM", "WhatsApp", "CRM"]
 
         <h2>What changes after deployment</h2>
 
-        <p class="section-sub">From slow + reactive ? fast + predictable</p>
+        <p class="section-sub">From slow + reactive → fast + predictable</p>
 
         <div class="grid grid-2">
 

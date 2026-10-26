@@ -1,5 +1,6 @@
 ---
 import { getCollection } from 'astro:content';
+import '../styles/fonts.css';
 import '../styles/global.css';
 import '../styles/animation.css';
 import '../styles/os.css';
@@ -106,14 +107,13 @@ const paletteItems = [
     </script>
     <meta name="theme-color" content="#14100a" />
 
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
-      rel="stylesheet"
-    />
+    <!--
+      The three text faces are self-hosted — see src/styles/fonts.css, written
+      by scripts/fetch-fonts.py. They used to be a stylesheet from Google
+      Fonts sitting in the critical path of every page, which meant the site
+      could not draw a word until a third party answered, and every visit
+      told a third party which pages were being read.
+    -->
 
     <!--
       Reveal targets start at opacity 0 and are un-hidden by JS. Without this,

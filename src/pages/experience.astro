@@ -49,7 +49,11 @@ const STAGES: Stage[] = [
   { id: 'founder', name: 'Founder', since: '2026' },
   { id: 'independent', name: 'Indie Expert', since: '2025' },
   { id: 'sr-sdet', name: 'Sr SDET', since: '2023' },
-  { id: 'sdet', name: 'SDET', since: '2020' },
+  // One rung, two stops: Alfa-Bank (Dec 2021 — Aug 2023) and Sportmaster
+  // (Jun 2020 — Dec 2021). The rail reads as a one-to-one list of the cards
+  // above it, so "2020" claimed a period that runs to 2023. The range is
+  // what the rung actually covers.
+  { id: 'sdet', name: 'SDET', since: '2020–23' },
   { id: 'qa', name: 'QA', since: '2019' },
 ];
 

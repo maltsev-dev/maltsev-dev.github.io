@@ -23,6 +23,11 @@
   /* Form errors need their own token: --braise is an accent, tuned to read as
      a border or a shadow, not to carry 12px text at 4.5:1 on the dark paper. */
   --erreur: #ff9a6b;
+  /* The same problem again, for the accent that does have to carry small text:
+     --braise sits on a tinted ground here, and on a tint it drops under 4.5:1.
+     --braise-txt is the same hue pulled toward the text end of the ramp, so it
+     can hold a 12px label on a tinted panel without the panel being dimmed. */
+  --braise-txt: #ec8a58;
   --theme-color: #14100a;
 }
 
@@ -35,6 +40,7 @@
   --creme: #fff183;
   --fort: #fff183;
   --erreur: #ffb3a0;
+  --braise-txt: #95c49a;
   --theme-color: #01141d;
 }
 
@@ -47,7 +53,27 @@
   --creme: #fffdf7;
   --fort: #241c12;
   --erreur: #a32c0c;
+  --braise-txt: #9a3b1c;
   --theme-color: #f4efe6;
+}
+
+/* The art face, shipped rather than hoped for.
+
+   The architecture diagram is 119 columns of box-drawing characters and
+   letters, and it only lines up if every glyph comes from one face at one
+   advance width. The stack this replaces was a list of fonts the site did
+   not have: on Linux, ChromeOS and most Android devices none of them was
+   there, the browser fell through to a generic `monospace`, and the box
+   glyphs in it did not share the advance of the letters — the grid came
+   apart. This is Cascadia Mono (SIL OFL), subset to the characters the
+   drawing uses by scripts/build-art-font.py: M, ─, ┌, • and ▼ all measure
+   0.5859em, which is the width the diagram was drawn to. */
+@font-face {
+  font-family: 'Cascadia Mono Art';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/cascadia-mono-art.woff2') format('woff2');
 }
 
 :root {
@@ -60,19 +86,29 @@
   --font-display: 'Anton', 'Arial Narrow', sans-serif;
   --font-ui: 'Inter', system-ui, -apple-system, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, 'Cascadia Mono', monospace;
-  /* Box-drawing art only works if every glyph comes from one face at one advance
-     width. Measured on this machine: JetBrains Mono's Google subsets carry
-     neither U+2500-257F nor U+25BC (─ 28.34 vs M 24, ▼ 39.59), and the
-     `ui-monospace` generic resolves to a face where • is 14 against an M of
-     35.57 — both silently break the grid. Cascadia Mono, Consolas, Menlo and
-     the DejaVu/Liberation faces measure one advance across M, ─, ┌, • and ▼,
-     so the stack is ordered by those and `ui-monospace` is left out. */
-  --font-art: 'Cascadia Mono', Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono',
-    'Liberation Mono', monospace;
+  /* The shipped face comes first, so the diagram is drawn in the same font
+     everywhere; the system faces behind it are the fallback for the browser
+     that has the file but has not loaded it yet. */
+  --font-art: 'Cascadia Mono Art', 'Cascadia Mono', Consolas, 'SF Mono', Menlo,
+    'DejaVu Sans Mono', 'Liberation Mono', monospace;
   --ui-zoom: 1;
   --wrap: 100%;
 
   color-scheme: dark;
+}
+
+/* The light theme is a light page: the scrollbar, the form controls and the
+   focus ring have to follow, or the browser paints dark-mode chrome on a
+   warm-paper background. */
+:root[data-theme='pierre'] {
+  color-scheme: light;
+}
+
+/* Text selection is the one colour in the site that belongs to no theme
+   until this rule exists — the browser default blue on every page. */
+::selection {
+  background: var(--braise);
+  color: var(--creme);
 }
 
 /* ----- Reset ------------------------------------------------------------ */
@@ -191,6 +227,31 @@ pre code {
   padding: 0;
 }
 
+/* Code blocks carry two Shiki palettes at once — the light one and the dark
+   one — and the site theme picks which one is live. The inline style on each
+   token names both; the rule below reads the one this theme wants. Without
+   this the `code { color: var(--fort) }` above wins on every token Shiki
+   left uncoloured, which in the light theme is dark ink on a dark block. */
+pre.astro-code {
+  background-color: var(--shiki-dark-bg, var(--rouille));
+  color: var(--shiki-dark, var(--fort));
+}
+
+pre.astro-code code,
+pre.astro-code span {
+  color: var(--shiki-dark, var(--fort));
+}
+
+:root[data-theme='pierre'] pre.astro-code {
+  background-color: var(--shiki-light-bg, var(--rouille));
+  color: var(--shiki-light, var(--fort));
+}
+
+:root[data-theme='pierre'] pre.astro-code code,
+:root[data-theme='pierre'] pre.astro-code span {
+  color: var(--shiki-light, var(--fort));
+}
+
 blockquote {
   margin: 1.5rem 0;
   padding-left: 1.2rem;
@@ -257,13 +318,17 @@ blockquote {
 }
 
 .nav-link {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
   padding: 0.35rem 0.7rem;
   border: var(--filet) solid transparent;
   text-decoration: none;
   text-transform: uppercase;
   letter-spacing: 0.08em;
   font-size: 0.85rem;
+  /* These are the primary navigation on a phone, and they were 29px tall.
+     The padding stays; the floor is what makes the row tappable. */
+  min-height: 44px;
 }
 
 .nav-link:hover {
@@ -513,7 +578,7 @@ blockquote {
 }
 
 .card-meta {
-  font-size: 0.75rem;
+  font-size: 0.8125rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--braise);
@@ -528,7 +593,7 @@ blockquote {
 }
 
 .tag {
-  font-size: 0.72rem;
+  font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.08em;
   border: var(--filet) solid var(--rouille);
@@ -849,7 +914,7 @@ blockquote {
   align-items: center;
   gap: 0.5rem;
   font-family: var(--font-mono);
-  font-size: 0.72rem;
+  font-size: 0.75rem;
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--braise);
@@ -873,7 +938,7 @@ blockquote {
   align-items: center;
   gap: 0.5rem;
   font-family: var(--font-mono);
-  font-size: 0.74rem;
+  font-size: 0.75rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--encre);
@@ -904,7 +969,7 @@ blockquote {
 
 .figure-label {
   font-family: var(--font-mono);
-  font-size: 0.7rem;
+  font-size: 0.75rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--braise);
@@ -975,7 +1040,7 @@ blockquote {
 
 .pipe-cost {
   font-family: var(--font-mono);
-  font-size: 0.68rem;
+  font-size: 0.75rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   border: var(--filet) solid currentColor;
@@ -1095,7 +1160,7 @@ blockquote {
 
 .article-back {
   font-family: var(--font-mono);
-  font-size: 0.74rem;
+  font-size: 0.75rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   margin-bottom: 1.5rem;
@@ -1136,7 +1201,7 @@ blockquote {
 
 .project .hero-fit {
   font-family: var(--font-mono);
-  font-size: 0.74rem;
+  font-size: 0.75rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--braise);
@@ -1169,7 +1234,7 @@ blockquote {
   display: block;
   margin-top: 0.25rem;
   font-family: var(--font-mono);
-  font-size: 0.7rem;
+  font-size: 0.75rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--encre);

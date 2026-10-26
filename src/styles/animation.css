@@ -134,6 +134,15 @@
   white-space: pre-wrap;
 }
 
+/* One word, one inline box. The characters inside are inline-blocks, and an
+   inline-block is an atomic inline — the browser may break the line between
+   any two of them, which splits the heading mid-word. The wrapper keeps the
+   word together and leaves the spaces between words as the only break points. */
+[data-anim='type'] .word {
+  display: inline-block;
+  white-space: nowrap;
+}
+
 [data-anim='type'] .ch {
   display: inline-block;
   opacity: 0;

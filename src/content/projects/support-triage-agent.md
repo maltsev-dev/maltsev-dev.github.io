@@ -201,7 +201,7 @@ tags: ["RAG", "Intercom", "React"]
 
         <h2>What changes after deployment</h2>
 
-        <p class="section-sub">From overloaded support ? scalable system</p>
+        <p class="section-sub">From overloaded support → scalable system</p>
 
         <div class="grid grid-2">
 

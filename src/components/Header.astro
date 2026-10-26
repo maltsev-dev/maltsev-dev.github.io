@@ -66,18 +66,37 @@ const isActive = (href: string) => currentPath.startsWith(href);
         System <span class="caret" aria-hidden="true">▾</span>
       </button>
       <div class="dropdown dropdown-right" data-panel="system" hidden>
-        <p class="dropdown-title">Appearance</p>
-        {
-          THEMES.map(([id, desc]) => (
-            <button class="dd-item" data-set-theme={id} role="menuitemradio" aria-checked="false">
-              <span class="fig" aria-hidden="true">◆</span>
-              <span>
-                {id}
-                <span class="desc">{desc}</span>
-              </span>
-            </button>
-          ))
-        }
+        <p class="dropdown-title" id="theme-group-label">Appearance</p>
+        <!--
+          The three themes are one of three, so they are a radio group and not
+          three buttons. The role used to be `menuitemradio` inside a panel
+          with no `menu` role, which left a screen reader announcing a menu
+          item radio that belonged to no menu, and the panel's own `menu` role
+          would have implied arrow-key navigation that was not implemented.
+          `radio` in a `radiogroup` says exactly what this is; os.js gives the
+          group the arrow-key behaviour that goes with it.
+        -->
+        <div role="radiogroup" aria-labelledby="theme-group-label" data-theme-group>
+          {
+            THEMES.map(([id, desc]) => (
+              <button
+                class="dd-item"
+                data-set-theme={id}
+                role="radio"
+                aria-checked="false"
+                tabindex="-1"
+              >
+                {/* The glyph is drawn by CSS so the selected theme can show a
+                    filled mark instead of the hollow one. */}
+                <span class="fig" aria-hidden="true" />
+                <span>
+                  {id}
+                  <span class="desc">{desc}</span>
+                </span>
+              </button>
+            ))
+          }
+        </div>
         <div class="dd-sep"></div>
         <a class="dd-item" href="/llm.txt">
           <span class="fig" aria-hidden="true">≡</span>

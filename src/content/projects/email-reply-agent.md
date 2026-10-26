@@ -93,7 +93,7 @@ tags: ["LLM", "Gmail", "React"]
 
                 <span class="problem-icon">●</span>
 
-                <p>Replies sit for hours ? leads go cold</p>
+                <p>Replies sit for hours → leads go cold</p>
 
             </div>
 
@@ -193,7 +193,7 @@ tags: ["LLM", "Gmail", "React"]
 
         <h2>What changes after deployment</h2>
 
-        <p class="section-sub">From chaos ? predictable pipeline</p>
+        <p class="section-sub">From chaos → predictable pipeline</p>
 
         <div class="grid grid-2">
 
