@@ -124,6 +124,26 @@
   --trait-fin: 2px;
   --ombre: 6px 6px 0 var(--braise);
   --ombre-sm: 3px 3px 0 var(--braise);
+  /*
+    How tall the status strip is. It is a token rather than a literal because
+    two places depend on the number: the strip itself, and the menu bar below
+    it, which sticks to the top of the viewport and has to start where the
+    strip ends. When the two were written out separately they drifted, and
+    the menu bar sat a pixel off the strip's edge.
+  */
+  --status-h: 1.5rem;
+  /*
+    How tall the menu bar is. The bar is the second half of the chrome stack,
+    and it is pinned to this height by the rule that draws it (see os.css), so
+    the number here and the bar on the page cannot drift apart. It used to be
+    taken on trust — the chrome stack was written as "1.9rem plus 3rem" and
+    came out twenty pixels short, because the bar's own padding and the word
+    mark inside it were never part of the sum. Everything that has to clear
+    the stack then measured itself against a number that was too small: the
+    sticky section heading sat under the menu bar and drew a line through its
+    own kicker.
+  */
+  --menu-h: 4.5rem;
   --font-display: 'Anton', 'Arial Narrow', sans-serif;
   --font-ui: 'Inter', system-ui, -apple-system, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, 'Cascadia Mono', monospace;
@@ -136,14 +156,15 @@
   --wrap: 100%;
 
   /* ----- The chrome stack -------------------------------------------------
-     Two elements sit at the top of every page: the status bar (1.9rem plus a
-     hairline) and the menu bar (44px plus a hairline). Together they are
-     about 4.8rem tall. Everything that has to clear them — an anchor target,
-     the sticky section heading — measures itself against this one number
-     rather than against a magic constant of its own. The narrow-screen value
-     lives in os.css, next to the rule that takes the menu bar out of the
-     stack. */
-  --chrome-h: 4.8rem;
+     Two elements sit at the top of every page: the status bar and the menu
+     bar, each with a hairline under it. Together they are the chrome stack,
+     and everything that has to clear them — an anchor target, the sticky
+     section heading, the sideways track's frame — measures itself against
+     this one number rather than against a magic constant of its own. It is
+     computed from the two halves so that neither can drift without the
+     stack moving with it. The narrow-screen value lives in os.css, next to
+     the rule that takes the menu bar out of the stack. */
+  --chrome-h: calc(var(--status-h) + var(--filet) + var(--menu-h));
 
   /* ----- Type scale --------------------------------------------------------
      Three steps below 1rem, plus the micro step between the label and the
@@ -723,6 +744,36 @@ blockquote {
   border: var(--filet) solid var(--rouille);
   padding: 0.1rem 0.45rem;
   color: var(--fort);
+}
+
+/* ----- Tap targets on a phone ---------------------------------------------
+   The chips are controls, not labels, and on a phone they were sized like
+   labels: a tag chip was twenty-five pixels tall and the "all work →" link
+   in a section head twenty-one. The type does not change — only the padding
+   around it does — so the row of chips keeps its rhythm and the hit area
+   grows to something a thumb can hit.
+   ---------------------------------------------------------------------- */
+@media (max-width: 40rem) {
+  .tag {
+    /* Forty-four pixels: the height of a thumb's target. The padding around
+       the type grows, the type does not, so the chips keep their rhythm and
+       the row of them does not get any wider. */
+    padding: 0.7rem 0.6rem;
+  }
+
+  /* A two-letter tag — "ai", "sp", "cli" — is a narrow target even at this
+     height. The chip keeps its face and gets a floor under it, so every tag
+     on a phone is a square a thumb can land on. */
+  a.tag {
+    display: inline-block;
+    min-width: 2.75rem;
+    text-align: center;
+  }
+
+  a.card-meta {
+    display: inline-block;
+    padding-block: 0.75rem;
+  }
 }
 
 /* ----- Prose (posts + project bodies) ----------------------------------- */

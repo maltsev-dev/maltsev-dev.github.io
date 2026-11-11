@@ -2,59 +2,247 @@
 import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import AiStack from '../components/AiStack.astro';
-import { describe } from '../lib/summarize';
+import { describe, readingTime, MAX_DESCRIPTION } from '../lib/summarize';
 import { AUTHOR } from '../lib/schema';
 import { tagSlug, tagLabel } from '../lib/tags';
 import { formatDate } from '../data/dates';
+import { MILESTONES } from '../data/milestones';
+import { STAGES } from '../data/stages';
+import { SKILL_COUNT, yearsOfExperience } from '../lib/profile';
+import { TOPICS, topicFor } from '../data/topics';
 
 const posts = (await getCollection('posts')).sort((a, b) =>
   (b.data.date ?? '').localeCompare(a.data.date ?? '')
 );
 const recent = posts.slice(0, 3);
+const cases = await getCollection('projects');
 
-// The homepage is a directory, not a summary: the figure shows what the work
-// is, and the column beside it opens each part of the site. The three cards
-// under the hero are the exception — they point at the newest writing, which
-// is the one thing a visitor cannot find from the directory alone.
-const SECTIONS = [
-  { n: '01', href: '/experience/', title: 'Experience' },
-  { n: '02', href: '/freelance/', title: 'Freelance' },
-  { n: '03', href: '/projects/', title: 'Projects' },
-  { n: '04', href: '/about/', title: 'Profile' },
+/**
+ * The four numbers at the top of the page.
+ *
+ * Every one of them is counted, never typed. A number written into a
+ * sentence cannot be checked by a build, so it goes stale the next time a
+ * post lands or a skill is added — and a portfolio whose own numbers are
+ * wrong is arguing against itself. These read from the same collections the
+ * rest of the site reads from.
+ */
+const STATS = [
+  { label: 'Years of practice', value: yearsOfExperience() },
+  { label: 'Skills in the pyramid', value: SKILL_COUNT },
+  { label: 'Systems shipped', value: MILESTONES.length + cases.length },
+  { label: 'Notes written', value: posts.length },
+];
+
+/**
+ * What the work is, in three parts.
+ *
+ * The three lines are the lede's three clauses, and each one is a door
+ * rather than a promise: the number and the destination are both real, so
+ * the claim can be checked by following it. The third one is the least
+ * glamorous and the most load-bearing — the layer under the two above it is
+ * where an agent either survives production or does not.
+ */
+const topicSize = (id: string): number =>
+  TOPICS.find((t) => t.id === id)?.posts.length ?? 0;
+
+const reliabilityNotes = posts.filter((post) =>
+  post.data.tags.includes('reliability')
+).length;
+
+const PILLARS = [
+  {
+    num: '01',
+    title: 'Agent runtime security',
+    body: 'Whether an agent may call a tool, spend a budget, or act on a human approval is a question about authority — not about the prompt. I build the runtime that answers it: scoped grants, enforced budgets, durable approvals, and a record of every call.',
+    href: '/blog/?topic=agent-runtime',
+    proof: `${topicSize('agent-runtime')} notes on the seam between a model and its tools`,
+  },
+  {
+    num: '02',
+    title: 'Retrieval that cites',
+    body: 'An answer that cannot name the passage it came from is a guess with a bibliography. Grounded retrieval, permission-aware filtering, reranking, and a refusal when the evidence is not there — plus the evaluation set that holds all of it in place.',
+    href: '/projects/',
+    proof: 'Case studies, including permission-aware internal search',
+  },
+  {
+    num: '03',
+    title: 'The reliability layer',
+    body: 'Traces, budgets, retries, and the failure states nobody designs on purpose. What an agent does when the run goes wrong, what it costs, and how anyone finds out — the part that decides whether the other two survive contact with production.',
+    href: '/blog/?tag=reliability',
+    proof: `${reliabilityNotes} notes on what happens when the run goes wrong`,
+  },
 ];
 
 // The same line the post index and the agent map use: the post's own
 // description when it has one, the first real sentence of the body when it
 // does not. A card of nothing but a title tells a visitor nothing.
 //
-// Every tag is listed, not the first three. A card that quietly drops the
-// rest of a post's tags says less about the post than the post's own page
-// does, and a reader cannot tell that anything was left out.
+// The subject and the reading time come along too, so that a card on the
+// front page says the same things as the same post's card on the index:
+// when it was written, what it is about, and how long it takes.
 const recentPosts = recent.map((post) => ({
   href: `/blog/${post.id}/`,
   title: post.data.title,
   date: formatDate(post.data.date),
-  summary: describe(post.data.title, post.body, post.data.description),
+  iso: post.data.date ?? '',
+  minutes: readingTime(post.body),
+  summary: describe(post.data.title, post.body, post.data.description, MAX_DESCRIPTION),
   tags: post.data.tags,
+  topic: topicFor(post.id),
 }));
 
+const work = cases.map((project) => ({
+  href: `/projects/${project.data.slug}/`,
+  title: project.data.title,
+  description: project.data.description ?? '',
+  tags: project.data.tags,
+}));
 ---
 
-<Base>
-  <section class="hero hero-scroll home-hero">
-    <span class="eyebrow" data-reveal><span class="pulse-dot"></span>{AUTHOR.name} · applied AI</span>
-    <h1 data-reveal data-reveal-delay="60" data-anim="type">Systems that carry real work.</h1>
+<Base
+  title="Anatolii Maltsev — Forward Deployed Engineer"
+  description="I build AI systems that survive production: agent runtime security, retrieval quality, and the reliability layer underneath both."
+>
+  <section class="hero home-hero">
+    <span class="eyebrow" data-reveal>
+      <span class="pulse-dot" aria-hidden="true"></span>
+      {AUTHOR.name} · Forward Deployed Engineer
+    </span>
+
+    <h1 data-reveal data-reveal-delay="60">I build AI systems that survive production.</h1>
+
     <p class="lede" data-reveal data-reveal-delay="120">
-      AI automation, embedded Rust, and the reliability layer that keeps both
-      honest when production pushes back.
+      Agent runtime security, retrieval quality, and the reliability layer
+      underneath both — for teams that need it to work, not to demo.
     </p>
+
+    <div class="btn-row home-cta" data-reveal data-reveal-delay="180">
+      <button type="button" class="btn" data-open-letter>Work with me</button>
+      <a class="btn" href="/projects/">See what shipped</a>
+    </div>
+
+    <dl class="home-stats" data-reveal data-reveal-delay="240">
+      {
+        STATS.map((stat) => (
+          <div class="stat">
+            <dt>{stat.label}</dt>
+            <dd>{stat.value}</dd>
+          </div>
+        ))
+      }
+    </dl>
+  </section>
+
+  <!--
+    What the work is, in three parts. Each card is a door: a claim, the number
+    behind it, and a link to the writing or the work that backs it up.
+  -->
+  <section class="section">
+    <div class="section-head">
+      <h2 data-reveal data-anim="underline">What I do</h2>
+      <span class="card-meta">three things, in order of how often they come up</span>
+    </div>
+
+    <div class="pillars">
+      {
+        PILLARS.map((pillar, i) => (
+          <article class="pillar" data-reveal data-reveal-delay={i * 70}>
+            <span class="pillar-num" aria-hidden="true">
+              {pillar.num}
+            </span>
+            <h3 class="pillar-title">{pillar.title}</h3>
+            <p class="pillar-body">{pillar.body}</p>
+            <a class="pillar-link" href={pillar.href}>
+              {pillar.proof}
+              <span class="pillar-go" aria-hidden="true">→</span>
+            </a>
+          </article>
+        ))
+      }
+    </div>
+  </section>
+
+  <!-- The three deep-dive case studies. -->
+  <section class="section">
+    <div class="section-head">
+      <h2 data-reveal data-anim="underline">Selected work</h2>
+      <a class="card-meta" href="/projects/">All work →</a>
+    </div>
+
+    <div class="card-grid">
+      {
+        work.map((w, i) => (
+          <div class="card work-card" data-reveal data-reveal-delay={i * 60}>
+            <span class="card-meta">Case study</span>
+            <h3>
+              <a class="card-link" href={w.href}>
+                {w.title}
+              </a>
+            </h3>
+            {w.description && <p>{w.description}</p>}
+            {w.tags.length > 0 && (
+              <div class="tag-row">
+                {w.tags.map((t) => (
+                  <span class="tag">{t}</span>
+                ))}
+              </div>
+            )}
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  <!--
+    The architecture. It used to sit in a column beside a list of links, where
+    it was shrunk to fit next to a directory that said less. It gets the whole
+    width here: ten stages, from the service skeleton to the edge runtime, and
+    a stage can be clicked for the detail behind it.
+
+    The band above the drawing is two columns rather than one: the claim on
+    the left, the table of contents on the right. A lede alone in a full-width
+    band left two thirds of it empty, and the ten stage names were only
+    legible inside the drawing — where they are drawn in boxes and therefore
+    unreadable to anyone scanning the section.
+  -->
+  <section class="section">
+    <div class="section-head">
+      <h2 data-reveal data-anim="underline">The architecture</h2>
+      <span class="card-meta">ten stages</span>
+    </div>
+
+    <div class="home-arch">
+      <p class="lede home-arch-lede" data-reveal>
+        The shape every system I build follows. A tool call is never a string a
+        model produced — it is a request a runtime has to authorize, budget and
+        record. The stages below are the ones I keep rebuilding, in the order
+        they have to exist.
+      </p>
+
+      <ol class="stage-index" data-reveal data-reveal-delay="60">
+        {
+          STAGES.map((stage) => (
+            <li class="stage-index-item">
+              <span class="stage-index-num" aria-hidden="true">
+                {stage.num}
+              </span>
+              <span class="stage-index-name">{stage.title}</span>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+
+    <div class="home-figure" data-reveal>
+      <AiStack />
+    </div>
   </section>
 
   <!-- The newest writing, so the front page routes to what is new rather than
        only to the list of everything. -->
-  <section class="section home-recent">
+  <section class="section">
     <div class="section-head">
-      <h2 data-reveal data-anim="underline">Recent writing</h2>
+      <h2 data-reveal data-anim="underline">Latest writing</h2>
       <a class="card-meta" href="/blog/">All writing →</a>
     </div>
 
@@ -62,7 +250,14 @@ const recentPosts = recent.map((post) => ({
       {
         recentPosts.map((p, i) => (
           <div class="card" data-reveal data-reveal-delay={i * 60}>
-            <span class="card-meta">{p.date}</span>
+            <div class="post-head">
+              <p class="post-meta">
+                <time datetime={p.iso}>{p.date}</time>
+                <span class="post-dot" aria-hidden="true">·</span>
+                <span>{p.minutes} min</span>
+              </p>
+              {p.topic && <p class="post-topic">{p.topic.label}</p>}
+            </div>
             <h3>
               {/*
                 The anchor carries the title and nothing else, so the link's
@@ -70,14 +265,6 @@ const recentPosts = recent.map((post) => ({
                 the anchor wrapped the whole card, its name was the card —
                 the title, the summary and every tag — and a screen reader
                 had to walk past all of it, once per card.
-
-                The name is not stretched to "Title — Read the post" the way
-                the project panels are, because here the anchor sits inside
-                the heading, and a label on it renames the heading too:
-                Chromium computes the heading's name from the contents of the
-                link, so the heading would be announced as "Title — Read the
-                post, heading". The section heading above already says what
-                these are.
               */}
               <a class="card-link" href={p.href}>
                 {p.title}
@@ -102,27 +289,6 @@ const recentPosts = recent.map((post) => ({
         ))
       }
     </div>
-  </section>
-
-  <!-- Figure on one side, directory on the other. -->
-  <section class="section home-split">
-    <div class="home-figure" data-reveal>
-      <AiStack />
-    </div>
-
-    <nav class="home-dir" aria-label="Sections">
-      {
-        SECTIONS.map((s, i) => (
-          <a class="dir-item" href={s.href} data-reveal data-reveal-delay={i * 70}>
-            <span class="dir-num">{s.n}</span>
-            <span class="dir-body">
-              <strong>{s.title}</strong>
-            </span>
-            <span class="dir-go" aria-hidden="true">→</span>
-          </a>
-        ))
-      }
-    </nav>
   </section>
 </Base>
 
@@ -165,5 +331,302 @@ const recentPosts = recent.map((post) => ({
   .card .tag:hover {
     color: var(--braise);
     border-color: var(--braise);
+  }
+
+  /* ----- The head of a writing card ---------------------------------------
+     The same three facts the index shows, in the same order and the same
+     type: when it was written, how long it takes, and what it is filed
+     under. A card on the front page and a card on the index that describe the
+     same post differently are two versions of the same thing, and the reader
+     has to work out which one to trust. */
+  .post-head {
+    display: grid;
+    gap: 0.18rem;
+  }
+
+  .post-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    flex-wrap: wrap;
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--fort);
+  }
+
+  .post-dot {
+    opacity: 0.6;
+  }
+
+  .post-topic {
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+    color: var(--braise);
+  }
+
+  /* ----- The hero ----------------------------------------------------------
+     On a wide screen the headline takes the room and the lede takes a fixed
+     column beside it, with the eyebrow over the top of both. Below the
+     breakpoint they stack, because a lede beside a headline only works where
+     there is width for both.
+     ---------------------------------------------------------------------- */
+  .home-hero {
+    padding-block: clamp(2.2rem, 8vh, 5rem) clamp(1.5rem, 4vh, 3rem);
+  }
+
+  @media (min-width: 62rem) {
+    .home-hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 27rem);
+      grid-template-areas:
+        'eyebrow eyebrow'
+        'title   lede'
+        'cta     cta'
+        'stats   stats';
+      column-gap: clamp(2rem, 5vw, 4.5rem);
+      align-items: end;
+    }
+
+    .home-hero .eyebrow {
+      grid-area: eyebrow;
+      justify-self: start;
+    }
+
+    .home-hero h1 {
+      grid-area: title;
+      margin-bottom: 0;
+    }
+
+    .home-hero .lede {
+      grid-area: lede;
+      margin-bottom: 0;
+    }
+
+    .home-hero .home-cta {
+      grid-area: cta;
+    }
+
+    .home-hero .home-stats {
+      grid-area: stats;
+    }
+  }
+
+  .home-cta {
+    margin-block: var(--sp-5) var(--sp-4);
+  }
+
+  /* ----- The four numbers --------------------------------------------------
+     The proof, directly under the claim. Counted from the collections, so
+     they cannot drift away from the pages they describe.
+     ---------------------------------------------------------------------- */
+  .home-stats {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1px;
+    margin: 0;
+    padding: 0;
+    background: var(--grid);
+    border: var(--filet) solid var(--grid);
+  }
+
+  @media (min-width: 44rem) {
+    .home-stats {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+
+  .stat {
+    display: flex;
+    /* The number sits above the label; the label reads first to a screen
+       reader, which is the order the sentence needs. */
+    flex-direction: column-reverse;
+    align-items: flex-start;
+    gap: 0.15rem;
+    padding: 0.85rem 1rem 0.95rem;
+    background: var(--papier);
+  }
+
+  .stat dt {
+    font-family: var(--font-mono);
+    font-size: var(--fs-label);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--fort);
+  }
+
+  .stat dd {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: clamp(1.7rem, 4vw, 2.5rem);
+    line-height: 1;
+    color: var(--braise);
+  }
+
+  /* ----- What I do ---------------------------------------------------------
+     Three panels on one ground, separated by hairlines rather than by gaps:
+     they read as one set of three, not as three separate cards.
+     ---------------------------------------------------------------------- */
+  .pillars {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1px;
+    background: var(--braise);
+    border: var(--trait) solid var(--braise);
+    box-shadow: var(--ombre);
+  }
+
+  @media (min-width: 48rem) {
+    .pillars {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  .pillar {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 1.2rem 1.25rem 1.35rem;
+    background: var(--papier);
+  }
+
+  .pillar-num {
+    font-family: var(--font-mono);
+    font-size: var(--fs-label);
+    letter-spacing: 0.12em;
+    color: var(--braise);
+  }
+
+  .pillar-title {
+    margin: 0;
+    font-size: clamp(1.15rem, 2.4vw, 1.4rem);
+    line-height: 1.15;
+  }
+
+  .pillar-body {
+    margin: 0;
+    color: var(--fort);
+    font-size: var(--fs-lead);
+  }
+
+  .pillar-link {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--sp-3);
+    margin-top: auto;
+    padding-top: var(--sp-3);
+    border-top: var(--filet) solid var(--grid);
+    font-family: var(--font-mono);
+    font-size: var(--fs-label);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--braise);
+    text-decoration: none;
+  }
+
+  .pillar-link:hover {
+    color: var(--fort);
+  }
+
+  .pillar-go {
+    transition: transform 180ms ease;
+  }
+
+  .pillar-link:hover .pillar-go {
+    transform: translateX(3px);
+  }
+
+  /* ----- The architecture --------------------------------------------------
+     The figure gets the whole width of the column, so the art is drawn at the
+     size it was drawn to be read at rather than shrunk to fit beside a
+     directory.
+     ---------------------------------------------------------------------- */
+  .home-arch {
+    display: grid;
+    gap: var(--sp-5) var(--sp-6);
+    align-items: start;
+  }
+
+  @media (min-width: 62rem) {
+    .home-arch {
+      grid-template-columns: minmax(0, 21rem) minmax(0, 1fr);
+    }
+  }
+
+  .home-arch-lede {
+    max-width: 54ch;
+    margin-bottom: 0;
+  }
+
+  /*
+    The table of contents for the drawing. Ten rows, one per stage.
+
+    It used to carry the tools each stage is built from as well, which made
+    it a second copy of the boxes in the figure right below it — the same ten
+    names and the same ten stacks, twice, one screen apart. The names are
+    what a reader scans for, and the figure already says what each one is
+    made of, so the list says the names and stops there.
+
+    It is an ordered list because the order is the point: the stages are the
+    order they have to exist in, not a set of interchangeable boxes.
+  */
+  .stage-index {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0 2.2rem;
+    grid-template-columns: 1fr;
+    counter-reset: stage;
+  }
+
+  @media (min-width: 40rem) {
+    .stage-index {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  .stage-index-item {
+    display: grid;
+    grid-template-columns: 1.9rem minmax(0, 1fr);
+    gap: 0.55rem;
+    align-items: baseline;
+    padding-block: 0.42rem;
+    border-bottom: var(--filet) solid var(--grid);
+  }
+
+  .stage-index-num {
+    font-family: var(--font-mono);
+    font-size: var(--fs-label);
+    letter-spacing: 0.12em;
+    color: var(--braise);
+  }
+
+  .stage-index-name {
+    font-size: 0.92rem;
+    line-height: 1.25;
+    color: var(--encre);
+  }
+
+  .home-figure {
+    min-width: 0;
+    /* The art below sizes itself from this column, so the query container has
+       to be the figure, not the page. The name lets the figure's own children
+       ask how wide the column is — the swipe hint uses it to appear only when
+       the drawing is genuinely wider than the column it sits in. */
+    container-type: inline-size;
+    container-name: figure;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .pillar-go {
+      transition: none;
+    }
   }
 </style>

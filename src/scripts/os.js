@@ -528,8 +528,11 @@ import { RAMPS, resolveRamp, themeColor } from '../data/themes';
       b.addEventListener('click', function () {
         var action = b.dataset.action;
         if (action === 'palette') {
-          var open = document.getElementById('paletteOpen');
-          if (open) open.click();
+          // The palette is opened through an event, not by clicking a
+          // particular button: the permanent trigger in the header is gone,
+          // and the control that opens it lives inside a menu that may be
+          // closed — and a hidden button cannot take the focus back.
+          document.dispatchEvent(new CustomEvent('palette:open'));
         } else if (action === 'crt') {
           var on = !document.body.classList.contains('crt');
           document.body.classList.toggle('crt', on);
@@ -1033,7 +1036,11 @@ import { RAMPS, resolveRamp, themeColor } from '../data/themes';
     var input = document.getElementById('paletteInput');
     var list = document.getElementById('paletteList');
     var empty = document.getElementById('paletteEmpty');
-    var opener = document.getElementById('paletteOpen');
+    // Where the focus goes back to when the trigger that opened the palette
+    // is gone by the time it closes — a control inside a menu that the
+    // reader has since dismissed. There is no permanent trigger in the
+    // header any more, so the fallback is the content itself.
+    var opener = null;
     var triggers = Array.prototype.slice.call(
       document.querySelectorAll('[data-open-palette]')
     );
@@ -1195,6 +1202,18 @@ import { RAMPS, resolveRamp, themeColor } from '../data/themes';
       if (!target || !document.contains(target) || !target.focus) target = opener;
       if (!target) return;
       if (target.offsetParent === null && opener && opener !== target) target = opener;
+      // The trigger is not visible any more — it was inside a menu the reader
+      // has since dismissed. Focusing a hidden control drops the focus on
+      // the floor, so it goes to the content instead: the reader is still
+      // on the page, and Tab continues from there.
+      if (!target || target.offsetParent === null) {
+        var main = document.getElementById('main');
+        if (main) {
+          main.focus();
+          return;
+        }
+        if (!target) return;
+      }
       target.focus();
     }
 
@@ -1237,6 +1256,13 @@ import { RAMPS, resolveRamp, themeColor } from '../data/themes';
 
     triggers.forEach(function (el) {
       el.addEventListener('click', function () { open(el); });
+    });
+
+    // Opened from outside the palette's own controls — the keyboard shortcut
+    // goes through open(null) directly, and anything that wants to open it
+    // without a button of its own can dispatch this.
+    document.addEventListener('palette:open', function () {
+      if (!isOpen()) open(null);
     });
 
     // Clicking the backdrop (but not the box) closes.

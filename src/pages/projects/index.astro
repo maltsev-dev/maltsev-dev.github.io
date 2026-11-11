@@ -10,6 +10,18 @@ interface Panel extends Milestone {
   linked: boolean;
 }
 
+/**
+ * The short name of a panel.
+ *
+ * The full titles are sentences — "AI Social Media Agent: 7-Platform
+ * Publishing with Human-in-the-Loop" — and they belong on the cards, where
+ * there is room for a sentence. The index under the track names twelve
+ * things in two rows, so it needs a name that fits: the milestone's own
+ * short field, or, for a case study, its title with the "AI " taken off.
+ */
+const shortName = (panel: Panel): string =>
+  panel.short ?? panel.title.replace(/^AI\s+/, '');
+
 // One track, two sources: the deep-dive cases (each with a page of its own) and
 // the milestone history.
 //
@@ -83,22 +95,42 @@ const LINK: Record<LinkKind, { cue: string; verb: string }> = {
   <!-- One viewport, no vertical scroll: the wheel drives the row sideways, the
        same as /experience/ but through this page's own wrapper. -->
   <div class="prj-page">
-  <section class="hero">
+  <section class="hero prj-hero">
     <span class="eyebrow" data-reveal>Catalog</span>
-    <h1 data-reveal data-reveal-delay="60">Projects</h1>
-    <p class="lede" data-reveal data-reveal-delay="120">
-      Production systems, not demos. Each one shipped, measured, and left running.
-    </p>
 
-    {
-      RECURRING.length > 0 && (
-        <ul class="recurring" data-reveal data-reveal-delay="180">
-          {RECURRING.map((t) => (
-            <li>{t}</li>
-          ))}
-        </ul>
-      )
-    }
+    {/*
+      The masthead is one row, not one column. Stacked, it left two thirds of
+      the band empty: a short title, a line under it, a row of chips under
+      that, and nothing at all on the right. Now the copy and the chips share
+      the row — the claim on the left, the stacks it was built from on the
+      right — and the band has two ends rather than one.
+
+      The line about moving along the row is here for the same reason the
+      figure on the front page says how to swipe it: on a desktop this page
+      does not scroll down, it scrolls sideways, and a page that swallows the
+      wheel without saying so reads as a broken page.
+    */}
+    <div class="prj-hero-main">
+      <div class="prj-hero-lead">
+        <h1 data-reveal data-reveal-delay="60">Projects</h1>
+        <p class="lede" data-reveal data-reveal-delay="120">
+          Production systems, not demos. Each one shipped, measured, and left running.
+        </p>
+        <p class="prj-hint" data-reveal data-reveal-delay="160" aria-hidden="true">
+          Scroll, or use ← →, to move along the row
+        </p>
+      </div>
+
+      {
+        RECURRING.length > 0 && (
+          <ul class="recurring prj-chips" data-reveal data-reveal-delay="200">
+            {RECURRING.map((t) => (
+              <li>{t}</li>
+            ))}
+          </ul>
+        )
+      }
+    </div>
   </section>
 
   <div class="track-scroll projects-track" data-track-scroll data-track-mode="wheel">
@@ -142,6 +174,46 @@ const LINK: Record<LinkKind, { cue: string; verb: string }> = {
         }
       </div>
 
+      {/*
+        The index. The row is a carousel and a carousel hides things: at any
+        moment a reader can see two of the twelve panels and no way to know
+        what the other ten are. This is the whole catalog in two rows — the
+        name of every project, in order, with the one the row is holding
+        marked. It fills the band the row leaves under itself and it is the
+        only place on the page where all twelve are on screen at once.
+
+        The items are links where the panel has somewhere to go and plain
+        text where it does not, exactly as the panels themselves are.
+      */}
+      <nav class="panel-index" aria-label="All projects">
+        {
+          panels.map((m, i) => {
+            const inner = (
+              <>
+                <span class="panel-index-num" aria-hidden="true">
+                  {String(i + 1).padStart(2, '0')}
+                </span>
+                <span class="panel-index-name">{shortName(m)}</span>
+                <span class="panel-index-when">{m.period}</span>
+              </>
+            );
+            return m.linked ? (
+              <a
+                class="panel-index-item"
+                href={m.href}
+                data-panel-index-item={i}
+              >
+                {inner}
+              </a>
+            ) : (
+              <span class="panel-index-item" data-panel-index-item={i}>
+                {inner}
+              </span>
+            );
+          })
+        }
+      </nav>
+
       <div class="panel-hud" aria-hidden="true">
         <span data-hud-current>01</span>
         <span class="panel-hud-bar"><i data-hud-bar /></span>
@@ -155,3 +227,67 @@ const LINK: Record<LinkKind, { cue: string; verb: string }> = {
     import '../../scripts/track.js';
   </script>
 </Base>
+
+<style>
+  /* The masthead: the claim on the left, the stacks on the right. Below the
+     breakpoint the two stack, and the chips keep their own margin so they do
+     not sit against the line above them. */
+  .prj-hero-main {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 0.7rem 2.5rem;
+  }
+
+  .prj-hero-lead {
+    max-width: 36rem;
+  }
+
+  .prj-hero-lead h1 {
+    margin: 0 0 0.35rem;
+  }
+
+  .prj-hero-lead .lede {
+    margin: 0;
+  }
+
+  /* The line that says how the row moves. Decorative: every panel is in the
+     index below the row, so nothing here is reachable only by scrolling
+     sideways.
+
+     It is shown only when the row actually moves sideways. The condition is
+     the one `isHorizontal()` uses in track.js and the one the layout in
+     track.css is written against — below that width, or without a fine
+     pointer, or under reduced motion, the panels are a column and the line
+     would be telling the reader to do something the page does not do. */
+  .prj-hint {
+    display: none;
+    margin: 0.55rem 0 0;
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--braise);
+  }
+
+  @media (min-width: 52.1rem) and (hover: hover) and (pointer: fine)
+    and (prefers-reduced-motion: no-preference) {
+    .prj-hint {
+      display: block;
+    }
+  }
+
+  /* Named through the wrapper so the rule outranks the one in track.css,
+     which gives the chips a margin of their own inside the wheel-mode
+     layout. */
+  .prj-hero-main .prj-chips {
+    margin-top: 0;
+  }
+
+  @media (max-width: 52rem) {
+    .prj-hero-main .prj-chips {
+      margin-top: 0.7rem;
+    }
+  }
+</style>

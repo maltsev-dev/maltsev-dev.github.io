@@ -5,6 +5,7 @@ import { describe, readingTime } from '../../lib/summarize';
 import { blogPostingNode, AUTHOR, postImage } from '../../lib/schema';
 import { formatDate } from '../../data/dates';
 import { tagSlug, tagLabel } from '../../lib/tags';
+import { topicFor } from '../../data/topics';
 
 export async function getStaticPaths() {
   const posts = await getCollection('posts');
@@ -31,6 +32,11 @@ const { Content } = await render(post);
 // that writes its own description gets it; the rest get the first real
 // sentence of their body.
 const description = describe(post.data.title, post.body, post.data.description);
+
+// The subject this post belongs to. The tags below say what it is *about*;
+// the topic says which thread it is part of, and it is a door back to the
+// rest of that thread rather than a label on this page alone.
+const topic = topicFor(post.id);
 
 const siteUrl = new URL(Astro.site ?? 'https://maltsev-dev.github.io');
 const schema = [
@@ -114,6 +120,16 @@ const neighborLabel = related.length ? 'Related' : 'Recent writing';
       <span class="lead-sep" aria-hidden="true">·</span>
       <span>{readingTime(post.body)} min read</span>
       {
+        topic && (
+          <>
+            <span class="lead-sep" aria-hidden="true">·</span>
+            <a class="lead-topic" href={`/blog/?topic=${topic.id}`}>
+              {topic.label}
+            </a>
+          </>
+        )
+      }
+      {
         post.data.tags.length > 0 && (
           <>
             <span class="lead-sep" aria-hidden="true">·</span>
@@ -189,7 +205,7 @@ const neighborLabel = related.length ? 'Related' : 'Recent writing';
       </p>
       <div class="btn-row">
         <button type="button" class="btn" data-open-letter>Write a message</button>
-        <a class="btn" href="/freelance/">What I take on</a>
+        <a class="btn" href="/freelance/">See the engagements</a>
       </div>
     </section>
   </article>
@@ -213,5 +229,20 @@ const neighborLabel = related.length ? 'Related' : 'Recent writing';
   .lead-tag:hover {
     color: var(--braise);
     border-color: var(--braise);
+  }
+
+  /* The topic badge. It sits in the same mono byline as the tags but reads
+     as one step louder, because it is the one item in the line that is a
+     place rather than a word: the thread this post belongs to. */
+  .lead-topic {
+    color: var(--braise);
+    text-decoration: none;
+    border: var(--filet) solid currentColor;
+    padding: 0.05rem 0.4rem;
+  }
+
+  .lead-topic:hover {
+    background: var(--braise);
+    color: var(--papier);
   }
 </style>

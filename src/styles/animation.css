@@ -103,12 +103,18 @@
 }
 
 /* ----- Scroll progress --------------------------------------------------- */
+/* The rail is a reading mark, not a control. It sits over the top of the
+   status bar, and without this the three pixels it covers swallow the taps
+   meant for the "available" button — the primary way into the contact dialog
+   on /freelance/. The sibling rail down the right edge is already
+   pointer-transparent; this one now matches it. */
 .progress-rail {
   position: fixed;
   inset: 0 0 auto 0;
   height: var(--trait);
   z-index: 70;
   background: var(--grid);
+  pointer-events: none;
 }
 
 .progress-rail i {

@@ -2,8 +2,9 @@
 import { getCollection } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 import { tagSlug, tagLabel } from '../../lib/tags';
-import { describe } from '../../lib/summarize';
+import { describe, MAX_DESCRIPTION } from '../../lib/summarize';
 import { formatDate } from '../../data/dates';
+import { topicFor } from '../../data/topics';
 
 /**
  * One page per tag.
@@ -76,8 +77,17 @@ const description = `${posts.length} ${
           <li class="tag-post" data-reveal data-reveal-delay={Math.min(i, 4) * 40}>
             <a href={`/blog/${post.id}/`}>
               <span class="card-meta">{formatDate(post.data.date)}</span>
+              {/*
+                The thread the post belongs to, next to the date. A tag page
+                is a cross-section of several threads at once, and saying which
+                one each post came from is what makes the list navigable
+                rather than just long.
+              */}
+              {topicFor(post.id) && (
+                <span class="tag-post-topic">{topicFor(post.id)?.label}</span>
+              )}
               <h3>{post.data.title}</h3>
-              <p>{describe(post.data.title, post.body, post.data.description)}</p>
+              <p>{describe(post.data.title, post.body, post.data.description, MAX_DESCRIPTION)}</p>
             </a>
           </li>
         ))
@@ -117,6 +127,13 @@ const description = `${posts.length} ${
   }
 
   .tag-post a:hover h3 {
+    color: var(--braise);
+  }
+
+  /* The thread, beside the date. It is a label, not a link: the whole row is
+     already one link to the post, and a link inside a link is not a link. */
+  .tag-post-topic {
+    margin-left: 0.6rem;
     color: var(--braise);
   }
 

@@ -1,115 +1,68 @@
 ---
 import Base from '../layouts/Base.astro';
-import DetailModal from '../components/DetailModal.astro';
 
 const num = (i: number) => String(i + 1).padStart(2, '0');
 
-const SERVICES = [
+/**
+ * The five engagements.
+ *
+ * Each one is a shape of work rather than a product: the symptom that brings
+ * someone here, the thing they end up holding, and the tools it is built
+ * with. The briefs used to live inside a dialog, one click away and one
+ * click from gone — a visitor had to open five boxes to learn what the page
+ * was offering, and a search engine saw five empty tiles. They are on the
+ * page now, in full, because they are the content.
+ */
+const ENGAGEMENTS = [
   {
     title: 'AI Agent Reliability Audit & Fix',
-    problem:
+    when:
       'The agent already runs, but routes requests to the wrong place, calls the wrong tools, loses state, loops, or gives unstable answers.',
-    result:
+    deliverable:
       'Root-cause audit, reproducible tests, the fixes themselves, error handling, metrics, and a report on the risks that remain.',
     stack: 'LangGraph, Python, OpenAI/Anthropic, pytest, OpenTelemetry, Langfuse.',
   },
   {
     title: 'RAG Quality & Access-Control Audit',
-    problem:
+    when:
       'The bot retrieves the wrong documents, hallucinates, cannot cite its sources, or shows information to the wrong user.',
-    result:
+    deliverable:
       'Retrieval diagnostics, access-control verification, an evaluation dataset, an improved pipeline, and regression tests to hold it there.',
     stack: 'PostgreSQL/pgvector or Qdrant, BM25, RRF, reranking, RAGAS, permission-aware retrieval.',
   },
   {
     title: 'AI Workflow & CRM Integration',
-    problem:
+    when:
       'Staff sort leads by hand, update the CRM, draft emails, and pass requests along to each other.',
-    result:
+    deliverable:
       'Automation from the incoming event to the agreed action, with error handling, logging, and protection against duplicates.',
     stack: 'n8n, Python, REST, OAuth, CRM APIs, PostgreSQL.',
   },
   {
     title: 'MCP Server & Secure Tool Integration',
-    problem:
+    when:
       'A client needs an agent wired into internal APIs, and that requires access limits, validation, audit, and safe execution.',
-    result: 'An MCP server, tool schemas, authorization, tests, and documentation.',
+    deliverable:
+      'An MCP server, tool schemas, authorization, tests, and documentation.',
     stack: 'Python/TypeScript, MCP SDK, OAuth, policy enforcement, structured logging.',
   },
   {
     title: 'Production Readiness & Architecture Review',
-    problem:
+    when:
       'A company wants to ship an AI feature but does not know which models, components, limits, and operational machinery it actually needs.',
-    result:
+    deliverable:
       'Architecture review, threat model, a quality-evaluation plan, a cost estimate, and a rollout roadmap.',
     stack: 'LLM APIs, LangGraph, RAG, Docker, PostgreSQL, OpenTelemetry.',
   },
-].map((s, i) => ({ ...s, id: `svc-${num(i)}`, num: num(i) }));
+].map((e, i) => ({ ...e, num: num(i) }));
 
-const PROJECTS = [
-  {
-    title: 'Autonomous L1/L2 Customer Support & Ticket Resolution',
-    gloss: 'Support without a human in the loop',
-    body:
-      'Replaces simple rules-based chatbots with agents that do not just answer the question but carry out the action inside internal systems.',
-  },
-  {
-    title: 'Inbound Lead Qualification & Enrichment',
-    gloss: 'B2B sales',
-    body:
-      'Replaces the first-contact SDR. The agent enriches the company record, scores the lead against a scoring model, and books the call itself.',
-  },
-  {
-    title: 'Intelligent Document & Invoice Processing',
-    gloss: 'Accounts payable automation',
-    body:
-      'Automates the work of accounting and procurement: reading awkward PDFs, scans, and receipts, and posting the extracted fields into the ERP.',
-  },
-  {
-    title: 'Automated Candidate Screening & HR Sourcing',
-    gloss: 'Resume screening and first interviews',
-    body:
-      'Speeds up hiring — working through hundreds of applications, matching them against a complex role profile, and running a basic technical and HR screen.',
-  },
-  {
-    title: 'Security & Incident Response Automation',
-    gloss: 'SOC / AI security',
-    body:
-      'Automates the work of security engineers: agents triage thousands of security alerts a day and filter out the false positives.',
-  },
-  {
-    title: 'Enterprise Knowledge Management & Research Agent',
-    gloss: 'GraphRAG',
-    body:
-      'Replaces plain keyword search with a research agent that finds the hidden connections across thousands of company documents and builds sourced reports from them.',
-  },
-  {
-    title: 'Operational Workflow & Employee Onboarding',
-    gloss: 'Internal ops',
-    body:
-      'Removes bureaucratic busywork inside IT, FinTech, and retail companies when a new employee joins or a resource is requested.',
-  },
-].map((p, i) => ({ ...p, id: `prj-${num(i)}`, num: num(i) }));
-
-const SERVICE_PANELS = SERVICES.map((s) => ({
-  id: s.id,
-  title: s.title,
-  rows: [
-    ['Problem', s.problem],
-    ['Result', s.result],
-    ['Stack', s.stack],
-  ] as [string, string][],
-  // Names the row that should be set in the mono face; the others are prose.
-  stack: 'Stack',
-}));
-
-const PROJECT_PANELS = PROJECTS.map((p) => ({
-  id: p.id,
-  title: p.title,
-  gloss: p.gloss,
-  body: p.body,
-}));
-
+/**
+ * The run of an engagement.
+ *
+ * Four steps, and the order matters: the first one is a conversation that
+ * can end the engagement before it starts, and the last one is the handover,
+ * which is the only step that has an end date.
+ */
 const STEPS = [
   {
     title: 'Scope call',
@@ -128,84 +81,145 @@ const STEPS = [
     body: 'Documented, tested, and yours. I leave when the system runs without me.',
   },
 ].map((s, i) => ({ ...s, num: num(i) }));
+
+/**
+ * The terms.
+ *
+ * Four lines that answer the question every client asks before the scope
+ * call: what shape is this, what does it cost, and what do I own at the
+ * end. They sit beside the hero because they are the reason to keep reading
+ * — the hero says what the work is, and this says what agreeing to it means.
+ */
+const TERMS = [
+  {
+    k: 'Fixed scope',
+    v: 'One deliverable, agreed in writing before the work starts.',
+  },
+  {
+    k: 'Fixed price',
+    v: 'A number, not an hourly meter.',
+  },
+  {
+    k: 'Open build',
+    v: 'Weekly updates and a working environment you can look at from week one.',
+  },
+  {
+    k: 'Yours at the end',
+    v: 'Code, tests and documentation — and no dependency on me to run it.',
+  },
+];
+
+/**
+ * What this is not.
+ *
+ * The part of the page that does the selling. Every offer on this kind of
+ * page reads the same — "AI solutions for your business" — and the reader
+ * has no way to tell one from another. Saying plainly what an engagement is
+ * not gives them something to check themselves against, and it is the
+ * shortest honest version of the whole pitch.
+ */
+const NOT_THIS = [
+  {
+    title: 'Not a demo.',
+    body: 'A working prototype is not an outcome. The engagement ends when the system runs without me, and you keep the code, the tests and the documentation.',
+  },
+  {
+    title: 'Not an open-ended retainer.',
+    body: 'Fixed scope, fixed price, explicit deliverables. If the scope moves, it moves in writing, on both sides.',
+  },
+  {
+    title: 'Not a fit for everything.',
+    body: 'If the honest answer is that your problem is a configuration change, a prompt, or a vendor that already does this — that is what the scope call will tell you.',
+  },
+];
 ---
 
-<Base title="Freelance" description="Freelance AI engineering: agent reliability audits, RAG quality, workflow automation, MCP tool integration, and architecture review.">
-  <section class="hero">
-    <span class="eyebrow" data-reveal>Freelance</span>
-    <h1 data-reveal data-reveal-delay="60">Available for work</h1>
-    <p class="lede" data-reveal data-reveal-delay="120">
-      I take on a small number of engagements at a time — usually where AI
-      automation and systems reliability overlap, and where the problem is hard
-      enough that a template won't do.
-    </p>
+<Base
+  title="Engagements"
+  description="Fixed-scope AI engineering engagements: agent reliability audits, RAG quality and access control, workflow automation, MCP tool integration, and architecture review."
+>
+  <section class="hero eng-hero">
+    <!--
+      The claim, in its own column. The terms panel beside it is taller than
+      the claim is, and when the two shared a grid the extra height was
+      handed back to the rows between them — which left a band of dead space
+      between the lede and the buttons. One column each, and the panel simply
+      hangs lower than the paragraph.
+    -->
+    <div class="eng-lead">
+      <span class="eyebrow" data-reveal>Engagements</span>
+      <h1 data-reveal data-reveal-delay="60">Fixed-scope AI engineering.</h1>
+      <p class="lede" data-reveal data-reveal-delay="120">
+        I take on a small number of engagements at a time — usually where AI
+        automation and systems reliability overlap, and where the problem is
+        hard enough that a template won't do.
+      </p>
 
-    <div class="btn-row" data-reveal data-reveal-delay="180">
-      <button type="button" class="btn" data-open-letter>Start a conversation</button>
-      <a class="btn" href="/projects/">See the work</a>
+      <div class="btn-row eng-cta" data-reveal data-reveal-delay="180">
+        <button type="button" class="btn" data-open-letter>Start a conversation</button>
+        <a class="btn" href="/projects/">See the work</a>
+      </div>
     </div>
+
+    <!--
+      The terms, beside the hero. The right half of the band was empty on
+      every page but this one; here it holds the four facts a client is
+      actually looking for before the scope call.
+    -->
+    <dl class="terms" data-reveal data-reveal-delay="240">
+      {
+        TERMS.map((term) => (
+          <div class="term">
+            <dt>{term.k}</dt>
+            <dd>{term.v}</dd>
+          </div>
+        ))
+      }
+    </dl>
+  </section>
+
+  <!--
+    The offers. A ledger rather than a grid of tiles: each line is a full
+    engagement, so it reads as a list of things that get done instead of a
+    wall of headings that all have to be opened to be compared.
+  -->
+  <section class="section">
+    <div class="section-head">
+      <h2 data-reveal data-anim="underline">The engagements</h2>
+      <span class="card-meta">{ENGAGEMENTS.length} shapes of work</span>
+    </div>
+
+    <ol class="ledger">
+      {
+        ENGAGEMENTS.map((e, i) => (
+          <li class="eng" data-reveal data-reveal-delay={Math.min(i, 4) * 50}>
+            <div class="eng-head">
+              <span class="eng-num" aria-hidden="true">
+                {e.num}
+              </span>
+              <h3 class="eng-title">{e.title}</h3>
+            </div>
+
+            <dl class="eng-facts">
+              <dt>Symptom</dt>
+              <dd>{e.when}</dd>
+              <dt>You get</dt>
+              <dd>{e.deliverable}</dd>
+              <dt>Stack</dt>
+              <dd class="eng-stack">{e.stack}</dd>
+            </dl>
+          </li>
+        ))
+      }
+    </ol>
   </section>
 
   <section class="section">
     <div class="section-head">
-      <h2 data-reveal data-anim="underline">Services</h2>
+      <h2 data-reveal data-anim="underline">How an engagement runs</h2>
+      <span class="card-meta">Four steps, in order</span>
     </div>
 
-    <div class="card-grid svc-grid" data-anim="tilt">
-      {
-        SERVICES.map((s, i) => (
-          <div class="card svc" data-reveal data-reveal-delay={i * 60}>
-            <span class="svc-num" aria-hidden="true">
-              {s.num}
-            </span>
-            {/* The button sits in the heading and its ::after is stretched over
-                the whole card, so the entire tile is the hit target while the
-                accessible name stays one clean label. A <button> cannot legally
-                wrap an <h3>, so the heading wraps the button instead. */}
-            <h3 class="svc-title">
-              <button
-                type="button"
-                class="svc-open"
-                data-open-dialog="serviceModal"
-                data-panel={s.id}
-              >
-                {s.title}
-                <span class="svc-cue">details</span>
-              </button>
-            </h3>
-          </div>
-        ))
-      }
-    </div>
-  </section>
-
-  <section class="section">
-    <div class="section-head">
-      <h2 data-reveal data-anim="underline">Projects</h2>
-    </div>
-
-    <div class="card-grid" data-anim="tilt">
-      {
-        PROJECTS.map((p, i) => (
-          <div class="card proj" data-reveal data-reveal-delay={i * 40}>
-            <span class="proj-num" aria-hidden="true">
-              {p.num}
-            </span>
-            <h3 class="proj-title">
-              <button type="button" class="svc-open" data-open-dialog="projectModal" data-panel={p.id}>
-                {p.title}
-                <span class="proj-gloss">{p.gloss}</span>
-                <span class="svc-cue">details</span>
-              </button>
-            </h3>
-          </div>
-        ))
-      }
-    </div>
-  </section>
-
-  <section class="section">
-    <h2 data-reveal data-anim="underline">How it works</h2>
     <ol class="steps" data-reveal data-reveal-delay="60">
       {
         STEPS.map((s) => (
@@ -222,10 +236,32 @@ const STEPS = [
   </section>
 
   <!--
-    The close. Until this existed the only way to get in touch from this page
-    was the `available` chip in the status bar — a 24px status indicator that
-    reads as a label rather than as a way in. The page is titled "Available
-    for work" and ends with nothing that starts the work.
+    The honest column. Three lines that say what an engagement is not, which
+    is the part of the pitch that actually separates one from another.
+  -->
+  <section class="section">
+    <div class="section-head">
+      <h2 data-reveal data-anim="underline">What this is not</h2>
+    </div>
+
+    <div class="not-grid">
+      {
+        NOT_THIS.map((n, i) => (
+          <div class="not" data-reveal data-reveal-delay={i * 60}>
+            <h3 class="not-title">{n.title}</h3>
+            <p class="not-body">{n.body}</p>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  <!--
+    The close. The page says what the work is, what it costs and what the
+    reader ends up holding — and then it stops. A page about taking on work
+    has to end with a way to start it, so the two ways in sit side by side:
+    the form, and the plain address, so it still works with the script
+    blocked.
   -->
   <section class="section close-cta">
     <div class="close-inner">
@@ -241,116 +277,149 @@ const STEPS = [
       </div>
     </div>
   </section>
-
-  <DetailModal id="serviceModal" panels={SERVICE_PANELS} />
-  <DetailModal id="projectModal" panels={PROJECT_PANELS} />
-
-  <script>
-    import '../scripts/dialogs.js';
-  </script>
 </Base>
 
 <style>
-  /* ----- Services ---------------------------------------------------------
-     Five offerings, each a tile that opens its brief in a dialog. The grid is
-     a little wider than the default card minimum because the titles run to two
-     lines on some of them.
+  /* ----- The hero ----------------------------------------------------------
+     Two columns on a wide screen: the claim on the left, the terms on the
+     right. Below the breakpoint they stack, because a four-row panel beside
+     a headline only works where there is width for both.
      ---------------------------------------------------------------------- */
-  .svc-grid {
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 21rem), 1fr));
+  .eng-hero {
+    padding-block: clamp(2.2rem, 8vh, 5rem) clamp(1.5rem, 4vh, 3rem);
   }
 
-  .svc-num {
-    font-family: var(--font-mono);
-    font-size: 0.75rem;
-    letter-spacing: 0.12em;
-    color: var(--braise);
+  @media (min-width: 62rem) {
+    .eng-hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 23rem);
+      column-gap: clamp(2rem, 5vw, 4.5rem);
+      align-items: start;
+    }
   }
 
-  /* ----- Openers ----------------------------------------------------------
-     Both grids are tiles that open a dialog, so the trigger styling is shared.
-     The card keeps its own heading and the button carries the label: a heading
-     is flow content and a button may not wrap one, but a button inside a
-     heading is valid and reads the way a reader expects.
-     ---------------------------------------------------------------------- */
-  .svc-title,
-  .proj-title {
-    margin: 0;
+  .eng-cta {
+    margin-block: var(--sp-5) 0;
   }
 
-  .svc-open {
-    display: block;
-    width: 100%;
-    text-align: start;
-    font: inherit;
-    color: inherit;
-    background: none;
-    border: none;
+  /* The terms panel: four rows on one ground, separated by hairlines. */
+  .terms {
+    display: grid;
+    gap: 1px;
+    margin: var(--sp-5) 0 0;
     padding: 0;
-    cursor: pointer;
+    background: var(--grid);
+    border: var(--filet) solid var(--grid);
   }
 
-  /* Stretch the trigger over the whole tile. The card is the positioned parent,
-     so the entire card becomes the hit target and the pointer highlight in
-     animation.css still lands on the card rather than on a text-sized box. */
-  .svc-open::after {
-    content: '';
-    position: absolute;
-    inset: 0;
+  .term {
+    display: grid;
+    gap: 0.15rem;
+    padding: 0.75rem 0.9rem 0.85rem;
+    background: var(--papier);
   }
 
-  /* The focus ring is drawn on the card: the button's own box is only as tall
-     as its text, so a ring on it would not say how large the target is. */
-  .card:has(.svc-open:focus-visible) {
-    outline: var(--trait) solid var(--braise);
-    outline-offset: 2px;
-  }
-
-  .svc-cue {
-    display: block;
-    margin-top: 0.4rem;
+  .term dt {
     font-family: var(--font-mono);
-    font-size: 0.75rem;
-    font-weight: 400;
-    letter-spacing: 0.14em;
+    font-size: var(--fs-label);
+    letter-spacing: 0.12em;
     text-transform: uppercase;
     color: var(--braise);
   }
 
-  /* Only the arrow moves, so the tile itself holds still the way the rest of
-     the cards on the site lift. */
-  .svc-cue::after {
-    content: ' →';
-    display: inline-block;
-    transition: transform 160ms ease;
+  .term dd {
+    margin: 0;
+    color: var(--fort);
+    font-size: var(--fs-small);
+    line-height: 1.5;
   }
 
-  .card:hover .svc-cue::after,
-  .svc-open:focus-visible .svc-cue::after {
-    transform: translateX(3px);
+  /* ----- The engagements ---------------------------------------------------
+     Five rows, each one a full-width line: the title on the left, the brief
+     on the right. The grid of tiles this replaced showed five headings and
+     hid five briefs behind a button; a visitor could not tell which offer
+     was theirs without clicking through all five.
+     ---------------------------------------------------------------------- */
+  .ledger {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-top: var(--trait) solid var(--braise);
   }
 
-  /* ----- Projects --------------------------------------------------------- */
-  .proj-num {
+  .eng {
+    display: grid;
+    gap: var(--sp-4);
+    padding-block: var(--sp-5);
+    border-bottom: var(--filet) solid var(--grid);
+  }
+
+  @media (min-width: 52rem) {
+    .eng {
+      grid-template-columns: minmax(13rem, 19rem) 1fr;
+      gap: var(--sp-6);
+      align-items: start;
+    }
+  }
+
+  .eng-head {
+    display: flex;
+    align-items: baseline;
+    gap: var(--sp-3);
+  }
+
+  .eng-num {
     font-family: var(--font-mono);
-    font-size: 0.75rem;
+    font-size: var(--fs-label);
     letter-spacing: 0.12em;
     color: var(--braise);
+    flex-shrink: 0;
   }
 
-  .proj-gloss {
-    display: block;
-    margin-top: 0.25rem;
-    font-style: italic;
-    font-weight: 400;
-    font-size: 0.9rem;
+  .eng-title {
+    margin: 0;
+    font-size: clamp(1.05rem, 2.2vw, 1.25rem);
+    line-height: 1.2;
+  }
+
+  .eng-facts {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.15rem;
+    margin: 0;
+  }
+
+  @media (min-width: 34rem) {
+    .eng-facts {
+      grid-template-columns: 5.5rem 1fr;
+      gap: 0.55rem 0.9rem;
+    }
+  }
+
+  .eng-facts dt {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--braise);
+    padding-top: 0.18rem;
+  }
+
+  .eng-facts dd {
+    margin: 0 0 0.45rem;
     color: var(--fort);
   }
 
-  /* ----- How it works -----------------------------------------------------
-     Three across, full page width. The reading cap that held this to 68ch was
-     right for a paragraph and wrong for four short steps, which left the block
-     occupying a third of the canvas for no reason.
+  .eng-facts dd.eng-stack {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--encre);
+  }
+
+  /* ----- How an engagement runs --------------------------------------------
+     Four across on a wide screen, two on a tablet, one on a phone. The old
+     three-column grid held four steps and left the last one stranded on a
+     row of its own.
      ---------------------------------------------------------------------- */
   .steps {
     list-style: none;
@@ -361,9 +430,15 @@ const STEPS = [
     grid-template-columns: 1fr;
   }
 
-  @media (min-width: 48rem) {
+  @media (min-width: 40rem) {
     .steps {
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 62rem) {
+    .steps {
+      grid-template-columns: repeat(4, 1fr);
     }
   }
 
@@ -374,7 +449,7 @@ const STEPS = [
 
   .step-num {
     font-family: var(--font-mono);
-    font-size: 0.75rem;
+    font-size: var(--fs-label);
     letter-spacing: 0.12em;
     color: var(--braise);
   }
@@ -385,6 +460,39 @@ const STEPS = [
   }
 
   .step-body {
+    margin: 0.4rem 0 0;
+    color: var(--fort);
+  }
+
+  /* ----- What this is not --------------------------------------------------
+     Three columns with a rule on top, matching the steps above: the two
+     blocks say the same kind of thing about the engagement, so they are
+     drawn the same way.
+     ---------------------------------------------------------------------- */
+  .not-grid {
+    display: grid;
+    gap: 1.5rem 2rem;
+    grid-template-columns: 1fr;
+  }
+
+  @media (min-width: 48rem) {
+    .not-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  .not {
+    border-top: var(--trait) solid var(--braise);
+    padding-top: 0.7rem;
+  }
+
+  .not-title {
+    margin: 0;
+    font-size: 1.05rem;
+    color: var(--braise);
+  }
+
+  .not-body {
     margin: 0.4rem 0 0;
     color: var(--fort);
   }
@@ -406,11 +514,5 @@ const STEPS = [
 
   .close-inner p {
     color: var(--fort);
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .svc-cue::after {
-      transition: none;
-    }
   }
 </style>

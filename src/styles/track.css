@@ -27,11 +27,16 @@
 /* The visible frame: pinned for the length of the runway, and clipped so the
    row traveling past its edges is hidden rather than overflowing the page. It
    also hangs the row in its middle, so the row is only as tall as it needs to
-   be — the height of the tallest card. */
+   be — the height of the tallest card.
+
+   The frame starts below the chrome and runs to the bottom of the window, so
+   it measures itself against --chrome-h: the same number the sticky headings
+   and the anchor targets clear. It used to carry a literal "1.9rem + 3rem"
+   written for a header that has since changed twice. */
 .track {
   position: sticky;
-  top: calc(1.9rem + 3rem);
-  height: calc(100vh - 1.9rem - 3rem);
+  top: var(--chrome-h);
+  height: calc(100vh - var(--chrome-h));
   min-height: 26rem;
   overflow: hidden;
   display: flex;
@@ -535,7 +540,12 @@
     --card-w: clamp(20rem, 52vw, 36rem);
     display: flex;
     flex-direction: column;
-    height: calc(100dvh - 1.9rem - 3rem);
+    /* The chrome is the status bar and the menu bar, and the site already
+       names the stack as one number. The old numbers here (1.9rem + 3rem)
+       were written before the status bar was shortened, and they left the page
+       eighteen pixels taller than the window — so the wheel that was supposed
+       to drive the row sideways also scrolled the page down by a hair. */
+    height: calc(100dvh - var(--chrome-h));
     /* The footer is pinned to the bottom of the screen on this page, so the
        frame gives up the height it covers — otherwise the position readout
        sits under the bar. */
@@ -602,6 +612,9 @@
     grid-auto-columns: var(--card-w);
     align-items: stretch;
     height: auto;
+    /* The row keeps its own height; the space under it belongs to the index,
+       not to a gap between the two. */
+    flex: 0 0 auto;
     /* Only the ends are padded: the leading half is what the script spends as the
        row's forward offset at rest, and the row needs no strip at its foot —
        the readout is pinned to the frame's own bottom, well below the cards. */
@@ -640,10 +653,126 @@
   color: var(--braise);
 }
 
+/* ----- The index ----------------------------------------------------------
+   The whole catalog, in two or three rows under the row of panels.
+
+   The row is a carousel: it shows two of the twelve panels at a time and hides
+   the rest, so a reader could arrive, look at two cards and leave without ever
+   knowing that eleven other systems existed. The index is the answer to that,
+   and it is also what fills the band the row leaves under itself — the empty
+   space between the cards and the readout used to be the largest unused area
+   on the site.
+
+   Each entry is the panel's number, its short name and when it was built. The
+   full title stays on the card, where there is room for a sentence; here the
+   name has to fit a column.
+
+   The entry the row is holding is marked, and the mark is the accent and the
+   weight: the same thing the lit panel does, at a tenth of the size. */
+.panel-index {
+  display: grid;
+  gap: 0.5rem 1.5rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  padding-top: var(--sp-5);
+}
+
+/* Inside the frame the index takes the whole band the row leaves under it:
+   the rows spread across it rather than sitting at the top of a hole. */
+.prj-page .panel-index {
+  flex: 1 1 auto;
+  min-height: 0;
+  align-content: stretch;
+  grid-auto-rows: auto;
+  padding-bottom: var(--sp-4);
+}
+
+@media (min-width: 74rem) {
+  .panel-index {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.panel-index-item {
+  display: grid;
+  grid-template-columns: 1.6rem minmax(0, 1fr);
+  gap: 0.05rem 0.45rem;
+  align-items: baseline;
+  text-decoration: none;
+  color: inherit;
+}
+
+.panel-index-num {
+  font-family: var(--font-mono);
+  font-size: var(--fs-label);
+  letter-spacing: 0.1em;
+  color: var(--fort);
+}
+
+.panel-index-name {
+  font-size: 0.86rem;
+  /* The leading is loose on purpose: at 1.25 the descender of an underscore
+     fell outside the line box and was clipped away, so `dev_stories_blog` read
+     as `dev stories blog`. */
+  line-height: 1.45;
+  color: var(--fort);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* When the panel was built. The mono label, at the foot of the entry. */
+.panel-index-when {
+  grid-column: 2;
+  font-family: var(--font-mono);
+  font-size: var(--fs-label);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fort);
+  opacity: 0.75;
+}
+
+a.panel-index-item:hover .panel-index-name {
+  color: var(--braise);
+}
+
+a.panel-index-item:hover .panel-index-num {
+  color: var(--braise);
+}
+
+/* The panel the row is holding. */
+.panel-index-item.is-current .panel-index-num {
+  color: var(--braise);
+}
+
+.panel-index-item.is-current .panel-index-name {
+  color: var(--braise);
+  font-weight: 600;
+}
+
+/* Stacked — narrow, reduced motion, or no fine pointer, where the row is the
+   plain column set up at the top of this file — every panel is on the page
+   already, so the index would only repeat them. */
+@media not all and (min-width: 52.1rem) and (hover: hover) and (pointer: fine)
+  and (prefers-reduced-motion: no-preference) {
+  .panel-index {
+    display: none;
+  }
+}
+
 /* Position readout along the foot of the frame, the bar stretched between the
    two counters: a progress bar the width of the frame is a ruler the reader can
    look down, where a fixed stub only says "somewhere in the middle". Hidden from
    assistive tech: it repeats what the panels themselves say. */
+/* The readout sits under the index rather than at the foot of the frame: the
+   index has taken the band the row used to leave empty, and a progress bar
+   with a hundred pixels of nothing under it reads as a rule floating in the
+   middle of the page. */
+.prj-page .panel-hud {
+  position: static;
+  margin-top: 0;
+  flex: 0 0 auto;
+}
+
 .panel-hud {
   position: absolute;
   left: clamp(1rem, 4vw, 3rem);

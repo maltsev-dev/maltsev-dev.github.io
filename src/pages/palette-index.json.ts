@@ -22,7 +22,7 @@ export const GET: APIRoute = async () => {
     { label: 'Experience', href: '/experience/', group: 'Page' },
     { label: 'Profile', href: '/about/', group: 'Page' },
     { label: 'Writing', href: '/blog/', group: 'Page' },
-    { label: 'Freelance', href: '/freelance/', group: 'Page' },
+    { label: 'Engagements', href: '/freelance/', group: 'Page' },
     ...PROJECTS.map((p) => ({
       label: p.data.title,
       href: `/projects/${p.data.slug}/`,

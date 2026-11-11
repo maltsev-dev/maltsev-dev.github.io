@@ -14,6 +14,12 @@ export interface Milestone {
   /** Stable id, used as the key and readable in the DOM. */
   slug: string;
   title: string;
+  /**
+   * The short name, for places where the full title does not fit: the index
+   * under the projects track, and anything else that has to name twelve
+   * things in a row. Optional — a milestone without one uses its title.
+   */
+  short?: string;
   period: string;
   /**
    * One panel is one glance, and every panel in the row is read side by side, so
@@ -30,6 +36,7 @@ export const MILESTONES: Milestone[] = [
   {
     slug: 'nullrun',
     title: 'NullRun',
+    short: 'NullRun',
     period: 'Current',
     summary:
       'A runtime authorization layer for agents: tool execution, approvals, budgets and policy. An agent acts inside a limit instead of an assumption — every call gated, every grant recorded.',
@@ -39,6 +46,7 @@ export const MILESTONES: Milestone[] = [
   {
     slug: 'ai-social-media-agent',
     title: 'AI Social Media Agent: 7-Platform Publishing with Human-in-the-Loop',
+    short: 'Social Media Agent',
     period: 'Mar 2026',
     summary:
       'A LangGraph pipeline generating content variants with DALL-E media across seven networks. Each one is held for human approval before it schedules and publishes, targeting 75% less production time and 3x posting frequency.',
@@ -47,6 +55,7 @@ export const MILESTONES: Milestone[] = [
   {
     slug: 'permission-aware-rag',
     title: 'Internal Knowledge: Permission-aware RAG That Never Lies',
+    short: 'Internal Knowledge',
     period: 'Mar 2026',
     summary:
       'A 13-stage hybrid retrieval pipeline — dense and BM25, merged by Reciprocal Rank Fusion, reranked by a cross-encoder. GPT-4o synthesis refuses to answer without grounded sources, so the system cannot invent a citation.',
@@ -55,6 +64,7 @@ export const MILESTONES: Milestone[] = [
   {
     slug: 'telegram-support-agent',
     title: 'AI-Powered Telegram Customer Support Multi-Agent System',
+    short: 'Telegram Support',
     period: 'Feb 2026',
     summary:
       'A 10-node LangGraph pipeline that classifies intent and answers from a RAG knowledge base. Anything unsafe or unresolved is validated and escalated to a human agent, targeting 60%+ auto-resolution under 5 seconds.',
@@ -63,6 +73,7 @@ export const MILESTONES: Milestone[] = [
   {
     slug: 'dev-nurse',
     title: 'Dev-Nurse',
+    short: 'Dev-Nurse',
     period: 'Jul 2025 — Nov 2025',
     summary:
       'A resource-constrained TinyML system on ESP32-S3: on-device inference, MQTT streaming and a Rust backend. Built to run fully at the edge, with no cloud dependency when the network drops.',
@@ -72,6 +83,7 @@ export const MILESTONES: Milestone[] = [
   {
     slug: 'rest-on',
     title: 'RestOn',
+    short: 'RestOn',
     period: 'Dec 2024 — Jan 2025',
     summary:
       'Actix-web backend code with third-party API integrations, generated from a prompt. It arrives with tests already written, so a prototype runs in minutes instead of an afternoon.',
@@ -81,6 +93,7 @@ export const MILESTONES: Milestone[] = [
   {
     slug: 'ue5-shooter-game',
     title: 'UE5 Shooter Game',
+    short: 'UE5 Shooter',
     period: 'Jul 2024 — Aug 2024',
     summary:
       'A shooter that never gets boring because you made it with your own hands. The sci-fi story and the combat both exceeded what I expected from a two-month project.',
@@ -90,6 +103,7 @@ export const MILESTONES: Milestone[] = [
   {
     slug: 'emulator-launcher',
     title: 'Android Emulator Launcher',
+    short: 'Emulator Launcher',
     period: 'Aug 2023 — Sep 2023',
     summary:
       'A Java Swing desktop application for configuring, creating and managing Android emulators. It turns the command-line ritual of AVD setup into a window with buttons.',
@@ -99,6 +113,7 @@ export const MILESTONES: Milestone[] = [
   {
     slug: 'dev-stories-blog',
     title: 'dev_stories_blog',
+    short: 'Dev Stories Blog',
     period: 'Jun 2023 — Dec 2025',
     summary:
       'Technical writing that takes my own projects apart piece by piece. It doubles as self-reflection on the engineering journey behind them.',

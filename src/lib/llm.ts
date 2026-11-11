@@ -1,6 +1,7 @@
 import { getCollection, type CollectionEntry } from 'astro:content';
 import type { APIContext } from 'astro';
 import { MILESTONES } from '../data/milestones';
+import { TOPICS } from '../data/topics';
 import { summarize } from './summarize';
 import { SKILL_COUNT, spellNumber, yearsOfExperience } from './profile';
 
@@ -20,57 +21,6 @@ type PostEntry = CollectionEntry<'posts'>;
   and one honest line per page it can then fetch for the detail.
 */
 
-interface Group {
-  /** Heading for the section. */
-  title: string;
-  /** One line saying what belongs in it, for a reader deciding whether to read on. */
-  note: string;
-  /** Tags that put a post here. Checked in order, so the specific beats the general. */
-  tags: string[];
-}
-
-// Order is the classification: the first group holding any of the post's tags
-// wins, so `rust` (twenty-seven posts) and `project` (twenty) fall to the end and
-// only collect what nothing more specific claimed.
-const GROUPS: Group[] = [
-  {
-    title: 'Authorization, policy and agent security',
-    note: 'The largest body of writing: who is allowed to do what, on whose authority, recorded how. This is also what NullRun, the product, is built on.',
-    tags: ['authorization', 'security', 'compliance', 'audit', 'mcp', 'enforcement', 'budget'],
-  },
-  {
-    title: 'Reliability, budgets and failure handling',
-    note: 'What an agent does when the run goes wrong: unknown outcomes, fail-closed paths, cost per call, and the operations underneath.',
-    tags: ['reliability', 'operations', 'cost', 'architecture', 'testing', 'redis', 'ai', 'open_ai'],
-  },
-  {
-    title: 'Embedded Rust and bare metal',
-    note: 'Register-level work on Cortex-M and Nordic/RP boards — peripherals, buses, interrupts, and the toolchain that shrinks firmware enough to fit.',
-    tags: [
-      'embedded', 'basic', 'basic_electronics', 'cpu', 'registers', 'peripherals', 'mmio',
-      'gpio', 'pwm', 'timers', 'interrupts', 'clock', 'sync', 'rp2040', 'nrf52833', 'nurse',
-    ],
-  },
-  {
-    title: 'Solana and smart contracts',
-    note: 'Programs, cross-program invocation and on-chain state, written in Rust on Anchor.',
-    tags: ['solana', 'anchor'],
-  },
-  {
-    title: 'Applications and the web',
-    note: 'Web servers, WASM, desktop-ish CLIs and TUIs, Android tooling, and the game work — the application layer above the systems.',
-    tags: [
-      'actix_web', 'webassembly', 'java', 'spring', 'svg', 'cli', 'android', 'graphics',
-      'gamedev', 'cpp', 'tui', 'product', 'engineering',
-    ],
-  },
-  {
-    title: 'The Rust toolchain and compilers',
-    note: 'How Rust source becomes a binary: the pipeline, the linker, AOT compilation, memory layout.',
-    tags: ['rust', 'compilers', 'linker', 'aot', 'memory'],
-  },
-];
-
 // Pages that are not collection-driven, with the one line that says what an
 // agent gets by fetching them.
 //
@@ -80,16 +30,11 @@ const GROUPS: Group[] = [
 const PAGES = [
   { path: '/', label: 'Home', desc: 'The pitch in one screen: what the work is and where to go next.' },
   { path: '/about/', label: 'Profile', desc: 'Method rather than CV — how engagements run, and what is on the desk right now.' },
-  { path: '/blog/', label: 'Writing', desc: 'Every post, newest first, grouped by year.' },
+  { path: '/blog/', label: 'Writing', desc: 'Every post, newest first, filed by topic.' },
   { path: '/projects/', label: 'Projects', desc: 'Case studies and shipped milestones side by side.' },
   { path: '/experience/', label: 'Experience', desc: `Six stops over ${spellNumber(yearsOfExperience())} years, then the ${SKILL_COUNT}-skill toolkit pyramid with provenance per skill.` },
-  { path: '/freelance/', label: 'Freelance', desc: 'What is taken on, and the four-step engagement: scope call, fixed-price proposal, build in the open, handover.' },
+  { path: '/freelance/', label: 'Engagements', desc: 'The five shapes of work taken on, what each one delivers, and the four-step run: scope call, written proposal, build in the open, handover.' },
 ];
-
-/** First group claiming any of the post's tags, or null for the leftovers. */
-function groupOf(tags: string[]): Group | null {
-  return GROUPS.find((g) => tags.some((t) => g.tags.includes(t))) ?? null;
-}
 
 /** The index line for one post: title, one-line description, date and tags. */
 function postLine(post: PostEntry, url: (path: string) => string): string {
@@ -130,9 +75,9 @@ export async function renderLlms({ site }: APIContext, selfPath: string): Promis
     // this site — over HTTPS it does not answer at all, and every URL in this
     // map points at maltsev-dev.github.io. The brand goes in the heading
     // instead, exactly as it does in the page titles.
-    '# Maltsev · Agentic Engineering',
+    '# Maltsev · Forward Deployed Engineer',
     '',
-    `> Anatolii Maltsev. AI agent authorization and reliability as the main subject, embedded Rust underneath it. ${spellNumber(yearsOfExperience(), true)} years in QA automation and platform test engineering, now building NullRun — a runtime authorization layer for AI agents. This site is the writing that came out of it: what an agent is allowed to do, what happens when it does it anyway, and the hardware and toolchain work underneath.`,
+    `> Anatolii Maltsev, forward deployed engineer. I build AI systems that survive production: agent runtime security, retrieval quality, and the reliability layer underneath both. Four years of it in QA automation and platform test engineering, the rest in applied AI engineering, embedded Rust underneath it, and ${spellNumber(yearsOfExperience())} years of practice in total. This site is the work and the writing: what an agent is allowed to do, what happens when it does it anyway, and the hardware and toolchain work underneath.`,
     '',
     'Everything here is English, server-rendered HTML with no login and no client-side requirement for reading. If you only need the map, stop after "Topics" — the index below it is complete, so there is no need to crawl every post.',
     '',
@@ -164,39 +109,27 @@ export async function renderLlms({ site }: APIContext, selfPath: string): Promis
     ''
   );
 
-  // Each post lands in exactly one group: the first whose tags it carries.
-  // Filtering per group instead would list a `rust, embedded` post under both
-  // headings and quietly inflate the counts.
-  const buckets = new Map<Group | null, typeof posts>();
-  for (const post of posts) {
-    const key = groupOf(post.data.tags);
-    const bucket = buckets.get(key);
-    if (bucket) bucket.push(post);
-    else buckets.set(key, [post]);
-  }
+  // The same five topics the site's own index shows, and the same counts.
+  //
+  // This section used to classify the posts by their tags, which produced six
+  // headings that were not the ones on the page — the site files the writing
+  // under five hand-assigned topics and the agent map filed it under six
+  // tag-derived groups, with numbers that did not match the chips a reader
+  // could see. One taxonomy, one source, no drift.
+  const byId = new Map(posts.map((p) => [p.id, p]));
 
-  for (const group of GROUPS) {
-    const inGroup = buckets.get(group);
-    if (!inGroup || inGroup.length === 0) continue;
+  for (const topic of TOPICS) {
+    const inTopic = topic.posts
+      .map((id) => byId.get(id))
+      .filter((p): p is PostEntry => Boolean(p));
+    if (inTopic.length === 0) continue;
 
     lines.push(
-      `### ${group.title} (${inGroup.length})`,
+      `### ${topic.label} (${inTopic.length})`,
       '',
-      group.note,
+      topic.desc,
       '',
-      ...inGroup.map((p) => postLine(p, url)),
-      ''
-    );
-  }
-
-  // Whatever no group claimed — kept rather than dropped, so the index stays a
-  // complete picture of the writing.
-  const rest = buckets.get(null);
-  if (rest && rest.length > 0) {
-    lines.push(
-      `### Other notes (${rest.length})`,
-      '',
-      ...rest.map((p) => postLine(p, url)),
+      ...inTopic.map((p) => postLine(p, url)),
       ''
     );
   }

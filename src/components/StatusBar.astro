@@ -2,6 +2,12 @@
 // Slim strip above the menu bar. Time and availability sit together on the
 // right edge. Availability opens the letter modal rather than navigating, so a
 // visitor who is ready to write does not have to find the Contact page first.
+//
+// The strip carries two words and a clock. It used to carry a third — "— say
+// hello" — and to be 44px tall because of it. Every screen of the site opened
+// with that much chrome above the fold, spent on a greeting, so it is gone:
+// the indicator says "available", the tooltip says what clicking it does, and
+// the strip is one line tall again.
 ---
 
 <div class="status-bar">
@@ -26,21 +32,22 @@
         class="status-item status-cta"
         type="button"
         data-open-letter
-        aria-label="available — say hello, open the message form"
+        aria-label="available — open the message form"
+        title="Available — open the message form"
       >
         <span class="pulse-dot" aria-hidden="true"></span>
-        <span>available<span class="status-hide-sm"> — say hello</span></span>
+        <span>available</span>
       </button>
     </div>
   </div>
 </div>
 
 <style>
-  /* The chip was 24px tall, which passes WCAG 2.2 and fails every touch
-     guideline, and it was the only way into the contact form on most pages.
-     44px is the floor iOS asks for; the strip grows by that much and nothing
-     else moves. */
+  /* The strip is one line tall. The button keeps the 24px floor WCAG 2.2 asks
+     for; a finger gets the 44px it needs from the overlay in os.css, which
+     grows the hit area without growing the layout. */
   .status-bar .status-cta {
-    min-height: 44px;
+    min-height: 24px;
+    padding-block: 0;
   }
 </style>

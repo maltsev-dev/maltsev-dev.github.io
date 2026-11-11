@@ -45,17 +45,11 @@ const METHOD = [
 
 // Right now. Three questions, answered plainly. Each answer is a list rather
 // than a run-on sentence — a single line of five items is unreadable.
+//
+// The third answer used to be the five service names, verbatim, from the
+// engagements page. The same list twice on one site is two places to update
+// and one place to read, so this one points at the page that holds it.
 const NOW = [
-  {
-    k: 'doing',
-    items: [
-      'AI agent reliability audit & fix',
-      'RAG quality & access-control audit',
-      'AI workflow & CRM integration',
-      'MCP server & secure tool integration',
-      'Production readiness & architecture review',
-    ],
-  },
   {
     k: 'founding',
     items: ['NullRun — runtime authorization for agents', 'Agentic Audit'],
@@ -63,6 +57,11 @@ const NOW = [
   {
     k: 'writing',
     items: ['agents', 'authorization, and the systems underneath them'],
+  },
+  {
+    k: 'taking on',
+    href: '/freelance/',
+    items: ['five fixed-scope engagements, one at a time'],
   },
 ];
 ---
@@ -195,11 +194,21 @@ const NOW = [
               <div class="now-row">
                 <dt>{n.k}</dt>
                 <dd>
-                  <ul class="now-items">
-                    {n.items.map((it) => (
-                      <li>{it}</li>
-                    ))}
-                  </ul>
+                  {n.href ? (
+                    /* One answer that is a door rather than a list: the
+                       engagements page holds the five offers in full, and
+                       repeating their names here is the duplication this
+                       page used to have. */
+                    <a class="now-link" href={n.href}>
+                      {n.items[0]}
+                    </a>
+                  ) : (
+                    <ul class="now-items">
+                      {n.items.map((it) => (
+                        <li>{it}</li>
+                      ))}
+                    </ul>
+                  )}
                 </dd>
               </div>
             ))
@@ -537,6 +546,16 @@ const NOW = [
 
   .now-row dd {
     margin: 0;
+    color: var(--fort);
+  }
+
+  /* The one answer that is a door. Drawn like a link because it is one. */
+  .now-link {
+    color: var(--braise);
+    text-decoration-color: var(--braise);
+  }
+
+  .now-link:hover {
     color: var(--fort);
   }
 

@@ -145,7 +145,7 @@ export const SKILL_TIERS: SkillTier[] = [
       {
         id: 'python',
         name: 'Python',
-        jobs: ['NullRun', 'Freelance'],
+        jobs: ['NullRun', 'Independent'],
         certs: [
           CERTS.langgraphFoundation,
           CERTS.langgraphEssentials,
@@ -158,7 +158,7 @@ export const SKILL_TIERS: SkillTier[] = [
       {
         id: 'rust',
         name: 'Rust',
-        jobs: ['Freelance'],
+        jobs: ['Independent'],
         certs: [
           CERTS.rustWebServers,
           CERTS.substrate,
@@ -204,6 +204,13 @@ export const SKILL_TIERS: SkillTier[] = [
       {
         id: 'quality-assurance',
         name: 'Quality Assurance',
+        jobs: QA_JOBS,
+        certs: [CERTS.ctfl],
+        projects: [],
+      },
+      {
+        id: 'performance-testing',
+        name: 'Performance Testing',
         jobs: QA_JOBS,
         certs: [CERTS.ctfl],
         projects: [],
@@ -272,49 +279,49 @@ export const SKILL_TIERS: SkillTier[] = [
       {
         id: 'ai-agent-development',
         name: 'AI Agent Development',
-        jobs: ['NullRun', 'Freelance'],
+        jobs: ['NullRun', 'Independent'],
         certs: [CERTS.agenticTrack],
         projects: ['Telegram support agent', '7-platform agent'],
       },
       {
         id: 'agentic-workflows',
         name: 'Agentic Workflows',
-        jobs: ['Freelance'],
+        jobs: ['Independent'],
         certs: [CERTS.agenticTrack],
         projects: ['7-platform agent'],
       },
       {
         id: 'rag',
         name: 'Retrieval-Augmented Generation',
-        jobs: ['Freelance'],
+        jobs: ['Independent'],
         certs: [],
         projects: ['Permission-aware RAG', 'Telegram support agent'],
       },
       {
         id: 'multi-agent-systems',
         name: 'Multi-agent Systems',
-        jobs: ['Freelance'],
+        jobs: ['Independent'],
         certs: [CERTS.agenticTrack],
         projects: ['Telegram support agent'],
       },
       {
         id: 'langgraph',
         name: 'LangGraph',
-        jobs: ['Freelance'],
+        jobs: ['Independent'],
         certs: [CERTS.langgraphEssentials, CERTS.langgraphFoundation],
         projects: ['Telegram support agent', '7-platform agent'],
       },
       {
         id: 'mcp',
         name: 'Model Context Protocol',
-        jobs: ['NullRun', 'Freelance'],
+        jobs: ['NullRun', 'Independent'],
         certs: [CERTS.mcpProduction, CERTS.agenticTrack],
         projects: ['NullRun'],
       },
       {
         id: 'ai-systems-architecture',
         name: 'AI Systems Architecture',
-        jobs: ['NullRun', 'Freelance'],
+        jobs: ['NullRun', 'Independent'],
         certs: [CERTS.mcpProduction, CERTS.langgraphFoundation],
         projects: ['NullRun', 'Permission-aware RAG', 'Telegram support agent'],
       },

@@ -31,70 +31,12 @@
 // ZONES below is only what the drawing needs: a label, the one-line readout and
 // the chips. Everything the modal says about a stage lives in src/data/stages.ts
 // and is merged in here, so prose edits never disturb the figure.
-import { STAGE_COPY } from '../data/stages';
+import { STAGE_COPY, STAGES } from '../data/stages';
 
-const DRAWING_ZONES = [
-  {
-    id: 'backend',
-    name: '01 · BACKEND FOUNDATION',
-    desc: 'FastAPI, Pydantic, AsyncIO, Pytest. The service skeleton every later stage plugs into.',
-    stack: ['FastAPI', 'Pydantic', 'AsyncIO', 'Pytest'],
-  },
-  {
-    id: 'llm',
-    name: '02 · LLM API & TOOL CALLING',
-    desc: 'Structured outputs and streaming. Every tool call is schema-checked before it is allowed to run.',
-    stack: ['Structured Outputs', 'Streaming'],
-  },
-  {
-    id: 'agents',
-    name: '03 · AGENT ORCHESTRATION',
-    desc: 'LangGraph state machine. Explicit transitions, so a run can be replayed and compared step by step.',
-    stack: ['LangGraph', 'State Machine'],
-  },
-  {
-    id: 'api',
-    name: '04 · API & BUSINESS INTEGRATIONS',
-    desc: 'REST, webhooks, OAuth 2.0, reconciliation. The layer where the agent meets the systems of record.',
-    stack: ['REST', 'Webhooks', 'OAuth 2.0', 'Reconciliation'],
-  },
-  {
-    id: 'rag',
-    name: '05 · RAG ENGINEERING',
-    desc: 'Hybrid search, reciprocal rank fusion, reranking. Retrieval quality before prompt quality.',
-    stack: ['Hybrid Search', 'RRF', 'Rerank'],
-  },
-  {
-    id: 'reliability',
-    name: '06 · RELIABILITY & RESILIENCE',
-    desc: 'Circuit breakers and idempotency keys. An upstream failure degrades the run instead of cascading.',
-    stack: ['Circuit Breakers', 'Idempotency'],
-  },
-  {
-    id: 'security',
-    name: '07 · SECURITY & AUTHORIZATION',
-    desc: 'Deterministic RBAC and a sandboxed tool runtime. Permissions decided in code, never by the model.',
-    stack: ['Deterministic RBAC', 'Sandbox'],
-  },
-  {
-    id: 'eval',
-    name: '08 · EVALUATION & REGRESSION',
-    desc: 'Trajectory tests over golden datasets. Every prompt or model change is measured before it ships.',
-    stack: ['Trajectory Tests', 'Golden Datasets'],
-  },
-  {
-    id: 'sql',
-    name: '09 · SQL & STATE PERSISTENCE',
-    desc: 'Postgres, Redis, checkpointing. Agent state survives a crash, a deploy and a restart.',
-    stack: ['Postgres', 'Redis', 'Checkpointing'],
-  },
-  {
-    id: 'obs',
-    name: '10 · OBSERVABILITY',
-    desc: 'Tracing and OpenTelemetry. Every run is inspectable from first tool call to final answer.',
-    stack: ['Tracing', 'OpenTelemetry', 'Alerting'],
-  },
-];
+const DRAWING_ZONES = STAGES.map((s) => ({
+  ...s,
+  name: `${s.num} · ${s.title.toUpperCase()}`,
+}));
 
 // Long-form panel copy, merged in. `desc` wins over nothing here: the readout
 // under the figure keeps the one-liner, the modal opens with the full lede.

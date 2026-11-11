@@ -29,6 +29,12 @@
   // The career track has the rail; the projects track has a progress bar in its
   // readout instead. Both are drawn from the same --track-progress.
   var hudBar = document.querySelector('[data-hud-bar]');
+  // The index under the projects row: the same twelve panels, named. It marks
+  // the one the row is holding, so the reader can see where they are in the
+  // catalog without having to read the cards to know it.
+  var indexItems = Array.prototype.slice.call(
+    document.querySelectorAll('[data-panel-index-item]')
+  );
 
   var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var wheelMode = runway.getAttribute('data-track-mode') === 'wheel';
@@ -143,6 +149,9 @@
     panels.forEach(function (panel, i) {
       panel.classList.toggle('is-current', i === current);
     });
+    indexItems.forEach(function (item, i) {
+      item.classList.toggle('is-current', i === current);
+    });
     lightStage(panels[current].getAttribute('data-stage'));
     if (hudCurrent) hudCurrent.textContent = String(current + 1).padStart(2, '0');
   }
@@ -152,6 +161,9 @@
     pos = 0;
     panels.forEach(function (p) {
       p.classList.remove('is-current');
+    });
+    indexItems.forEach(function (item) {
+      item.classList.remove('is-current');
     });
     if (branches) branches.style.setProperty('--track-progress', '0');
     if (hudBar) hudBar.style.setProperty('--track-progress', '0');

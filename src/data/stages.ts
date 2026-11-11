@@ -28,6 +28,101 @@ export interface StageCopy {
   check: string[];
 }
 
+export interface StageSummary {
+  /** The stage's id: the key its copy lives under. */
+  id: string;
+  /** Two digits, in the order the stages have to exist. */
+  num: string;
+  /** The stage's name, without the number. */
+  title: string;
+  /** One line: what this stage is. */
+  desc: string;
+  /** The tools it is built with. */
+  stack: string[];
+}
+
+/**
+ * The ten stages, in the order the drawing puts them in.
+ *
+ * It lives beside the long-form copy rather than inside the component so
+ * that a page can list the stages without drawing the figure — the homepage
+ * uses it as the caption under the architecture, and the component uses it
+ * for the boxes themselves. One list, so a stage cannot be renamed in one
+ * place and not the other.
+ */
+export const STAGES: StageSummary[] = [
+  {
+    id: 'backend',
+    num: '01',
+    title: 'Backend foundation',
+    desc: 'FastAPI, Pydantic, AsyncIO, Pytest. The service skeleton every later stage plugs into.',
+    stack: ['FastAPI', 'Pydantic', 'AsyncIO', 'Pytest'],
+  },
+  {
+    id: 'llm',
+    num: '02',
+    title: 'LLM API & tool calling',
+    desc: 'Structured outputs and streaming. Every tool call is schema-checked before it is allowed to run.',
+    stack: ['Structured Outputs', 'Streaming'],
+  },
+  {
+    id: 'agents',
+    num: '03',
+    title: 'Agent orchestration',
+    desc: 'LangGraph state machine. Explicit transitions, so a run can be replayed and compared step by step.',
+    stack: ['LangGraph', 'State Machine'],
+  },
+  {
+    id: 'api',
+    num: '04',
+    title: 'API & business integrations',
+    desc: 'REST, webhooks, OAuth 2.0, reconciliation. The layer where the agent meets the systems of record.',
+    stack: ['REST', 'Webhooks', 'OAuth 2.0', 'Reconciliation'],
+  },
+  {
+    id: 'rag',
+    num: '05',
+    title: 'RAG engineering',
+    desc: 'Hybrid search, reciprocal rank fusion, reranking. Retrieval quality before prompt quality.',
+    stack: ['Hybrid Search', 'RRF', 'Rerank'],
+  },
+  {
+    id: 'reliability',
+    num: '06',
+    title: 'Reliability & resilience',
+    desc: 'Circuit breakers and idempotency keys. An upstream failure degrades the run instead of cascading.',
+    stack: ['Circuit Breakers', 'Idempotency'],
+  },
+  {
+    id: 'security',
+    num: '07',
+    title: 'Security & authorization',
+    desc: 'Deterministic RBAC and a sandboxed tool runtime. Permissions decided in code, never by the model.',
+    stack: ['Deterministic RBAC', 'Sandbox'],
+  },
+  {
+    id: 'eval',
+    num: '08',
+    title: 'Evaluation & regression',
+    desc: 'Trajectory tests over golden datasets. Every prompt or model change is measured before it ships.',
+    stack: ['Trajectory Tests', 'Golden Datasets'],
+  },
+  {
+    id: 'sql',
+    num: '09',
+    title: 'SQL & state persistence',
+    desc: 'Postgres, Redis, checkpointing. Agent state survives a crash, a deploy and a restart.',
+    stack: ['Postgres', 'Redis', 'Checkpointing'],
+  },
+  {
+    id: 'obs',
+    num: '10',
+    title: 'Observability',
+    desc: 'Tracing and OpenTelemetry. Every run is inspectable from first tool call to final answer.',
+    stack: ['Tracing', 'OpenTelemetry', 'Alerting'],
+  },
+];
+
 export const STAGE_COPY = {
   backend: {
     lede: 'My backend is a single async service, and every stage below is a module it loads.',
