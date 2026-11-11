@@ -22,18 +22,22 @@
     "cards": [
       {
         "icon": "●",
+        "title": "No instant response",
         "text": "No instant response when leads come in"
       },
       {
         "icon": "¦",
+        "title": "Unqualified leads",
         "text": "Sales wastes time on unqualified leads"
       },
       {
         "icon": "●",
+        "title": "Hot prospects go cold",
         "text": "Hot prospects go cold within minutes"
       },
       {
         "icon": "●",
+        "title": "Follow-ups slip",
         "text": "Follow-ups fall through the cracks"
       }
     ]
@@ -116,7 +120,24 @@
   },
   "risk": {
     "sub": "This is already happening in your pipeline",
-    "cards": []
+    "cards": [
+      {
+        "title": "▲ Speed wins deals",
+        "text": "Faster competitors reply first and win"
+      },
+      {
+        "title": "▲ Paid leads wasted",
+        "text": "You pay for leads that never convert"
+      },
+      {
+        "title": "▲ Silent revenue leak",
+        "text": "Revenue leaks silently every day"
+      },
+      {
+        "title": "▲ SDR burnout",
+        "text": "Sales team burns out on junk leads"
+      }
+    ]
   },
   "pricing": {
     "pairs": [

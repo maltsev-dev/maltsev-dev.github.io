@@ -102,9 +102,12 @@
 
    Both conditions must match `isHorizontal()` in the script. Below this width
    the cards are narrower than their own text; under reduced motion the travel
-   is precisely the thing being taken away.
+   is precisely the thing being taken away. The pointing device is the third:
+   the horizontal layout takes the page's vertical scroll away, so a tablet
+   without a wheel would lose the panels it could not reach.
    -------------------------------------------------------------------------- */
-@media (min-width: 52.1rem) and (prefers-reduced-motion: no-preference) {
+@media (min-width: 52.1rem) and (hover: hover) and (pointer: fine)
+  and (prefers-reduced-motion: no-preference) {
   .exp-page {
     /* The card width, named once: the grid track and the centring padding below
        must agree, or the last card lands off-centre at the end of the travel. */
@@ -460,9 +463,17 @@
   color: var(--fort);
 }
 
-/* Without the travel — reduced motion, or a viewport too narrow for cards
-   wider than their own text — the track is a plain vertical list. */
-@media (prefers-reduced-motion: reduce), (max-width: 52rem) {
+/* Without the travel — a viewport too narrow for cards wider than their own
+   text, reduced motion, or a device with no fine pointer — the track is a
+   plain vertical list.
+
+   The condition is the exact complement of the horizontal one above, so there
+   is no width at which the two disagree. They used to be two separate
+   thresholds a rem apart, and in the gap between them the row was laid out
+   horizontally while the script stood down: seven of the twelve panels were
+   on the page and none of them could be reached. */
+@media not all and (min-width: 52.1rem) and (hover: hover) and (pointer: fine)
+  and (prefers-reduced-motion: no-preference) {
   .track-panel {
     transition: none;
   }
@@ -509,8 +520,11 @@
 
 /* Both conditions must match `isHorizontal()` in the script: below this width
    the cards are narrower than their own text; under reduced motion the travel
-   is precisely the thing being taken away. */
-@media (min-width: 52.1rem) and (prefers-reduced-motion: no-preference) {
+   is precisely the thing being taken away; without a fine pointer there is no
+   wheel and no arrow key to drive the row sideways, and the layout would take
+   the page's vertical scroll away from a device that has only a finger. */
+@media (min-width: 52.1rem) and (hover: hover) and (pointer: fine)
+  and (prefers-reduced-motion: no-preference) {
   .prj-page {
     /* The card width, named once: the grid track and the centring padding must
        agree, or the last card lands off-centre at the end of the travel. */
@@ -518,6 +532,10 @@
     display: flex;
     flex-direction: column;
     height: calc(100dvh - 1.9rem - 3rem);
+    /* The footer is pinned to the bottom of the screen on this page, so the
+       frame gives up the height it covers — otherwise the position readout
+       sits under the bar. */
+    padding-bottom: 3rem;
     overflow: hidden;
   }
 
@@ -680,10 +698,12 @@
   padding: 0.15rem 0.5rem;
 }
 
-/* Stacked — narrow, or reduced motion, where the row is the plain column set up
-   at the top of this file — the panels no longer travel and the readout has
-   nothing to count. Shown anyway it would sit at 01/12 for the whole page. */
-@media (max-width: 52rem), (prefers-reduced-motion: reduce) {
+/* Stacked — narrow, reduced motion, or no fine pointer, where the row is the
+   plain column set up at the top of this file — the panels no longer travel
+   and the readout has nothing to count. Shown anyway it would sit at 01/12 for
+   the whole page. */
+@media not all and (min-width: 52.1rem) and (hover: hover) and (pointer: fine)
+  and (prefers-reduced-motion: no-preference) {
   .panel-hud {
     display: none;
   }

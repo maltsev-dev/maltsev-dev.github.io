@@ -93,6 +93,8 @@ tags: ["LLM", "Gmail", "React"]
 
                 <span class="problem-icon">●</span>
 
+                <strong>Slow first reply</strong>
+
                 <p>Replies sit for hours → leads go cold</p>
 
             </div>
@@ -100,6 +102,8 @@ tags: ["LLM", "Gmail", "React"]
             <div class="problem-card">
 
                 <span class="problem-icon">●</span>
+
+                <strong>Inconsistent follow-ups</strong>
 
                 <p>Follow-ups are inconsistent or forgotten</p>
 
@@ -109,6 +113,8 @@ tags: ["LLM", "Gmail", "React"]
 
                 <span class="problem-icon">¦</span>
 
+                <strong>Inbox overload</strong>
+
                 <p>Inbox becomes your revenue bottleneck</p>
 
             </div>
@@ -116,6 +122,8 @@ tags: ["LLM", "Gmail", "React"]
             <div class="problem-card">
 
                 <span class="problem-icon">●</span>
+
+                <strong>Manual SDR work</strong>
 
                 <p>SDRs drown in repetitive manual work</p>
 

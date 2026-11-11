@@ -22,18 +22,22 @@
     "cards": [
       {
         "icon": "●",
+        "title": "Slow first reply",
         "text": "Replies sit for hours → leads go cold"
       },
       {
         "icon": "●",
+        "title": "Inconsistent follow-ups",
         "text": "Follow-ups are inconsistent or forgotten"
       },
       {
         "icon": "¦",
+        "title": "Inbox overload",
         "text": "Inbox becomes your revenue bottleneck"
       },
       {
         "icon": "●",
+        "title": "Manual SDR work",
         "text": "SDRs drown in repetitive manual work"
       }
     ]

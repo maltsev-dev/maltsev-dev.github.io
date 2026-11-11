@@ -2,6 +2,9 @@
 import { getCollection } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 import ProjectCase from '../../components/ProjectCase.astro';
+// Loaded here rather than in the layout: these rules only ever apply to the
+// three case studies, and the site-wide bundle should not carry them.
+import '../../styles/case.css';
 
 // The case bodies are parsed out of the legacy landing pages into JSON by
 // _parse_projects.py; the original HTML stays on disk untouched.

@@ -12,6 +12,25 @@
   // the CSS side.
   var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+  // ---- Scroll lock --------------------------------------------------------
+  // Four things lock the page while they are open: the boot overlay, the
+  // command palette, the letter form and the stage dialog. Each used to write
+  // `body.style.overflow` directly, so the first of them to finish released
+  // the lock for all of them — open the palette while the boot sequence was
+  // still playing and the page scrolled behind it. A counter gives every
+  // owner its own release.
+  var scrollLocks = 0;
+
+  function lockScroll() {
+    scrollLocks += 1;
+    document.body.style.overflow = 'hidden';
+  }
+
+  function unlockScroll() {
+    scrollLocks = Math.max(0, scrollLocks - 1);
+    if (!scrollLocks) document.body.style.overflow = '';
+  }
+
   // ---- Boot sequence -----------------------------------------------------
   // Once per session. Anything already in the DOM stays interactive underneath;
   // the overlay only covers it while it plays.
@@ -33,7 +52,7 @@
     ];
 
     overlay.hidden = false;
-    document.body.style.overflow = 'hidden';
+    lockScroll();
 
     script.forEach(function (row, i) {
       var el = document.createElement('div');
@@ -56,7 +75,7 @@
       } catch (e) {
         /* storage blocked — the overlay still closes, it just replays */
       }
-      document.body.style.overflow = '';
+      unlockScroll();
       overlay.classList.add('is-done');
       overlay.addEventListener('animationend', function () {
         overlay.hidden = true;
@@ -175,10 +194,18 @@
 
   // ---- Horizontal card rows ----------------------------------------------
   // A row of cards that scrolls sideways, with no scrollbar to invite the
-  // gesture, so the wheel over the row is what moves it: the reader keeps
-  // scrolling down the page as usual, and whatever their pointer is over
-  // travels sideways instead. The fade at the end that still has content is
-  // the standing hint that there is more, since nothing else says so.
+  // gesture, so a sideways gesture over the row is what moves it: the reader
+  // keeps scrolling down the page as usual, and only a gesture that was
+  // already sideways travels the row instead. The fade at the end that still
+  // has content is the standing hint that there is more, since nothing else
+  // says so.
+  //
+  // Only a sideways gesture is claimed. A vertical wheel notch used to be
+  // turned into sideways travel and the page's own scroll cancelled with it,
+  // so a reader had to spend eighteen notches on the first row before the
+  // page moved at all — the page read as frozen. The row is still reachable
+  // without a pointer: it is focusable and the arrow keys scroll it, and a
+  // finger drags it natively.
   (function cardRows() {
     var rows = document.querySelectorAll('.card-row');
     if (!rows.length) return;
@@ -208,8 +235,21 @@
       var PER_LINE = 120;
       var PER_PAGE = 1;
 
+      // A sideways gesture, and only a sideways gesture, is the row's to take.
+      //
+      // The trackpad's own two-finger swipe arrives on deltaX. Shift+wheel is
+      // the keyboard-and-mouse way of saying "sideways", and browsers split
+      // over where they report it: Chromium turns it into deltaX, Firefox
+      // leaves it on deltaY with shiftKey set. Both are honoured; a plain
+      // vertical notch is neither, so it goes to the page.
+      function sideways(e) {
+        if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) return true;
+        return e.shiftKey && e.deltaY !== 0;
+      }
+
       function toPixels(e) {
-        var d = Math.abs(e.deltaY) >= Math.abs(e.deltaX) ? e.deltaY : e.deltaX;
+        var d = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+        if (!d) return 0;
         if (e.deltaMode === 1) d *= PER_LINE;              // lines
         else if (e.deltaMode === 2) d *= row.clientWidth * PER_PAGE; // pages
         else d *= PER_PIXEL;
@@ -233,6 +273,12 @@
         // Nothing sideways to show. Leave the event alone so the page scrolls
         // down, which is what the reader was trying to do.
         if (max <= 1) return;
+
+        // A vertical notch belongs to the page. Claiming it here is what used
+        // to make the page look frozen: the scroll was cancelled and the row
+        // moved instead, so the reader had to work through the row's whole
+        // length before the page gave way.
+        if (!sideways(e)) return;
 
         var d = toPixels(e);
         if (!d) return;
@@ -810,16 +856,94 @@
   })();
 
   // ---- Command palette ---------------------------------------------------
+  // A combobox over a listbox, in a modal dialog.
+  //
+  // The three things it used to get wrong are all the same mistake: the
+  // markup said `aria-modal="true"` and `role="combobox"`, and the code did
+  // neither. Focus walked straight out of the dialog into the page behind,
+  // the background scrolled under the open palette, the active option was
+  // never announced, and closing it dropped focus on the floor.
   (function palette() {
     var dialog = document.getElementById('palette');
     var input = document.getElementById('paletteInput');
     var list = document.getElementById('paletteList');
     var empty = document.getElementById('paletteEmpty');
     var opener = document.getElementById('paletteOpen');
+    var triggers = Array.prototype.slice.call(
+      document.querySelectorAll('[data-open-palette]')
+    );
     if (!dialog || !input || !list) return;
 
-    var items = Array.prototype.slice.call(list.querySelectorAll('.palette-item'));
+    var items = [];
     var cursor = 0;
+    var lastFocus = null;
+    var indexRequest = null;
+    // Whether this dialog is the one currently holding the scroll lock.
+    var locked = false;
+    // The state of the index: 'idle' before the first open, then 'loading',
+    // 'ready' or 'failed'. The status line has to say which one it is in —
+    // "Loading…" left on the screen after the index arrived told the reader
+    // that a search was still running when it had already finished.
+    var indexState = 'idle';
+
+    // The index is fetched the first time the palette opens: it used to be
+    // built into every page's HTML, which cost every reader the bytes of a
+    // list of 84 posts whether or not they opened the palette.
+    function loadIndex() {
+      if (indexRequest) return indexRequest;
+      indexState = 'loading';
+      if (empty) {
+        empty.hidden = false;
+        empty.textContent = 'Loading…';
+      }
+      indexRequest = fetch('/palette-index.json')
+        .then(function (res) {
+          if (!res.ok) throw new Error('palette index ' + res.status);
+          return res.json();
+        })
+        .then(function (data) {
+          var frag = document.createDocumentFragment();
+          data.forEach(function (item, i) {
+            var li = document.createElement('li');
+            li.className = 'palette-item';
+            li.id = 'pal-' + i;
+            li.setAttribute('role', 'option');
+            li.setAttribute('aria-selected', 'false');
+            li.tabIndex = -1;
+            li.dataset.label = item.label.toLowerCase();
+            li.dataset.group = item.group.toLowerCase();
+            li.dataset.href = item.href;
+
+            var group = document.createElement('span');
+            group.className = 'palette-group';
+            group.textContent = item.group;
+
+            var label = document.createElement('span');
+            label.className = 'palette-label';
+            label.textContent = item.label;
+
+            li.appendChild(group);
+            li.appendChild(label);
+            frag.appendChild(li);
+          });
+          list.appendChild(frag);
+          items = Array.prototype.slice.call(list.querySelectorAll('.palette-item'));
+          indexState = 'ready';
+          if (empty) {
+            empty.hidden = true;
+            empty.textContent = 'No match.';
+          }
+        })
+        .catch(function () {
+          indexState = 'failed';
+          if (empty) {
+            empty.hidden = false;
+            empty.textContent = 'The index could not be loaded.';
+          }
+          items = [];
+        });
+      return indexRequest;
+    }
 
     function visible() {
       return items.filter(function (el) {
@@ -829,24 +953,84 @@
 
     function setCursor(next) {
       var shown = visible();
-      if (!shown.length) return;
+      if (!shown.length) {
+        input.removeAttribute('aria-activedescendant');
+        return;
+      }
       cursor = (next + shown.length) % shown.length;
       shown.forEach(function (el, i) {
         el.setAttribute('aria-selected', i === cursor ? 'true' : 'false');
       });
-      shown[cursor].scrollIntoView({ block: 'nearest' });
+      // The focus stays in the input, so the active option is announced
+      // through aria-activedescendant — without it, a screen reader user
+      // pressing ArrowDown heard nothing at all while the highlight moved.
+      var active = shown[cursor];
+      input.setAttribute('aria-activedescendant', active.id);
+      active.scrollIntoView({ block: 'nearest' });
     }
 
-    function open() {
+    // The page behind a modal dialog must not be reachable: not by Tab, not
+    // by the scroll wheel, and not by a screen reader walking the tree.
+    function setBackgroundInert(on) {
+      var siblings = document.body.children;
+      for (var i = 0; i < siblings.length; i++) {
+        var el = siblings[i];
+        if (el === dialog || el.id === 'letterModal') continue;
+        if (on) {
+          el.setAttribute('inert', '');
+        } else {
+          el.removeAttribute('inert');
+        }
+      }
+    }
+
+    function open(trigger) {
+      lastFocus = trigger || document.activeElement;
       dialog.hidden = false;
+      input.setAttribute('aria-expanded', 'true');
+      if (!locked) {
+        locked = true;
+        lockScroll();
+      }
+      setBackgroundInert(true);
       input.value = '';
-      filter('');
       input.focus();
+      if (!items.length) {
+        loadIndex().then(function () {
+          // The reader may have typed while the index was on its way. The
+          // answer has to match the question they asked, so the query is
+          // re-applied rather than reset to nothing.
+          if (isOpen()) filter(input.value);
+        });
+      } else {
+        filter('');
+      }
     }
 
     function close() {
       dialog.hidden = true;
-      if (opener) opener.focus();
+      input.setAttribute('aria-expanded', 'false');
+      input.removeAttribute('aria-activedescendant');
+      if (locked) {
+        locked = false;
+        unlockScroll();
+      }
+      setBackgroundInert(false);
+      // The focus goes back where it came from. Before this, it was left on
+      // the input inside a dialog that had just been hidden, and the browser
+      // dropped it on <body> — so the reader lost their place in the page.
+      restoreFocus();
+      lastFocus = null;
+    }
+
+    // A trigger inside a closed dropdown cannot take the focus back, so the
+    // permanent one in the header stands in for it.
+    function restoreFocus() {
+      var target = lastFocus;
+      if (!target || !document.contains(target) || !target.focus) target = opener;
+      if (!target) return;
+      if (target.offsetParent === null && opener && opener !== target) target = opener;
+      target.focus();
     }
 
     function filter(q) {
@@ -860,7 +1044,16 @@
         el.style.display = hit ? '' : 'none';
         if (hit) any = true;
       });
-      if (empty) empty.hidden = any;
+      if (empty) {
+        empty.hidden = any;
+        // The line says which of the three states the reader is in: still
+        // loading, nothing matched, or the index never arrived.
+        if (!any) {
+          if (indexState === 'failed') empty.textContent = 'The index could not be loaded.';
+          else if (indexState === 'loading') empty.textContent = 'Loading…';
+          else empty.textContent = 'No match.';
+        }
+      }
       setCursor(0);
     }
 
@@ -868,11 +1061,23 @@
       return !dialog.hidden;
     }
 
-    if (opener) opener.addEventListener('click', open);
+    triggers.forEach(function (el) {
+      el.addEventListener('click', function () { open(el); });
+    });
 
     // Clicking the backdrop (but not the box) closes.
     dialog.addEventListener('mousedown', function (e) {
       if (e.target === dialog) close();
+    });
+
+    // Clicking an option goes there. The option is the interactive element
+    // itself: it used to wrap an <a>, and `option` has presentational
+    // children, so the link was stripped from the accessibility tree while
+    // the anchor stayed in the tab order.
+    list.addEventListener('click', function (e) {
+      var option = e.target.closest ? e.target.closest('.palette-item') : null;
+      if (!option || !option.dataset.href) return;
+      window.location.href = option.dataset.href;
     });
 
     input.addEventListener('input', function () {
@@ -883,7 +1088,7 @@
       // Ctrl/Cmd+K toggles from anywhere, including inside a field.
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
         e.preventDefault();
-        isOpen() ? close() : open();
+        isOpen() ? close() : open(null);
         return;
       }
       if (!isOpen()) return;
@@ -900,10 +1105,16 @@
       } else if (e.key === 'Enter') {
         e.preventDefault();
         var shown = visible();
-        if (shown[cursor]) {
-          var link = shown[cursor].querySelector('a');
-          if (link) link.click();
+        if (shown[cursor] && shown[cursor].dataset.href) {
+          window.location.href = shown[cursor].dataset.href;
         }
+      } else if (e.key === 'Tab') {
+        // The only focusable thing in the dialog is the search field: the
+        // options are announced through aria-activedescendant and are not
+        // tab stops. Tab is held here so it cannot walk out into the page
+        // behind, which `aria-modal="true"` says is unavailable.
+        e.preventDefault();
+        input.focus();
       }
     });
   })();
@@ -921,6 +1132,7 @@
     var form = document.getElementById('contactForm');
     var status = document.getElementById('formStatus');
     var lastFocus = null;
+    var locked = false;
 
     var FOCUSABLE =
       'a[href], button:not([disabled]), input, select, textarea, [tabindex]:not([tabindex="-1"])';
@@ -932,14 +1144,20 @@
     function open() {
       lastFocus = document.activeElement;
       modal.hidden = false;
-      document.body.style.overflow = 'hidden';
+      if (!locked) {
+        locked = true;
+        lockScroll();
+      }
       var first = modal.querySelector('input, textarea');
       if (first) first.focus();
     }
 
     function close() {
       modal.hidden = true;
-      document.body.style.overflow = '';
+      if (locked) {
+        locked = false;
+        unlockScroll();
+      }
       if (lastFocus && lastFocus.focus) lastFocus.focus();
     }
 
@@ -1135,6 +1353,7 @@
     var closers = Array.prototype.slice.call(modal.querySelectorAll('[data-close-stage]'));
     var box = modal.querySelector('.stage-modal-box');
     var lastFocus = null;
+    var locked = false;
 
     var FOCUSABLE =
       'a[href], button:not([disabled]), input, select, textarea, [tabindex]:not([tabindex="-1"])';
@@ -1156,7 +1375,10 @@
       if (!isOpen()) return;
       panels.forEach(function (p) { p.hidden = true; });
       modal.hidden = true;
-      document.body.style.overflow = '';
+      if (locked) {
+        locked = false;
+        unlockScroll();
+      }
       if (lastFocus && lastFocus.focus) lastFocus.focus();
     }
 
@@ -1170,7 +1392,10 @@
       // Ten panels share this dialog; only the one on screen can name it.
       var heading = panel.querySelector('[id]');
       if (heading) modal.setAttribute('aria-labelledby', heading.id);
-      document.body.style.overflow = 'hidden';
+      if (!locked) {
+        locked = true;
+        lockScroll();
+      }
       // The box is the scroller and it is shared by all ten panels, so without
       // this the second stage opens halfway down, where the previous one was
       // left scrolled.

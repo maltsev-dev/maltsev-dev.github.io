@@ -91,6 +91,8 @@ tags: ["LLM", "WhatsApp", "CRM"]
 
                 <span class="problem-icon">●</span>
 
+                <strong>No instant response</strong>
+
                 <p>No instant response when leads come in</p>
 
             </div>
@@ -98,6 +100,8 @@ tags: ["LLM", "WhatsApp", "CRM"]
             <div class="problem-card">
 
                 <span class="problem-icon">¦</span>
+
+                <strong>Unqualified leads</strong>
 
                 <p>Sales wastes time on unqualified leads</p>
 
@@ -107,6 +111,8 @@ tags: ["LLM", "WhatsApp", "CRM"]
 
                 <span class="problem-icon">●</span>
 
+                <strong>Hot prospects go cold</strong>
+
                 <p>Hot prospects go cold within minutes</p>
 
             </div>
@@ -114,6 +120,8 @@ tags: ["LLM", "WhatsApp", "CRM"]
             <div class="problem-card">
 
                 <span class="problem-icon">●</span>
+
+                <strong>Follow-ups slip</strong>
 
                 <p>Follow-ups fall through the cracks</p>
 
@@ -349,7 +357,7 @@ tags: ["LLM", "WhatsApp", "CRM"]
 
             <div class="risk-card">
 
-                <span class="risk-icon">▲</span>
+                <strong>▲ Speed wins deals</strong>
 
                 <p>Faster competitors reply first and win</p>
 
@@ -357,7 +365,7 @@ tags: ["LLM", "WhatsApp", "CRM"]
 
             <div class="risk-card">
 
-                <span class="risk-icon">▲</span>
+                <strong>▲ Paid leads wasted</strong>
 
                 <p>You pay for leads that never convert</p>
 
@@ -365,7 +373,7 @@ tags: ["LLM", "WhatsApp", "CRM"]
 
             <div class="risk-card">
 
-                <span class="risk-icon">▲</span>
+                <strong>▲ Silent revenue leak</strong>
 
                 <p>Revenue leaks silently every day</p>
 
@@ -373,7 +381,7 @@ tags: ["LLM", "WhatsApp", "CRM"]
 
             <div class="risk-card">
 
-                <span class="risk-icon">▲</span>
+                <strong>▲ SDR burnout</strong>
 
                 <p>Sales team burns out on junk leads</p>
 

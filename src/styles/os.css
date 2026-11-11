@@ -432,19 +432,33 @@
   margin-bottom: 0;
 }
 
-/* ----- Footer ------------------------------------------------------------ */
+/* ----- Footer ------------------------------------------------------------
+   The footer is a panel in the rouille accent, so its text has to be read
+   against that ground and not against the page. --fort is the only token
+   that clears 4.5:1 on the accent in all three ramps: --braise is 2.2:1 on
+   the phosphore panel and --encre 4.2:1, and the copyright is small text.
+   ---------------------------------------------------------------------- */
 .site-footer {
   margin-top: 3.5rem;
   border-top: var(--trait) solid var(--braise);
   background: var(--rouille);
-  padding-block: 1.4rem;
+  padding-block: 2.2rem 1.4rem;
 }
 
 .footer-grid {
   display: grid;
-  gap: 1.5rem;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr));
+  gap: 1.8rem 2rem;
+  grid-template-columns: minmax(0, 2fr) repeat(2, minmax(0, 13rem));
   align-items: start;
+}
+
+.footer-lead {
+  font-family: var(--font-display);
+  font-size: clamp(1.05rem, 2.2vw, 1.35rem);
+  line-height: 1.3;
+  color: var(--fort);
+  max-width: 34ch;
+  margin: 0 0 1rem;
 }
 
 .footer-col h2 {
@@ -452,7 +466,8 @@
   font-size: 0.75rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--braise);
+  color: var(--fort);
+  opacity: 0.8;
   margin-bottom: 0.5rem;
 }
 
@@ -468,10 +483,14 @@
 .footer-col a {
   text-decoration: none;
   font-size: 0.9rem;
+  color: var(--fort);
+  border-bottom: 1px solid transparent;
 }
 
-.footer-col a:hover {
+.footer-col a:hover,
+.footer-col a:focus-visible {
   text-decoration: underline;
+  color: var(--creme);
 }
 
 .footer-bar {
@@ -479,14 +498,76 @@
   justify-content: space-between;
   gap: 1rem;
   flex-wrap: wrap;
-  margin-top: 1.4rem;
+  margin-top: 1.6rem;
   padding-top: 0.9rem;
-  border-top: var(--filet) solid var(--grid);
+  border-top: var(--filet) solid color-mix(in srgb, var(--fort) 30%, transparent);
   font-family: var(--font-mono);
   font-size: 0.75rem;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--fort);
+  opacity: 0.85;
+}
+
+@media (max-width: 44rem) {
+  .footer-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* The compact footer: one row of copyright, contact and a call to action.
+   It is what the projects catalogue gets, because that page is one viewport
+   tall and its wheel is spoken for by the row of panels — a footer below it
+   would sit under a fold the page cannot scroll to. */
+.site-footer--compact {
+  padding-block: 0.6rem;
+}
+
+.site-footer--compact .footer-bar {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: none;
+}
+
+/* The same condition the track asks: only where the row travels sideways is
+   the page unable to scroll, and only there does the footer have to be
+   pinned rather than sit at the end of the flow. */
+@media (min-width: 52.1rem) and (hover: hover) and (pointer: fine)
+  and (prefers-reduced-motion: no-preference) {
+  .site-footer--compact {
+    position: fixed;
+    inset: auto 0 0 0;
+    z-index: 38;
+    margin-top: 0;
+    height: 3rem;
+    display: flex;
+    align-items: center;
+    padding-block: 0;
+    background: var(--papier);
+    border-top: var(--filet) solid var(--braise);
+  }
+
+  /* The full-size button is taller than the bar and hangs over the bottom of
+     the screen; this one is cut to the bar. */
+  .site-footer--compact .btn {
+    padding: 0.35rem 0.8rem;
+    font-size: 0.8rem;
+    box-shadow: 3px 3px 0 var(--braise);
+  }
+
+  .site-footer--compact .wrap {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    width: 100%;
+  }
+
+  .site-footer--compact .footer-bar {
+    flex: 1 1 auto;
+    border-top: none;
+    padding-top: 0;
+    margin-top: 0;
+  }
 }
 
 /* ----- Scroll-linked motion ---------------------------------------------
@@ -2205,6 +2286,33 @@
    is dropped, links are expanded so a printed CV is still usable.
    ---------------------------------------------------------------------- */
 @media print {
+  /* The print sheet needs its own ramp, not just a white body.
+     Printing a dark theme left the links at 2.03:1 and the block quotes at
+     1.25:1 on white paper — a printout that could not be read. These
+     overrides repeat the theme selectors so they outrank the ramps in
+     global.css, which sit earlier in the bundle. */
+  :root,
+  :root[data-theme='phosphore'],
+  :root[data-theme='acidule'],
+  :root[data-theme='pierre'] {
+    --papier: #ffffff;
+    --encre: #1a1a1a;
+    --fort: #1a1a1a;
+    --braise: #8c2a18;
+    --braise-txt: #8c2a18;
+    --erreur: #8c2a18;
+    --grid: #999999;
+    --rouille: #ffffff;
+    --creme: #ffffff;
+    --focus-ring: #000000;
+    --code-kw: #8c2a18;
+    --code-str: #1f6b2b;
+    --code-num: #1a1a1a;
+    --code-cm: #555555;
+    --ok: #1f6b2b;
+    --placeholder: #555555;
+  }
+
   .status-bar,
   .menu-bar,
   .site-footer,
@@ -2234,6 +2342,22 @@
   h3,
   .tl-role {
     color: #000;
+  }
+
+  /* Code prints as ink on paper, not as a rust slab. The syntax colours are
+     carried by inline custom properties, so they have to be overridden on the
+     tokens themselves — the highlights are a screen affordance. */
+  pre,
+  pre.astro-code {
+    background: #fff !important;
+    color: #1a1a1a !important;
+    border-color: #8c2a18;
+    box-shadow: none;
+  }
+
+  pre.astro-code code,
+  pre.astro-code span {
+    color: #1a1a1a !important;
   }
 
   a::after {

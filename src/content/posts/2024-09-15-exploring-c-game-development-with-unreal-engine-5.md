@@ -38,8 +38,8 @@ A rewarding project that expanded my knowledge of puzzle mechanics and physics i
   * *Mover* leveraging UnrealMathUtility
   * *Trigger* based on BoxComponent
 
-<video controls width="720">  
-<source src="/media/dungeon-raider-preview.webm" type="video/webm" />  
+<video controls preload="none" poster="/media/posters/dungeon-raider-preview.jpg" width="720">
+<source src="/media/dungeon-raider-preview.webm" type="video/webm" />
 </video>  
 
 [🎨 ArtStation](https://www.artstation.com/artwork/kNE3e2) | [🔗 GitHub Repository](https://github.com/maltsev-dev/unrealProjects/tree/main/src/grabber)
@@ -56,8 +56,8 @@ A compact project packed with fundamental gameplay features and engine technique
 * Game mode logic
 * Sound and camera configuration
 
-<video controls width="720">  
-<source src="/media/toon-tanks-preview.webm" type="video/webm" />  
+<video controls preload="none" poster="/media/posters/toon-tanks-preview.jpg" width="720">
+<source src="/media/toon-tanks-preview.webm" type="video/webm" />
 </video>  
 
 [🎨 ArtStation](https://www.artstation.com/artwork/kND2Z0) | [🔗 GitHub Repository](https://github.com/maltsev-dev/unrealProjects/tree/main/src/toontanks)
@@ -75,8 +75,8 @@ A sci-fi shooter experience crafted with passion and a deep dive into complex Un
 * Advanced line tracing techniques
 * HUD design and game condition management
 
-<video controls width="720">  
-<source src="/media/cssriot-preview.webm" type="video/webm" />  
+<video controls preload="none" poster="/media/posters/cssriot-preview.jpg" width="720">
+<source src="/media/cssriot-preview.webm" type="video/webm" />
 </video>  
 
 [🎨 ArtStation](https://www.artstation.com/artwork/RK3LXm) | [🔗 GitHub Repository](https://github.com/maltsev-dev/unrealProjects/tree/main/src/simpleShooter)

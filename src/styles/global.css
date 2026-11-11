@@ -28,6 +28,22 @@
      --braise-txt is the same hue pulled toward the text end of the ramp, so it
      can hold a 12px label on a tinted panel without the panel being dimmed. */
   --braise-txt: #ec8a58;
+  /* The focus ring has to clear 3:1 on every surface it lands on, and in this
+     ramp the accent only reaches 2.17:1 on the rust chrome. The ring therefore
+     uses the text colour, which clears it on both the paper and the panels. */
+  --focus-ring: #ffa02e;
+  /* Syntax colours live on the code panel, not on the page, so they need their
+     own ramp: one accent cannot be both a border and 4.5:1 text. */
+  --code-kw: #ffc48a;
+  --code-str: #b7e8c0;
+  --code-num: #ffc48a;
+  --code-cm: #e6b894;
+  /* The one green in the palette. It carries "this is good", so it has to be
+     readable as small text on the page and on a panel. */
+  --ok: #c8f0cf;
+  /* The placeholder of a form field, on the page ground and on the fill the
+     field takes when it is focused. */
+  --placeholder: #e6b894;
   --theme-color: #14100a;
 }
 
@@ -41,6 +57,13 @@
   --fort: #fff183;
   --erreur: #ffb3a0;
   --braise-txt: #95c49a;
+  --focus-ring: var(--braise);
+  --code-kw: #a7e0ac;
+  --code-str: #b7e8c0;
+  --code-num: #ffd0dc;
+  --code-cm: #cfe6d1;
+  --ok: #c8f0cf;
+  --placeholder: #a7e0ac;
   --theme-color: #01141d;
 }
 
@@ -54,6 +77,13 @@
   --fort: #241c12;
   --erreur: #a32c0c;
   --braise-txt: #9a3b1c;
+  --focus-ring: var(--braise);
+  --code-kw: #8f2f10;
+  --code-str: #1f6b2b;
+  --code-num: #3d3124;
+  --code-cm: #5b4d3d;
+  --ok: #1f6b2b;
+  --placeholder: #5b4d3d;
   --theme-color: #f4efe6;
 }
 
@@ -105,10 +135,21 @@
 }
 
 /* Text selection is the one colour in the site that belongs to no theme
-   until this rule exists — the browser default blue on every page. */
+   until this rule exists — the browser default blue on every page.
+   The page colour goes on the accent, not the other way round: the accent
+   under the cream text measures 3.14:1 in phosphore and 1.95:1 in acidule,
+   and selected text is text the reader then has to read. */
 ::selection {
   background: var(--braise);
-  color: var(--creme);
+  color: var(--papier);
+}
+
+/* The placeholder is a hint, not a value, but it is still text the reader has
+   to read — and the UA default measures 2.31:1 on the filled field it sits
+   on. `opacity: 1` because the UA sheet dims placeholders further. */
+::placeholder {
+  color: var(--placeholder);
+  opacity: 1;
 }
 
 /* ----- Reset ------------------------------------------------------------ */
@@ -160,9 +201,10 @@ a:hover {
 }
 
 /* Focus is the one place the accent never gets overridden: a visitor using a
-   keyboard must always be able to see where they are. */
+   keyboard must always be able to see where they are. The ring uses its own
+   token because the accent is too close to the rust chrome to be seen on it. */
 :focus-visible {
-  outline: var(--trait) solid var(--braise);
+  outline: var(--trait) solid var(--focus-ring);
   outline-offset: 2px;
 }
 
@@ -456,10 +498,10 @@ blockquote {
   margin-inline: calc(-1 * clamp(1rem, 4vw, 3rem));
   padding-inline: clamp(1rem, 4vw, 3rem);
   --edge-fade: 3.5rem;
-  /* No scrollbar: the wheel is what moves this row, and a bar under it would
-     advertise a control that is not the one being used. The cue that remains is
-     the card cut off at the edge plus the fade. The row is still focusable, so
-     arrow keys scroll it for anyone who cannot use a pointer. */
+  /* No scrollbar: a sideways gesture is what moves this row, and a bar under
+     it would advertise a control that is not the one being used. The cue that
+     remains is the card cut off at the edge plus the fade. The row is still
+     focusable, so arrow keys scroll it for anyone who cannot use a pointer. */
   padding-block: 0.35rem 0.4rem;
   scrollbar-width: none;
   -ms-overflow-style: none;
@@ -476,7 +518,7 @@ blockquote {
    the only visible indication that the row can be scrolled without a pointer,
    so it gets an outline in the row's own colour. */
 .card-row:focus-visible {
-  outline: var(--trait) solid var(--braise);
+  outline: var(--trait) solid var(--focus-ring);
   outline-offset: 2px;
 }
 
@@ -703,10 +745,15 @@ blockquote {
   width: 100%;
 }
 
+/* The focused field turns rust, so the text inside it has to turn with it:
+   the page colour on the panel measures 4.20:1 in phosphore and 4.14:1 in
+   acidule, under the AA floor at the moment the visitor most needs to read
+   what they typed. */
 .field input:focus,
 .field select:focus,
 .field textarea:focus {
   background: var(--rouille);
+  color: var(--fort);
 }
 
 /* Honeypot: hidden from people, reachable by bots that fill every field. */
@@ -763,8 +810,10 @@ blockquote {
   font-size: 1.05rem;
 }
 
+/* The palette is a dialog, so focus lands in it the moment it opens. The ring
+   stays: the fill alone measures 2.22:1 against the page and 1.25:1 in the
+   light ramp, which is not a focus indicator. */
 .palette-input:focus {
-  outline: none;
   background: var(--rouille);
 }
 
@@ -776,15 +825,18 @@ blockquote {
   overflow-y: auto;
 }
 
-.palette-item a {
+/* The option is the interactive element: it used to wrap an <a>, and
+   `option` has presentational children, so the link was stripped from the
+   accessibility tree while the anchor stayed in the tab order. */
+.palette-item {
   display: block;
   padding: 0.5rem 0.7rem;
-  text-decoration: none;
   color: var(--encre);
+  cursor: pointer;
 }
 
-.palette-item[aria-selected='true'] a,
-.palette-item a:hover {
+.palette-item[aria-selected='true'],
+.palette-item:hover {
   background: var(--braise);
   color: var(--papier);
 }
@@ -795,20 +847,27 @@ blockquote {
   font-size: 0.9rem;
 }
 
-/* ----- Footer ----------------------------------------------------------- */
+/* The group a result belongs to. This rule lives here and not in the
+   component's own <style> block: the options are built by script, and a
+   scoped style only reaches markup the compiler saw. */
+.palette-group {
+  display: inline-block;
+  min-width: 5.5rem;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  opacity: 0.7;
+}
+
+/* ----- Footer -----------------------------------------------------------
+   The footer rules live in os.css with the rest of the page chrome; only
+   the two rules the shared layout needs are here.
+   ---------------------------------------------------------------------- */
 .site-footer {
   margin-top: 3rem;
   border-top: var(--trait) solid var(--braise);
   background: var(--rouille);
   padding-block: 1.5rem;
-}
-
-.site-footer .wrap {
-  display: flex;
-  justify-content: space-between;
-  gap: 1rem;
-  flex-wrap: wrap;
-  font-size: 0.85rem;
 }
 
 .footer-links {
@@ -1055,7 +1114,7 @@ blockquote {
 }
 
 .c-ok {
-  color: #398847;
+  color: var(--ok);
 }
 
 .c-warm,
@@ -1073,7 +1132,7 @@ blockquote {
 }
 
 .s-ok {
-  border-color: #398847;
+  border-color: var(--ok);
 }
 
 .s-warm,
@@ -1125,21 +1184,24 @@ blockquote {
   color: var(--fort);
 }
 
+/* Inline code tokens. These sit on the code panel, not on the page, so the
+   accent is not available to them: it measures 2.17:1 there in phosphore.
+   Each token class has a per-ramp colour that clears 4.5:1 on the panel. */
 .t-kw,
 .t-cl {
-  color: var(--braise);
+  color: var(--code-kw);
 }
 
 .t-str {
-  color: #398847;
+  color: var(--code-str);
 }
 
 .t-num {
-  color: var(--encre);
+  color: var(--code-num);
 }
 
 .t-cm {
-  opacity: 0.6;
+  color: var(--code-cm);
 }
 
 .os-panel.cta {
@@ -1170,6 +1232,130 @@ blockquote {
   border: none;
   border-top: var(--filet) solid var(--grid);
   margin: 1.8rem 0;
+}
+
+/* ----- The close of an article ------------------------------------------
+   A post used to end with its last line: no neighbour, no related post and
+   no way to ask a question about it. Three blocks close it now.
+   ---------------------------------------------------------------------- */
+.post-nav {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-top: 3rem;
+  padding-top: 1.2rem;
+  border-top: var(--trait) solid var(--braise);
+}
+
+.post-nav-link {
+  display: block;
+  padding: 0.8rem 0.9rem;
+  border: var(--filet) solid var(--braise);
+  background: var(--papier);
+  text-decoration: none;
+  color: inherit;
+}
+
+.post-nav-link:hover {
+  background: var(--rouille);
+}
+
+.post-nav-newer {
+  text-align: right;
+}
+
+.post-nav-empty {
+  border-color: transparent;
+  background: none;
+}
+
+.post-nav-label {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--braise);
+  margin-bottom: 0.3rem;
+}
+
+.post-nav-title {
+  display: block;
+  color: var(--fort);
+  line-height: 1.3;
+}
+
+.post-related {
+  margin-top: 2.4rem;
+}
+
+.post-related-head {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--braise);
+  margin-bottom: 0.7rem;
+}
+
+.post-related-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.5rem;
+}
+
+.post-related-list a {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+  padding: 0.6rem 0.8rem;
+  border: var(--filet) solid var(--grid);
+  text-decoration: none;
+  color: inherit;
+}
+
+.post-related-list a:hover {
+  border-color: var(--braise);
+  background: var(--rouille);
+}
+
+.post-related-title {
+  color: var(--fort);
+}
+
+.post-related-date {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--encre);
+  white-space: nowrap;
+}
+
+.post-cta {
+  margin-top: 2.8rem;
+  padding: 1.4rem 1.5rem;
+  border: var(--trait) solid var(--braise);
+  background: var(--rouille);
+}
+
+.post-cta h2 {
+  margin-top: 0;
+}
+
+.post-cta .btn-row {
+  margin-bottom: 0;
+}
+
+@media (max-width: 34rem) {
+  .post-nav {
+    grid-template-columns: 1fr;
+  }
+
+  .post-nav-newer {
+    text-align: left;
+  }
 }
 
 .article h1 {

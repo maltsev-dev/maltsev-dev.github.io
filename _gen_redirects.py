@@ -19,7 +19,13 @@ from pathlib import Path
 
 BASE = Path(__file__).parent
 CONTENT = BASE / "content"
+POSTS = BASE / "src" / "content" / "posts"
 STATIC = BASE / "static"
+
+# The canonical has to be absolute: a relative one reads as a canonical of the
+# redirect stub itself, which is the page we are asking a search engine to
+# drop from the index.
+SITE = "https://maltsev-dev.github.io"
 
 TEMPLATE = """<!doctype html>
 <html lang="en">
@@ -27,7 +33,7 @@ TEMPLATE = """<!doctype html>
 <meta charset="utf-8">
 <meta name="robots" content="noindex, follow">
 <title>Redirecting to {target}</title>
-<link rel="canonical" href="{target}">
+<link rel="canonical" href="{canonical}">
 <meta http-equiv="refresh" content="0; url={target}">
 <style>
   body {{ background: {papier}; color: {encre}; font-family: ui-monospace, monospace;
@@ -73,9 +79,78 @@ def parse_frontmatter(raw: str):
     return title, date, tags
 
 
+def parse_yaml_tags(raw: str) -> list[str]:
+    """Return the tag list from a YAML-frontmatter post.
+
+    The collection the site actually ships (`src/content/posts/`) uses YAML
+    frontmatter, the legacy one (`content/`) uses TOML. Only the tags are
+    needed here, and they are written in one of two shapes — an inline list or
+    a block list — so a two-line parser is enough and the script stays
+    dependency-free.
+    """
+    if not raw.startswith("---"):
+        return []
+    parts = raw.split("---", 2)
+    if len(parts) < 3:
+        return []
+    lines = parts[1].splitlines()
+    tags: list[str] = []
+    in_tags = False
+    for line in lines:
+        stripped = line.strip()
+        if not stripped or stripped.startswith("#"):
+            continue
+        if in_tags:
+            if stripped.startswith("- "):
+                tags.append(stripped[2:].strip().strip("\"'"))
+                continue
+            in_tags = False
+        if stripped.startswith("tags:"):
+            inline = stripped[len("tags:"):].strip()
+            if inline.startswith("[") and inline.endswith("]"):
+                tags = [
+                    t.strip().strip("\"'")
+                    for t in inline[1:-1].split(",")
+                    if t.strip()
+                ]
+            elif not inline:
+                in_tags = True
+    return tags
+
+
 def slugify(title: str, date: str) -> str:
     base = re.sub(r"[^a-z0-9]+", "-", title.lower()).strip("-")
     return f"{date}-{base}" if date else base
+
+
+def legacy_root_name(stem: str) -> str:
+    """The filename the legacy generator wrote for a post.
+
+    The collection stores posts as `YYYY-MM-DD-slug.md`; the legacy generator
+    published each one as `slug.html` at the site root, with the date
+    stripped off. Twenty-three published articles were linked from the legacy
+    index under exactly that name, and every one of them is a hard 404 today.
+    """
+    match = re.match(r"^\d{4}-\d{2}-\d{2}-(.+)$", stem)
+    return match.group(1) if match else stem
+
+
+def tag_slugs(tag: str) -> set[str]:
+    """Every path spelling a tag was ever published under.
+
+    The legacy site wrote the tag as written in the front matter, so
+    `actix_web` stayed `actix_web` and `basic_electronics` stayed
+    `basic_electronics`. The current generator rewrites them to hyphens, and
+    the live site linked to both spellings. Both are emitted.
+    """
+    raw = tag.strip().lower()
+    if not raw or not re.fullmatch(r"[a-z0-9_-]+", raw):
+        return set()
+    slugs = {raw}
+    hyphen = re.sub(r"[^a-z0-9-]+", "-", raw).strip("-")
+    if hyphen:
+        slugs.add(hyphen)
+    return slugs
 
 
 def build_map() -> dict[str, str]:
@@ -92,6 +167,18 @@ def build_map() -> dict[str, str]:
         routes[f"/{path.stem}.html"] = f"/blog/{slug}/"
         tags.update(t.lower() for t in post_tags)
 
+    # The posts the site actually ships. The tag set has to come from here and
+    # not only from `content/`: the fifteen tags the 2026 posts introduced —
+    # authorization, security, mcp, reliability, budget, cost, operations,
+    # testing, audit, compliance, enforcement, redis and the underscore
+    # spellings actix_web, basic_electronics, open_ai — never existed in the
+    # legacy collection, so no stub was ever written for them and every one of
+    # those tag pages is a 404.
+    for path in sorted(POSTS.glob("*.md")):
+        post_tags = parse_yaml_tags(path.read_text(encoding="utf-8"))
+        routes[f"/{legacy_root_name(path.stem)}.html"] = f"/blog/{path.stem}/"
+        tags.update(t.lower() for t in post_tags)
+
     # Section pages that no longer exist under their old names.
     routes["/archive/"] = "/blog/"
     routes["/archive/index.html"] = "/blog/"
@@ -103,10 +190,11 @@ def build_map() -> dict[str, str]:
     routes["/ai_sms_lead_agent_architecture.html"] = "/projects/lead-qualification-agent/"
     routes["/ai_support_ticket_architecture.html"] = "/projects/support-triage-agent/"
 
-    # Tag pages collapsed into the single archive.
-    for tag in tags:
-        safe = re.sub(r"[^a-z0-9-]+", "-", tag).strip("-")
-        if safe:
+    # Tag pages collapsed into the single archive. Both spellings of every
+    # tag are emitted: the one the legacy site linked to (the raw front-matter
+    # form) and the hyphenated one.
+    for tag in sorted(tags):
+        for safe in tag_slugs(tag):
             routes[f"/tags/{safe}/"] = "/blog/"
             routes[f"/tags/{safe}/index.html"] = "/blog/"
 
@@ -125,10 +213,17 @@ def write_stub(route: str, target: str) -> bool:
     else:
         out = STATIC / route.lstrip("/") / "index.html"
 
+    # The canonical is absolute. A relative one is resolved against the
+    # redirect stub itself by some crawlers and ignored by others, so the
+    # signal it carries is ambiguous; the absolute form is what the crawl
+    # sees everywhere else on the site.
+    canonical = SITE + target
+
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(
         TEMPLATE.format(
             target=target,
+            canonical=canonical,
             target_js=json.dumps(target),
             papier="#14100a",
             encre="#ffa02e",

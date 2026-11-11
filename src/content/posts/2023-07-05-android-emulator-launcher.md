@@ -50,7 +50,7 @@ The interface displays the list of active emulators along with their connection 
 
 ## 🎥 Demo
 
-<video controls width="720">
+<video controls preload="none" poster="/media/posters/java_swing_android_emulator_launcher.jpg" width="720">
 <source src="/media/java_swing_android_emulator_launcher.webm" type="video/webm" />
 </video>
 

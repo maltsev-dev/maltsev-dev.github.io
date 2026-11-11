@@ -361,7 +361,7 @@ tags: ["RAG", "Intercom", "React"]
 
             <div class="risk-card">
 
-                <span class="risk-icon">▲</span>
+                <strong>▲ Cost scales with volume</strong>
 
                 <p>Support costs scale linearly with growth</p>
 
@@ -369,7 +369,7 @@ tags: ["RAG", "Intercom", "React"]
 
             <div class="risk-card">
 
-                <span class="risk-icon">▲</span>
+                <strong>▲ Churn from slow replies</strong>
 
                 <p>Customers churn from slow responses</p>
 
@@ -377,7 +377,7 @@ tags: ["RAG", "Intercom", "React"]
 
             <div class="risk-card">
 
-                <span class="risk-icon">▲</span>
+                <strong>▲ Your best agents burn out</strong>
 
                 <p>Top agents burn out and leave</p>
 
@@ -385,7 +385,7 @@ tags: ["RAG", "Intercom", "React"]
 
             <div class="risk-card">
 
-                <span class="risk-icon">▲</span>
+                <strong>▲ Faster competitors win</strong>
 
                 <p>Faster competitors win your customers</p>
 

@@ -1,18 +1,80 @@
 ---
 import { getCollection, render } from 'astro:content';
 import Base from '../../layouts/Base.astro';
+import { describe } from '../../lib/summarize';
+import { blogPostingNode } from '../../lib/schema';
 
 export async function getStaticPaths() {
   const posts = await getCollection('posts');
-  return posts.map((p) => ({ params: { slug: p.id }, props: { post: p } }));
+  // Newest first, the order the index lists them in. The neighbours are cut
+  // from this list, so the two ends of it have one neighbour instead of two.
+  const ordered = [...posts].sort((a, b) =>
+    (b.data.date ?? '').localeCompare(a.data.date ?? '')
+  );
+  return ordered.map((post, i) => ({
+    params: { slug: post.id },
+    props: {
+      post,
+      older: ordered[i + 1] ?? null,
+      newer: ordered[i - 1] ?? null,
+    },
+  }));
 }
 
-const { post } = Astro.props;
+const { post, older, newer } = Astro.props;
 const { Content } = await render(post);
 
+// The meta description used to be the title, so every post advertised itself
+// twice and the search snippet was whatever the title happened to be. A post
+// that writes its own description gets it; the rest get the first real
+// sentence of their body.
+const description = describe(post.data.title, post.body, post.data.description);
+
+const siteUrl = new URL(Astro.site ?? 'https://maltsev-dev.github.io');
+const schema = [
+  blogPostingNode(siteUrl, {
+    title: post.data.title,
+    description,
+    date: post.data.date,
+    tags: post.data.tags,
+    slug: post.id,
+  }),
+];
+
+// The posts this one leads to. A reader who lands from search on one of the
+// hardware notes used to have nowhere to go: eighteen of the posts carried no
+// onward link at all, and the hardware cluster never linked into the agent
+// writing that is the site's actual subject. Ranked by how many tags they
+// share, then by date, so the nearest neighbour comes first.
+const allPosts = await getCollection('posts');
+const others = allPosts.filter((p) => p.id !== post.id);
+
+const related = others
+  .map((p) => ({
+    post: p,
+    shared: p.data.tags.filter((t) => post.data.tags.includes(t)).length,
+  }))
+  .filter((x) => x.shared > 0)
+  .sort(
+    (a, b) =>
+      b.shared - a.shared ||
+      (b.post.data.date ?? '').localeCompare(a.post.data.date ?? '')
+  )
+  .slice(0, 3)
+  .map((x) => x.post);
+
+// A post whose tags belong to it alone — the AI pipeline note is the only one
+// tagged `architecture` — would still be a dead end. It falls back to the
+// newest writing instead, under a heading that says what it is.
+const neighbours = related.length
+  ? related
+  : [...others]
+      .sort((a, b) => (b.data.date ?? '').localeCompare(a.data.date ?? ''))
+      .slice(0, 3);
+const neighbourLabel = related.length ? 'Related' : 'Recent writing';
 ---
 
-<Base title={post.data.title} description={post.data.title} type="article">
+<Base title={post.data.title} description={description} type="article" schema={schema}>
   <!-- Read column, centred, so a long article is not glued to the left edge
        on a wide screen. -->
   <article class="prose article">
@@ -37,5 +99,65 @@ const { Content } = await render(post);
     <hr />
 
     <Content />
+
+    <!--
+      The close of the article. The post used to end with its last line and
+      nothing else: no way onward, no way to ask, no way back into the writing.
+      Three things now close it — the neighbours in time, the posts that share
+      its subject, and the way to start a conversation about it.
+    -->
+    <nav class="post-nav" aria-label="More posts">
+      {
+        older ? (
+          <a class="post-nav-link post-nav-older" href={`/blog/${older.id}/`}>
+            <span class="post-nav-label">Older</span>
+            <span class="post-nav-title">{older.data.title}</span>
+          </a>
+        ) : (
+          <span class="post-nav-link post-nav-empty" />
+        )
+      }
+      {
+        newer ? (
+          <a class="post-nav-link post-nav-newer" href={`/blog/${newer.id}/`}>
+            <span class="post-nav-label">Newer</span>
+            <span class="post-nav-title">{newer.data.title}</span>
+          </a>
+        ) : (
+          <span class="post-nav-link post-nav-empty" />
+        )
+      }
+    </nav>
+
+    {
+      neighbours.length > 0 && (
+        <section class="post-related">
+          <h2 class="post-related-head">{neighbourLabel}</h2>
+          <ul class="post-related-list">
+            {neighbours.map((r) => (
+              <li>
+                <a href={`/blog/${r.id}/`}>
+                  <span class="post-related-title">{r.data.title}</span>
+                  <span class="post-related-date">{r.data.date}</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )
+    }
+
+    <section class="post-cta">
+      <h2>Ask me about this</h2>
+      <p>
+        If this is close to the work you are trying to do, I am the person who
+        wrote it. Half an hour on a call is enough for both of us to know
+        whether it is work I should be doing.
+      </p>
+      <div class="btn-row">
+        <button type="button" class="btn" data-open-letter>Write a message</button>
+        <a class="btn" href="/freelance/">What I take on</a>
+      </div>
+    </section>
   </article>
 </Base>

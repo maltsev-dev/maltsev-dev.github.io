@@ -7,6 +7,11 @@ const posts = defineCollection({
     title: z.string(),
     date: z.string().optional(),
     tags: z.array(z.string()).default([]),
+    /**
+     * The post's own description. Optional: a post that does not write one
+     * gets the first real sentence of its body, derived at build time.
+     */
+    description: z.string().optional(),
   }),
 });
 

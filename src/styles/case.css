@@ -1,0 +1,342 @@
+/* ==========================================================================
+   Case study — /projects/<slug>/
+
+   ProjectCase.astro renders the data lifted out of the legacy landing pages
+   into JSON (see _parse_projects.py) with site components. It shipped with
+   no stylesheet at all, so every one of its fifty-odd elements fell back to
+   the browser's block layout: the three pages that sell the product read as a
+   draft. The metrics hung as bare text, the before/after pairs ran together on
+   one line, and the pipeline steps carried two numbers each — the <ol>'s own
+   marker and the .flow-n span — with nothing separating them.
+
+   Everything here resolves through the theme tokens, so a case study looks
+   the same in all three ramps.
+   ========================================================================== */
+
+.wrap-sub {
+  margin-inline: auto;
+  max-width: 58rem;
+}
+
+/* ----- Hero -------------------------------------------------------------- */
+
+.case {
+  padding-block: 0 3rem;
+}
+
+.case-hero {
+  padding-block: 1.5rem 0.5rem;
+}
+
+.case-tagline {
+  font-family: var(--font-display);
+  font-size: clamp(1.9rem, 5.5vw, 3.2rem);
+  line-height: 1.08;
+  color: var(--fort);
+  margin: 0 0 0.7rem;
+  text-wrap: balance;
+}
+
+.case-fit {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--braise);
+  margin-top: 0.9rem;
+}
+
+/* The metric strip: a hairline grid in the accent, cells in the paper
+   colour. The same construction as the legacy pages' .metrics, so the two
+   generations of page read as one. */
+.case-metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
+  gap: 1px;
+  background: var(--braise);
+  border: var(--trait) solid var(--braise);
+  margin-block: 1.8rem;
+}
+
+.case-metric {
+  background: var(--papier);
+  padding: 0.9rem 1.1rem;
+}
+
+.case-metric strong {
+  display: block;
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 3.6vw, 2.1rem);
+  line-height: 1.1;
+  color: var(--braise);
+}
+
+.case-metric span {
+  display: block;
+  margin-top: 0.25rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--encre);
+}
+
+.case-trust {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--fort);
+  border-left: var(--trait) solid var(--braise);
+  padding-left: 0.85rem;
+}
+
+/* ----- Blocks ------------------------------------------------------------ */
+
+.case-block {
+  padding-block: 2.4rem;
+  border-top: var(--filet) solid var(--grid);
+}
+
+.case-block h2 {
+  font-family: var(--font-display);
+  font-size: clamp(1.4rem, 3.4vw, 2rem);
+  line-height: 1.15;
+  color: var(--fort);
+  margin: 0 0 0.8rem;
+}
+
+.case-sub {
+  max-width: 62ch;
+  color: var(--fort);
+  margin-bottom: 1.5rem;
+}
+
+/* ----- The problem list -------------------------------------------------- */
+
+.case-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 19rem), 1fr));
+}
+
+.case-list li {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.85rem;
+  align-items: start;
+  border: var(--filet) solid var(--grid);
+  background: color-mix(in srgb, var(--rouille) 18%, var(--papier));
+  padding: 0.85rem 1rem;
+}
+
+.case-bullet {
+  font-family: var(--font-mono);
+  font-size: 1.05rem;
+  line-height: 1.5;
+  color: var(--braise);
+}
+
+.case-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.case-card-title {
+  color: var(--fort);
+}
+
+.case-card-text {
+  font-size: 0.95rem;
+  color: var(--encre);
+}
+
+/* ----- Before / after ---------------------------------------------------- */
+
+.case-deltas {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+}
+
+.delta {
+  display: grid;
+  grid-template-columns: auto auto 1fr;
+  grid-template-areas:
+    'before arrow after'
+    'label label label';
+  align-items: baseline;
+  gap: 0.35rem 0.6rem;
+  border: var(--filet) solid var(--braise);
+  background: var(--papier);
+  padding: 0.9rem 1rem;
+}
+
+.delta-before {
+  grid-area: before;
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  color: var(--encre);
+  opacity: 0.75;
+  text-decoration: line-through;
+  text-decoration-color: var(--braise);
+}
+
+.delta-arrow {
+  grid-area: arrow;
+  color: var(--braise);
+  font-weight: 700;
+}
+
+.delta-after {
+  grid-area: after;
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  line-height: 1.2;
+  color: var(--fort);
+}
+
+.delta-label {
+  grid-area: label;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--braise);
+}
+
+.case-highlight {
+  margin-top: 1.6rem;
+  padding: 1rem 1.2rem;
+  border-left: var(--trait) solid var(--braise);
+  background: color-mix(in srgb, var(--rouille) 40%, var(--papier));
+  font-family: var(--font-display);
+  font-size: clamp(1.05rem, 2.4vw, 1.3rem);
+  color: var(--fort);
+}
+
+/* ----- The pipeline ------------------------------------------------------ */
+
+/* The list is a numbered sequence in the markup, but the number is drawn by
+   .flow-n so that it can sit in a box. The <ol>'s own marker would be a
+   second number, right beside it: `1. 1 Lead replies`. */
+.case-flow {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.9rem;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+}
+
+.flow-step {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.2rem 0.9rem;
+  align-items: start;
+  border: var(--filet) solid var(--grid);
+  background: color-mix(in srgb, var(--rouille) 18%, var(--papier));
+  padding: 0.9rem 1rem;
+}
+
+.flow-n {
+  grid-column: 1;
+  grid-row: 1 / span 2;
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  background: var(--braise);
+  color: var(--papier);
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.flow-step strong {
+  grid-column: 2;
+  color: var(--fort);
+}
+
+.flow-step > span:not(.flow-n) {
+  grid-column: 2;
+  font-size: 0.95rem;
+  color: var(--encre);
+}
+
+/* ----- Cards ------------------------------------------------------------- */
+
+.card-glyph {
+  display: inline-grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border: var(--filet) solid var(--braise);
+  background: var(--papier);
+  color: var(--braise);
+  font-family: var(--font-mono);
+  font-size: 1rem;
+}
+
+/* The risk cards are the argument against doing nothing, so they wear the
+   warning tint rather than the plain card ground. */
+.card-risk {
+  border-color: var(--rouille);
+  background: color-mix(in srgb, var(--rouille) 22%, var(--papier));
+}
+
+.card-risk h3 {
+  color: var(--fort);
+}
+
+/* ----- Pricing ----------------------------------------------------------- */
+
+.case-price {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+  gap: 1px;
+  background: var(--braise);
+  border: var(--trait) solid var(--braise);
+}
+
+.price-cell {
+  background: var(--papier);
+  padding: 1rem 1.1rem;
+  display: grid;
+  gap: 0.3rem;
+  align-content: start;
+}
+
+.price-cell strong {
+  font-family: var(--font-display);
+  font-size: clamp(1.3rem, 3vw, 1.8rem);
+  line-height: 1.15;
+  color: var(--fort);
+}
+
+.price-cell span {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--encre);
+}
+
+/* ----- Narrow screens ---------------------------------------------------- */
+
+/* A delta is a row of three on a wide screen; on a phone the arrow sits
+   under the "before" instead of beside it, so the pair still reads as a
+   pair. */
+@media (max-width: 30rem) {
+  .delta {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      'before'
+      'arrow'
+      'after'
+      'label';
+  }
+}

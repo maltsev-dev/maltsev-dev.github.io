@@ -2,12 +2,12 @@
 //
 // Two modes, told apart by `data-track-mode` on the runway:
 //
-//   wheel  (default on /experience/) — the page does not scroll. The wrapper is
-//          one viewport tall and the wheel feeds the row directly: a trackpad
-//          swipe arrives as deltaX, a mouse wheel as deltaY, and both mean the
-//          same thing here. Arrow keys step one card at a time.
-//   scroll (/projects/)             — the page scrolls down and the runway's
+//   scroll (/experience/, /projects/) — the page scrolls down and the runway's
 //          height carries the row's travel, exactly as before.
+//   wheel  (/experience/ only)         — the page does not scroll. The wrapper
+//          is one viewport tall and the wheel feeds the row directly: a
+//          trackpad swipe arrives as deltaX, a mouse wheel as deltaY, and both
+//          mean the same thing here. Arrow keys step one card at a time.
 //
 // Both modes share one render path: a progress fraction in, a transform and a
 // lit panel out.
@@ -34,10 +34,24 @@
   var wheelMode = runway.getAttribute('data-track-mode') === 'wheel';
   var pos = 0;
 
-  // Stacked layouts (narrow screens, reduced motion) need no travel at all —
-  // CSS removes the transform and shows every panel, so stand down.
+  // The horizontal layout needs a viewport wide enough for a card and a
+  // pointing device to drive it with.
+  //
+  // The pointing device is the important half. The layout takes the page's
+  // vertical scroll away — the wrapper is one viewport tall and the row moves
+  // sideways instead — so on a tablet, where there is no wheel and no arrow
+  // key, ten of the twelve project panels were simply unreachable. iPad Pro in
+  // portrait is 834px, which is inside the width threshold, so it was exactly
+  // the audience that lost the content.
+  //
+  // CSS asks the same question (see the two media queries in track.css) and
+  // the two must agree: CSS lays the row out, this script decides whether it
+  // may travel.
   function isHorizontal() {
-    return !reduce && window.matchMedia('(min-width: 52.1rem)').matches;
+    return (
+      !reduce &&
+      window.matchMedia('(min-width: 52.1rem) and (hover: hover) and (pointer: fine)').matches
+    );
   }
 
   function clamp(v) {
@@ -167,11 +181,26 @@
 
   function onKey(e) {
     if (!wheelMode || !isHorizontal()) return;
-    var t = span();
-    var pitch = t && panels.length > 1
+
+    // The keyboard belongs to whatever the reader is typing into. Without this
+    // guard a caret in the contact form never moved: ArrowRight was swallowed
+    // by the track, and End jumped the background to the last panel instead of
+    // going to the end of the line. The same pattern already guards the number
+    // shortcuts in os.js.
+    var t = e.target;
+    if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.tagName === 'SELECT')) {
+      return;
+    }
+    if (t && t.isContentEditable) return;
+    // And to whatever is open on top of the page: the letter modal has its own
+    // keyboard behaviour and must not have the background move under it.
+    if (t && t.closest && t.closest('[role="dialog"]')) return;
+
+    var reach = span();
+    var pitch = reach && panels.length > 1
       ? Math.abs(panels[1].getBoundingClientRect().left - panels[0].getBoundingClientRect().left)
-      : t;
-    var step = t ? pitch / t : 0;
+      : reach;
+    var step = reach ? pitch / reach : 0;
     var next;
 
     switch (e.key) {
@@ -197,6 +226,55 @@
     pos = clamp(next);
     render(pos);
   }
+
+  // ----- touch ------------------------------------------------------------
+  // A laptop with a touchscreen still reports a fine pointer, so it gets the
+  // horizontal layout — but in wheel mode the page does not scroll, and a
+  // finger has no wheel to turn. Without this the row is stuck on its first
+  // panel for anyone using the touchscreen.
+  //
+  // Only wheel mode needs it: where the page scrolls, the row's travel is the
+  // scroll distance and a vertical swipe already moves it.
+  var touch = null;
+
+  row.addEventListener(
+    'touchstart',
+    function (e) {
+      if (!wheelMode || !isHorizontal()) return;
+      if (e.touches.length !== 1) return;
+      touch = { x: e.touches[0].clientX, y: e.touches[0].clientY, pos: pos };
+    },
+    { passive: true }
+  );
+
+  row.addEventListener(
+    'touchmove',
+    function (e) {
+      if (!touch || !wheelMode || !isHorizontal()) return;
+      var dx = e.touches[0].clientX - touch.x;
+      var dy = e.touches[0].clientY - touch.y;
+      // A drag that is mostly vertical is a scroll gesture and belongs to the
+      // browser; the row only claims the ones that travel along it.
+      if (Math.abs(dy) > Math.abs(dx)) {
+        touch = null;
+        return;
+      }
+      var reach = span();
+      if (!reach) return;
+      e.preventDefault();
+      pos = clamp(touch.pos - dx / reach);
+      render(pos);
+    },
+    { passive: false }
+  );
+
+  row.addEventListener(
+    'touchend',
+    function () {
+      touch = null;
+    },
+    { passive: true }
+  );
 
   // ----- scroll mode -------------------------------------------------------
 

@@ -35,10 +35,16 @@ UA = (
 GOOGLE_CSS = (
     "https://fonts.googleapis.com/css2"
     "?family=Anton"
-    "&family=Inter:wght@300;400;500;600;700"
-    "&family=JetBrains+Mono:wght@400;500"
+    "&family=Inter:wght@100..900"
+    "&family=JetBrains+Mono:wght@400..800"
     "&display=swap"
 )
+
+# The families this script owns. Files that start with one of these names and
+# are not in the new set are stale — the weight-specific copies of the
+# variable faces — and are removed. The art face is not this script's job and
+# is not in this list.
+MANAGED = ("anton-", "inter-", "jetbrains-mono-")
 
 # The subsets the site can actually render. Latin covers English and the
 # punctuation the design uses; cyrillic is there because the blog posts
@@ -81,7 +87,16 @@ def parse(css: str):
 
 
 def slug(family: str, weight: str, subset: str) -> str:
-    return f"{family.lower().replace(' ', '-')}-{weight}-{subset}.woff2"
+    """The filename a face is stored under.
+
+    A variable face — one whose weight is a range, "100 900" — is stored
+    without a weight in its name: it is one file for the whole family, not
+    one file per weight.
+    """
+    base = family.lower().replace(" ", "-")
+    if " " in weight:
+        return f"{base}-{subset}.woff2"
+    return f"{base}-{weight}-{subset}.woff2"
 
 
 def main() -> int:
@@ -130,11 +145,34 @@ def main() -> int:
         " * The unicode-ranges are Google's, so the browser still downloads only\n"
         " * the ranges a page actually renders: an English page never touches the\n"
         " * cyrillic files.\n"
+        " *\n"
+        " * Inter and JetBrains Mono are variable fonts — one file per subset\n"
+        " * carries every weight. They used to be declared as five (or two)\n"
+        " * discrete faces, and because each of those declarations pointed at the\n"
+        " * *same* variable file, a page with bold prose downloaded the same 48 kB\n"
+        " * twice under two names, and the deployment carried 19 byte-identical\n"
+        " * copies of the same two faces. One declaration with a weight range is\n"
+        " * both smaller and one request.\n"
         " */\n\n"
     )
 
     CSS_OUT.write_text(header + "\n\n".join(blocks) + "\n", encoding="utf-8")
     print(f"wrote {CSS_OUT.relative_to(ROOT)} with {len(blocks)} faces")
+
+    # The weight-specific copies of the variable faces are stale now — they
+    # were byte-identical to the file that replaced them and were downloaded
+    # twice under two names. Anything this script manages that is not in the
+    # new set goes.
+    stale = [
+        p
+        for p in OUT_DIR.glob("*.woff2")
+        if p.name.startswith(MANAGED) and p.name not in seen
+    ]
+    for p in stale:
+        p.unlink()
+        print(f"removed stale {p.name}")
+    if stale:
+        print(f"removed {len(stale)} stale font file(s)")
     return 0
 
 

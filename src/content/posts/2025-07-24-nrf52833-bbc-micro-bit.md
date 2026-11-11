@@ -86,6 +86,6 @@ section              size        addr
 .debug_line         21193         0x0
 Total              208253
 ```
-<video controls width="720">  
-<source src="/media/nrf53833/led_circle.webm" type="video/webm" />  
+<video controls preload="none" poster="/media/posters/nrf53833__led_circle.jpg" width="720">
+<source src="/media/nrf53833/led_circle.webm" type="video/webm" />
 </video>  

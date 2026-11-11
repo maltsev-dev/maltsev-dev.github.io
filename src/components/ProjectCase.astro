@@ -15,7 +15,7 @@ interface Props {
     fit?: string;
     trust?: string;
     metrics?: Metric[];
-    problem?: { sub?: string; cards?: { icon: string; text: string }[] };
+    problem?: { sub?: string; cards?: { icon: string; title?: string; text: string }[] };
     solution?: { sub?: string; cards?: { icon: string; title: string; text: string }[] };
     results?: {
       sub?: string;
@@ -73,7 +73,10 @@ const has = (v: unknown[]) => Array.isArray(v) && v.length > 0;
         {data.problem!.cards!.map((c) => (
           <li data-reveal>
             <span class="case-bullet" aria-hidden="true">{c.icon}</span>
-            <span>{c.text}</span>
+            <span class="case-card-body">
+              {c.title && <strong class="case-card-title">{c.title}</strong>}
+              <span class="case-card-text">{c.text}</span>
+            </span>
           </li>
         ))}
       </ul>

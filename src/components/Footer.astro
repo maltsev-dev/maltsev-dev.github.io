@@ -1,18 +1,106 @@
 ---
+interface Props {
+  /**
+   * The compact form is one row: copyright, contact, and a call to action.
+   *
+   * The projects catalogue is a one-viewport page whose wheel is spent on the
+   * row of panels, so a full footer below it would sit under a fold the page
+   * cannot scroll to. There the footer becomes a bar pinned to the bottom of
+   * the screen instead, and the header carries the site links.
+   */
+  compact?: boolean;
+}
+
+const { compact = false } = Astro.props;
+
 const year = new Date().getFullYear();
+
+// The same six routes the header index and the palette carry. The footer is
+// the last thing on the page, so it is the one place a reader who has
+// finished an article can still go without scrolling back up.
+const SECTIONS = [
+  { href: '/', label: 'Home' },
+  { href: '/projects/', label: 'Projects' },
+  { href: '/experience/', label: 'Experience' },
+  { href: '/blog/', label: 'Writing' },
+  { href: '/about/', label: 'Profile' },
+  { href: '/freelance/', label: 'Freelance' },
+];
+
+const ELSEWHERE = [
+  { href: 'https://github.com/maltsev-dev', label: 'GitHub', external: true },
+  { href: 'https://www.linkedin.com/in/a-maltsev', label: 'LinkedIn', external: true },
+  { href: '/rss.xml', label: 'RSS', external: false },
+];
 ---
 
-<!-- Deliberately one quiet row. The menus carry navigation; the footer does
-     not need to repeat it. -->
-<footer class="site-footer">
-  <div class="wrap footer-line">
-    <span>© {year} Anatoly Maltsev</span>
+<!--
+  The end of the page. Until this was connected, every route ended in blank
+  space: no way on from a finished article, and no <footer> landmark for a
+  screen reader to jump to.
+-->
+{
+  compact ? (
+    <footer class="site-footer site-footer--compact">
+      <div class="wrap footer-bar">
+        <span>© {year} Anatoly Maltsev</span>
+        <nav class="footer-links" aria-label="Elsewhere">
+          <a href="mailto:mr.a.maltsev@gmail.com">Email</a>
+          <a href="https://github.com/maltsev-dev" rel="noopener" target="_blank">GitHub</a>
+          <a href="https://www.linkedin.com/in/a-maltsev" rel="noopener" target="_blank">LinkedIn</a>
+          <a href="/rss.xml">RSS</a>
+        </nav>
+        <button type="button" class="btn btn-primary" data-open-letter>Start a conversation</button>
+      </div>
+    </footer>
+  ) : (
+    <footer class="site-footer">
+      <div class="wrap">
+        <div class="footer-grid">
+          <div class="footer-lead-col">
+            <p class="footer-lead">
+              Agentic systems that carry real work — built to be measured, not admired.
+            </p>
+            <button type="button" class="btn btn-primary" data-open-letter>Start a conversation</button>
+          </div>
 
-    <nav class="footer-links" aria-label="Elsewhere">
-      <a href="https://github.com/maltsev-dev" rel="noopener" target="_blank">GitHub</a>
-      <a href="https://www.linkedin.com/in/a-maltsev" rel="noopener" target="_blank">LinkedIn</a>
-      <a href="mailto:mr.a.maltsev@gmail.com">Email</a>
-      <a href="/rss.xml">RSS</a>
-    </nav>
-  </div>
-</footer>
+          <nav class="footer-col" aria-label="Site sections">
+            <h2>Site</h2>
+            <ul>
+              {SECTIONS.map((s) => (
+                <li>
+                  <a href={s.href}>{s.label}</a>
+                </li>
+              ))}
+            </ul>
+          </nav>
+
+          <nav class="footer-col" aria-label="Elsewhere">
+            <h2>Elsewhere</h2>
+            <ul>
+              {ELSEWHERE.map((s) => (
+                <li>
+                  <a
+                    href={s.href}
+                    rel={s.external ? 'noopener' : undefined}
+                    target={s.external ? '_blank' : undefined}
+                  >
+                    {s.label}
+                  </a>
+                </li>
+              ))}
+              <li>
+                <a href="mailto:mr.a.maltsev@gmail.com">Email</a>
+              </li>
+            </ul>
+          </nav>
+        </div>
+
+        <div class="footer-bar">
+          <span>© {year} Anatoly Maltsev</span>
+          <span>Built with Astro · Anton, Inter, JetBrains Mono</span>
+        </div>
+      </div>
+    </footer>
+  )
+}

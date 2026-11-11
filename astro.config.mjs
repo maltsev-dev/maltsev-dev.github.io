@@ -1,6 +1,7 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
 import mdx from '@astrojs/mdx';
+import rehypeImageAttrs from './src/plugins/rehype-image-attrs.mjs';
 
 // Static output, matching the legacy generator: GitHub Pages serves `dist/`
 // from the repo root, so every route is pre-rendered to plain HTML.
@@ -28,6 +29,10 @@ export default defineConfig({
   // theme is `github-dark-default` rather than `github-dark` because the
   // latter's comment grey (#6a737d on #24292e) is 3.05:1 and fails AA.
   markdown: {
+    // Every image in a post body gets its intrinsic size, `loading="lazy"`
+    // and `decoding="async"`. Without them the browser reserves no space
+    // for a figure and the article jumps as each one lands.
+    rehypePlugins: [rehypeImageAttrs],
     shikiConfig: {
       themes: { light: 'github-light', dark: 'github-dark-default' },
       defaultColor: false,

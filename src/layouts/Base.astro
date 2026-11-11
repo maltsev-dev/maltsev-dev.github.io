@@ -1,5 +1,4 @@
 ---
-import { getCollection } from 'astro:content';
 import '../styles/fonts.css';
 import '../styles/global.css';
 import '../styles/animation.css';
@@ -10,6 +9,8 @@ import Header from '../components/Header.astro';
 import StatusBar from '../components/StatusBar.astro';
 import LetterModal from '../components/LetterModal.astro';
 import Palette from '../components/Palette.astro';
+import Footer from '../components/Footer.astro';
+import { graph } from '../lib/schema';
 
 interface Props {
   title?: string;
@@ -18,6 +19,8 @@ interface Props {
   type?: string;
   /** Shows the fixed section rail down the right edge. */
   rail?: boolean;
+  /** Extra schema.org nodes for this page, added to the site graph. */
+  schema?: Record<string, unknown>[];
 }
 
 const {
@@ -26,29 +29,23 @@ const {
   image = '/og.png',
   type = 'website',
   rail = false,
+  schema = [],
 } = Astro.props;
 
 const canonical = new URL(Astro.url.pathname, Astro.site);
 const fullTitle = title === 'Maltsev · Agentic Engineering' ? title : `${title} · maltsev.dev`;
 
-// One index for the whole site, built here rather than per page: every route
-// gets the same complete list, and adding a post or project is picked up
-// automatically on the next build instead of needing six edits.
-const POSTS = (await getCollection('posts')).sort((a, b) =>
-  (b.data.date ?? '').localeCompare(a.data.date ?? '')
-);
-const PROJECTS = await getCollection('projects');
+// Every page declares who wrote it and what the site is, and a page that is
+// about one thing adds its own node on top. Without this the site had no
+// structured data at all: no author, no dates, nothing for a rich result.
+const siteUrl = new URL(Astro.site ?? 'https://maltsev-dev.github.io');
+const jsonLd = graph(siteUrl, schema);
 
-const paletteItems = [
-  { label: 'Home', href: '/', group: 'Page' },
-  { label: 'Projects', href: '/projects/', group: 'Page' },
-  { label: 'Experience', href: '/experience/', group: 'Page' },
-  { label: 'Profile', href: '/about/', group: 'Page' },
-  { label: 'Writing', href: '/blog/', group: 'Page' },
-  { label: 'Freelance', href: '/freelance/', group: 'Page' },
-  ...PROJECTS.map((p) => ({ label: p.data.title, href: `/projects/${p.data.slug}/`, group: 'Project' })),
-  ...POSTS.map((p) => ({ label: p.data.title, href: `/blog/${p.id}/`, group: 'Post' })),
-];
+// The projects catalogue is one viewport tall and its wheel is spent on the
+// row of panels, so the full footer would sit below a fold the page cannot
+// scroll to. It gets the compact form instead, which is pinned to the bottom
+// of the screen and carries the copyright and the contact.
+const compactFooter = Astro.url.pathname === '/projects/';
 ---
 
 <!doctype html>
@@ -56,6 +53,19 @@ const paletteItems = [
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!--
+      The two faces every page renders in are preloaded. Without this the
+      font request cannot start until the stylesheet has been fetched,
+      parsed and matched against the layout — a full extra round trip after
+      the first paint, and the text arrives in the fallback face first.
+      `crossorigin` is not optional: fonts are fetched in anonymous CORS
+      mode, and a preload without it is fetched twice — once here and once
+      by the font matcher.
+    -->
+    <link rel="preload" href="/fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/jetbrains-mono-latin.woff2" as="font" type="font/woff2" crossorigin />
+
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
 
@@ -79,6 +89,8 @@ const paletteItems = [
     <meta name="twitter:image" content={new URL(image, Astro.site)} />
     <meta name="twitter:image:alt" content="Maltsev — agentic engineering that carries real work" />
     <title>{fullTitle}</title>
+
+    <script type="application/ld+json" set:html={jsonLd} />
 
     <!--
       Theme must be resolved before first paint, otherwise a visitor on a dark
@@ -158,8 +170,10 @@ const paletteItems = [
 
     {rail && <div class="section-rail" aria-hidden="true"><i id="railFill"></i></div>}
 
+    <Footer compact={compactFooter} />
+
     <LetterModal />
-    <Palette items={paletteItems} />
+    <Palette />
 
     <script>
       import '../scripts/os.js';

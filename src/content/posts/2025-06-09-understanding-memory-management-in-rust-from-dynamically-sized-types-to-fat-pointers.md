@@ -416,7 +416,7 @@ use std::io::Write;
 
 In memory, `Trait Object` is a **fat pointer** of two pointers (`data pointer` + `vtable pointer`)  
 
-![Trait object diagram showing a fat pointer made of a data pointer to the Vec<u8> and a vtable pointer to the shared method table](/images/rust_memory/rust_memory_fat_pointer.png)
+![Trait object diagram showing a fat pointer made of a data pointer to the byte buffer and a vtable pointer to the shared method table](/images/rust_memory/rust_memory_fat_pointer.png)
 
 * `data pointer` - a pointer to the actual values, in this case, a pointer to a `Vec<u8>`.  
 * `vtable pointer` - a pointer to a table representing the value type. The table is generated once at compile time and is shared by **all objects of that type**.  

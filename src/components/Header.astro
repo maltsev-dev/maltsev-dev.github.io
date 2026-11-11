@@ -105,11 +105,45 @@ const isActive = (href: string) => currentPath.startsWith(href);
             <span class="desc">for agents</span>
           </span>
         </a>
+        <!--
+          A visible way into the command palette. Ctrl+K is the shortcut, but
+          a shortcut is not a way in for a reader on a phone or a screen
+          reader, and it gives the palette somewhere to return the focus to
+          when it closes.
+        -->
+        <button class="dd-item" type="button" data-open-palette>
+          <span class="fig" aria-hidden="true">⌘</span>
+          <span>
+            Command palette
+            <span class="desc">Ctrl+K</span>
+          </span>
+        </button>
       </div>
     </div>
     </div>
 
     <nav class="social" aria-label="Elsewhere">
+      <!--
+        The command palette's permanent trigger. It has to be a real control
+        in the header and not a keyboard shortcut only: on a phone there is no
+        Ctrl+K, and a screen reader reader would never find the palette at
+        all. It is also where the palette returns the focus to when it
+        closes.
+      -->
+      <button
+        class="social-link"
+        type="button"
+        id="paletteOpen"
+        data-open-palette
+        aria-label="Open the command palette"
+        title="Command palette (Ctrl+K)"
+      >
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <circle cx="10.5" cy="10.5" r="6.5"></circle>
+          <path d="m15.5 15.5 5 5"></path>
+        </svg>
+      </button>
+
       <a
         class="social-link"
         href="https://github.com/maltsev-dev"

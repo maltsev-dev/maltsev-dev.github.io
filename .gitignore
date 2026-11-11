@@ -51,3 +51,14 @@ npm-debug.log*
 .DS_Store
 Thumbs.db
 desktop.ini
+# Superpowers plan workspaces (ledger, briefs, review packages)
+.superpowers/
+
+# GStack tooling state: browse/probe logs, QA report runs, screenshot dumps
+# and a copy of the built site. It is scratch space for the audit tooling, not
+# part of the site.
+/.gstack/
+
+# The audit reports the QA tooling wrote. They are a working artifact of the
+# audit, not site content; the fixes they asked for live in src/.
+/docs/audit/

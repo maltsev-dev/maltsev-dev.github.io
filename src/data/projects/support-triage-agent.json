@@ -19,11 +19,53 @@
   ],
   "problem": {
     "sub": "You’re not lacking effort — your system doesn’t scale",
-    "cards": []
+    "cards": [
+      {
+        "icon": "◆",
+        "title": "Repetitive overload",
+        "text": "Same questions answered 1000+ times every month"
+      },
+      {
+        "icon": "◆",
+        "title": "Slow responses",
+        "text": "Delays frustrate customers and increase churn"
+      },
+      {
+        "icon": "◆",
+        "title": "Linear scaling",
+        "text": "More tickets = more hires = rising costs"
+      },
+      {
+        "icon": "◆",
+        "title": "Agent burnout",
+        "text": "Top talent stuck doing low-value repetitive work"
+      }
+    ]
   },
   "solution": {
     "sub": "Resolve the majority of tickets instantly — without adding headcount",
-    "cards": []
+    "cards": [
+      {
+        "icon": "◆",
+        "title": "Instant classification",
+        "text": "Detects intent, urgency, and category in milliseconds"
+      },
+      {
+        "icon": "◆",
+        "title": "Auto-responses",
+        "text": "Generates accurate answers from your knowledge base"
+      },
+      {
+        "icon": "◆",
+        "title": "Data lookup",
+        "text": "Pulls orders, accounts, and policies in real time"
+      },
+      {
+        "icon": "◆",
+        "title": "Smart escalation",
+        "text": "Routes only complex cases to human agents"
+      }
+    ]
   },
   "results": {
     "sub": "From overloaded support → scalable system",
@@ -78,7 +120,24 @@
   },
   "risk": {
     "sub": "Support becomes your growth bottleneck",
-    "cards": []
+    "cards": [
+      {
+        "title": "▲ Cost scales with volume",
+        "text": "Support costs scale linearly with growth"
+      },
+      {
+        "title": "▲ Churn from slow replies",
+        "text": "Customers churn from slow responses"
+      },
+      {
+        "title": "▲ Your best agents burn out",
+        "text": "Top agents burn out and leave"
+      },
+      {
+        "title": "▲ Faster competitors win",
+        "text": "Faster competitors win your customers"
+      }
+    ]
   },
   "pricing": {
     "pairs": [

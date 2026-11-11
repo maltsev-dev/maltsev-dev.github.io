@@ -1,6 +1,7 @@
 import { getCollection, type CollectionEntry } from 'astro:content';
 import type { APIContext } from 'astro';
 import { MILESTONES } from '../data/milestones';
+import { summarize } from '../lib/summarize';
 
 type PostEntry = CollectionEntry<'posts'>;
 
@@ -79,65 +80,6 @@ const PAGES = [
   { path: '/experience/', label: 'Experience', desc: 'Six stops over seven years, then the 23-skill toolkit pyramid with provenance per skill.' },
   { path: '/freelance/', label: 'Freelance', desc: 'What is taken on, and the four-step engagement: scope call, fixed-price proposal, build in the open, handover.' },
 ];
-
-/**
- * The first real paragraph of a post, as one line.
- *
- * Posts have no summary field, so the opening paragraph is what an agent would
- * read anyway — but taken raw it starts with emoji, headings, `<!-- more -->`
- * markers and tables. Skipping anything that is not a sentence keeps the index
- * to descriptions rather than fragments.
- */
-function summarize(body: string | undefined): string {
-  if (!body) return '';
-
-  const text = body
-    .replace(/<!--[\s\S]*?-->/g, ' ')
-    .replace(/```[\s\S]*?```/g, ' ')
-    .replace(/!\[[^\]]*\]\([^)]*\)/g, ' ')
-    .replace(/\[([^\]]*)\]\([^)]*\)/g, '$1')
-    .replace(/https?:\/\/\S+/g, ' ')
-    .replace(/<[^>]+>/g, ' ') // some posts open with a raw-HTML lede
-    .replace(/[*_`>|]/g, '')
-    // Emoji carry the section markers in the embedded posts, and several are
-    // decorative rather than words. Dropped so the sentence underneath them is
-    // what gets judged.
-    .replace(/\p{Extended_Pictographic}|[︎️]/gu, ' ');
-
-  for (const raw of text.split(/\n\s*\n/)) {
-    const para = raw.replace(/\s+/g, ' ').trim();
-    if (para.length < 70) continue;
-    if (/^(?:[-–—•*+|\]]|\d+[.)])\s/.test(para)) continue; // list item, table row
-    if (/^[A-Z0-9"'(]/.test(para) && /\d\.\s+\S/.test(para.slice(40))) continue; // a numbered list folded into one paragraph
-    if (!/^[A-Z0-9"'(]/.test(para)) continue; // a stray fragment
-    // Long enough to describe the post. Shorter paragraphs are titles, labels
-    // and bylines — the ones worth skipping are the repeats of the heading.
-    if (para.split(/\s+/).length < 16) continue;
-
-    return truncate(para);
-  }
-
-  return '';
-}
-
-/**
- * Shorten to roughly a sentence and a half.
- *
- * Cutting at the last full stop reads far better than cutting at the character
- * limit: a description that ends on a sentence is usable on its own, while one
- * that ends mid-clause reads as a truncation bug. Where the paragraph has no
- * stop that early — a run-on, or a long first sentence — fall back to the word
- * boundary and mark it honestly.
- */
-function truncate(para: string, limit = 190): string {
-  if (para.length <= limit) return para;
-
-  const head = para.slice(0, limit);
-  const stop = Math.max(head.lastIndexOf('. '), head.lastIndexOf('! '), head.lastIndexOf('? '));
-  if (stop > limit * 0.45) return head.slice(0, stop + 1);
-
-  return head.slice(0, head.lastIndexOf(' ')) + '…';
-}
 
 /** First group claiming any of the post's tags, or null for the leftovers. */
 function groupOf(tags: string[]): Group | null {

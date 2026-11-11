@@ -149,8 +149,8 @@ Routing is handled client-side:
 
 Because the backend serves the frontend assets directly, the system behaves as a **single cohesive application** from the user’s perspective.
 
-<video controls width="720">  
-<source src="/media/dev_nurse_project_web.webm" type="video/webm" />  
+<video controls preload="none" poster="/media/posters/dev_nurse_project_web.jpg" width="720">
+<source src="/media/dev_nurse_project_web.webm" type="video/webm" />
 </video>  
 
 ---
