@@ -1,11 +1,11 @@
 ---
 title: "📄 HTML Scraper"
 date: "2023-06-26"
+description: "A Spring Boot pipeline that fetches a page, parses it with Jsoup, maps the data to POJOs and writes an Excel file."
 tags: ["java", "spring", "project"]
 ---
 **A Spring Boot application for scraping and converting HTML data into an Excel spreadsheet.**
 
-<!-- more -->
 ---
 
 [📚 GitHub Repository](https://github.com/maltsev-dev/html_scraper_template)
@@ -14,7 +14,7 @@ This project demonstrates a complete pipeline of working with web data using Jav
 
 ---
 
-## ⚙️ Tech Stack
+## ⚙️ Tech stack
 
 * **Spring Boot** – main application framework
 * **Jsoup** – HTML parsing
@@ -42,7 +42,7 @@ This project demonstrates a complete pipeline of working with web data using Jav
 
 ---
 
-## 🛠️ How to Run
+## 🛠️ How to run
 
 1. Clone the repository:
 

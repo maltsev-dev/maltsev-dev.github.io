@@ -121,7 +121,7 @@ the type, with no set to maintain and no list that can fall out of date.
 The tradeoff is that an incidental field in the envelope invalidates live
 approvals, which is only tolerable because a well-shaped envelope does not
 contain incidental fields. This is developed in
-[material fields and canonicalisation](/blog/2026-08-14-material-fields-and-canonicalization/).
+[material fields and canonicalization](/blog/2026-08-14-material-fields-and-canonicalization/).
 
 The second decision is *who computes it*. It cannot be the SDK. If the
 client sends the digest alongside the payload, a compromised or merely
@@ -226,7 +226,7 @@ expensive.
 
 | Check | How to run it | What a pass looks like |
 |---|---|---|
-| The digest reacts to the right field | Change the amount, then change a field that is not in the envelope. | The amount change is refused. The out-of-envelope change is allowed; if it refuses, the canonicalisation is not sorted. |
+| The digest reacts to the right field | Change the amount, then change a field that is not in the envelope. | The amount change is refused. The out-of-envelope change is allowed; if it refuses, the canonicalization is not sorted. |
 | The grant is consumed once | Consume an approval, then attempt the execution again. | The second attempt is refused, and the state transition is what refused it. A success out of the same row means the read-then-write is still there. |
 | A consumed grant replays as a duplicate | Consume an approval, then replay it. | The error code names the duplicate. Assert the code: the failure alone does not say which branch refused. |
 | Expiry is enforced | Mint an approval with a 60-second TTL and sleep past it. | The consume refuses. |
@@ -265,7 +265,7 @@ a third answer: refuse, and mark it for review.
 ### Do we need a cryptographic hash, or would any comparison do?
 
 The point is determinism and binding. SHA-256 over a canonical
-serialisation gives you both for free. What actually breaks is
+serialization gives you both for free. What actually breaks is
 non-canonical input. If `{"a":1,"b":2}` and `{"b":2,"a":1}` produce
 different digests, every approval refuses for a reason nobody can
 explain.

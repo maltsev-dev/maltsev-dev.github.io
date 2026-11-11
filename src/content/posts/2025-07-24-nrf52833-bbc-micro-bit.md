@@ -1,6 +1,7 @@
 ---
 title: "🧪 nrf52833 BBC micro:bit"
 date: "2025-07-24"
+description: "A playground for the micro:bit v2.21: GPIO, I2C, SPI, UART, ADC and PWM experiments on the nrf52833."
 tags: ["rust", "nrf52833", "embedded", "project"]
 ---
 **Experiments, Prototypes & Notes with the micro:bit v2.21**
@@ -8,7 +9,6 @@ tags: ["rust", "nrf52833", "embedded", "project"]
 This repository contains my projects, experiments, and notes using the **micro:bit v2.21**, built on the **nrf52833** microcontroller.  
 It serves as a playground for testing ideas, learning embedded concepts, and building small prototypes.
 
-<!-- more -->
 ---
 
 
@@ -21,7 +21,7 @@ It serves as a playground for testing ideas, learning embedded concepts, and bui
 
 ---
 
-## ⚙️ Hardware Used
+## ⚙️ Hardware used
 
 * micro:bit v2.21
 * Breadboard & jumper wires
@@ -30,21 +30,17 @@ It serves as a playground for testing ideas, learning embedded concepts, and bui
 
 ---
 
-## 🧩 Projects & Experiments
+## 🧩 Projects & experiments
 
 | Project Name            | Description                         | Status         |
 | ----------------------- | ----------------------------------- | -------------- |
 | `blinky`  | blink onboard led           | ✅ Done         |
 | `led_circle`  | onboard led matrix circle controlled by bsc           | ✅ Done         |
 | `uart_echo`  | connect MCu to PC through UART from BSC           | ✅ Done         |
-| `xxx`             | planned | ⏳ Planned       |
-
-
-*More to come.*
 
 ---
 
-## 🔧 Tools & Tech Stack
+## 🔧 Tools & tech stack
 
 * Languages:  Rust
 * IDEs: VSCode
@@ -86,6 +82,6 @@ section              size        addr
 .debug_line         21193         0x0
 Total              208253
 ```
-<video controls preload="none" poster="/media/posters/nrf53833__led_circle.jpg" width="720">
-<source src="/media/nrf53833/led_circle.webm" type="video/webm" />
+<video controls preload="none" poster="/media/posters/nrf52833__led_circle.jpg" width="720">
+<source src="/media/nrf52833/led_circle.webm" type="video/webm" />
 </video>  

@@ -7,15 +7,40 @@
 <div class="status-bar">
   <div class="wrap">
     <div class="status-right">
+      <!--
+        No `datetime` in the markup: an empty value is not a valid date/time
+        string, and the one the script writes has to be the visitor's local
+        time, which is only known in the browser.
+      -->
       <span class="status-item clock">
         <span class="k" aria-hidden="true">time</span>
-        <time id="clock" datetime="">—</time>
+        <time id="clock">—</time>
       </span>
 
-      <button class="status-item status-cta" type="button" data-open-letter>
+      <!--
+        The one contact entry point on the page, so it has to say what it does
+        and be big enough to hit. The visible word is kept inside the
+        accessible name, which is what Label in Name asks for.
+      -->
+      <button
+        class="status-item status-cta"
+        type="button"
+        data-open-letter
+        aria-label="available — say hello, open the message form"
+      >
         <span class="pulse-dot" aria-hidden="true"></span>
-        <span>available</span>
+        <span>available<span class="status-hide-sm"> — say hello</span></span>
       </button>
     </div>
   </div>
 </div>
+
+<style>
+  /* The chip was 24px tall, which passes WCAG 2.2 and fails every touch
+     guideline, and it was the only way into the contact form on most pages.
+     44px is the floor iOS asks for; the strip grows by that much and nothing
+     else moves. */
+  .status-bar .status-cta {
+    min-height: 44px;
+  }
+</style>

@@ -6,10 +6,9 @@ tags: ["embedded", "basic", "sp"]
 Digital systems are based on the concept of **bits**, in addition to using bits they often have to transfer them back and forth usually between two components (MCU and Sensor, LCD etc).  
 🟠 All the different methods of bit transfer can be divided into 2 categories - `Parallel` and `Serial` transfer  
 
-<!-- more -->
 ---
 
-## &emsp;&emsp;&emsp; Serial Protocol fundamentals
+## Serial protocol fundamentals
 
 ### Parallel transfer 
 The earliest protocols for transmitting data were mostly parallel.  
@@ -27,7 +26,7 @@ Such transmission can be synchronous and asynchronous.
 * a larger number of potential nodes.
 Most modern serial data transmission protocols use multiple channels (buses, wires). This type of transmission becomes more complex to create and analyze.  
 
-### Families of Serial Protocols
+### Families of serial protocols
 
 <style>
   table {
@@ -59,7 +58,7 @@ Most modern serial data transmission protocols use multiple channels (buses, wir
     <tr>
       <th>Low-speed (General)</th>
       <th>Automotive</th>
-      <th>Aerospace / Defence</th>
+      <th>Aerospace / Defense</th>
       <th>High-speed</th>
       <th>MIPI</th>
     </tr>
@@ -89,13 +88,13 @@ Most modern serial data transmission protocols use multiple channels (buses, wir
   </tbody>
 </table>
 
-### Levels, Timing, Framing, Protocols
+### Levels, timing, framing, protocols
 **Levels** - answers the question of what voltage is used to represent `zero` and `one`.
 **Timing** - determines how often bits should be `sent` and `read`.
 **Framing** - determines how the bits will be organized into `groups`, in what order (`idle`, `start`, `data`, `arc`, `stop`..) and what the transitions between groups mean.
 **Protocols** - a set of rules for exchanging information, in additional to the previous characteristics.
 
-### Serial Protocols Decoding
+### Serial protocols decoding
 A modern approach to analyzing and decoding serial data transmission protocols is the use of an **oscilloscope**.  
 After selecting a suitable protocol, it is necessary to set the `synchronization` and `framing levels` on the oscilloscope in accordance with the signal that needs to be analyzed, and then connect.  
 **Oscilloscope** - is the most common pin-tool for decoding and analyzing parallel and serial protocols.

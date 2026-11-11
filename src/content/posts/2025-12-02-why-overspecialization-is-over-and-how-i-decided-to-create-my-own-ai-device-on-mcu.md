@@ -6,10 +6,9 @@ tags: ["project", "rust", "nurse", "product"]
 In this series of articles, I'd like to show you how to create your own **ESP32-S3**-based device with **ML** built right into the firmware. 
 🟠 I'll try to describe not only what I'm doing, but also how I got there—all the decisions, compromises, and challenges that arose along the way.  
 
-<!-- more -->
 ---
 
-## &emsp;&emsp;&emsp; Why did I even take this on??
+## Why did I even take this on??
 The reasons are actually quite simple—and honest.
 
 1. It's an objectively difficult challenge.
@@ -35,7 +34,7 @@ want to document this journey: the approaches, the conclusions, the decisions ma
 This will be useful for me in the future, and perhaps for other developers reading this series, my employers, or my partners.  
 
 
-## &emsp;&emsp;&emsp; What exactly do I want to build?
+## What exactly do I want to build?
 My future **device** will contain:
 1. AI inference for image classification and human feature detection
 2. Camera and image processing stream
@@ -63,11 +62,11 @@ The **main stages** of this project are:
 * Creating a prototype enclosure for 3D printing
 
 
-## &emsp;&emsp;&emsp; Project architecture (high-level plan)
+## Project architecture (high-level plan)
 ![High-level architecture flow diagram of the project: MCU handles frame capture, processing and inference, sends predictions over an MQTT telemetry queue to the backend for authentication and storage, and on to the frontend dashboards](/images/nurse_high_level_arch.png)
 
 
-## &emsp;&emsp;&emsp; How the article series will be structured
+## How the article series will be structured
 I'll try to divide the entire journey into logical modules.  
 In the following articles, I'll cover:
 

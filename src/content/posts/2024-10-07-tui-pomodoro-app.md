@@ -1,15 +1,15 @@
 ---
 title: "🍅 TUI Pomodoro App"
 date: "2024-10-07"
+description: "A keyboard-driven Pomodoro timer built with Rust and Cursive, with a configurable session length and a minimal interface."
 tags: ["rust", "tui", "project"]
 ---
 **A terminal-based Pomodoro timer built with Rust and [Cursive](https://crates.io/crates/cursive), replicating the feel of vintage console tools.**  
-![cursive Version](https://img.shields.io/badge/cursive-0.21.1%20-orange)
+`cursive 0.21.1`
 
-<!-- more -->
 ---
 
-## ⏳ Text-based User Interface Pomodoro Timer
+## ⏳ Text-based user interface pomodoro timer
 
 [📚 GitHub Repository](https://github.com/maltsev-dev/tui_pomodoro)
 
@@ -23,16 +23,13 @@ Ideal for Rust developers looking to:
 
 ---
 
-### ⚙️ Tools & Tech
+### ⚙️ Tools & tech
 
 <h3 style="text-align:center; margin-bottom:8px;">Tools</h3>
 <p align="center" style="margin:0; padding:0;">
-  <img style="display:inline-block; vertical-align:middle;"
-       src="https://img.shields.io/badge/rust-1.83.0%20-green" alt="Rust Version"/>
-  <img style="display:inline-block; vertical-align:middle;"
-       src="https://img.shields.io/badge/cursive-0.21.1%20-orange" alt="cursive Version"/>
-  <img style="display:inline-block; vertical-align:middle;"
-       src="https://github.com/maltsev-dev/tui_pomodoro/actions/workflows/rust.yml/badge.svg" alt="Build Status"/>
+  <code>rust 1.83.0</code>
+  <code>cursive 0.21.1</code>
+  <a href="https://github.com/maltsev-dev/tui_pomodoro/actions/workflows/rust.yml"><code>CI</code></a>
 </p>
 
 ---
@@ -61,7 +58,7 @@ Ideal for Rust developers looking to:
 
 ---
 
-## 📦 Installation & Usage
+## 📦 Installation & usage
 
 1. **Clone the Repository**
 

@@ -1,12 +1,12 @@
 ---
 title: "🧮 Simple Solana Counter Program"
 date: "2025-03-04"
+description: "A minimal native Rust Solana program that increments and decrements an on-chain counter owned by the user's keypair."
 tags: ["rust", "solana", "project"]
 ---
 **A lightweight, native Solana smart contract for incrementing and decrementing a counter.**
 Developed with native **Rust** for performance and simplicity.
 
-<!-- more -->
 ---
 
 [📚 GitHub Repository](https://github.com/maltsev-dev/counter_on_native_solana)
@@ -25,9 +25,9 @@ The program is ideal for developers who want to:
 
 ---
 
-## 🛠️ How to Get Started
+## 🛠️ How to get started
 
-### 1. 🧪 Start a Local Solana Validator
+### 1. 🧪 Start a local Solana validator
 
 Run the following command to simulate the Solana blockchain locally:
 
@@ -35,7 +35,7 @@ Run the following command to simulate the Solana blockchain locally:
 solana-test-validator
 ```
 
-### 2. 🧱 Build and Deploy the Program
+### 2. 🧱 Build and deploy the program
 
 Use Anchor CLI to build and deploy the smart contract to the local validator:
 
@@ -45,7 +45,7 @@ anchor build && anchor deploy
 
 > **Note**: Although the on-chain code is native Rust, Anchor is used for deployment and local testing convenience.
 
-### 3. 👛 Set Up Your Wallet
+### 3. 👛 Set up your wallet
 
 Export your Solana CLI wallet path so it can be used for deployments and interactions:
 
@@ -53,7 +53,7 @@ Export your Solana CLI wallet path so it can be used for deployments and interac
 export ANCHOR_WALLET=~/.config/solana/id.json
 ```
 
-### 4. 🔁 Interact with the Program
+### 4. 🔁 Interact with the program
 
 Once deployed, you can send transactions to:
 

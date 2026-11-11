@@ -2,6 +2,8 @@
 import { defineConfig } from 'astro/config';
 import mdx from '@astrojs/mdx';
 import rehypeImageAttrs from './src/plugins/rehype-image-attrs.mjs';
+import rehypeTableScroll from './src/plugins/rehype-table-scroll.mjs';
+import rehypeHeadingIds from './src/plugins/rehype-heading-ids.mjs';
 
 // Static output, matching the legacy generator: GitHub Pages serves `dist/`
 // from the repo root, so every route is pre-rendered to plain HTML.
@@ -32,7 +34,7 @@ export default defineConfig({
     // Every image in a post body gets its intrinsic size, `loading="lazy"`
     // and `decoding="async"`. Without them the browser reserves no space
     // for a figure and the article jumps as each one lands.
-    rehypePlugins: [rehypeImageAttrs],
+    rehypePlugins: [rehypeImageAttrs, rehypeTableScroll, rehypeHeadingIds],
     shikiConfig: {
       themes: { light: 'github-light', dark: 'github-dark-default' },
       defaultColor: false,

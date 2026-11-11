@@ -87,7 +87,7 @@ except ReconstructError:
 The fallback looks defensive. It defeats the entire verification
 boundary: the client is now asserting the property the server was
 supposed to establish. If the server cannot prove the action is the one
-that was approved, the correct behaviour is a refusal, because "I could
+that was approved, the correct behavior is a refusal, because "I could
 not check" and "it checked out" must not produce the same outcome.
 
 ## 3. Configuration drift between cache and source
@@ -326,7 +326,7 @@ switched on where it counts.
 
 The regression checks pin the exact expressions that must be present, so
 a deletion or a rewrite of `redis.call` into a client-side read fails
-the build. That is a narrower claim than a behavioural test and worth
+the build. That is a narrower claim than a behavioral test and worth
 stating precisely: a text pin proves the code contains the shape, and no
 more. The primary guarantee is carried by the script itself.
 

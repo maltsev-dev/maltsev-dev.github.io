@@ -141,7 +141,7 @@ already resolved.
 Agent A can read customer records and delegate tasks. Agent B can apply
 small credits.
 
-Agent A reads a record containing a card number, summarises it, and
+Agent A reads a record containing a card number, summarizes it, and
 delegates the task to Agent B. The summary contains the card number.
 
 Agent B's scope never evaluated that data. Every layer of the system

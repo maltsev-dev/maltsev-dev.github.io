@@ -10,12 +10,9 @@ When developing programs for microcontrollers, debugging is significantly more c
 Obtaining debug information, setting breakpoints, accessing registers and local variables require a special environment and integration of tools, and the process itself becomes much less obvious.  
 🟠 In this article I want to describe the standard process when debugging software running on a microcontroller and describe the tools that play a key role in this.
 
-<!-- more -->
 ---
 
-## &emsp;&emsp;&emsp; 🏗️ Debug Interfaces
-
-## JTAG (Joint Test Action Group)
+## JTAG (joint test action group)
 - standard serial port for testing and debugging ([JTAG - Wikipedia](https://en.wikipedia.org/wiki/JTAG#:~:text=JTAG%20,testing%20%2078%20after%20manufacture)).  
 Since 1990, an industry standard (IEEE 1149.1) for testing electronics.  
 Can use 4 or 5 lines:
@@ -27,11 +24,10 @@ Can use 4 or 5 lines:
 With these lines, you can write a program image to memory, receive debug messages, read the internal state, stop and step through the code.  
 Provides access to the internal registers and memory of the chip for debugging.  
 
-## SWD (Serial Wire Debug) 
+## SWD (serial wire debug)
 - alternative **2-pin** ARM debug interface ([Serial Wire Debug (SWD) Issue #785 riscv/riscv-debug-spec GitHub](https://github.com/riscv/riscv-debug-spec/issues/785#:~:text=Serial%20Wire%20Debug%20,same%20JTAG%20protocol%20on%20top)).  
 Similar to JTAG, but uses only `SWDIO` and `SWCLK` lines, saving MCU pins.
 
-## &emsp;&emsp;&emsp; ⚒️ Debugging tools
 ## 📟 Hardware
 * Connect to the device via **JTAG** (4-5 lines) or **SWD** (2 lines).
 | **Tool** | **Protocol** | **Target platforms** |
@@ -43,7 +39,7 @@ Similar to JTAG, but uses only `SWDIO` and `SWCLK` lines, saving MCU pins.
 
 ## 💽 Software
 ### 🖥️ Servers
-#### OpenOCD (Open On Chip Debugger)
+#### OpenOCD (open on chip debugger)
 - `OpenOCD`: An open source tool for debugging, testing and programming embedded systems, providing an interface between the **host** and the **hardware**, often used with `GDB`.
     * Since 2005, Open Source supports almost every architecture.
     * Until recently, `OpenOCD` paired with the `GDB` debugger was the way you developed your embedded project code.
@@ -59,7 +55,6 @@ Similar to JTAG, but uses only `SWDIO` and `SWCLK` lines, saving MCU pins.
 Can connect to built-in targets via `OpenOCD` or `probe-rs`.  
 Supports Rust-specific debugging (pretty printing, IDE integration).  
 
-## &emsp;&emsp;&emsp; 📐 Logging
 ## defmt
 - `[defmt]`(https://crates.io/crates/defmt) (deferred formatting): an efficient logging framework for embedded systems:  
     * Formats logs on the host, passing only indexes and values ​​from the device.
@@ -109,7 +104,7 @@ In VS Code, you can install the **“Debugger for probe-rs”** extension.
 Then open the project and start debugging by pressing `F5` – it uses `probe-rs` to flash and run the application.  
 This approach allows you to see the `defmt`/`RTT` output directly in the VSCode console.
 
-## Debugging memory in Embedded Rust
+## Debugging memory in embedded Rust
 * **Memory inspection** via `GDB`: access to variables, registers and memory areas (print, `x/10x 0x...`). Memory is defined in memory.x.
 * **Linker errors**: check that `memory.x` matches the chip configuration.
 * **Reading registers**: include .svd to correctly display peripherals.
@@ -118,7 +113,7 @@ Despite Rust's safety, `unsafe` blocks are often necessary for low-level work. T
 
 This approach combines Rust's compile-time safety with analysis tools, ensuring high stability of embedded software.  
 
-## &emsp;&emsp;&emsp; 🔄 Typical workflow
+## 🔄 Typical workflow
 1. Write code → add `rprintln!()` for logs.  
 2. `cargo build` → `cargo flash --chip ...`  
 3. Run the server `probe-rs run --gdb` in the background.  
@@ -284,7 +279,7 @@ This approach combines Rust's compile-time safety with analysis tools, ensuring 
 }
 ```
 
-## Key Points
+## Key points
 
 - **RTT instead of UART:** No extra pins needed, works at any speed.
 - **probe-rs > OpenOCD:** Easier installation, better integration with Rust.

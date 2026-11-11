@@ -7,7 +7,6 @@ tags: ["embedded", "basic", "interrupts"]
 
 When an interrupt occurs, the **CPU suspends the current task**, goes to the **Interrupt Service Routine (ISR)**, performs the required action, and returns back.
 
-<!-- more -->
 ---
 
 ## Interrupts
@@ -64,7 +63,7 @@ At a high level:
 
 ---
 
-## Interrupt Priorities
+## Interrupt priorities
 What happens if we have multiple interrupts firing at the same time? We handle them by priority.  
 
 Interrupts have a priority associated with them. When multiple interrupts fire, the interrupt with the `highest priority` is handled first. Furthermore, a higher priority interrupt can even interrupt a lower priority interrupt.  
@@ -84,7 +83,7 @@ There are several steps to using interrupts in an MCU:
 
 ---
 
-## NVIC (Nested Vectored Interrupt Controller)
+## NVIC (nested vectored interrupt controller)
 Many modern MCUs are based on the `ARM Cortex-M` architecture, where interrupt management is performed via the `NVIC` (Nested Vectored Interrupt Controller). Let's consider its features:
 
 - Vector table in memory
@@ -110,7 +109,7 @@ fn TIM2() {
     
 ---
 
-## Safety: Critical Sections
+## Safety: Critical sections
 Interrupts can interfere with the main code. To protect shared data:
 
 ### A simple way is to temporarily disable interrupts
@@ -142,7 +141,7 @@ fn EXTI0() {
 
 ---
 
-## Interrupt Handling Guidelines
+## Interrupt handling guidelines
 - **Minimize time in ISRs**: Keep handlers short so as not to block other interrupts or the main program.
 - **Avoid blocking**: Do not use delays or other blocking operations in ISRs.
 - **Use flags**: Pass data from ISRs to the main program via flags or queues.

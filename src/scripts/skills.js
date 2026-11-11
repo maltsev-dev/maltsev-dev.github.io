@@ -1,9 +1,13 @@
 // The hover card on the skill chips.
 //
-// One card element for the whole page, moved to whichever chip the pointer or
-// the keyboard is on. It is absolutely positioned in document coordinates and
-// follows the chip down the page while the reader is still over it, closing as
-// soon as the chip is left behind.
+// One card per chip, each with its own id, and each chip pointing at its own
+// card. There used to be a single card for the whole page that every chip
+// described: its text was whatever chip was hovered last, so a screen reader
+// read the description of one skill while the reader was on another.
+//
+// The card is absolutely positioned in document coordinates and follows the
+// chip down the page while the reader is still over it, closing as soon as the
+// chip is left behind.
 //
 // Three facts per skill and no prose: how many jobs it was used on, what
 // certifies it, and where it shipped. The data is src/data/skills.ts, the same
@@ -16,9 +20,8 @@
   if (!section) return;
 
   var chips = Array.prototype.slice.call(section.querySelectorAll('[data-skill]'));
-  var card = document.querySelector('[data-skill-card]');
   var dataNode = document.getElementById('skills-data');
-  if (!chips.length || !card || !dataNode) return;
+  if (!chips.length || !dataNode) return;
 
   var data;
   try {
@@ -39,6 +42,14 @@
 
   var open = null; // the chip currently holding the card
   var timer = null;
+
+  // One card per chip, and the chip that owns it. The cards are in the markup
+  // now — one per chip, each with its own id, so a chip's `aria-describedby`
+  // points at a card that is in the HTML before this script runs at all. The
+  // script finds them by id and takes them over: it owns where they sit, when
+  // they open and when they close. A card that is somehow missing is built
+  // here, so the behavior never depends on the markup being right.
+  var cards = {};
 
   /**
    * One row of the card: a label and how many things are behind it.
@@ -65,7 +76,7 @@
     return [dt, dd];
   }
 
-  function fill(skill) {
+  function fill(card, skill) {
     card.textContent = '';
 
     var name = document.createElement('p');
@@ -87,8 +98,34 @@
     card.appendChild(dl);
   }
 
+  // Take the cards over. The card that is open is the only one shown, so the
+  // page still shows one card at a time.
+  chips.forEach(function (chip) {
+    var id = chip.getAttribute('data-skill');
+    var skill = data[id];
+    if (!skill) return;
+
+    var card = document.getElementById('skill-card-' + id);
+    if (!card) {
+      card = document.createElement('div');
+      card.className = 'skill-card';
+      card.id = 'skill-card-' + id;
+      card.setAttribute('data-skill-card', id);
+      document.body.appendChild(card);
+    }
+    card.setAttribute('role', 'tooltip');
+    // While it is closed the card is out of the accessibility tree, so a
+    // screen reader reading the page in order does not walk through every
+    // closed card before the content.
+    card.setAttribute('aria-hidden', 'true');
+    fill(card, skill);
+
+    cards[id] = card;
+    chip.setAttribute('aria-describedby', card.id);
+  });
+
   /** Below the chip if there is room, above it if there is not. */
-  function place(chip) {
+  function place(chip, card) {
     var r = chip.getBoundingClientRect();
     var box = card.getBoundingClientRect();
 
@@ -104,37 +141,56 @@
     card.style.left = Math.round(left) + 'px';
   }
 
-  function show(chip) {
-    var skill = data[chip.getAttribute('data-skill')];
-    if (!skill) return;
+  function cardFor(chip) {
+    return chip ? cards[chip.getAttribute('data-skill')] : null;
+  }
 
-    fill(skill);
+  function show(chip) {
+    var card = cardFor(chip);
+    if (!card) return;
+
+    // Another chip's card is open: close it first, or the page shows two.
+    if (open && open !== chip) closeCard(open);
+
     card.style.visibility = 'hidden';
     card.setAttribute('data-open', '');
-    place(chip);
+    // The card is the chip's description, so it has to be in the tree while
+    // the chip is focused.
+    card.removeAttribute('aria-hidden');
+    place(chip, card);
     card.style.visibility = '';
 
-    if (open && open !== chip) open.classList.remove('is-open');
     chip.classList.add('is-open');
     open = chip;
   }
 
-  function hide(chip) {
-    if (chip) chip.classList.remove('is-open');
-    else if (open) open.classList.remove('is-open');
+  /**
+   * Put a card away: out of the tree, out of the document flow, and back at
+   * the origin rather than wherever it last was. It is absolutely positioned,
+   * so a card closed at the far end of a wide screen keeps widening the
+   * document — on a phone that is a horizontal scrollbar with nothing in it.
+   * Hiding first means the jump is not seen.
+   */
+  function closeCard(chip) {
+    if (!chip) return;
+    var card = cardFor(chip);
+    if (!card) return;
     card.removeAttribute('data-open');
-    // Put it back at the origin rather than leaving it wherever it last was.
-    // It is absolutely positioned, so a card closed at the far end of a wide
-    // screen keeps widening the document — on a phone that is a horizontal
-    // scrollbar with nothing in it. Hiding first means the jump is not seen.
+    card.setAttribute('aria-hidden', 'true');
     card.style.visibility = 'hidden';
     card.style.top = '0px';
     card.style.left = '0px';
+    chip.classList.remove('is-open');
+  }
+
+  function hide(chip) {
+    if (chip) chip.classList.remove('is-open');
+    closeCard(open);
     open = null;
   }
 
   chips.forEach(function (chip) {
-    // A short delay on the way out, so moving between two neighbouring chips
+    // A short delay on the way out, so moving between two neighboring chips
     // does not flash the card closed and open again.
     chip.addEventListener('mouseenter', function () {
       if (!canHover) return;
@@ -189,7 +245,7 @@
       requestAnimationFrame(function () {
         pending = false;
         if (!open) return;
-        if (open.matches(':hover') || open === document.activeElement) place(open);
+        if (open.matches(':hover') || open === document.activeElement) place(open, cardFor(open));
         else hide();
       });
     },
@@ -197,6 +253,6 @@
   );
 
   window.addEventListener('resize', function () {
-    if (open) place(open);
+    if (open) place(open, cardFor(open));
   });
 })();

@@ -21,8 +21,13 @@ export const AUTHOR = {
   ],
 } as const;
 
-/** The social card every page shares. */
+/** The social card every page shares unless it has one of its own. */
 const SITE_IMAGE = '/og.png';
+
+/** The social card for one post. */
+export function postImage(slug: string): string {
+  return `/og/${slug}.png`;
+}
 
 /** The person behind the writing. */
 export function personNode(site: URL): Record<string, unknown> {
@@ -58,7 +63,14 @@ export function websiteNode(site: URL): Record<string, unknown> {
  */
 export function blogPostingNode(
   site: URL,
-  post: { title: string; description: string; date?: string; tags: string[]; slug: string }
+  post: {
+    title: string;
+    description: string;
+    date?: string;
+    updated?: string;
+    tags: string[];
+    slug: string;
+  }
 ): Record<string, unknown> {
   const url = new URL(`/blog/${post.slug}/`, site).href;
   return {
@@ -68,9 +80,11 @@ export function blogPostingNode(
     description: post.description,
     url,
     mainEntityOfPage: { '@type': 'WebPage', '@id': url },
-    image: new URL(SITE_IMAGE, site).href,
+    // The post's own card, not the site card: a preview of a post that shows
+    // the site's homepage image tells the reader nothing about the post.
+    image: new URL(postImage(post.slug), site).href,
     datePublished: post.date ?? undefined,
-    dateModified: post.date ?? undefined,
+    dateModified: post.updated ?? post.date ?? undefined,
     author: { '@id': site.href + '#person' },
     publisher: { '@id': site.href + '#person' },
     keywords: post.tags.length ? post.tags.join(', ') : undefined,
@@ -82,7 +96,7 @@ export function blogPostingNode(
  * The graph a page declares: the site, its author, and whatever the page
  * itself adds.
  *
- * `undefined` values are dropped rather than serialised — schema.org reads
+ * `undefined` values are dropped rather than serialized — schema.org reads
  * `"datePublished": undefined` as a missing field, but it reads
  * `"keywords": null` as a claim that there are no keywords.
  */

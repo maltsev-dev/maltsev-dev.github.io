@@ -67,7 +67,7 @@ what executes.
 At the approval seam, the operator approves payload A and the executor
 later receives payload B. That happens whenever anything between approval
 and execution can transform the payload: a retry wrapper, a queue
-serialisation round trip, a "restore context" feature that rebuilds
+serialization round trip, a "restore context" feature that rebuilds
 arguments from a summary, a middleware layer that merges defaults into
 the request.
 
@@ -204,7 +204,7 @@ security control is how a system's actual coverage gets miscounted.
 
 ### Are prompt-level controls then useless?
 
-No. They reduce the attack surface, they shape behaviour, and in some
+No. They reduce the attack surface, they shape behavior, and in some
 deployments they are the only control that exists. They are a
 probability, and the honest framing is that they reduce frequency rather
 than providing a guarantee.
@@ -213,7 +213,7 @@ than providing a guarantee.
 
 Yes, for a different reason: latency and economics. An enforcement layer
 that refuses after a full model round trip is more expensive and slower
-than a model that declines to propose the action. The two optimise
+than a model that declines to propose the action. The two optimize
 different things, and conflating them is how teams end up with either a
 slow system with weak reasoning or a fast system with a hole.
 

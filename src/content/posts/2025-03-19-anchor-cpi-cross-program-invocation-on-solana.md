@@ -1,12 +1,12 @@
 ---
 title: "🔗 Anchor CPI – Cross-Program Invocation on Solana"
 date: "2025-03-19"
+description: "Two Anchor programs where one calls the other through a CPI, with a System Program transfer alongside it."
 tags: ["rust", "solana", "anchor", "project"]
 ---
 **A working example of Anchor-based CPI (Cross Program Invocation) — when one Solana program calls another.**
 This project demonstrates best practices for inter-program communication using the Anchor framework.
 
-<!-- more -->
 ---
 
 [📚 GitHub Repository](https://github.com/maltsev-dev/anchor_cpi)
@@ -21,7 +21,7 @@ CPI (Cross-Program Invocation) is a critical building block for modular, reusabl
 
 ---
 
-## 🔧 Stack & Tools
+## 🔧 Stack & tools
 
 * 🦀 **Rust** — primary language
 * ⚓ **Anchor** — Solana framework
@@ -51,9 +51,9 @@ CPI (Cross-Program Invocation) is a critical building block for modular, reusabl
 
 ---
 
-## 🚀 Setup & Usage
+## 🚀 Setup & usage
 
-### 1. 🏗️ Initialize Projects
+### 1. 🏗️ Initialize projects
 
 Create two Anchor programs:
 
@@ -63,7 +63,7 @@ cd ..
 anchor init program-b
 ```
 
-### 2. 🔁 Configure Dependencies
+### 2. 🔁 Configure dependencies
 
 In `Cargo.toml` of `program-a`, add:
 
@@ -83,7 +83,7 @@ program-b = { path = "../program-b", features = ["cpi"], resolution = false }
 
 ---
 
-### 3. 🧪 Run Tests
+### 3. 🧪 Run tests
 
 Build and test CPI interaction:
 
@@ -93,7 +93,7 @@ anchor build && anchor test
 
 ---
 
-### 4. 🧱 Start Local Validator
+### 4. 🧱 Start local validator
 
 ```bash
 cd .anchor/
@@ -102,7 +102,7 @@ solana-test-validator
 
 ---
 
-### 5. 🔍 View Transactions
+### 5. 🔍 View transactions
 
 1. Open [explorer.solana.com](https://explorer.solana.com)
 2. Switch to "Localhost" network
@@ -110,7 +110,7 @@ solana-test-validator
 
 ---
 
-## 🖥️ Sample Logs
+## 🖥️ Sample logs
 
 ```bash
 Program logged: "Instruction: Initialize"

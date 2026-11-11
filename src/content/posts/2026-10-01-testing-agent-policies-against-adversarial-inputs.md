@@ -138,7 +138,7 @@ def test_amount_boundaries(amount, expected):
 ```
 
 The wrong-type cases matter more than they look, because each one defeats a
-different comparison. Brittle behaviour is what the parser or comparison
+different comparison. Brittle behavior is what the parser or comparison
 does when it is handed a value the author never wrote a branch for.
 
 | Input class | Payload shape | What a brittle parser does | What the gate must return |
@@ -187,7 +187,7 @@ def test_material_field_changed_after_approval_is_refused():
 ```
 
 An injected *provenance* field is inert. An injected *material* field
-does enter the decision, and it is supposed to be. The defence sits in
+does enter the decision, and it is supposed to be. The defense sits in
 recomputation: the server re-derives the material fields from the live
 payload and refuses when the re-derived digest disagrees with the
 approved one. The field is an input; the forged claim
@@ -302,7 +302,7 @@ notice if the policy were wrong.
 Take a real policy threshold, change it, and confirm a test fails. If
 changing `CAP` from 500 to 5000 leaves the suite green, then no test
 covers the threshold. The suite has line coverage of that branch and
-zero behavioural coverage of it.
+zero behavioral coverage of it.
 
 ```python
 # mutation: swap `>` for `>=` in the approval branch
@@ -362,7 +362,7 @@ and the honest answer there is that no general check exists.
 And test suites rot against the system they test. A policy rule that
 changes without a test changing is a rule that stopped being checked, and
 nothing in the build fails, because the test still passes against code
-that no longer has the behaviour. Coverage of the *policy* is what needs
+that no longer has the behavior. Coverage of the *policy* is what needs
 measuring, and it is a different number from coverage of the code.
 
 ## FAQ

@@ -92,7 +92,7 @@ is the same shape as the consumption check in
 and it exists for the same reason: a load-then-write lets two workers both
 see `approved` and both execute.
 
-The rule generalises to every transition on this record. Approving is a
+The rule generalizes to every transition on this record. Approving is a
 conditional update from `PENDING`. Denying is a conditional update from
 `PENDING`. Nothing reads status and then writes it back.
 
@@ -145,7 +145,7 @@ negative answers forces the agent to infer state from absence, and
 inference is precisely what durable state was supposed to eliminate.
 
 A retried workflow that finds `denied` can end the run and report the
-refusal to the user, which is the correct behaviour. The same workflow
+refusal to the user, which is the correct behavior. The same workflow
 that found nothing would re-ask, and it would keep re-asking forever,
 because nothing in the protocol tells it the difference.
 

@@ -154,7 +154,7 @@ export const STAGE_COPY = {
       ['I cap the recursion', '`recursion_limit=10..20` stops a confused agent from burning the budget in a loop.'],
     ],
     pitfalls: [
-      ['Mutating state in place', '`state[\'key\'] = val` desynchronises checkpointing and misbehaves under async.'],
+      ['Mutating state in place', '`state[\'key\'] = val` desynchronizes checkpointing and misbehaves under async.'],
       ['Unknown tool, no `KeyError`', 'An invalid tool routes the graph to a self-correction node instead of crashing it.'],
     ],
     check: [
@@ -203,7 +203,7 @@ export const STAGE_COPY = {
     ],
     tips: [
       ['I write two phases', 'Record `PENDING`, make the call, then move it to `COMPLETED` only on success.'],
-      ['I back off with jitter', 'Randomised delays stop my retries from hitting the provider as a herd.'],
+      ['I back off with jitter', 'Randomized delays stop my retries from hitting the provider as a herd.'],
       ['I reconcile on a schedule', 'Compare what I believe with what the system of record says and repair the difference.'],
     ],
     pitfalls: [
@@ -329,7 +329,7 @@ export const STAGE_COPY = {
   },
 
   security: {
-    lede: 'The model proposes and my code decides; nothing runs that the backend has not authorised.',
+    lede: 'The model proposes and my code decides; nothing runs that the backend has not authorized.',
     art: [
       '[ Untrusted User Input ]',
       '       │',
@@ -357,8 +357,8 @@ export const STAGE_COPY = {
       '└──────────────────────────────────────┘',
     ].join('\n'),
     key: [
-      ['Authorisation in code', 'RBAC and token scope are checked in Python, and never asked of the model.'],
-      ['Injection defence', 'User text and fetched pages are data, and my system prompt says so.'],
+      ['Authorization in code', 'RBAC and token scope are checked in Python, and never asked of the model.'],
+      ['Injection defense', 'User text and fetched pages are data, and my system prompt says so.'],
       ['Sandboxed tools', 'Generated code runs in gVisor, Docker sandboxes or WASM.'],
     ],
     tips: [
@@ -440,7 +440,7 @@ export const STAGE_COPY = {
     key: [
       ['Durable checkpoints', 'Graph snapshots written in ACID transactions, never left in memory.'],
       ['pgvector alongside Postgres', 'Records and their vectors in one store, with HNSW indexes.'],
-      ['Distributed locks', 'Redis serialises the concurrent requests of one user.'],
+      ['Distributed locks', 'Redis serializes the concurrent requests of one user.'],
     ],
     tips: [
       ['Transactional outbox', 'The state and the outbound event go in one transaction, and a worker delivers it.'],

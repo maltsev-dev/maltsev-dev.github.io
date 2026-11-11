@@ -7,7 +7,13 @@
 <div class="letter" id="letterModal" hidden role="dialog" aria-modal="true" aria-labelledby="letterTitle">
   <div class="letter-backdrop" data-close-letter></div>
 
-  <div class="letter-box" role="document">
+  <!--
+    No `role="document"` on the box: inside a dialog it switches the screen
+    reader into browse mode for the whole form, and the reader then has to
+    switch back to forms mode to type into the message box. The dialog owns
+    its contents.
+  -->
+  <div class="letter-box">
     <div class="letter-head">
       <span id="letterTitle">new message</span>
       <button type="button" class="letter-x" data-close-letter aria-label="Close">✕</button>
@@ -34,7 +40,7 @@
             id="l-subject"
             name="subject"
             type="text"
-            placeholder="Automation / Agent system / Embedded"
+            placeholder="What are you building?"
             autocomplete="off"
             maxlength="120"
           />
@@ -73,10 +79,25 @@
             placeholder="What are you trying to automate? What breaks today?"></textarea>
         </div>
 
-        <!-- Honeypot: hidden from people, filled in by most bots. -->
+        <!--
+          Honeypot: hidden from people, filled in by most bots. It is kept out
+          of the accessibility tree, out of the tab order and out of the
+          autofill's reach — a disabled field is none of those three, and a
+          field a password manager can fill is a field that can silently
+          swallow a real message. The script reads the value straight off the
+          element, since a disabled field is not part of the form data.
+        -->
         <div class="hp" aria-hidden="true">
           <label for="l-challenge">Leave this field empty</label>
-          <input id="l-challenge" name="challenge" type="text" tabindex="-1" autocomplete="off" />
+          <input
+            id="l-challenge"
+            name="challenge"
+            type="text"
+            tabindex="-1"
+            autocomplete="off"
+            disabled
+            data-honeypot="challenge"
+          />
         </div>
       </div>
 

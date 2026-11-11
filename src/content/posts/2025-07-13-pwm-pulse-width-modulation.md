@@ -5,7 +5,6 @@ tags: ["embedded", "basic", "pwm"]
 ---
 🟠 How to handle pulse width modulation
 
-<!-- more -->
 ---
 
 **PWM (pulse width modulation)** is used to control the power supplied to the load.
@@ -45,7 +44,7 @@ It has 2 main parameters
     * Automatic (for example, using feedback on the output voltage in a pulse power supply)
     * Software (using some kind of intelligent system that changes the pulse width depending on external logic or parameters)
 
-![Square wave diagrams comparing 50%, 75% and 25% duty cycles, with the on and off portions of each pulse labelled](/images/emb/pwm_duty_cycle.png)
+![Square wave diagrams comparing 50%, 75% and 25% duty cycles, with the on and off portions of each pulse labeled](/images/emb/pwm_duty_cycle.png)
 
 
 ### Average voltage level
@@ -56,7 +55,7 @@ PWM - often used to vary power by changing the `average voltage level` across a 
 
 ---
 
-## Switching Frequency
+## Switching frequency
 - Switching frequency, which is defined as the reciprocal of the time between the leading edges of the voltage pulses.
 - The required switching frequency depends on the load or application area
     * can be from `10H`z to several `kHz`
@@ -66,7 +65,7 @@ PWM - often used to vary power by changing the `average voltage level` across a 
 
 ---
 
-## Examples of PWM Systems
+## Examples of PWM systems
 | System | Description |
 | ---------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
 | **1. Visual Devices** | ● Screen brightness control (high frequency to avoid flickering)<br>● RGB LED color control |

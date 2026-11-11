@@ -22,9 +22,9 @@ that matters is quieter: approving becomes a gesture.
 
 An approver handling two hundred cards a day is clearing a queue. Two
 hundred separate reviews is not what a day of that looks like. The
-behaviour under load is predictable: read the title, look at the amount,
+behavior under load is predictable: read the title, look at the amount,
 click approve. And because the queue is the same every day, that
-behaviour is invisible. Every individual action looks considered, and
+behavior is invisible. Every individual action looks considered, and
 the aggregate looks fine.
 
 The consequence is that the control is present and inert. It produces
@@ -136,7 +136,7 @@ what was in force on the day of the incident.
 You cannot tell whether HITL is working from the count of approvals. The
 counts go up and everyone feels better while the control gets weaker.
 
-What predicts a real approval is the distribution of reviewer behaviour.
+What predicts a real approval is the distribution of reviewer behavior.
 A genuine review has a latency distribution with a tail, where some
 approvals take thirty seconds because something looks off. A rubber
 stamp has a spike at the floor.
@@ -169,7 +169,7 @@ problem that the tier boundary made worse.
 Three mitigations, in order of how much they help:
 
 - **Make the band narrow relative to the request distribution.** A wide
-  approval band around a tight auto-allow ceiling maximises the number of
+  approval band around a tight auto-allow ceiling maximizes the number of
   requests that can be reframed into it.
 - **Aggregate the split explicitly.** A per-execution cumulative counter
   on the same risk dimension means two sub-ceiling actions in one
@@ -282,7 +282,7 @@ tool-parameter rule are configuration, so a boundary moves without a
 deploy and the change is a reviewable edit, with no release involved. Policy
 resolution is most-specific-first: per calling key, then per workflow,
 then org-wide. A policy can be scoped to one team without disturbing the
-rest of the organisation.
+rest of the organization.
 
 **The card carries the reason.** An approval row records the rule that
 fired, the risk level, the tool name and the action's own parameters.

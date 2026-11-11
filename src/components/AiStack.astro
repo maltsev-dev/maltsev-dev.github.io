@@ -220,6 +220,17 @@ LINES.forEach((segs, row) => {
     }
   </div>
 
+  {/* The figure is 119 columns wide. Below the point where it fits, it scrolls
+      sideways inside its own box — but a scroll nobody can see is a stage
+      nobody reaches. This says so, and only on the screens where the art is
+      actually wider than its column.
+
+      It is aria-hidden on purpose: the ten stage buttons are in the DOM and
+      reachable by keyboard, so a screen reader gets to every stage by
+      focusing it. The hint is for the sighted reader who has to guess that
+      the drawing moves. */}
+  <p class="stack-swipe" aria-hidden="true">Swipe the figure sideways to reach the stages on the right.</p>
+
   <span class="stack-scan" aria-hidden="true"></span>
 </div>
 
@@ -241,7 +252,13 @@ LINES.forEach((segs, row) => {
   aria-labelledby={`stage-title-${ZONES[0].id}`}
 >
   <div class="stage-modal-backdrop" data-close-stage></div>
-  <div class="stage-modal-box" role="document">
+  <!--
+    `role="document"` switched the screen reader into browse mode for the
+    whole panel, which took the keyboard away from the reader inside the
+    dialog. A named group says the same thing without that: os.js repoints
+    the label at the panel that is on screen.
+  -->
+  <div class="stage-modal-box" role="group" aria-labelledby={`stage-title-${ZONES[0].id}`}>
     {
       ZONES.map((z) => (
         <section class="stage-modal-panel" data-stage-panel={z.id} hidden aria-labelledby={`stage-title-${z.id}`}>
@@ -253,7 +270,7 @@ LINES.forEach((segs, row) => {
             <p class="stage-modal-lede">{z.lede}</p>
             {/* The stage drawn on its own. It is a diagram, not decoration:
                 it is the same shape the block has inside the big figure, so a
-                reader who wants the detail still recognises the geometry. */}
+                reader who wants the detail still recognizes the geometry. */}
             <pre class="stage-modal-art" aria-hidden="true"><code>{z.art}</code></pre>
             <ul class="stage-modal-stack">
               {z.stack.map((s) => <li>{s}</li>)}

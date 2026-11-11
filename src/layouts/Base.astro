@@ -3,45 +3,35 @@ import '../styles/fonts.css';
 import '../styles/global.css';
 import '../styles/animation.css';
 import '../styles/os.css';
-import '../styles/track.css';
-import '../styles/skills.css';
-import Header from '../components/Header.astro';
+import Head from '../components/Head.astro';
 import StatusBar from '../components/StatusBar.astro';
+import Header from '../components/Header.astro';
 import LetterModal from '../components/LetterModal.astro';
 import Palette from '../components/Palette.astro';
 import Footer from '../components/Footer.astro';
-import { graph } from '../lib/schema';
+
+// `track.css` and `skills.css` are not imported here. They style two pages
+// and two pages only — the sideways track on /projects/ and /experience/ and
+// the skills pyramid on /experience/ — and importing them from the layout put
+// 36 KB of CSS on every page of the site, including the ones that have no
+// track and no pyramid. The two pages import them themselves; Astro then
+// emits them as a chunk that only those pages load.
 
 interface Props {
   title?: string;
   description?: string;
   image?: string;
+  /** What the social card shows. Defaults to the site's own line. */
+  imageAlt?: string;
   type?: string;
-  /** Shows the fixed section rail down the right edge. */
   rail?: boolean;
   /** Extra schema.org nodes for this page, added to the site graph. */
   schema?: Record<string, unknown>[];
 }
 
-const {
-  title = 'Maltsev · Agentic Engineering',
-  description = 'AI operational systems, agentic engineering, embedded and distributed systems — built to carry real work.',
-  image = '/og.png',
-  type = 'website',
-  rail = false,
-  schema = [],
-} = Astro.props;
+const { title, description, image, imageAlt, type, rail = false, schema } = Astro.props;
 
-const canonical = new URL(Astro.url.pathname, Astro.site);
-const fullTitle = title === 'Maltsev · Agentic Engineering' ? title : `${title} · maltsev.dev`;
-
-// Every page declares who wrote it and what the site is, and a page that is
-// about one thing adds its own node on top. Without this the site had no
-// structured data at all: no author, no dates, nothing for a rich result.
-const siteUrl = new URL(Astro.site ?? 'https://maltsev-dev.github.io');
-const jsonLd = graph(siteUrl, schema);
-
-// The projects catalogue is one viewport tall and its wheel is spent on the
+// The projects catalog is one viewport tall and its wheel is spent on the
 // row of panels, so the full footer would sit below a fold the page cannot
 // scroll to. It gets the compact form instead, which is pinned to the bottom
 // of the screen and carries the copyright and the contact.
@@ -54,88 +44,14 @@ const compactFooter = Astro.url.pathname === '/projects/';
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <!--
-      The two faces every page renders in are preloaded. Without this the
-      font request cannot start until the stylesheet has been fetched,
-      parsed and matched against the layout — a full extra round trip after
-      the first paint, and the text arrives in the fallback face first.
-      `crossorigin` is not optional: fonts are fetched in anonymous CORS
-      mode, and a preload without it is fetched twice — once here and once
-      by the font matcher.
-    -->
-    <link rel="preload" href="/fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin />
-    <link rel="preload" href="/fonts/jetbrains-mono-latin.woff2" as="font" type="font/woff2" crossorigin />
-
-    <meta name="description" content={description} />
-    <link rel="canonical" href={canonical} />
-
-    <meta property="og:site_name" content="Maltsev · Agentic Engineering" />
-    <meta property="og:type" content={type} />
-    <meta property="og:title" content={fullTitle} />
-    <meta property="og:description" content={description} />
-    <meta property="og:url" content={canonical} />
-    <!--
-      The image path is site-rooted. It used to be `/static/favicon.png`, which
-      is where the file sits in the repo — but static/ IS the public dir, so the
-      built site serves it at `/favicon.png`. Every page was advertising a URL
-      that 404s, and every chat and social preview of the site rendered with no
-      image at all.
-    -->
-    <meta property="og:image" content={new URL(image, Astro.site)} />
-    <meta property="og:image:width" content="1200" />
-    <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt" content="Maltsev — agentic engineering that carries real work" />
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:image" content={new URL(image, Astro.site)} />
-    <meta name="twitter:image:alt" content="Maltsev — agentic engineering that carries real work" />
-    <title>{fullTitle}</title>
-
-    <script type="application/ld+json" set:html={jsonLd} />
-
-    <!--
-      Theme must be resolved before first paint, otherwise a visitor on a dark
-      theme sees the default ramp and then a jump. Render-blocking and
-      dependency-free; keep in sync with the ramps in global.css and the list
-      in Header.astro.
-
-      define:vars serialises the value to a string, so it has to be parsed back
-      into an object before use — `hasOwnProperty` against a string is always
-      false, which silently reset the stored theme on every navigation.
-    -->
-    <script is:inline define:vars={{ colors: JSON.stringify({
-      phosphore: '#14100a', acidule: '#01141d', pierre: '#f4efe6',
-    }) }}>
-      (function () {
-        try {
-          var ramps = JSON.parse(colors);
-          var id = localStorage.getItem('theme');
-          if (id && Object.prototype.hasOwnProperty.call(ramps, id)) {
-            document.documentElement.dataset.theme = id;
-            var m = document.querySelector('meta[name="theme-color"]');
-            if (m) m.setAttribute('content', ramps[id]);
-          }
-        } catch (e) { /* storage blocked — the default ramp stands */ }
-      })();
-    </script>
-    <meta name="theme-color" content="#14100a" />
-
-    <!--
-      The three text faces are self-hosted — see src/styles/fonts.css, written
-      by scripts/fetch-fonts.py. They used to be a stylesheet from Google
-      Fonts sitting in the critical path of every page, which meant the site
-      could not draw a word until a third party answered, and every visit
-      told a third party which pages were being read.
-    -->
-
-    <!--
-      Reveal targets start at opacity 0 and are un-hidden by JS. Without this,
-      a visitor without JS sees blank gaps where the sections should be.
-    -->
-    <noscript>
-      <style>
-        [data-reveal] { opacity: 1 !important; transform: none !important; }
-      </style>
-    </noscript>
+    <Head
+      title={title}
+      description={description}
+      image={image}
+      imageAlt={imageAlt}
+      type={type}
+      schema={schema}
+    />
   </head>
 
   <body class="crt">
@@ -161,19 +77,72 @@ const compactFooter = Astro.url.pathname === '/projects/';
 
     <a class="skip-link" href="#main">Skip to content</a>
 
-    <StatusBar />
-    <Header currentPath={Astro.url.pathname} />
+    <!--
+      The skip link has to move the focus, not only the scroll position.
 
-    <main id="main" class="wrap" data-rail={rail ? 'on' : undefined}>
+      A fragment link scrolls the page, but the focus stays on the link: the
+      next Tab press sends the reader back into the navigation they just
+      tried to skip. The target is focusable — `tabindex="-1"` on `<main>` —
+      so the browser can put the focus there; the script is what asks it to.
+
+      It is inline and dependency-free on purpose: the skip link is the first
+      thing a keyboard reader meets, and it must work before anything else
+      has loaded.
+    -->
+    <script is:inline>
+      (function () {
+        var link = document.querySelector('.skip-link');
+        if (!link) return;
+        link.addEventListener('click', function () {
+          var target = document.getElementById('main');
+          if (!target) return;
+          try {
+            target.focus({ preventScroll: true });
+          } catch (e) {
+            target.focus();
+          }
+        });
+      })();
+    </script>
+
+    <!--
+      The site header is a landmark. Without a `<header>` element the banner
+      was only implied by the class name, and a screen reader had no way to
+      jump to it — the reader had to walk the whole navigation.
+
+      `display: contents` keeps the two bars exactly as they were: the status
+      bar sticks to the top of the viewport and the menu bar sticks just below
+      it, and each does that against the page, not against each other. A
+      wrapper with a box of its own would change that relationship.
+    -->
+    <header class="site-header" style="display: contents">
+      <StatusBar />
+      <Header currentPath={Astro.url.pathname} />
+    </header>
+
+    <!--
+      `tabindex="-1"` makes the content programmatically focusable, which is
+      what the skip link needs: a plain fragment link scrolls the page but
+      leaves the focus on the link, so the next Tab press sends the reader
+      back into the navigation they just tried to skip. With the target
+      focusable, the browser moves the focus there as well.
+    -->
+    <main id="main" class="wrap" tabindex="-1" data-rail={rail ? 'on' : undefined}>
       <slot />
     </main>
 
     {rail && <div class="section-rail" aria-hidden="true"><i id="railFill"></i></div>}
 
-    <Footer compact={compactFooter} />
-
+    <!--
+      The dialogs come before the footer on purpose. The footer is the last
+      thing in the document: a reader who reaches the end of a page should
+      meet the footer's links, not the invisible controls of two dialogs that
+      are closed.
+    -->
     <LetterModal />
     <Palette />
+
+    <Footer compact={compactFooter} />
 
     <script>
       import '../scripts/os.js';

@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="Maltsev">
+  <!--
+    The brand mark: "A|M" in the display face, on the braise square the social
+    card and the header use. It is drawn as strokes rather than set as text so
+    it does not depend on a font being installed on the reader's machine: a
+    favicon is the one asset every browser renders before the page CSS lands.
+
+    Geometry (64-unit grid):
+      A      legs 14 to 21 to 28 (apex 21,20, feet 14,46 and 28,46),
+             crossbar at y=37
+      |      stem at x=33, from 20 to 46
+      M      38,46 up to 38,20, down to 43.5,33, up to 49,20, down to 49,46
+    Colours are the phosphore ramp: braise #e0501e, papier #14100a.
+  -->
+  <rect width="64" height="64" fill="#e0501e"/>
+  <g fill="none" stroke="#14100a" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="miter">
+    <path d="M14 46 L21 20 L28 46"/>
+    <path d="M16.4 37 H25.6" stroke-linecap="butt"/>
+    <path d="M33 20 V46"/>
+    <path d="M38 46 V20 L43.5 33 L49 20 V46"/>
+  </g>
+</svg>

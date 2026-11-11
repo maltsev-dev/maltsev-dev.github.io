@@ -18,7 +18,7 @@
   color: var(--fort);
   border-bottom: var(--filet) solid var(--braise);
   font-family: var(--font-mono);
-  font-size: 0.75rem;
+  font-size: var(--fs-label);
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
@@ -27,7 +27,7 @@
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 1rem;
+  gap: var(--sp-4);
   min-height: 1.9rem;
   padding-block: 0.2rem;
 }
@@ -36,7 +36,7 @@
 .status-right {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: var(--sp-4);
   min-width: 0;
 }
 
@@ -80,7 +80,7 @@
 .menu-bar .wrap {
   display: flex;
   align-items: stretch;
-  gap: 0.75rem;
+  gap: var(--sp-3);
   flex-wrap: wrap;
 }
 
@@ -88,7 +88,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
+  gap: var(--sp-2);
   padding: 0.5rem 0;
   text-decoration: none;
   font-family: var(--font-display);
@@ -96,7 +96,7 @@
   color: var(--fort);
   /* "A|M" is 41px wide in the display face — one pixel under the 44px
      platform minimum for a tap target. The floor costs nothing and the mark
-     stays centred in it. */
+     stays centered in it. */
   min-width: 44px;
 }
 
@@ -114,12 +114,12 @@
 .menu-btn {
   display: inline-flex;
   align-items: center;
-  gap: 0.4rem;
+  gap: var(--sp-2);
   padding: 0.55rem 0.8rem;
   background: none;
   border: var(--filet) solid transparent;
   font-family: var(--font-mono);
-  font-size: 0.78rem;
+  font-size: var(--fs-label);
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--encre);
@@ -137,7 +137,7 @@
 }
 
 .menu-btn .caret {
-  font-size: 0.7em;
+  font-size: 0.75em;
   opacity: 0.7;
 }
 
@@ -163,7 +163,7 @@
   margin: 0 0 0.3rem;
   padding: 0 0.5rem;
   font-family: var(--font-mono);
-  font-size: 0.75rem;
+  font-size: var(--fs-label);
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--braise);
@@ -172,7 +172,7 @@
 .dd-item {
   display: flex;
   align-items: center;
-  gap: 0.6rem;
+  gap: var(--sp-2);
   width: 100%;
   padding: 0.45rem 0.5rem;
   background: none;
@@ -181,7 +181,7 @@
   text-decoration: none;
   color: var(--encre);
   font-family: var(--font-ui);
-  font-size: 0.88rem;
+  font-size: var(--fs-small);
 }
 
 .dd-item:hover,
@@ -192,14 +192,14 @@
 
 .dd-item .fig {
   font-family: var(--font-mono);
-  font-size: 0.75rem;
+  font-size: var(--fs-label);
   opacity: 0.65;
   flex-shrink: 0;
 }
 
 .dd-item .desc {
   display: block;
-  font-size: 0.75rem;
+  font-size: var(--fs-label);
   opacity: 0.75;
   text-transform: uppercase;
   letter-spacing: 0.06em;
@@ -208,7 +208,7 @@
 .dd-item kbd {
   margin-left: auto;
   font-family: var(--font-mono);
-  font-size: 0.75rem;
+  font-size: var(--fs-label);
   border: var(--filet) solid currentColor;
   padding: 0 0.25rem;
   flex-shrink: 0;
@@ -217,7 +217,7 @@
 /* The theme list is a radio group. The selected theme has to look selected:
    the state was carried by aria-checked alone, so the list read the same
    whichever theme was on. The mark is filled instead of hollow, and the row
-   is tinted — the accent colour carries the tint rather than the text, so
+   is tinted — the accent color carries the tint rather than the text, so
    the label keeps the contrast it already had in every theme. */
 .dd-item[role='radio'] .fig::before {
   content: '◆';
@@ -233,6 +233,17 @@
 
 .dd-item[role='radio'][aria-checked='true'] {
   background: color-mix(in srgb, var(--braise) 14%, transparent);
+}
+
+/* The hover has to survive the checked state. The tint above outranks the
+   plain `.dd-item:hover`, so without this the selected theme would be the
+   one row in the list that does not answer the pointer. The pair is the one
+   every other row uses — the page color on the accent: 4.81:1 in phosphore,
+   8.34:1 in acidule, 4.75:1 in pierre. */
+.dd-item[role='radio'][aria-checked='true']:hover,
+.dd-item[role='radio'][aria-checked='true']:focus-visible {
+  background: var(--braise);
+  color: var(--papier);
 }
 
 .dd-sep {
@@ -261,7 +272,7 @@
    screens, so the fade cannot be a fixed rule. */
 .menu-quick {
   display: none;
-  gap: 0.35rem;
+  gap: var(--sp-1);
   list-style: none;
   margin: 0;
   padding: 0 0 0.5rem;
@@ -341,6 +352,13 @@
   .menu-bar {
     position: static;
   }
+
+  /* The menu bar leaves the chrome stack, so the stack is the status bar
+     alone: 1.9rem of content and a hairline. The sticky heading and the
+     anchor targets both measure against this number. */
+  :root {
+    --chrome-h: 2rem;
+  }
 }
 
 /* ----- Timeline (Experience) ---------------------------------------------
@@ -349,7 +367,7 @@
    ---------------------------------------------------------------------- */
 .timeline-wrap {
   position: relative;
-  margin-top: 2rem;
+  margin-top: var(--sp-6);
 }
 
 .timeline {
@@ -369,20 +387,27 @@
   background: var(--grid);
 }
 
-/* The filled portion, driven by --tl-progress (0..1). */
+/* The filled portion, driven by --tl-progress (0..1).
+
+   The fill is scaled, not resized. A height that changes on every scroll
+   frame re-runs layout for the bar and its container on every frame; a scale
+   is a compositor-only property, so the whole bar moves on the GPU and the
+   page never lays out again. The picture is the same. */
 .timeline-fill {
   position: absolute;
   left: 0.42rem;
   top: 0.4rem;
   width: var(--trait);
   background: var(--braise);
-  height: calc(var(--tl-progress, 0) * 100%);
-  transition: height 120ms linear;
+  height: 100%;
+  transform: scaleY(var(--tl-progress, 0));
+  transform-origin: top;
+  transition: transform 120ms linear;
 }
 
 .tl-item {
   position: relative;
-  padding-bottom: 2rem;
+  padding-bottom: var(--sp-6);
 }
 
 .tl-item::before {
@@ -402,7 +427,7 @@
 
 .tl-when {
   font-family: var(--font-mono);
-  font-size: 0.75rem;
+  font-size: var(--fs-label);
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--braise);
@@ -416,11 +441,11 @@
 }
 
 .tl-where {
-  font-size: 0.82rem;
+  font-size: var(--fs-micro);
   text-transform: uppercase;
   letter-spacing: 0.08em;
   opacity: 0.8;
-  margin-bottom: 0.5rem;
+  margin-bottom: var(--sp-2);
 }
 
 .tl-body {
@@ -447,7 +472,7 @@
 
 .footer-grid {
   display: grid;
-  gap: 1.8rem 2rem;
+  gap: var(--sp-6) 2rem;
   grid-template-columns: minmax(0, 2fr) repeat(2, minmax(0, 13rem));
   align-items: start;
 }
@@ -463,12 +488,12 @@
 
 .footer-col h2 {
   font-family: var(--font-mono);
-  font-size: 0.75rem;
+  font-size: var(--fs-label);
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--fort);
   opacity: 0.8;
-  margin-bottom: 0.5rem;
+  margin-bottom: var(--sp-2);
 }
 
 .footer-col ul {
@@ -477,12 +502,12 @@
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 0.3rem;
+  gap: var(--sp-1);
 }
 
 .footer-col a {
   text-decoration: none;
-  font-size: 0.9rem;
+  font-size: var(--fs-small);
   color: var(--fort);
   border-bottom: 1px solid transparent;
 }
@@ -496,13 +521,13 @@
 .footer-bar {
   display: flex;
   justify-content: space-between;
-  gap: 1rem;
+  gap: var(--sp-4);
   flex-wrap: wrap;
   margin-top: 1.6rem;
   padding-top: 0.9rem;
   border-top: var(--filet) solid color-mix(in srgb, var(--fort) 30%, transparent);
   font-family: var(--font-mono);
-  font-size: 0.75rem;
+  font-size: var(--fs-label);
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--fort);
@@ -516,7 +541,7 @@
 }
 
 /* The compact footer: one row of copyright, contact and a call to action.
-   It is what the projects catalogue gets, because that page is one viewport
+   It is what the projects catalog gets, because that page is one viewport
    tall and its wheel is spoken for by the row of panels — a footer below it
    would sit under a fold the page cannot scroll to. */
 .site-footer--compact {
@@ -551,14 +576,14 @@
      the screen; this one is cut to the bar. */
   .site-footer--compact .btn {
     padding: 0.35rem 0.8rem;
-    font-size: 0.8rem;
+    font-size: var(--fs-micro);
     box-shadow: 3px 3px 0 var(--braise);
   }
 
   .site-footer--compact .wrap {
     display: flex;
     align-items: center;
-    gap: 1rem;
+    gap: var(--sp-4);
     width: 100%;
   }
 
@@ -594,16 +619,24 @@
 }
 
 /* Section headings pin briefly while their section scrolls past — a cheap
-   substitute for a full scroll-driven library. */
+   substitute for a full scroll-driven library.
+
+   The offset is the chrome stack, not a number of its own: the status bar
+   and the menu bar are about 4.8rem tall together, and the heading used to
+   stick at 4.2rem — under the menu bar, which painted over its top edge. It
+   is also the number the anchor targets clear (--chrome-h), so the two
+   cannot drift apart. The solid background and the stacking position keep
+   the chrome from ever painting over it. */
 .sticky-head {
   position: sticky;
-  top: 4.2rem;
+  top: var(--chrome-h);
   background: var(--papier);
-  padding-block: 0.5rem;
-  z-index: 10;
+  padding-block: var(--sp-2);
+  z-index: 46;
 }
 
-/* Hairline that grows across the section as it passes through the viewport. */
+/* Hairline that grows across the section as it passes through the viewport.
+   Scaled rather than resized, for the same reason as the timeline fill. */
 .rule-progress {
   height: var(--trait);
   background: var(--grid);
@@ -613,7 +646,9 @@
 .rule-progress i {
   display: block;
   height: 100%;
-  width: calc(var(--sec-progress, 0) * 100%);
+  width: 100%;
+  transform: scaleX(var(--sec-progress, 0));
+  transform-origin: left;
   background: var(--braise);
 }
 
@@ -621,9 +656,9 @@
 .kv {
   display: flex;
   align-items: baseline;
-  gap: 0.5rem;
+  gap: var(--sp-2);
   font-family: var(--font-mono);
-  font-size: 0.82rem;
+  font-size: var(--fs-micro);
 }
 
 .kv::after {
@@ -637,186 +672,15 @@
   order: 2;
 }
 
-/* ----- Diagram -----------------------------------------------------------
-   The SVG scales with the viewBox, so nothing inside needs to know the pixel
-   width of its container. Wires draw themselves once the figure scrolls into
-   view; packets ride along them continuously.
-   ---------------------------------------------------------------------- */
-.diagram {
-  border: var(--filet) solid var(--braise);
-  background: var(--papier);
-  box-shadow: var(--ombre);
-  padding: 1rem;
-}
-
-.diagram-stage {
-  position: relative;
-  overflow: hidden;
-}
-
-.diagram svg {
-  width: 100%;
-  height: auto;
-  display: block;
-}
-
-.diagram-line {
-  fill: none;
-  stroke: var(--grid);
-  stroke-width: 3;
-  /* Long dash so the reveal reads as a line being drawn, left to right. */
-  stroke-dasharray: 200;
-  stroke-dashoffset: 200;
-}
-
-.diagram.is-drawn .diagram-line {
-  animation: draw 620ms cubic-bezier(0.2, 0.9, 0.2, 1) forwards;
-}
-
-.diagram.is-drawn .diagram-line:nth-child(2) {
-  animation-delay: 110ms;
-}
-
-.diagram.is-drawn .diagram-line:nth-child(3) {
-  animation-delay: 220ms;
-}
-
-@keyframes draw {
-  to {
-    stroke-dashoffset: 0;
-  }
-}
-
-.diagram-node rect {
-  fill: var(--papier);
-  stroke: var(--braise);
-  stroke-width: 3;
-  transition: fill 180ms ease;
-}
-
-.diagram-node text {
-  fill: var(--encre);
-  font-family: var(--font-mono);
-  font-size: 15px;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  text-anchor: middle;
-  pointer-events: none;
-}
-
-.diagram-node {
-  cursor: pointer;
-}
-
-.diagram-node:hover rect,
-.diagram-node:focus-visible rect,
-.diagram-node.is-active rect {
-  fill: var(--rouille);
-}
-
-.diagram-node.is-active text {
-  fill: var(--creme);
-}
-
-.diagram-node:focus {
-  outline: none;
-}
-
-.diagram-node:focus-visible rect {
-  stroke-dasharray: 6 4;
-}
-
-/* Packet: a dot offset along the wire's path. Falls back to being invisible
-   where offset-path is unsupported — the wires still read as a flow. */
-.flow-dot {
-  fill: var(--braise);
-  offset-distance: 0%;
-  offset-rotate: auto;
-  animation: travel 3.3s linear infinite;
-}
-
-@supports not (offset-path: path('M0 0')) {
-  .flow-dot {
-    display: none;
-  }
-}
-
-@keyframes travel {
-  from {
-    offset-distance: 0%;
-    opacity: 0;
-  }
-  12% {
-    opacity: 1;
-  }
-  88% {
-    opacity: 1;
-  }
-  to {
-    offset-distance: 100%;
-    opacity: 0;
-  }
-}
-
-/* Readout under the figure. The text swaps on hover/focus; height is animated
-   so the panel does not jump when the copy changes length. */
-.diagram-panel {
-  margin-top: 0.9rem;
-  padding-top: 0.8rem;
-  border-top: var(--filet) solid var(--grid);
-  min-height: 3.4rem;
-}
-
-.diagram-text {
-  margin: 0;
-  display: flex;
-  gap: 0.6rem;
-  align-items: baseline;
-  flex-wrap: wrap;
-  color: var(--fort);
-}
-
-.diagram-text[hidden] {
-  display: none;
-}
-
-.diagram-text strong {
-  font-family: var(--font-mono);
-  font-size: 0.78rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--braise);
-  flex-shrink: 0;
-}
-
-.diagram-hint {
-  margin: 0.35rem 0 0;
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--grid);
-}
-
-.diagram.is-active .diagram-hint {
-  visibility: hidden;
-}
-
-/* Hovering the figure speeds the packets up — the clearest "something is
-   happening" signal without changing any layout. */
-.diagram:hover .flow-dot {
-  animation-duration: 1.1s;
-}
-
 /* ----- Footer: single quiet row ----------------------------------------- */
 .footer-line {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
+  gap: var(--sp-4);
   flex-wrap: wrap;
   font-family: var(--font-mono);
-  font-size: 0.75rem;
+  font-size: var(--fs-label);
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--fort);
@@ -824,7 +688,7 @@
 
 .footer-links {
   display: flex;
-  gap: 1rem;
+  gap: var(--sp-4);
   flex-wrap: wrap;
 }
 
@@ -841,13 +705,13 @@
 .menu-group {
   display: flex;
   align-items: center;
-  gap: 0.35rem;
+  gap: var(--sp-1);
 }
 
 .social {
   display: flex;
   align-items: center;
-  gap: 0.15rem;
+  gap: var(--sp-1);
   margin-left: auto;
 }
 
@@ -914,9 +778,11 @@
 .section-rail i {
   display: block;
   width: 100%;
-  height: calc(var(--rail-progress, 0) * 100%);
+  height: 100%;
+  transform: scaleY(var(--rail-progress, 0));
+  transform-origin: top;
   background: var(--braise);
-  transition: height 140ms linear;
+  transition: transform 140ms linear;
 }
 
 .section-rail b {
@@ -938,9 +804,16 @@
 }
 
 /* Panels take the screen as they pass through, which is what makes the page
-   read as a sequence rather than a long scroll. */
-[data-rail='on'] > .section,
-[data-rail='on'] > .hero {
+   read as a sequence rather than a long scroll.
+
+   The two selectors are wrapped in :where(), which contributes no specificity
+   of its own. Without it the rule reached (0,2,0) and beat a page's own
+   scoped .hero — the homepage's hero is a two-column grid at 62rem, and
+   switching the rail on there would have quietly replaced it with a flex
+   column, at every width, with nothing to point at the cause. Now the rule
+   is (0,1,0): a page that styles its own hero names it and wins, and a page
+   that does not still gets the full-height panel. */
+[data-rail='on'] > :where(.section, .hero) {
   min-height: 76vh;
   display: flex;
   flex-direction: column;
@@ -948,7 +821,7 @@
 }
 
 /* A panel whose content is genuinely taller than the viewport must still be
-   reachable — centring it would clip the ends behind the next section. */
+   reachable — centering it would clip the ends behind the next section. */
 [data-rail='on'] > .section > :last-child {
   margin-bottom: 0;
 }
@@ -964,8 +837,7 @@
     padding-right: clamp(1rem, 4vw, 3rem);
   }
 
-  [data-rail='on'] > .section,
-  [data-rail='on'] > .hero {
+  [data-rail='on'] > :where(.section, .hero) {
     min-height: 0;
     display: block;
   }
@@ -993,7 +865,7 @@
      button is the primary conversion path on /freelance/, where it is the only
      way into the contact dialog. */
   min-height: 24px;
-  padding-block: 0.25rem;
+  padding-block: var(--sp-1);
 }
 
 .status-cta:hover {
@@ -1090,7 +962,7 @@
 .big-file {
   grid-area: file;
   font-family: var(--font-mono);
-  font-size: 0.75rem;
+  font-size: var(--fs-label);
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--braise);
@@ -1109,7 +981,7 @@
   margin: 0;
   max-width: 52ch;
   color: var(--encre);
-  font-size: 0.92rem;
+  font-size: var(--fs-lead);
 }
 
 .big-go {
@@ -1164,8 +1036,8 @@
 .roadmap {
   position: relative;
   display: grid;
-  gap: 2.5rem;
-  margin-top: 2rem;
+  gap: var(--sp-6);
+  margin-top: var(--sp-6);
   padding-left: clamp(1.5rem, 4vw, 2.5rem);
 }
 
@@ -1181,9 +1053,11 @@
 .roadmap-rail i {
   display: block;
   width: 100%;
-  height: calc(var(--road, 0) * 100%);
+  height: 100%;
+  transform: scaleY(var(--road, 0));
+  transform-origin: top;
   background: var(--braise);
-  transition: height 140ms linear;
+  transition: transform 140ms linear;
 }
 
 .stop {
@@ -1214,7 +1088,7 @@
 .stop-when {
   display: inline-block;
   font-family: var(--font-mono);
-  font-size: 0.75rem;
+  font-size: var(--fs-label);
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--braise);
@@ -1229,7 +1103,7 @@
 
 .stop-where {
   font-family: var(--font-mono);
-  font-size: 0.8rem;
+  font-size: var(--fs-micro);
   letter-spacing: 0.06em;
   color: var(--encre);
 }
@@ -1245,14 +1119,14 @@
   margin: 0;
   padding: 0;
   display: grid;
-  gap: 0.7rem;
+  gap: var(--sp-3);
 }
 
 /* Each project mark lights up when its stop is reached. */
 .mark {
   display: grid;
   grid-template-columns: auto 1fr;
-  gap: 0.7rem;
+  gap: var(--sp-3);
   align-items: start;
   padding: 0.7rem 0.9rem;
   border: var(--filet) solid var(--grid);
@@ -1288,7 +1162,7 @@
 }
 
 .mark span {
-  font-size: 0.9rem;
+  font-size: var(--fs-small);
   color: var(--encre);
 }
 
@@ -1314,7 +1188,7 @@
   position: relative;
   display: grid;
   gap: clamp(1.5rem, 4vw, 2.6rem);
-  margin-top: 2rem;
+  margin-top: var(--sp-6);
 }
 
 .assemble-rail {
@@ -1329,16 +1203,18 @@
 .assemble-rail i {
   display: block;
   width: 100%;
-  height: calc(var(--asm, 0) * 100%);
+  height: 100%;
+  transform: scaleY(var(--asm, 0));
+  transform-origin: top;
   background: var(--braise);
-  transition: height 140ms linear;
+  transition: transform 140ms linear;
 }
 
 .stage {
   position: relative;
   display: grid;
   grid-template-columns: 2.3rem 1fr;
-  gap: 1.2rem;
+  gap: var(--sp-4);
   align-items: start;
   padding-left: 2.6rem;
 }
@@ -1363,7 +1239,7 @@
 
 .stage-num {
   font-family: var(--font-mono);
-  font-size: 0.78rem;
+  font-size: var(--fs-label);
   letter-spacing: 0.12em;
   color: var(--braise);
   padding-top: 0.35rem;
@@ -1397,7 +1273,7 @@
 .stage-marks {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.4rem;
+  gap: var(--sp-2);
   list-style: none;
   margin: 0;
   padding: 0;
@@ -1405,7 +1281,7 @@
 
 .stage-marks li {
   font-family: var(--font-mono);
-  font-size: 0.75rem;
+  font-size: var(--fs-label);
   letter-spacing: 0.06em;
   color: var(--fort);
   border: var(--filet) solid var(--braise);
@@ -1431,7 +1307,7 @@
 @media (max-width: 40rem) {
   .stage {
     grid-template-columns: 1fr;
-    gap: 0.3rem;
+    gap: var(--sp-1);
     padding-left: 2.2rem;
   }
 
@@ -1471,8 +1347,11 @@
 .home-figure {
   min-width: 0;
   /* The art below sizes itself from this column, so the query container has
-     to be the figure, not the page. */
+     to be the figure, not the page. The name lets the figure's own children
+     ask how wide the column is — the swipe hint uses it to appear only when
+     the drawing is genuinely wider than the column it sits in. */
   container-type: inline-size;
+  container-name: figure;
 }
 
 .home-dir {
@@ -1488,7 +1367,7 @@
   display: grid;
   grid-template-columns: auto 1fr auto;
   align-items: center;
-  gap: 1rem;
+  gap: var(--sp-4);
   padding: clamp(1rem, 2.4vw, 1.6rem) 1.2rem;
   background: var(--papier);
   text-decoration: none;
@@ -1562,7 +1441,7 @@
   z-index: 120;
   display: grid;
   place-items: center;
-  padding: 1rem;
+  padding: var(--sp-4);
 }
 
 .letter[hidden] {
@@ -1605,12 +1484,12 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
+  gap: var(--sp-4);
   padding: 0.7rem 1rem;
   background: var(--rouille);
   border-bottom: var(--filet) solid var(--braise);
   font-family: var(--font-mono);
-  font-size: 0.75rem;
+  font-size: var(--fs-label);
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--fort);
@@ -1635,7 +1514,7 @@
 .letter-foot {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: var(--sp-4);
   flex-wrap: wrap;
   padding: 0.8rem 1rem 1.2rem;
   border-top: var(--filet) solid var(--grid);
@@ -1649,19 +1528,24 @@
 
 /* Per-field error, injected by the submit handler in os.js. The field already
    carries required/minlength, so the input is the thing that turns red; the
-   message underneath says why. */
+   message underneath says why.
+
+   The color is --erreur, the token that exists for exactly this: --braise is
+   an accent, tuned to read as a border or a shadow, and on the rust fill a
+   focused field takes it measures 2.17:1. --erreur is the error color of
+   each ramp, and it clears 4.5:1 on the page in all three. */
 .field-error {
   margin: 0.35rem 0 0;
-  font-size: 0.78rem;
+  font-size: var(--fs-label);
   line-height: 1.35;
-  color: var(--flag, var(--braise));
+  color: var(--erreur);
 }
 
 .letter-body .field input[aria-invalid='true'],
 .letter-body .field textarea[aria-invalid='true'],
 .letter-body .field select[aria-invalid='true'] {
-  border-color: var(--flag, var(--braise));
-  outline-color: var(--flag, var(--braise));
+  border-color: var(--erreur);
+  outline-color: var(--erreur);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1686,7 +1570,7 @@
   display: grid;
   grid-template-columns: auto 1fr auto;
   align-items: center;
-  gap: 1rem;
+  gap: var(--sp-4);
   padding: 1rem 1.2rem;
   background: var(--papier);
   text-decoration: none;
@@ -1699,7 +1583,7 @@
 
 .resource-ico {
   font-family: var(--font-mono);
-  font-size: 0.8rem;
+  font-size: var(--fs-micro);
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--braise);
@@ -1716,7 +1600,7 @@
 
 .resource-body span {
   font-family: var(--font-mono);
-  font-size: 0.76rem;
+  font-size: var(--fs-label);
   color: var(--encre);
   word-break: break-all;
 }
@@ -1821,17 +1705,23 @@
   background: var(--papier);
   box-shadow: var(--ombre);
   overflow: hidden;
+  /* Deliberately not `min-width: max-content`. The art is 50.8rem wide at the
+     floor, so a panel that sized itself to its content would be 50.8rem wide
+     on a phone — and the page, not the figure, would scroll sideways. The
+     glyphs are protected by the 0.7rem floor on .stack-view instead, and the
+     drawing scrolls inside the <pre>. */
+  max-width: 100%;
 }
 
 .stack-head {
   display: flex;
   align-items: center;
-  gap: 0.6rem;
+  gap: var(--sp-2);
   padding: 0.45rem 0.8rem;
   background: var(--rouille);
   border-bottom: var(--filet) solid var(--braise);
   font-family: var(--font-mono);
-  font-size: 0.75rem;
+  font-size: var(--fs-label);
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--fort);
@@ -1893,6 +1783,10 @@
   /* The art is wide; letting it scroll sideways beats shrinking it to
      illegibility on a phone. */
   -webkit-overflow-scrolling: touch;
+  /* The drawing scrolls, the page does not: a swipe that reaches the end of
+     the art stops here instead of handing the leftover momentum to the page
+     and sliding the whole layout sideways. */
+  overscroll-behavior-x: contain;
 }
 
 /* One transparent button per box, placed by os.js from the glyph rectangles.
@@ -1922,9 +1816,13 @@
   visibility: visible;
 }
 
+/* The keyboard targets in the figure get the same ring as everything else:
+   the site has one focus recipe, and this used to be a second, thinner one
+   (2px against 3px, 1px of offset against 2px) with the accent hard-coded
+   instead of the focus token. */
 .stack-hit-box:focus-visible {
-  outline: 2px solid var(--braise);
-  outline-offset: 1px;
+  outline: var(--trait) solid var(--focus-ring);
+  outline-offset: 2px;
 }
 
 /* The reset above sets `code, pre, kbd { font-family: var(--font-ui) }`, and that
@@ -1945,7 +1843,7 @@
 
 /* A tint, not an inversion. Filling the block with solid accent turned its own
    box-drawing glyphs dark and the block read as two nested rectangles; a low
-   alpha fill over the page colour keeps the frame one frame and lifts the
+   alpha fill over the page color keeps the frame one frame and lifts the
    label off the background. */
 .stack-zone.is-hot {
   background: color-mix(in srgb, var(--braise) 26%, transparent);
@@ -1954,11 +1852,16 @@
 
 /* Lines arrive one at a time when the figure first scrolls into view.
    The animation is the enhancement, never the source of visibility: with no
-   JS the class is never added and every line renders at full opacity. */
+   JS the class is never added and every line renders at full opacity.
+
+   The step is 25ms, not 45ms. The figure has 38 rows, and at 45ms the last
+   one waited 1.665 s — 1.925 s to its last pixel — which on a slow machine
+   reads as a blank column rather than as a drawing assembling. At 25ms the
+   last row waits 925ms and the whole figure is done in about 1.2 s. */
 .stack.is-live .stack-line,
 .stack.is-live .stack-zone {
   animation: line-in 260ms cubic-bezier(0.2, 0.9, 0.2, 1) both;
-  animation-delay: calc(var(--i, 0) * 45ms);
+  animation-delay: calc(var(--i, 0) * 25ms);
 }
 
 @keyframes line-in {
@@ -1983,11 +1886,11 @@
 .stack-read-item {
   margin: 0;
   display: flex;
-  gap: 0.7rem;
+  gap: var(--sp-3);
   align-items: baseline;
   flex-wrap: wrap;
   font-family: var(--font-mono);
-  font-size: 0.78rem;
+  font-size: var(--fs-label);
   line-height: 1.6;
 }
 
@@ -2015,6 +1918,49 @@
 
 .stack-read-item span {
   color: var(--fort);
+}
+
+/* The swipe hint. The figure is 119 columns of monospace: below the width
+   where that fits, the <pre> scrolls sideways and three of the ten stages sit
+   past the right edge. The scroll itself is already there — what was missing
+   was the reader knowing about it, so the hint says it in words.
+
+   It only appears on the screens where the art is genuinely wider than its
+   column (see the 52rem gate below), because on a wide screen the drawing
+   fits and the hint would be a lie. */
+.stack-swipe {
+  display: none;
+  margin: 0;
+  padding: 0.5rem 1rem 0.6rem;
+  border-top: var(--filet) solid var(--grid);
+  background: var(--papier);
+  color: var(--fort);
+  font-family: var(--font-mono);
+  font-size: var(--fs-label);
+  line-height: 1.6;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  opacity: 0.85;
+}
+
+.stack-swipe::before {
+  content: '← ';
+  color: var(--braise);
+}
+
+/* The threshold is the drawing's own width, not a viewport guess: 119 columns
+   at the art font's 0.5859em advance and the 0.7rem floor, plus the 2rem of
+   padding the <pre> keeps, comes to 50.8rem. Below that the art cannot fit
+   the column and the <pre> scrolls sideways.
+
+   A viewport media query cannot express this: the figure column is two thirds
+   of the split on a wide screen and the full width once the split stacks, so
+   the same viewport can be over the line or under it. The container query
+   asks the column itself. */
+@container figure (max-width: 50.8rem) {
+  .stack-swipe {
+    display: block;
+  }
 }
 
 /* A highlight bar that sweeps down the figure once, on reveal. */
@@ -2080,12 +2026,12 @@
 .stage-modal-head {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: var(--sp-4);
   padding: 0.6rem 0.9rem;
   background: var(--rouille);
   border-bottom: var(--filet) solid var(--braise);
   font-family: var(--font-mono);
-  font-size: 0.82rem;
+  font-size: var(--fs-micro);
   letter-spacing: 0.06em;
   color: var(--fort);
 }
@@ -2112,7 +2058,7 @@
 .stage-modal-lede {
   margin: 0 0 1rem;
   font-family: var(--font-mono);
-  font-size: 0.92rem;
+  font-size: var(--fs-lead);
   line-height: 1.6;
   color: var(--fort);
 }
@@ -2120,7 +2066,7 @@
 .stage-modal-stack {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.4rem;
+  gap: var(--sp-2);
   margin: 0 0 1.2rem;
   padding: 0;
   list-style: none;
@@ -2131,7 +2077,7 @@
   border: var(--filet) solid var(--braise);
   background: color-mix(in srgb, var(--rouille) 45%, var(--papier));
   font-family: var(--font-mono);
-  font-size: 0.75rem;
+  font-size: var(--fs-label);
   letter-spacing: 0.04em;
   color: var(--fort);
 }
@@ -2156,7 +2102,7 @@
   border: var(--filet) solid var(--braise);
   color: var(--fort);
   font-family: var(--font-art);
-  font-size: 0.75rem;
+  font-size: var(--fs-label);
   line-height: 1.3;
   font-variant-ligatures: none;
   tab-size: 2;
@@ -2172,7 +2118,7 @@
 .stage-modal-cols {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
-  gap: 1.1rem 1.8rem;
+  gap: var(--sp-4) 1.8rem;
   align-items: start;
 }
 
@@ -2183,7 +2129,7 @@
 .stage-modal-h {
   margin: 0 0 0.5rem;
   font-family: var(--font-mono);
-  font-size: 0.75rem;
+  font-size: var(--fs-label);
   font-weight: 500;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -2193,12 +2139,12 @@
 .stage-modal-list {
   margin: 0;
   padding-left: 1.1rem;
-  font-size: 0.88rem;
+  font-size: var(--fs-small);
   line-height: 1.6;
 }
 
 .stage-modal-list li + li {
-  margin-top: 0.5rem;
+  margin-top: var(--sp-2);
 }
 
 .stage-modal-list b {
@@ -2210,13 +2156,13 @@
   padding: 0.05em 0.3em;
   background: color-mix(in srgb, var(--rouille) 40%, var(--papier));
   font-family: var(--font-mono);
-  font-size: 0.86em;
+  font-size: 0.875em;
   color: var(--fort);
   overflow-wrap: break-word;
 }
 
 .stage-modal-num {
-  /* The counter rather than a glyph: it keeps the marker in the text colour of
+  /* The counter rather than a glyph: it keeps the marker in the text color of
      the list and matches the numbering used in the section headings. */
   list-style: decimal;
   padding-left: 1.25rem;
@@ -2225,7 +2171,7 @@
 .stage-modal-num li::marker {
   color: var(--braise);
   font-family: var(--font-mono);
-  font-size: 0.85em;
+  font-size: 0.875em;
 }
 
 /* The checklist is a list of things to do, not a list of claims, so nothing
@@ -2237,7 +2183,7 @@
 
 .stage-modal-check li {
   position: relative;
-  padding-left: 1.5rem;
+  padding-left: var(--sp-5);
 }
 
 .stage-modal-check li::before {
@@ -2269,6 +2215,12 @@
 @media (prefers-reduced-motion: reduce) {
   .stack.is-live .stack-line,
   .stack.is-live .stack-zone {
+    animation: none;
+  }
+
+  /* The dot is the only infinite animation left in the figure, so it has to
+     calm down with the rest of them. */
+  .stack-dot {
     animation: none;
   }
 
@@ -2305,6 +2257,9 @@
     --rouille: #ffffff;
     --creme: #ffffff;
     --focus-ring: #000000;
+    /* The table rule has to carry 3:1 on paper on its own: a printed table
+       with a hairline that fades into the sheet is a table nobody can read. */
+    --table-rule: #767676;
     --code-kw: #8c2a18;
     --code-str: #1f6b2b;
     --code-num: #1a1a1a;
@@ -2322,7 +2277,9 @@
   .btn-row,
   .skip-link,
   .eyebrow,
-  .pulse-dot {
+  .pulse-dot,
+  .bg-grid,
+  .bg-glow {
     display: none !important;
   }
 
@@ -2344,7 +2301,7 @@
     color: #000;
   }
 
-  /* Code prints as ink on paper, not as a rust slab. The syntax colours are
+  /* Code prints as ink on paper, not as a rust slab. The syntax colors are
      carried by inline custom properties, so they have to be overridden on the
      tokens themselves — the highlights are a screen affordance. */
   pre,
@@ -2362,7 +2319,7 @@
 
   a::after {
     content: ' (' attr(href) ')';
-    font-size: 0.7em;
+    font-size: 0.75em;
     color: #555;
   }
 

@@ -1,6 +1,8 @@
 // Site chrome: theme switching, scroll reveal, command palette, contact form.
 // No framework — everything here is a DOM effect on pre-rendered HTML.
 
+import { RAMPS, resolveRamp, themeColor } from '../data/themes';
+
 (function () {
   'use strict';
 
@@ -93,11 +95,25 @@
     var bar = document.getElementById('progressBar');
     if (!bar || reduceMotion) return;
 
+    // The bar is scaled, not resized. Writing a width on it every frame makes
+    // the browser lay the bar out again on every frame, and the layout is the
+    // expensive part; a transform is only painted. The fraction goes in as
+    // `--progress` (0..1) and the stylesheet scales the bar with it.
+    //
+    // Whether the stylesheet has been switched over is asked once, here, and
+    // not on every frame: with the new rule the computed transform is a
+    // matrix, with the old one — the rule that drives the bar off its width —
+    // it is `none`. Until the stylesheet is switched, the bar keeps being
+    // sized the old way so it never goes blank in between.
+    var scaled = window.getComputedStyle(bar).transform !== 'none';
+
     function update() {
       var doc = document.documentElement;
       var max = doc.scrollHeight - doc.clientHeight;
       // A page shorter than the viewport has no scroll range; avoid /0.
-      bar.style.width = (max > 0 ? (doc.scrollTop / max) * 100 : 0) + '%';
+      var p = max > 0 ? doc.scrollTop / max : 0;
+      bar.style.setProperty('--progress', p.toFixed(4));
+      if (!scaled) bar.style.width = (p * 100).toFixed(2) + '%';
     }
 
     var pending = false;
@@ -192,6 +208,37 @@
     });
   })();
 
+  // ---- Card link names ---------------------------------------------------
+  // A link that wraps a whole card takes the whole card as its name: the
+  // title, the summary, the tags and the trailing "Open →" cue — forty words
+  // for a screen reader to walk past, on every card of the list. The heading
+  // stays inside the link, so the document outline is unchanged, and the name
+  // is shortened to the title and what the link does.
+  //
+  // The pages that still need this are the ones whose markup has no name of
+  // its own. Where the server already wrote one — the project panels, whose
+  // verb depends on what the link *is* and not on a URL prefix — the markup
+  // wins: the two must not disagree about the same sentence.
+  (function cardNames() {
+    function labelFor(a, title) {
+      var href = a.getAttribute('href') || '';
+      var what = href.indexOf('/blog/') !== -1 ? 'Read the post' : 'Open the project';
+      return title + ' — ' + what;
+    }
+
+    document.querySelectorAll('a.track-panel.panel-project').forEach(function (a) {
+      if (a.hasAttribute('aria-label')) return;
+      var heading = a.querySelector('h2, h3');
+      var title = heading ? heading.textContent.trim() : '';
+      if (!title) return;
+      a.setAttribute('aria-label', labelFor(a, title));
+    });
+
+    // The cards are `div.card` with the anchor inside the heading, so there
+    // is no whole-card link left to name — `a.card` matches nothing in the
+    // build, and the branch that used to name it was removed as dead code.
+  })();
+
   // ---- Horizontal card rows ----------------------------------------------
   // A row of cards that scrolls sideways, with no scrollbar to invite the
   // gesture, so a sideways gesture over the row is what moves it: the reader
@@ -201,7 +248,7 @@
   // says so.
   //
   // Only a sideways gesture is claimed. A vertical wheel notch used to be
-  // turned into sideways travel and the page's own scroll cancelled with it,
+  // turned into sideways travel and the page's own scroll canceled with it,
   // so a reader had to spend eighteen notches on the first row before the
   // page moved at all — the page read as frozen. The row is still reachable
   // without a pointer: it is focusable and the arrow keys scroll it, and a
@@ -240,7 +287,7 @@
       // The trackpad's own two-finger swipe arrives on deltaX. Shift+wheel is
       // the keyboard-and-mouse way of saying "sideways", and browsers split
       // over where they report it: Chromium turns it into deltaX, Firefox
-      // leaves it on deltaY with shiftKey set. Both are honoured; a plain
+      // leaves it on deltaY with shiftKey set. Both are honored; a plain
       // vertical notch is neither, so it goes to the page.
       function sideways(e) {
         if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) return true;
@@ -275,7 +322,7 @@
         if (max <= 1) return;
 
         // A vertical notch belongs to the page. Claiming it here is what used
-        // to make the page look frozen: the scroll was cancelled and the row
+        // to make the page look frozen: the scroll was canceled and the row
         // moved instead, so the reader had to work through the row's whole
         // length before the page gave way.
         if (!sideways(e)) return;
@@ -294,7 +341,7 @@
 
         // Snap is off while the wheel is turning the row, because proximity
         // snapping would tug each notch back toward the nearest card and the
-        // strip would judder instead of travelling.
+        // strip would judder instead of traveling.
         row.classList.add('is-auto');
         clearTimeout(settle);
         settle = setTimeout(release, 140);
@@ -342,6 +389,21 @@
       return n < 10 ? '0' + n : String(n);
     }
 
+    /**
+     * The local time as a valid HTML date/time string: no timezone suffix,
+     * because the value describes the reader's own wall clock.
+     */
+    function localStamp(d) {
+      return (
+        d.getFullYear() +
+        '-' + pad(d.getMonth() + 1) +
+        '-' + pad(d.getDate()) +
+        'T' + pad(d.getHours()) +
+        ':' + pad(d.getMinutes()) +
+        ':' + pad(d.getSeconds())
+      );
+    }
+
     function tick() {
       var d = new Date();
       var h = d.getHours();
@@ -350,7 +412,10 @@
       el.textContent =
         DAYS[d.getDay()] + ' ' + d.getDate() +
         ' · ' + h12 + ':' + pad(d.getMinutes()) + ' ' + (h < 12 ? 'AM' : 'PM');
-      el.setAttribute('datetime', d.toISOString());
+      // The machine-readable value has to say what the text says. It used to
+      // carry a UTC timestamp, so the reader's own clock was announced in
+      // another timezone than the one they were looking at.
+      el.setAttribute('datetime', localStamp(d));
 
       // Schedule just past the next minute so the display flips on time.
       var msToNextMinute = 60000 - (d.getSeconds() * 1000 + d.getMilliseconds());
@@ -366,13 +431,59 @@
   (function menus() {
     var buttons = Array.prototype.slice.call(document.querySelectorAll('[data-menu]'));
 
-    function closeAll(except) {
+    // The theme ramp that is actually on the page, the ramps the OS resolves
+    // to, and the chrome color of each one — all of it comes from
+    // src/data/themes.ts. The list used to be written out here as well as in
+    // the picker and in the boot script in the head: three copies of the same
+    // four names, free to drift apart.
+
+    var lightQuery = window.matchMedia('(prefers-color-scheme: light)');
+
+    // The button whose panel is open. Escape gives the focus back to it: the
+    // panel holds links, so the reader could be inside it when it closed, and
+    // a hidden element cannot keep the focus — the browser dropped it on
+    // <body> and the reader lost their place in the page.
+    var openBtn = null;
+
+    function resolve(id) {
+      return resolveRamp(id, lightQuery.matches);
+    }
+
+    function applyThemeColor(ramp) {
+      var meta = document.querySelector('meta[name="theme-color"]');
+      if (!meta) return;
+      // The token is the source of truth: it is defined per ramp in the
+      // stylesheet, so it cannot drift from the page it is describing.
+      var value = '';
+      try {
+        value = window
+          .getComputedStyle(document.documentElement)
+          .getPropertyValue('--theme-color')
+          .trim();
+      } catch (e) {
+        /* computed style unavailable — the fallback below stands */
+      }
+      meta.setAttribute('content', value || themeColor(ramp));
+    }
+
+    /**
+     * Close every panel except `except`.
+     *
+     * `restore` puts the focus back on the button that opened the panel. It
+     * is only right when the panel is closed by the keyboard: a click outside
+     * must not drag the focus away from whatever the reader just clicked.
+     */
+    function closeAll(except, restore) {
       buttons.forEach(function (b) {
         if (b === except) return;
         b.setAttribute('aria-expanded', 'false');
         var panel = document.querySelector('[data-panel="' + b.dataset.menu + '"]');
         if (panel) panel.hidden = true;
       });
+      if (openBtn && openBtn !== except) {
+        if (restore && document.contains(openBtn)) openBtn.focus();
+        openBtn = null;
+      }
     }
 
     buttons.forEach(function (btn) {
@@ -385,6 +496,7 @@
         closeAll(btn);
         btn.setAttribute('aria-expanded', open ? 'false' : 'true');
         panel.hidden = open;
+        openBtn = open ? null : btn;
       });
     });
 
@@ -395,14 +507,20 @@
     });
 
     document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape') closeAll();
+      if (e.key !== 'Escape') return;
+      // A dialog over the page has its own Escape handling and its own idea
+      // of where the focus belongs; the header dropdown must not pull it away.
+      if (document.querySelector('[role="dialog"]:not([hidden])')) return;
+      closeAll(null, true);
     });
 
     // Theme + action items live inside the System dropdown.
     document.querySelectorAll('[data-set-theme]').forEach(function (b) {
       b.addEventListener('click', function () {
         setTheme(b.dataset.setTheme);
-        closeAll();
+        // The panel closes under the button that was just pressed, so the
+        // focus goes back to the trigger rather than to the top of the page.
+        closeAll(null, true);
       });
     });
 
@@ -422,8 +540,16 @@
       });
     });
 
+    /**
+     * Apply a theme.
+     *
+     * `id` is what the reader picked: one of the three ramps, or `system`.
+     * `system` is stored as itself and resolved to a ramp for the page, so
+     * the choice survives a visit to another page and still follows the OS.
+     */
     function setTheme(id) {
-      html.dataset.theme = id;
+      var ramp = resolve(id);
+      html.dataset.theme = ramp;
       try {
         localStorage.setItem('theme', id);
       } catch (e) {
@@ -433,15 +559,26 @@
         b.setAttribute('aria-checked', b.dataset.setTheme === id ? 'true' : 'false');
       });
       syncRadios();
+      applyThemeColor(ramp);
     }
 
-    // Keep the radio state honest on load.
-    var current = html.dataset.theme;
-    document.querySelectorAll('[data-set-theme]').forEach(function (b) {
-      b.setAttribute('aria-checked', b.dataset.setTheme === current ? 'true' : 'false');
-    });
+    // The OS changes its mind while the page is open: follow it.
+    var onSystemChange = function () {
+      var current = null;
+      try {
+        current = localStorage.getItem('theme');
+      } catch (e) {
+        /* storage blocked — nothing to follow */
+      }
+      if (current === 'system') setTheme('system');
+    };
+    if (lightQuery.addEventListener) {
+      lightQuery.addEventListener('change', onSystemChange);
+    } else if (lightQuery.addListener) {
+      lightQuery.addListener(onSystemChange);
+    }
 
-    // The three themes are one of three, so the group behaves like the radio
+    // The themes are one of several, so the group behaves like the radio
     // group its markup now says it is: the arrow keys move between the themes
     // and pick one, and only the selected one is in the tab order. Tab used to
     // walk through all three before reaching the llms.txt link under them.
@@ -463,6 +600,34 @@
 
     syncRadios();
 
+    // The stored choice can be `system`, which the boot script in the head
+    // cannot resolve — it only knows the three ramps — so the theme is
+    // applied here as well, and the radio state follows the stored choice.
+    var stored = null;
+    try {
+      stored = localStorage.getItem('theme');
+    } catch (e) {
+      /* storage blocked — the default ramp stands */
+    }
+    if (stored && (RAMPS.indexOf(stored) !== -1 || stored === 'system')) {
+      setTheme(stored);
+    } else {
+      // Nothing stored: the page is on the ramp it booted with, and the radio
+      // group has to say which one that is. `system` is not a ramp, so if the
+      // page booted on it, it is resolved here.
+      var boot = html.dataset.theme;
+      if (boot === 'system') boot = resolve('system');
+      html.dataset.theme = boot;
+      document.querySelectorAll('[data-set-theme]').forEach(function (b) {
+        b.setAttribute(
+          'aria-checked',
+          b.dataset.setTheme === boot ? 'true' : 'false'
+        );
+      });
+      syncRadios();
+      applyThemeColor(boot);
+    }
+
     var themeGroup = document.querySelector('[data-theme-group]');
     if (themeGroup) {
       themeGroup.addEventListener('keydown', function (e) {
@@ -483,8 +648,8 @@
 
         e.preventDefault();
         // Choosing with the keyboard must not close the dropdown: the visitor
-        // is picking between three themes, and the menu closing after the
-        // first arrow press would take the other two away.
+        // is picking between the themes, and the menu closing after the
+        // first arrow press would take the others away.
         setTheme(next.dataset.setTheme);
         next.focus();
       });
@@ -520,7 +685,7 @@
 
       if (timeline && tlFill) {
         var r = timeline.getBoundingClientRect();
-        // How far the timeline has travelled through the viewport.
+        // How far the timeline has traveled through the viewport.
         var prog = Math.min(1, Math.max(0, (vh * 0.75 - r.top) / r.height));
         tlFill.style.setProperty('--tl-progress', prog.toFixed(3));
       }
@@ -591,7 +756,7 @@
 
     var queued = false;
 
-    // How far `el` has travelled through the viewport, 0..1.
+    // How far `el` has traveled through the viewport, 0..1.
     function travel(el, vh) {
       var r = el.getBoundingClientRect();
       return Math.min(1, Math.max(0, (vh * 0.75 - r.top) / r.height));
@@ -1047,13 +1212,22 @@
       if (empty) {
         empty.hidden = any;
         // The line says which of the three states the reader is in: still
-        // loading, nothing matched, or the index never arrived.
+        // loading, nothing matched, or the index never arrived. When there is
+        // something to show it is emptied rather than left saying "No
+        // match." — the combobox describes itself with this line, and a
+        // description that says "No match." while the list is full is a lie.
         if (!any) {
           if (indexState === 'failed') empty.textContent = 'The index could not be loaded.';
           else if (indexState === 'loading') empty.textContent = 'Loading…';
           else empty.textContent = 'No match.';
+        } else {
+          empty.textContent = '';
         }
       }
+      // The popup is only open while it has something in it. With every
+      // option filtered out, the combobox claims an expanded list of
+      // nothing, and the cursor points at an option that is not there.
+      input.setAttribute('aria-expanded', any ? 'true' : 'false');
       setCursor(0);
     }
 
@@ -1135,7 +1309,7 @@
     var locked = false;
 
     var FOCUSABLE =
-      'a[href], button:not([disabled]), input, select, textarea, [tabindex]:not([tabindex="-1"])';
+      'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
     function isOpen() {
       return !modal.hidden;
@@ -1216,21 +1390,63 @@
 
     // The error text is announced by the same live region as the success text,
     // so a screen reader hears it without focus having to move.
+    function setFieldError(input, text) {
+      input.setAttribute('aria-invalid', 'true');
+      var holder = input.closest('.field');
+      if (!holder) return;
+      var note = holder.querySelector('.field-error');
+      if (!note) {
+        note = document.createElement('p');
+        note.className = 'field-error';
+        holder.appendChild(note);
+      }
+      note.id = input.id + '-error';
+      note.textContent = text;
+      input.setAttribute('aria-describedby', note.id);
+    }
+
+    function clearFieldError(input) {
+      input.removeAttribute('aria-invalid');
+      var holder = input.closest('.field');
+      var note = holder && holder.querySelector('.field-error');
+      if (note) note.remove();
+      input.removeAttribute('aria-describedby');
+    }
+
+    /**
+     * Re-check every field and put the errors where they belong.
+     *
+     * The count in the live region is the real one, not a placeholder: the
+     * old copy read "N fields need fixing" with a literal N.
+     */
+    function refreshProblems(values) {
+      var problems = problemsFor(values);
+      ['l-email', 'l-message'].forEach(function (id) {
+        var input = document.getElementById(id);
+        if (!input) return;
+        var p = null;
+        problems.forEach(function (x) {
+          if (x.field === id) p = x;
+        });
+        if (p) setFieldError(input, p.text);
+        else clearFieldError(input);
+      });
+      if (status) {
+        status.textContent =
+          problems.length === 0
+            ? ''
+            : problems.length === 1
+              ? 'One field needs fixing before this can be sent.'
+              : problems.length + ' fields need fixing before this can be sent.';
+      }
+      return problems;
+    }
+
     function reportProblems(list) {
       list.forEach(function (p) {
         var input = document.getElementById(p.field);
         if (!input) return;
-        input.setAttribute('aria-invalid', 'true');
-        var holder = input.closest('.field');
-        var note = holder && holder.querySelector('.field-error');
-        if (!note) {
-          note = document.createElement('p');
-          note.className = 'field-error';
-          holder.appendChild(note);
-        }
-        note.id = p.field + '-error';
-        note.textContent = p.text;
-        input.setAttribute('aria-describedby', note.id);
+        setFieldError(input, p.text);
       });
       if (status) {
         status.textContent =
@@ -1251,11 +1467,18 @@
       if (status) status.textContent = '';
     }
 
-    // Clear a field's error as soon as it is edited — leaving the message up
-    // while the reader fixes it is noise.
-    form.addEventListener('input', function (e) {
-      if (!e.target.hasAttribute('aria-invalid')) return;
-      clearProblems();
+    // A field's error is cleared as soon as it is edited, and the other
+    // fields are re-checked — but only the edited field's error goes away.
+    // Clearing every error on every keystroke hid the problems that were
+    // still there: a reader who fixed the email field lost the warning on the
+    // message field and found out about it only on the next submit.
+    form.addEventListener('input', function () {
+      if (!form.querySelector('[aria-invalid="true"]')) return;
+      var current = new FormData(form);
+      refreshProblems({
+        email: String(current.get('email') || '').trim(),
+        message: String(current.get('message') || '').trim(),
+      });
     });
 
     form.addEventListener('submit', function (e) {
@@ -1263,10 +1486,16 @@
 
       var data = new FormData(form);
 
-      // Honeypot: a field no person can see but most bots fill in. Acknowledge
-      // without sending anything.
-      if (data.get('challenge')) {
-        if (status) status.textContent = 'Thanks — message received.';
+      // Honeypot: a field no person can see but most bots fill in. The
+      // submission is discarded, so the acknowledgement must not claim that
+      // anything was delivered — it says what happened and what to do if
+      // nothing did.
+      var honeypot = document.querySelector('[data-honeypot]');
+      if (honeypot && honeypot.value) {
+        if (status) {
+          status.textContent =
+            'Thanks — the form was submitted. If nothing happens, use the email address in the footer.';
+        }
         form.reset();
         return;
       }
@@ -1285,7 +1514,12 @@
         return;
       }
 
-      var title = '[' + (kind || 'Project') + '] ' + (subject || 'New enquiry');
+      // The subject says which field it came from. The type is the select's
+      // own value ("Agentic AI", "Audit", …) and the fallback names the field
+      // the same way the form labels it, so the two never disagree. The
+      // fallback for the line itself is "Website enquiry" rather than
+      // "New enquiry": it says what the mail is, not how new it is.
+      var title = '[' + (kind || 'Project type') + '] ' + (subject || 'Website enquiry');
       var body =
         'Email: ' + email + '\n' +
         'Type: ' + (kind || '—') + '\n' +
@@ -1293,7 +1527,11 @@
         message;
 
       if (status) {
-        status.textContent = 'Opening your mail client — if nothing happens, write to mr.a.maltsev@gmail.com.';
+        // The mail client is the browser's, not the site's: it may not open at
+        // all. The address is in the footer on every page, so the fallback
+        // points at it instead of repeating the address here.
+        status.textContent =
+          'Opening your mail client — if it does not open, use the email address in the footer.';
       }
 
       window.location.href =
@@ -1304,7 +1542,7 @@
   })();
 
   // ---- Number shortcuts --------------------------------------------------
-  // 1..5 jump to the pages listed in the Sources menu. Ignored while a field has
+  // 1..4 jump to the pages listed in the Sources menu. Ignored while a field has
   // focus, so typing "2024" into the message box does not navigate away.
   (function shortcuts() {
     var targets = Array.prototype.slice.call(document.querySelectorAll('[data-goto]'));
@@ -1356,7 +1594,7 @@
     var locked = false;
 
     var FOCUSABLE =
-      'a[href], button:not([disabled]), input, select, textarea, [tabindex]:not([tabindex="-1"])';
+      'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
     // All ten panels live in the DOM at once and nine of them are hidden, so
     // the selector alone returns the close button of every stage. Trap on those
@@ -1391,7 +1629,12 @@
       modal.hidden = false;
       // Ten panels share this dialog; only the one on screen can name it.
       var heading = panel.querySelector('[id]');
-      if (heading) modal.setAttribute('aria-labelledby', heading.id);
+      if (heading) {
+        modal.setAttribute('aria-labelledby', heading.id);
+        // The box carries the same name, so the group it holds is not left
+        // announcing the first stage while a different one is on screen.
+        if (box) box.setAttribute('aria-labelledby', heading.id);
+      }
       if (!locked) {
         locked = true;
         lockScroll();

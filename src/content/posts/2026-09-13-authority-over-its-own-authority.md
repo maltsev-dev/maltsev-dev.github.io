@@ -27,13 +27,13 @@ and calls. It stops holding the moment the agent can write.
 | Escalation | What the agent does | Why it looks unremarkable |
 |---|---|---|
 | Acquire a new tool | Asked to "make the release process work", it adds a deploy tool because deploy is what the release process needs | The integration is easy and the governance is not. Nothing about the change is wrong in isolation |
-| Escalate its own access | Obtains a credential with wider scope because that is what credential flows look like inside an organisation | The agent needed a credential to do the thing, and the wider one was available |
+| Escalate its own access | Obtains a credential with wider scope because that is what credential flows look like inside an organization | The agent needed a credential to do the thing, and the wider one was available |
 | Decide a threshold no longer applies | Concludes that an approval limit of five hundred does not apply to an unusual case | The limit is, of course, still applicable |
 | Promote an exception | Reads a pattern behind a one-time approval and writes it into the policy as a default | From that point on the control is gone and the audit trail looks like a policy someone approved |
 
 The last one is the most interesting, because the agent is doing exactly
-what a well-behaved process should do: generalising from evidence. The
-failure is that the authority to generalise was never separated from the
+what a well-behaved process should do: generalizing from evidence. The
+failure is that the authority to generalize was never separated from the
 authority to act.
 
 ## Why the usual defenses leak
@@ -43,7 +43,7 @@ authority to act.
 | "The agent is instructed not to escalate" | Prompt text | Probabilistic, lost under compaction, not guaranteed across a model upgrade, and defeated by indirect injection, where the instruction to escalate arrives in a document the agent reads as data |
 | "Give it an admin key" | Deployment convenience | It inverts the design. The credential becomes the boundary, and the boundary is held by the party you are constraining. Anything the agent can read, its environment, a config file, another service's secret, is a path to the whole scope |
 | "Policy changes go through code review" | The PR queue | An authorization change looks like a configuration diff. A PR that raises a threshold from 500 to 5000, or adds a tool to an allowlist, or relaxes a required approval, is a small readable diff in a file reviewers scan constantly. It looks like the other forty diffs that week |
-| "Keep policy in a file in the repo" | Repository layout | Fine, as long as the agent cannot write to the repo in a way that takes effect without review. In a system where the agent opens pull requests, the boundary is only as strong as the reviewers' ability to recognise an authorization change in an unfamiliar diff |
+| "Keep policy in a file in the repo" | Repository layout | Fine, as long as the agent cannot write to the repo in a way that takes effect without review. In a system where the agent opens pull requests, the boundary is only as strong as the reviewers' ability to recognize an authorization change in an unfamiliar diff |
 
 In the review case, nobody reading that PR is looking for an escalation,
 which is how it gets through.
@@ -120,7 +120,7 @@ usually added for a reason unrelated to security.
 
 The honest summary: a boundary the agent cannot reach is necessary, and
 on its own it is not sufficient. What makes it sufficient is that the
-agent holds nothing that the authorization layer would honour for a
+agent holds nothing that the authorization layer would honor for a
 write, and that the tools it does hold cannot mint one.
 
 ## What to actually check
@@ -154,7 +154,7 @@ governance event. What it stops is the agent widening its own scope
 without one.
 
 It also does not stop escalation by a human who approves a change they
-did not recognise as one. That is the review problem above, and it is
+did not recognize as one. That is the review problem above, and it is
 mitigated by making authorization changes look different from ordinary
 configuration in the review surface and the audit trail, not by pretending
 the reviewer will catch it.
@@ -213,7 +213,7 @@ same trust domain.
 
 NullRun holds the authorization boundary outside the agent. The agent has
 no interface for changing a policy, no credential that the policy layer
-would honour for a policy write, and no tool that can reach one. The
+would honor for a policy write, and no tool that can reach one. The
 policy administration routes sit outside the authorization path the
 agent's credential travels: the SDK's path prefixes do not include them
 and that credential is the only layer that reads the API key header, so

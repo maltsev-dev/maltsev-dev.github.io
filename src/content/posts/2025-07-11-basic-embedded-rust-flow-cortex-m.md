@@ -1,11 +1,11 @@
 ---
 title: "Basic Embedded Rust Flow (Cortex-M)"
 date: "2025-07-11"
+description: "A step-by-step template for a Cortex-M Rust project: config.toml, rust-toolchain.toml, memory.x, probe-rs, defmt and the panic handler."
 tags: ["rust", "embedded", "basic"]
 ---
 🟠 A must-have template for creating a Rust project for microcontrollers.
 
-<!-- more -->
 ---
 
 <style>
@@ -97,9 +97,9 @@ tags: ["rust", "embedded", "basic"]
 </tbody>
 </table>
 
-## 📌 1. Project Setup
+## 📌 1. Project setup
 
-### ✅ Project Creation
+### ✅ Project creation
 
 ```bash
 cargo new --bin my_project
@@ -130,10 +130,10 @@ rustflags = [
   "-C", "link-arg=-Tdefmt.x",
   "-C", "no-vectorize-loops",
 ]
-runner = "elf2uf2-rs -d"   # или другой, см. ниже
+runner = "elf2uf2-rs -d"   # or another, see below
 ```
 
-#### QEMU Runner
+#### QEMU runner
 
 ```toml
 runner = """
@@ -145,7 +145,7 @@ runner = """
 """
 ```
 
-#### probe-rs Runner
+#### probe-rs runner
 ```toml
 runner = "probe-rs run"
 ```
@@ -173,7 +173,7 @@ cargo embed --chip rp2040 — specify the chip manually
 ```
 
 
-### ✅ Linking and Memory
+### ✅ Linking and memory
 
 create file `memory.x` file in the project root
 
@@ -189,7 +189,7 @@ MEMORY
 
 ---
 
-## 📌 2. Panic Handler
+## 📌 2. Panic handler
 
 Without defining `#[panic_handler]` the project will not compile.
 
@@ -204,7 +204,7 @@ fn panic(_info: &PanicInfo) -> ! {
 
 ---
 
-## 📌 3. Main Function
+## 📌 3. Main function
 
 add dependencies:
 
@@ -247,7 +247,7 @@ fn main() -> ! {
 
 ---
 
-## 📌 5. Interrupts / Exceptions (e.g. SysTick)
+## 📌 5. Interrupts / exceptions (e.g. SysTick)
 
 ```rust
 use cortex_m_rt::exception;

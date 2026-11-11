@@ -1,12 +1,12 @@
 ---
 title: "🎮 Game on Solana: Guess the Number"
 date: "2025-03-07"
+description: "A minimalist on-chain guessing game built with Rust and Anchor: the contract picks a number, the player guesses it."
 tags: ["rust", "solana", "anchor", "project"]
 ---
 **A simple interactive number guessing game powered by smart contracts on the Solana blockchain.**
 Developed with **Rust** and the **Anchor framework**.
 
-<!-- more -->
 ---
 
 [📚 GitHub Repository](https://github.com/maltsev-dev/guess_the_number_on_solana)
@@ -49,9 +49,9 @@ A great demo for:
 
 ---
 
-## 🚀 Getting Started
+## 🚀 Getting started
 
-### 1. 🔧 Start the Local Validator
+### 1. 🔧 Start the local validator
 
 Launch the Solana test environment locally:
 
@@ -59,7 +59,7 @@ Launch the Solana test environment locally:
 solana-test-validator
 ```
 
-### 2. 🛠️ Build and Deploy the Program
+### 2. 🛠️ Build and deploy the program
 
 Compile and deploy the Anchor smart contract:
 
@@ -67,7 +67,7 @@ Compile and deploy the Anchor smart contract:
 anchor build && anchor deploy
 ```
 
-### 3. 🎮 Play the Game
+### 3. 🎮 Play the game
 
 Send transactions with your guess to the validator. Example:
 
@@ -79,7 +79,7 @@ anchor run guess -- --number 42
 
 ---
 
-## 🧠 How It Works
+## 🧠 How it works
 
 * Upon initialization, the program stores a secret number (randomly generated on start).
 * Each guess is a transaction with an integer.

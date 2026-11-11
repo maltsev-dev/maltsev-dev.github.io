@@ -1,4 +1,5 @@
 ---
+import '../../styles/track.css';
 import { getCollection } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 import { MILESTONES, type Milestone } from '../../data/milestones';
@@ -46,6 +47,36 @@ const RECURRING = [...counts.entries()]
   .filter(([, n]) => n > 1)
   .map(([t]) => t)
   .sort((a, b) => a.localeCompare(b));
+
+// What a panel's link is, and what it is called.
+//
+// A panel is a link that wraps the whole card, so without a name of its own
+// the link takes the card as its name: the title, the summary, the skills and
+// the arrow at the foot — forty words for a screen reader to walk past, once
+// per panel of the row. The heading stays inside the link, so the outline of
+// the page is unchanged; the name says what the link is and what it does.
+//
+// The name and the cue at the foot of the panel come from the same rule, so
+// what a reader sees and what a reader hears are the same sentence. The rule
+// follows what the link is — a post to read, a case study to view, another
+// site to open — and not one hardcoded URL: the old rule switched on the
+// string '/blog/', so two links that looked the same were labeled with two
+// different verbs.
+type LinkKind = 'post' | 'writing' | 'case' | 'external';
+
+const linkKind = (href: string): LinkKind => {
+  if (/^https?:\/\//.test(href)) return 'external';
+  if (href === '/blog/') return 'writing';
+  if (href.startsWith('/blog/')) return 'post';
+  return 'case';
+};
+
+const LINK: Record<LinkKind, { cue: string; verb: string }> = {
+  post: { cue: 'Read →', verb: 'Read the post' },
+  writing: { cue: 'Browse →', verb: 'Browse the writing' },
+  case: { cue: 'View →', verb: 'View the project' },
+  external: { cue: 'Open →', verb: 'Open the project' },
+};
 ---
 
 <Base title="Projects" description="Case studies in agentic AI and automation.">
@@ -53,7 +84,7 @@ const RECURRING = [...counts.entries()]
        same as /experience/ but through this page's own wrapper. -->
   <div class="prj-page">
   <section class="hero">
-    <span class="eyebrow" data-reveal>Catalogue</span>
+    <span class="eyebrow" data-reveal>Catalog</span>
     <h1 data-reveal data-reveal-delay="60">Projects</h1>
     <p class="lede" data-reveal data-reveal-delay="120">
       Production systems, not demos. Each one shipped, measured, and left running.
@@ -75,6 +106,7 @@ const RECURRING = [...counts.entries()]
       <div class="track-row" data-track-row>
         {
           panels.map((m) => {
+            const kind = m.href ? linkKind(m.href) : null;
             const body = (
               <>
                 <p class="track-meta">
@@ -90,11 +122,17 @@ const RECURRING = [...counts.entries()]
                   ))}
                 </ul>
 
-                {m.href && <span class="panel-foot">{m.href === '/blog/' ? 'Read →' : 'Open →'}</span>}
+                {kind && (
+                  <span class="panel-foot">{LINK[kind].cue}</span>
+                )}
               </>
             );
             return m.linked ? (
-              <a class="track-panel panel-project" href={m.href}>
+              <a
+                class="track-panel panel-project"
+                href={m.href}
+                aria-label={kind ? `${m.title} — ${LINK[kind].verb}` : undefined}
+              >
                 {body}
               </a>
             ) : (

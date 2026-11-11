@@ -121,3 +121,45 @@ export function describe(title: string, body: string | undefined, own?: string):
 
   return text;
 }
+
+/**
+ * Below this many words a post is a note, not an essay.
+ *
+ * The corpus runs to a median of about nine hundred words, and thirteen of
+ * the sixty-nine posts come in under a third of that. They are not broken —
+ * a post that answers one question in three paragraphs is doing its job — but
+ * the index cannot treat them the same as the long ones: a reader choosing
+ * what to open is choosing between a weekend's reading and a Tuesday's.
+ */
+export const SHORT_POST_WORDS = 400;
+
+/** How many words a body has. Code, markup and images do not count. */
+export function wordCount(body: string | undefined): number {
+  if (!body) return 0;
+  const text = body
+    .replace(/```[\s\S]*?```/g, ' ')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/!\[[^\]]*\]\([^)]*\)/g, ' ')
+    .replace(/\[([^\]]*)\]\([^)]*\)/g, '$1');
+  return text.split(/\s+/).filter(Boolean).length;
+}
+
+/** Whether a post is a note rather than an essay. */
+export function isShort(body: string | undefined): boolean {
+  return wordCount(body) < SHORT_POST_WORDS;
+}
+
+/**
+ * How long a post takes to read.
+ *
+ * Two hundred words a minute is the usual figure for adult prose, and the
+ * number is now computed from the body rather than written into a post's
+ * front matter — the one post that carried a hardcoded "7 min read" was the
+ * only reading time on the site, and it had already drifted.
+ *
+ * The minimum is one minute: a short note is still a minute of someone's
+ * attention, and "0 min read" reads like a broken widget.
+ */
+export function readingTime(body: string | undefined): number {
+  return Math.max(1, Math.round(wordCount(body) / 200));
+}

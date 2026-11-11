@@ -100,7 +100,7 @@ touching the counter.
 **4. Settling more than was reserved.** Re-checking the budget at
 settlement time looks like a safety net. By then the decision to spend
 has already been made. Settlement compares the actual cost against the
-*authorised* reservation plus a fixed-cent epsilon, and rejects on
+*authorized* reservation plus a fixed-cent epsilon, and rejects on
 overrun so the TTL can release the money.
 
 ## The resolution step is where most of the bugs live
@@ -138,7 +138,7 @@ dies, and each landing spot has a different amount of money stuck in it:
        │ settle(actual) ─────────────────►│
        │                                  │  HGET  reservation:{exec_id}
        │                                  │  cmp   org_id + api_key_id
-       │                                  │  cmp   actual vs authorised + ε
+       │                                  │  cmp   actual vs authorized + ε
        │                                  │  DECRBY by the actual cost
        │                                  │  DEL   reservation:{exec_id}
        │ ◄── settled − released ──────────│
@@ -151,7 +151,7 @@ dies, and each landing spot has a different amount of money stuck in it:
 | Execute | Agent crashes, tool never runs | The envelope stays held until its TTL expires |
 | Settle | Reservation record gone, TTL fired | Reject, nothing moves |
 | Settle | `org_id` or `api_key_id` mismatch | Reject, counter untouched |
-| Settle | `actual > authorised + ε` | Reject, TTL releases the envelope |
+| Settle | `actual > authorized + ε` | Reject, TTL releases the envelope |
 
 Two skews in that settlement step are permanent and cannot be
 subtracted away:

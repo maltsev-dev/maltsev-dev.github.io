@@ -145,7 +145,7 @@ by the application, which is the common half-measure:
 |---|---|---|---|
 | Survives a new code path | No | No | Yes |
 | Agent can modify it | Yes | Yes | No |
-| Same behaviour in dev and prod | Only if you keep them in sync | Only if you keep them in sync | Yes |
+| Same behavior in dev and prod | Only if you keep them in sync | Only if you keep them in sync | Yes |
 | Reviewable in one place | No | No | Yes |
 | Cost of adding an agent | Edit code, deploy | New branch, deploy | Mint a key |
 

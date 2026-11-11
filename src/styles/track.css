@@ -25,7 +25,7 @@
 }
 
 /* The visible frame: pinned for the length of the runway, and clipped so the
-   row travelling past its edges is hidden rather than overflowing the page. It
+   row traveling past its edges is hidden rather than overflowing the page. It
    also hangs the row in its middle, so the row is only as tall as it needs to
    be — the height of the tallest card. */
 .track {
@@ -60,9 +60,9 @@
 
    How the "lit" one is told apart is a contrast decision, not a taste one.
    Dimming the whole card was the first answer and it does not work: the
-   panel carries three text colours and the darkest of them, the accent, is
+   panel carries three text colors and the darkest of them, the accent, is
    only 4.8:1 against the paper at full strength, so any dimming at all puts
-   the accent-coloured text under AA. The accent therefore cannot be dimmed,
+   the accent-colored text under AA. The accent therefore cannot be dimmed,
    and the panel is not dimmed either.
 
    What marks the current panel is its frame: a warm tint, the accent edge and
@@ -70,7 +70,7 @@
    is free to carry the accent at any strength, and every word on every card
    keeps the contrast it was designed with.
 
-   The panel's own ground stays the paper colour so that nothing on it moves:
+   The panel's own ground stays the paper color so that nothing on it moves:
    the text measures exactly what it measures on the rest of the page. */
 .track-panel {
   display: flex;
@@ -83,7 +83,7 @@
     box-shadow 420ms cubic-bezier(0.3, 0, 0.2, 1);
 }
 
-/* Exactly one panel is lit: the one at the centre of the screen. */
+/* Exactly one panel is lit: the one at the center of the screen. */
 .track-panel.is-current {
   border-color: var(--braise);
   background: color-mix(in srgb, var(--rouille) 8%, var(--papier));
@@ -109,8 +109,8 @@
 @media (min-width: 52.1rem) and (hover: hover) and (pointer: fine)
   and (prefers-reduced-motion: no-preference) {
   .exp-page {
-    /* The card width, named once: the grid track and the centring padding below
-       must agree, or the last card lands off-centre at the end of the travel. */
+    /* The card width, named once: the grid track and the centering padding below
+       must agree, or the last card lands off-center at the end of the travel. */
     --card-w: clamp(19rem, 46vw, 34rem);
   }
 
@@ -135,7 +135,7 @@
     grid-auto-columns: var(--card-w);
     align-items: stretch;
     height: auto;
-    /* Half the leftover width on each side, so the last card lands centred at
+    /* Half the leftover width on each side, so the last card lands centered at
        the end of the travel. The head is symmetrical only so the row is one
        width at both ends; the script spends it as a forward offset that unwinds
        across the travel, so the row opens flush against the page margin instead
@@ -160,13 +160,13 @@
 .track-meta {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: var(--sp-2);
   flex-wrap: wrap;
   font-family: var(--font-mono);
-  font-size: 0.75rem;
+  font-size: var(--fs-label);
   letter-spacing: 0.06em;
   color: var(--braise);
-  margin-bottom: 0.5rem;
+  margin-bottom: var(--sp-2);
 }
 
 .track-hash {
@@ -176,7 +176,7 @@
 .track-chip {
   border: var(--filet) solid var(--braise);
   padding: 0.05rem 0.4rem;
-  font-size: 0.75rem;
+  font-size: var(--fs-label);
   letter-spacing: 0.1em;
   text-transform: uppercase;
 }
@@ -188,7 +188,7 @@
 
 .track-when {
   font-family: var(--font-mono);
-  font-size: 0.75rem;
+  font-size: var(--fs-label);
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--encre);
@@ -200,7 +200,7 @@
    it is connective tissue, not the point of the card. */
 .track-body {
   color: var(--fort);
-  font-size: 0.88rem;
+  font-size: var(--fs-small);
   line-height: 1.5;
   margin-bottom: 0.8rem;
 }
@@ -218,14 +218,14 @@
   margin-bottom: 0.1rem;
 }
 
-/* Employer and the specialisation, on one line: the name is the part worth
+/* Employer and the specialization, on one line: the name is the part worth
    scanning for, so it stays display weight while the tail recedes. It sits
    directly under the role — the two belong together as the heading of the
    card, and a full line between them reads as two separate facts. */
 .track-org {
-  font-size: 0.9rem;
+  font-size: var(--fs-small);
   color: var(--encre);
-  margin-bottom: 0.5rem;
+  margin-bottom: var(--sp-2);
 }
 
 .track-org em {
@@ -239,19 +239,19 @@
   margin: 0 0 0.9rem;
   padding: 0;
   display: grid;
-  gap: 0.45rem;
+  gap: var(--sp-2);
   align-content: start;
 }
 
 .track-points li {
   display: grid;
   grid-template-columns: auto 1fr;
-  gap: 0.6rem;
+  gap: var(--sp-2);
   align-items: start;
   padding: 0.5rem 0.7rem;
   border: var(--filet) solid var(--grid);
   border-left: var(--trait) solid var(--braise);
-  /* Tinted, not flat: the card behind is the page colour, so an unpainted box
+  /* Tinted, not flat: the card behind is the page color, so an unpainted box
      would disappear into it. */
   background: color-mix(in srgb, var(--rouille) 20%, var(--papier));
 }
@@ -263,7 +263,7 @@
 
 .track-points p {
   margin: 0;
-  font-size: 0.84rem;
+  font-size: var(--fs-small);
   line-height: 1.5;
   color: var(--fort);
 }
@@ -281,14 +281,14 @@
   list-style: none;
   display: flex;
   flex-wrap: wrap;
-  gap: 0.35rem;
+  gap: var(--sp-1);
   margin: auto 0 0;
   padding: 0;
 }
 
 .track-skills li {
   font-family: var(--font-mono);
-  font-size: 0.75rem;
+  font-size: var(--fs-label);
   font-weight: 500;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -327,7 +327,7 @@
   }
 
   .track-org {
-    font-size: 0.84rem;
+    font-size: var(--fs-small);
     margin-bottom: 0.4rem;
   }
 
@@ -335,17 +335,17 @@
      tissue, and on a window that cannot spare it the bullets are the better
      thing to keep whole. */
   .track-body {
-    font-size: 0.8rem;
+    font-size: var(--fs-micro);
     line-height: 1.4;
     margin-bottom: 0.6rem;
   }
 
   .track-points {
-    gap: 0.35rem;
+    gap: var(--sp-1);
   }
 
   .track-points p {
-    font-size: 0.78rem;
+    font-size: var(--fs-label);
     line-height: 1.45;
   }
 
@@ -354,7 +354,7 @@
   }
 
   .track-skills li {
-    font-size: 0.75rem;
+    font-size: var(--fs-label);
     padding: 0.1rem 0.4rem;
   }
 }
@@ -373,7 +373,7 @@
   align-items: center;
   gap: clamp(1rem, 3vw, 2.5rem);
   font-family: var(--font-mono);
-  font-size: 0.75rem;
+  font-size: var(--fs-label);
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--encre);
@@ -397,12 +397,12 @@
   flex: 1;
   display: grid;
   justify-items: center;
-  gap: 0.3rem;
+  gap: var(--sp-1);
   color: var(--encre);
   transition: color 320ms cubic-bezier(0.3, 0, 0.2, 1);
 }
 
-/* The rail itself: a hairline across, with the travelled part drawn over it in
+/* The rail itself: a hairline across, with the traveled part drawn over it in
    the accent. It runs the same way the track does — Founder at the left, QA at
    the right — so the fill grows from the left as the reader moves back through
    the history. With five rungs the nodes sit at 10% and 90%, so the rail is
@@ -423,8 +423,12 @@
 
 .branch-list::after {
   left: 10%;
-  width: calc(var(--track-progress, 0) * 80%);
+  width: 80%;
   background: var(--braise);
+  /* Scaled, not resized: the width of this rule was written from a scroll
+     frame to the next, and every one of those writes re-ran layout. */
+  transform: scaleX(var(--track-progress, 0));
+  transform-origin: left;
 }
 
 .branch-list b {
@@ -434,7 +438,7 @@
 .branch-list span {
   /* 9.9px at 0.62rem, dimmed to 0.7 on top of it: a date nobody could read.
      The rail is decorative, but it is still read by the eye. */
-  font-size: 0.75rem;
+  font-size: var(--fs-label);
   opacity: 0.85;
 }
 
@@ -499,7 +503,7 @@
   .track-panel {
     flex: 0 0 auto;
     width: 100%;
-    margin-bottom: 1rem;
+    margin-bottom: var(--sp-4);
   }
 }
 
@@ -526,8 +530,8 @@
 @media (min-width: 52.1rem) and (hover: hover) and (pointer: fine)
   and (prefers-reduced-motion: no-preference) {
   .prj-page {
-    /* The card width, named once: the grid track and the centring padding must
-       agree, or the last card lands off-centre at the end of the travel. */
+    /* The card width, named once: the grid track and the centering padding must
+       agree, or the last card lands off-center at the end of the travel. */
     --card-w: clamp(20rem, 52vw, 36rem);
     display: flex;
     flex-direction: column;
@@ -535,7 +539,7 @@
     /* The footer is pinned to the bottom of the screen on this page, so the
        frame gives up the height it covers — otherwise the position readout
        sits under the bar. */
-    padding-bottom: 3rem;
+    padding-bottom: var(--sp-7);
     overflow: hidden;
   }
 
@@ -557,7 +561,7 @@
   }
 
   .prj-page .lede {
-    font-size: 0.9rem;
+    font-size: var(--fs-small);
     line-height: 1.45;
   }
 
@@ -607,7 +611,7 @@
 
 .panel-project {
   justify-content: flex-start;
-  gap: 0.6rem;
+  gap: var(--sp-2);
   text-decoration: none;
   color: inherit;
 }
@@ -628,9 +632,9 @@
    down the row rather than following each summary's length. */
 .panel-foot {
   margin-top: auto;
-  padding-top: 1rem;
+  padding-top: var(--sp-4);
   font-family: var(--font-mono);
-  font-size: 0.75rem;
+  font-size: var(--fs-label);
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--braise);
@@ -647,9 +651,9 @@
   bottom: 1rem;
   display: flex;
   align-items: center;
-  gap: 0.9rem;
+  gap: var(--sp-4);
   font-family: var(--font-mono);
-  font-size: 0.75rem;
+  font-size: var(--fs-label);
   letter-spacing: 0.12em;
   color: var(--encre);
   pointer-events: none;
@@ -671,7 +675,9 @@
 .panel-hud-bar i {
   display: block;
   height: 100%;
-  width: calc(var(--track-progress, 0) * 100%);
+  width: 100%;
+  transform: scaleX(var(--track-progress, 0));
+  transform-origin: left;
   background: var(--braise);
 }
 
@@ -681,7 +687,7 @@
   list-style: none;
   display: flex;
   flex-wrap: wrap;
-  gap: 0.35rem;
+  gap: var(--sp-1);
   margin: 1.6rem 0 0;
   padding: 0;
   max-width: 62ch;
@@ -689,7 +695,7 @@
 
 .recurring li {
   font-family: var(--font-mono);
-  font-size: 0.75rem;
+  font-size: var(--fs-label);
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--fort);

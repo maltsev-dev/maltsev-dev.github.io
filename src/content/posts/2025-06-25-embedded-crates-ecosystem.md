@@ -9,12 +9,11 @@ In general, developing programs for **MCU** is aimed at obtaining some informati
 
 🟠 In this article I'll take a closer look at these abstraction levels and some other useful crates.
 
-<!-- more -->
 ---
 
-## Levels of Abstraction
+## Levels of abstraction
 
-## &emsp;&emsp;&emsp; 1. Low Level
+## 1. Low level
 To program an **MCU**, at the **lowest level**, you need to control a special set of `registers` available inside the **MCU**.  
 [Registers](/blog/2025-07-11-mcu-registers/) are special memory locations that you can interact with: write data to, read, modify, and store values.  
 To write or read a value from a register, you need to manipulate individual **bits** at specific memory addresses reserved for those registers.  
@@ -23,12 +22,12 @@ Once the control bits are set in the right registers, at some point the write wi
 * This approach can be unsafe, as it requires the use of **unsafe blocks** and **pointer dereferencing** to access register addresses - this can lead to undefined behavior (UB) and memory errors.  
 * Directly manipulating registers to control the **MCU** is powerful, but not the most intuitive or safe way to interact with the hardware.  
 
-## &emsp;&emsp;&emsp; 2. SVD (System View Description) Level
+## 2. SVD (system view description) level
 In addition to the datasheet describing the register structure, **MCU** manufacturers sometimes provide standardized **SVD** (System View Description) files in `xml` format.  
 These files contain information about the functions and location of registers in a format `convenient for machine processing.`  
 * The [svd2rust](https://crates.io/crates/svd2rust) tool allows you to automatically generate safe Rust crates with type-safe access to **MCU** peripheral registers based on such **SVD** files.
 
-## &emsp;&emsp;&emsp; 3. PAC (Peripheral Access Crate) Level
+## 3. PAC (peripheral access crate) level
 
 After patching the **SVD** files and generating code through `svd2rust`, we get a safe and structured **PAC** - interface for working with the **MCU** peripherals.  
 
@@ -42,7 +41,7 @@ For example, if a struct representing a certain register has already been passed
 * No initialization check: not guaranteed that you have set up all necessary registers correctly.
 * No automatic checking of dependencies between peripherals (e.g. when working with `Timers`, `DMA`, etc.)
 
-## &emsp;&emsp;&emsp; 4. HAL (Hardware Abstraction Layer) Level
+## 4. HAL (hardware abstraction layer) level
 **HAL** is a high-level abstraction layer built on top of PAC that provides a convenient and safe interface for controlling the **MCU** peripherals.  
 These interfaces use clear structures and high-level abstractions: `GPIO`, `RCC`, `I2C`, `SPI`, `Timers`, `Pins`, etc.  
 This allows implementing safety checks at the type system level and checking the initialization of components before they are used.  
@@ -65,7 +64,7 @@ The measurement procedure is as follows:
 When creating the driver function, structures defined in a specific **HAL** for a specific **MCU** were used.  
 The problem is that these types and structures **may not exist** in the same form in another **HAL** - in order to use this driver on another **MCU**, it must be rewritten.  
 
-## &emsp;&emsp;&emsp; 5. Embedded HAL
+## 5. Embedded HAL
 [embedded-hal](https://crates.io/crates/embedded-hal) is a project that provides a unified set of **traits** to abstract common **MCU** peripherals: `GPIO`, `Timers`, `SPI`, `UART`, `I2C`, etc.  
 
 * A **HAL** implemented for a specific **MCU** (e.g. [stm32f4xx-hal](https://crates.io/crates/stm32f4xx-hal) or [rp2040-hal](https://crates.io/crates/rp2040-hal)), implements the traits from `embedded-hal`, usually relying on low-level **PAC** interfaces.
@@ -100,7 +99,7 @@ where
     ...
 ```
 
-## &emsp;&emsp;&emsp; 6. BSP (Board Support Package) Level
+## 6. BSP (board support package) level
 `BSP` crates provide abstractions and utilities specific to a particular board (not just an **MCU**).
 
 While `PAC` and `HAL` correspond to **MCU families**, a `BSP` corresponds to a **specific board model** - with its layout, pinout, onboard components and peripherals.  

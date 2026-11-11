@@ -1,6 +1,9 @@
 ---
 import { getCollection } from 'astro:content';
 import Base from '../../layouts/Base.astro';
+import { tagSlug, tagLabel } from '../../lib/tags';
+import { summarize, isShort } from '../../lib/summarize';
+import { formatDate } from '../../data/dates';
 
 const posts = (await getCollection('posts')).sort((a, b) =>
   (b.data.date ?? '').localeCompare(a.data.date ?? '')
@@ -14,9 +17,22 @@ for (const post of posts) {
   byYear.get(year)!.push(post);
 }
 
+/**
+ * The one line under a title.
+ *
+ * A post that writes its own description gets it; the rest get the first
+ * real sentence of their body. The short ones — the notes rather than the
+ * essays — get a line either way, because a card with a title and nothing
+ * else does not tell a reader whether the post is worth opening.
+ */
+const summaryOf = (post: (typeof posts)[number]): string =>
+  post.data.description?.trim() || summarize(post.body);
 ---
 
-<Base title="Blog" description="Notes on embedded Rust, agentic AI, and systems work.">
+<Base
+  title="Writing"
+  description="Notes on embedded Rust, agentic AI, and systems work — every post, newest first, grouped by year."
+>
   <section class="hero">
     <span class="eyebrow" data-reveal>Notes</span>
     <h1 data-reveal data-reveal-delay="60">Writing</h1>
@@ -42,24 +58,94 @@ for (const post of posts) {
           role="group"
           aria-label={`Posts from ${year}`}
         >
-          {list.map((post, i) => (
-            <a
-              class="card"
-              href={`/blog/${post.id}/`}
-              data-reveal
-              data-reveal-delay={Math.min(i, 4) * 40}
-            >
-              <span class="card-meta">{post.data.date}</span>
-              <h3>{post.data.title}</h3>
-              <div class="tag-row">
-                {post.data.tags.slice(0, 3).map((t) => (
-                  <span class="tag">{t}</span>
-                ))}
+          {list.map((post, i) => {
+            const summary = summaryOf(post);
+            const short = isShort(post.body);
+            return (
+              <div
+                class="card"
+                data-reveal
+                data-reveal-delay={Math.min(i, 4) * 40}
+              >
+                <span class="card-meta">
+                  {formatDate(post.data.date)}
+                  {short && <span class="card-flag">note</span>}
+                </span>
+                <h3>
+                  <a class="card-link" href={`/blog/${post.id}/`}>
+                    {post.data.title}
+                  </a>
+                </h3>
+                {summary && <p>{summary}</p>}
+                {/*
+                  The tag chips used to be spans: styled exactly like links,
+                  and leading nowhere — the route they implied did not exist.
+                  They are links now, and every tag has a page behind it.
+                */}
+                <div class="tag-row">
+                  {post.data.tags.map((t) => (
+                    <a class="tag" href={`/tags/${tagSlug(t)}/`}>
+                      {tagLabel(t)}
+                    </a>
+                  ))}
+                </div>
               </div>
-            </a>
-          ))}
+            );
+          })}
         </div>
       </section>
     ))
   }
 </Base>
+
+<style>
+  /*
+    The card is a link to the post, and the tag chips inside it are links to
+    the tag pages. Two links cannot nest, so the post link is stretched over
+    the card with a pseudo-element and the chips sit above it. The whole card
+    is still the hit target, and a chip is still its own hit target.
+  */
+  .card {
+    position: relative;
+  }
+
+  .card-link {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .card-link::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+  }
+
+  .card h3 {
+    margin: 0;
+  }
+
+  .card .tag {
+    text-decoration: none;
+  }
+
+  .card .tag-row {
+    position: relative;
+    z-index: 1;
+  }
+
+  .card .tag:hover {
+    color: var(--braise);
+    border-color: var(--braise);
+  }
+
+  /* A short post is a note, and the index says so rather than letting the
+     reader open it expecting an essay. */
+  .card-flag {
+    margin-left: 0.4rem;
+    padding: 0 0.3rem;
+    border: 1px solid var(--filet);
+    color: var(--fort);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+</style>

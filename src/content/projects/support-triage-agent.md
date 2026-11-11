@@ -5,6 +5,19 @@ description: "Resolves 40-60% of support tickets on its own. The rest are routed
 tags: ["RAG", "Intercom", "React"]
 ---
 
+<!--
+LEGACY SOURCE - this body is not rendered by the site.
+
+Only the frontmatter above reaches the pages. The case-study pages are built from
+the JSON sidecars in src/data/projects/ (one file per slug), and those sidecars
+are generated from this file by _parse_projects.py, which scrapes the HTML below
+for the metrics, problem and solution cards, before/after results, pipeline
+steps, risk cards and pricing.
+
+Keep this file as the source of truth for that HTML: change it here, then re-run
+_parse_projects.py to refresh the JSON. Do not hand-edit the JSON.
+-->
+
 <!-- Hero Section -->
 
             <div class="hero">

@@ -6,7 +6,7 @@ tags: ["reliability", "authorization"]
 The agent is already running. The operator decides to stop it.
 
 The worker is on another pod. The queue keeps delivering jobs. Another
-worker picks up the in-flight execution. Cancelling the framework's call
+worker picks up the in-flight execution. Canceling the framework's call
 does not propagate. Killing the container does not stop the queue.
 
 What is left is SSH, hope and patience. None of those are reliable for an
@@ -183,7 +183,7 @@ Realistically:
 | Kind of call | What the operator gets |
 |---|---|
 | Short calls, the common case | The call finishes before the operator can react, so killing is effectively a pause |
-| Long calls | The downstream tool has to honour a cancellation token. Most HTTP clients can drop a request, and many APIs keep processing after the client disconnects, so whether the effect happened is genuinely unknown |
+| Long calls | The downstream tool has to honor a cancellation token. Most HTTP clients can drop a request, and many APIs keep processing after the client disconnects, so whether the effect happened is genuinely unknown |
 | Local side effects already written | Nothing rolls them back. Killing stops the workflow and leaves the writes in place |
 
 So "the operator killed it" and "the action did not happen" are
@@ -251,7 +251,7 @@ The queue integration is the hard part and it is real work. Without it,
 the honest description of your kill switch is "stops at the next gate",
 which is useful and is not the same thing.
 
-In-flight abort is bounded by what the downstream honours. For a tool
+In-flight abort is bounded by what the downstream honors. For a tool
 that performs a multi-second write inside a server you do not control,
 you cannot prove the effect did not happen, and no amount of local state
 will let you claim otherwise.

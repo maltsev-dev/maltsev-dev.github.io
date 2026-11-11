@@ -3,155 +3,117 @@ title: "CPU–Peripheral I/O Communication: Approaches and Trade-offs"
 date: "2025-07-02"
 tags: ["embedded", "basic", "cpu"]
 ---
- 
 
 🟠 Data Transmission Between CPU and Peripheral Devices via I/O Methods
 
-<!-- more -->
+A microcontroller talks to its peripherals through one of a small number of I/O models, and the choice decides how much of the CPU's time the transfer costs, how quickly the peripheral gets serviced, and how much code the driver needs. Below are the six approaches: what each one does, how often it is used, what it buys you, what it costs you, and the tools that implement it on real hardware.
 
-<style>
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 20px;
-  }
+## MMIO (memory-mapped I/O)
 
-  th,
-  td {
-    border: 1px solid #ddd;
-    padding: 8px;
-    vertical-align: top;
-  }
+**Description.** Peripherals are mapped into the memory space; accessed via standard load/store instructions.
 
-  th {
-    background-color: #f59140;
-    color: white;
-    text-align: center;
-  }
+**Usage frequency.** ~90% in microcontrollers (`ARM`, `RISC-V`, etc.).
 
-  td:first-child {
-    width: auto;
-  }
-</style>
+**Advantages**
+- Simple programming model
+- Works on most architectures (`ARM`, `RISC-V`, `x86`, `MIPS`)
+- High performance
+- Unified memory and peripheral addressing
+- Easy access via standard Rust code (`unsafe` with `volatile`)
 
-<table>
-  <thead>
-    <tr>
-      <th>Method</th>
-      <th>Description</th>
-      <th>Usage Frequency</th>
-      <th>✅ Advantages</th>
-      <th>❌ Disadvantages</th>
-      <th>🛠️ Tools / Crates</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td><strong>MMIO (Memory-Mapped I/O)</strong></td>
-      <td>Peripherals are mapped into the memory space; accessed via standard load/store instructions.</td>
-      <td>~90% in microcontrollers (`ARM`, `RISC-V`, etc.)</td>
-      <td>
-        - Simple programming model<br>
-        - Works on most architectures (`ARM`, `RISC-V`, `x86`, `MIPS`)<br>
-        - High performance<br>
-        - Unified memory and peripheral addressing<br>
-        - Easy access via standard Rust code (`unsafe` with `volatile`)
-      </td>
-      <td>
-        - CPU can be busy polling<br>
-        - Requires memory protection (`MPU`/`MMU`) in complex systems<br>
-        - Needs care with caching (often regions marked as `non-cacheable`)<br>
-        - Address layout can get complex in large SoCs
-      </td>
-      <td>
-        <code>cortex-m</code>, <code>riscv</code>, <code>volatile-register</code>, <code>peripheral</code>
-      </td>
-    </tr>
-    <tr>
-      <td><strong>PMIO (Port-Mapped I/O)</strong></td>
-      <td>Uses a separate `I/O` address space and dedicated instructions like <code>in</code> / <code>out</code>.</td>
-      <td>Primarily x86</td>
-      <td>
-        - Strict separation of memory and I/O<br>
-        - Supported by legacy PC hardware
-      </td>
-      <td>
-        - Non-portable (requires special instructions)<br>
-        - Not supported on modern microcontrollers
-      </td>
-      <td>
-        Not **applicable in Rust** embedded; mostly C/ASM for x86
-      </td>
-    </tr>
-    <tr>
-      <td><strong>PIO (Programmed I/O)</strong></td>
-      <td>CPU directly polls the peripheral registers status (via `MMIO` or `PMIO`) in a loop.</td>
-      <td>Very common in simple or early-stage systems</td>
-      <td>
-        - Easy to implement<br>
-        - Works without `interrupts` or `DMA`
-      </td>
-      <td>
-        - Very inefficient (CPU is fully occupied)<br>
-        - Poor scalability and power consumption
-      </td>
-      <td>
-        Any HAL (e.g. <code>embedded-hal</code>) with polling read/write
-      </td>
-    </tr>
-    <tr>
-      <td><strong>DMA (Direct Memory Access)</strong></td>
-      <td>Data transfer between peripheral and memory handled by a dedicated DMA controller, not CPU.</td>
-      <td>Widely used in **high-throughput** peripherals</td>
-      <td>
-        - Offloads CPU<br>
-        - High-speed data transfer (e.g. `SPI`, `SDIO`, `Ethernet`)<br>
-        - Enables low-power, autonomous operation
-      </td>
-      <td>
-        - Setup complexity<br>
-        - Requires compatible hardware<br>
-        - Needs careful buffer and interrupt handling
-      </td>
-      <td>
-        <code>stm32-dma</code>, <code>esp-hal</code>, <code>nrf-dma</code>, manual register config
-      </td>
-    </tr>
-    <tr>
-      <td><strong>Interrupt-driven I/O</strong></td>
-      <td>Peripherals signal the CPU via hardware interrupts to trigger event-driven processing.</td>
-      <td>Very common in `RTOS` and multitasking environments</td>
-      <td>
-        - Reactive and efficient<br>
-        - Good for low-latency responses (e.g. buttons, timers)<br>
-        - Frees CPU from busy-waiting<br>
-        - Integrates with task scheduling / `RTOS`
-      </td>
-      <td>
-        - Requires careful handling of race conditions and priority<br>
-        - May introduce complexity in shared-state management
-      </td>
-      <td>
-        <code>#[interrupt]</code>, <code>cortex-m-rt</code>, <code>riscv-rt</code><br>
-        <code>RTIC</code>, <code>embassy</code>, <code>freertos-rust</code>, <code>tock</code>
-      </td>
-    </tr>
-    <tr>
-      <td><strong>Message-based I/O (mailbox, queues)</strong></td>
-      <td>Communication via message passing (mailboxes, channels) typically in multicore `SoCs` or `OS-based systems`.</td>
-      <td>Used in SMP systems, OS kernels, Linux SoCs</td>
-      <td>
-        - Decouples processing from hardware<br>
-        - Highly scalable<br>
-        - Enables safe inter-core or inter-process communication
-      </td>
-      <td>
-        - Requires advanced OS or firmware<br>
-        - Increased system complexity
-      </td>
-      <td>
-        <code>heapless::spsc</code>, <code>embassy-channel</code>, <code>tock</code> IPC, RTOS queues
-      </td>
-    </tr>
-  </tbody>
-</table>
+**Disadvantages**
+- CPU can be busy polling
+- Requires memory protection (`MPU`/`MMU`) in complex systems
+- Needs care with caching (often regions marked as `non-cacheable`)
+- Address layout can get complex in large SoCs
+
+**Tools / crates.** `cortex-m`, `riscv`, `volatile-register`, `peripheral`
+
+## PMIO (port-mapped I/O)
+
+**Description.** Uses a separate `I/O` address space and dedicated instructions like `in` / `out`.
+
+**Usage frequency.** Primarily x86.
+
+**Advantages**
+- Strict separation of memory and I/O
+- Supported by legacy PC hardware
+
+**Disadvantages**
+- Non-portable (requires special instructions)
+- Not supported on modern microcontrollers
+
+**Tools / crates.** Not **applicable in Rust** embedded; mostly C/ASM for x86
+
+## PIO (programmed I/O)
+
+**Description.** CPU directly polls the peripheral registers status (via `MMIO` or `PMIO`) in a loop.
+
+**Usage frequency.** Very common in simple or early-stage systems.
+
+**Advantages**
+- Easy to implement
+- Works without `interrupts` or `DMA`
+
+**Disadvantages**
+- Very inefficient (CPU is fully occupied)
+- Poor scalability and power consumption
+
+**Tools / crates.** Any HAL (e.g. `embedded-hal`) with polling read/write
+
+## DMA (direct memory access)
+
+**Description.** Data transfer between peripheral and memory handled by a dedicated DMA controller, not CPU.
+
+**Usage frequency.** Widely used in **high-throughput** peripherals.
+
+**Advantages**
+- Offloads CPU
+- High-speed data transfer (e.g. `SPI`, `SDIO`, `Ethernet`)
+- Enables low-power, autonomous operation
+
+**Disadvantages**
+- Setup complexity
+- Requires compatible hardware
+- Needs careful buffer and interrupt handling
+
+**Tools / crates.** `stm32-dma`, `esp-hal`, `nrf-dma`, manual register config
+
+## Interrupt-driven I/O
+
+**Description.** Peripherals signal the CPU via hardware interrupts to trigger event-driven processing.
+
+**Usage frequency.** Very common in `RTOS` and multitasking environments.
+
+**Advantages**
+- Reactive and efficient
+- Good for low-latency responses (e.g. buttons, timers)
+- Frees CPU from busy-waiting
+- Integrates with task scheduling / `RTOS`
+
+**Disadvantages**
+- Requires careful handling of race conditions and priority
+- May introduce complexity in shared-state management
+
+**Tools / crates.** `#[interrupt]`, `cortex-m-rt`, `riscv-rt`, `RTIC`, `embassy`, `freertos-rust`, `tock`
+
+## Message-based I/O (mailbox, queues)
+
+**Description.** Communication via message passing (mailboxes, channels) typically in multicore `SoCs` or `OS-based systems`.
+
+**Usage frequency.** Used in SMP systems, OS kernels, Linux SoCs.
+
+**Advantages**
+- Decouples processing from hardware
+- Highly scalable
+- Enables safe inter-core or inter-process communication
+
+**Disadvantages**
+- Requires advanced OS or firmware
+- Increased system complexity
+
+**Tools / crates.** `heapless::spsc`, `embassy-channel`, `tock` IPC, RTOS queues
+
+## The trade-offs
+
+None of these methods wins outright. `PIO` is the simplest to implement, but it leaves the CPU fully occupied. `DMA` takes the load off the CPU entirely, at the cost of setup complexity and a hard requirement on compatible hardware. Interrupt-driven I/O gives low-latency, event-driven behavior, but asks you to handle race conditions and shared state carefully. Message-based I/O decouples processing from hardware and scales well, but assumes an OS or firmware with a scheduler to carry the messages. `MMIO` is the default on modern microcontrollers; `PMIO` survives mainly in legacy x86 designs.

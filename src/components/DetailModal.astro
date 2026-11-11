@@ -11,7 +11,7 @@ export interface DetailPanel {
   gloss?: string;
   /** Opening paragraph. */
   body?: string;
-  /** Labelled facts, rendered as a two-column definition list. */
+  /** Labeled facts, rendered as a two-column definition list. */
   rows?: [string, string][];
   /** Marks the last row of `rows` as a tool list rather than prose. */
   stack?: string;
@@ -44,7 +44,13 @@ const idFor = (panel: string) => `${id}-t-${panel}`;
 >
   <div class="dlg-backdrop" data-close-dialog></div>
 
-  <div class="dlg-box" role="document">
+  <!--
+    `role="document"` here switched the screen reader into browse mode for
+    the whole panel. A named group says the same thing without taking the
+    keyboard away from the reader: dialogs.js repoints the label at the panel
+    that is on screen.
+  -->
+  <div class="dlg-box" role="group" aria-labelledby={idFor(panels[0].id)}>
     {
       panels.map((p) => (
         <section class="dlg-panel" data-panel={p.id} hidden aria-labelledby={idFor(p.id)}>

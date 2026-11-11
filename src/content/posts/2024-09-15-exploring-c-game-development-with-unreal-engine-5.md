@@ -1,14 +1,14 @@
 ---
 title: "🎮 Exploring C++ Game Development with Unreal Engine 5"
 date: "2024-09-15"
+description: "Three C++ games built in Unreal Engine 5 - Dungeon Raider, Toon Tanks and ISSRiot - and what they taught me about level design."
 tags: ["cpp", "gamedev", "project"]
 ---
 This collection represents my journey and experiments with C++ programming inside Unreal Engine 5, showcasing projects born from curiosity and a desire to bring interactive worlds to life.
 
-<!-- more -->
 ---
 
-## My Journey into Unreal Engine
+## My journey into Unreal Engine
 
 * I get truly excited when I can make a computer perform magic that I can touch, see, and interact with. This passion has reshaped my interests and motivated me to dive deeper into game development.
 
@@ -24,7 +24,7 @@ This collection represents my journey and experiments with C++ programming insid
 
 ---
 
-## Featured Projects
+## Featured projects
 
 ### Dungeon Raider
 

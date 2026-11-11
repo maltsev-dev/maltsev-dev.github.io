@@ -44,7 +44,7 @@ Nothing in that chain is a bug. Every component behaved as written.
 The gap is between a label and an identity, so two different things
 answered to one.
 
-This generalises past MCP. A function name in an RPC system, a class
+This generalizes past MCP. A function name in an RPC system, a class
 name in an object system, a route in an HTTP service: all labels.
 Authorization that binds to a label carries a label-dependence bug, and
 the bug stays invisible until the label collides or is repurposed.
@@ -180,7 +180,7 @@ lookup above fails loudly instead of resolving by accident.
 A rename lands the other way round, and the same design handles it
 correctly. The renamed tool does not match the existing entry, so it
 arrives as a tool nobody has reviewed, and an unreviewed tool is refused
-until a human looks at it. That is the behaviour you want from a rename:
+until a human looks at it. That is the behavior you want from a rename:
 the entry keeps its history under the old name, and the new name gets
 its own review. It inherits no approval that was granted for a different
 label.

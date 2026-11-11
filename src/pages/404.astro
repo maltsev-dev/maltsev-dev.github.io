@@ -1,17 +1,26 @@
 ---
-import Base from '../layouts/Base.astro';
+import Minimal from '../layouts/Minimal.astro';
 ---
 
-<Base title="Not found" description="This page does not exist.">
+<!--
+  The error page carries no site chrome, so it uses the chrome-free layout.
+  It also drops the reveal animation: the reveal is un-hidden by the site's
+  script, and this page ships no script — so the text would stay at opacity
+  zero.
+-->
+<Minimal
+  title="Not found"
+  description="That page isn't here. The link may be old, or the page may have moved."
+>
   <section class="hero">
-    <span class="eyebrow" data-reveal>Error 404</span>
-    <h1 data-reveal data-reveal-delay="60">No such file</h1>
-    <p class="lede" data-reveal data-reveal-delay="120">
-      The path you requested doesn't exist on this system.
+    <span class="eyebrow">Error 404</span>
+    <h1>That page isn't here</h1>
+    <p class="lede">
+      The link may be old, or the page may have moved.
     </p>
-    <div class="btn-row" data-reveal data-reveal-delay="180">
-      <a class="btn btn-primary" href="/">Back to index</a>
+    <div class="btn-row">
+      <a class="btn btn-primary" href="/">Back to home</a>
       <a class="btn" href="/blog/">Browse writing</a>
     </div>
   </section>
-</Base>
+</Minimal>

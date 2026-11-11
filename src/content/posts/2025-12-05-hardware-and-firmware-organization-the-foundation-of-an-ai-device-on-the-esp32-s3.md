@@ -6,10 +6,9 @@ tags: ["project", "rust", "nurse", "product"]
 🟠 In this article, I'll explain the hardware I'm using in my AI device project, why I chose it, and how I structured the firmware in Rust.  
 This is the foundation of the entire project: the MCU, display, controls, and a minimal firmware skeleton that ensures modularity and expandability. 
 
-<!-- more -->
 ---
 
-## &emsp;&emsp;&emsp; What I'm building and why hardware matters
+## What I'm building and why hardware matters
 The project is an ESP32-S3-based AI device that determines the probability of a person being in front of a camera.
 It can:
 - collect data from sensors (OV2640 camera);
@@ -19,7 +18,7 @@ It can:
 - send data to the backend (Actix Web);
 
 
-##  &emsp;&emsp;&emsp; Choosing an MCU: Why the ESP32-S3 Sense
+## Choosing an MCU: Why the ESP32-S3 Sense
 The main parameters influencing the choice of a microcontroller for this project were a powerful core, RAM and Flash memory capacity, and a Wi-Fi module.  
 I chose the XIAO ESP32-S3 Sense for three reasons:
 1. The Sense has a pluggable camera module that can be upgraded if needed.
@@ -30,7 +29,7 @@ In addition to the chip, I needed a breadboard for easy prototyping, cables, an 
 ![Conceptual wiring diagram of the device: an XIAO ESP32-S3 Sense with camera module connected over I2C to a 16x2 LCD, and a button on a 200 ohm pull-up resistor](/images/nurse_high_level_design.png)
 
 
-## &emsp;&emsp;&emsp; DevJournal: The Journey from Idea to Working Prototype
+## DevJournal: The journey from idea to working prototype
 Development always begins with a simple impulse—an idea that catches your attention.  
 For me, this impulse was the desire to implement something complex yet interesting, something I hadn't encountered before.  
 But the path from "it would be cool to do" to the actual result is rarely straightforward.  
@@ -56,7 +55,7 @@ Rejecting perfectionism accelerated my development without losing quality and tu
 > _"I try to simply try without perfection, but sometimes the amount of work ahead overwhelms me..."
 
 
-## &emsp;&emsp;&emsp; DevJournal: Engineering Wilds
+## DevJournal: Engineering wilds
 - **Start: Basic Firmware**  
 Development began with the basic firmware: to get the ESP32-S3 up and running with its two coprocessors, I used the community-supported starter template 'esp-idf-template'. This allowed me to quickly assemble a minimal working project, flash an LED, and move on.  
 > When starting out, it's best to use **tested templates** – this saves a ton of time and allows you to focus on the logic rather than the basic setup.
@@ -91,7 +90,7 @@ I moved FreeRTOS tasks to the first core and reduced the button stack size. This
 The resulting structure became MCU → MQTT → backend (Actix Web) → frontend.  
 I implemented minute-based throttling: predictions are sent only when the minute changes (without timers), simply based on the current time change. This reduced the load on the network and server and made updates more meaningful.
 
-## &emsp;&emsp;&emsp; DevJournal: Principles and Example  
+## DevJournal: Principles and example
 It's important to me that the hardware drivers, logic modules, and firmware (Rust + esp_idf_hal) are organized in a modular and extensible manner: each component is isolated, built on abstraction layers and the principle of loose coupling.  
 The code is structured so that commands and requests are separated, and the module code structure follows the logical flow of the device.  
 This architecture reduces the firmware size, improves its testability, ensures performance monitoring, and allows for easy integration of the AI ​​model into the overall processing pipeline.  
@@ -189,6 +188,6 @@ The result of the function is An option that, when certain conditions are met, i
 `device/UM001/stats Time: 12/03 12:24, AvgScore(5): 0.87, LastScore: 0.99, Label: human`
 
 
-## &emsp;&emsp;&emsp;  What's next
+## What's next
 In the next article, I'll move on to ML organization.  
 I plan to briefly cover the entire ML life cycle, from basic concepts and data preparation to model conversion and deployment on the MCU.

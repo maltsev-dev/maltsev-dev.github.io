@@ -226,18 +226,18 @@ where per-action checks compose cleanly and per-path checks do not. A
 tool that invokes a subtool through your client is covered
 automatically, and one that does not is a gap worth auditing.
 
-### What if the framework serialises arguments in a way we cannot inspect?
+### What if the framework serializes arguments in a way we cannot inspect?
 
 It should not, but some do: opaque blobs, base64 wrappers, stringified
 JSON. That is a genuine blocker for action-level enforcement, and the
 options are: work at the tool boundary instead of the argument boundary,
-push the canonicalisation into the client that builds the payload, or
+push the canonicalization into the client that builds the payload, or
 treat that tool as uninspectable and gate it as a whole.
 
 ### Is wrapping the tool callable really enough?
 
 It is enough for every path that reaches that callable. A second
-reference to the same behaviour obtained another way, an HTTP call to
+reference to the same behavior obtained another way, an HTTP call to
 the same service or a direct database write, sits outside it. "One
 client" beats "wrapped callable" because it is checkable: you can assert
 the absence of raw credentials.

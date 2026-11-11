@@ -8,10 +8,9 @@ Understanding how this tiny boundary between p-type and n-type materials control
 
 🟠 In this article, we’ll explore the structure, behavior, and biasing conditions of the PN junction — revealing the delicate balance that makes semiconductor devices work.  
 
-<!-- more -->
 ---
 
-## &emsp;&emsp;&emsp; The PN Junction
+## The PN junction
 
 ![Diagram of a silicon PN junction formed by joining p-type and n-type crystal regions at a boundary](/images/basic%20electronics/pn_junction.png)
 
@@ -27,10 +26,10 @@ There are **3 possible bias conditions for a PN junction:**
 3. **Forward Bias** - the `negative` source terminal is connected to the **n-type**, and the `positive` terminal is connected to the **p-type**
 
 
-### &emsp;&emsp;&emsp; Equilibrium (zero bias)
+### Equilibrium (zero bias)
 Without external influence, balance is achieved. 
 
-#### &emsp;&emsp;&emsp; The Depletion Region
+#### The depletion region
 Because of the high concentration, the electrons in `N` repel each other and spread (**diffuse**) into the `P` region.  
 In the `P` region, this free electron coming from `N` - fills a hole.  
 Thus, each time an electron crosses the junction and **recombines** with a hole, it creates a pair of **ions**.  
@@ -43,7 +42,7 @@ When a diopole is created, the **majority carriers** on each side are **extracte
 ![Diagram of the charge-free depletion region at the junction, containing immobile positive and negative ions paired as dipoles](/images/basic%20electronics/the_depletion_region_2.png)
 
 
-#### &emsp;&emsp;&emsp; Barrier Potential
+#### Barrier potential
 
 Each region (diopole) has an **electric field** between the **positive** and **negative** ions.  
 Whenever a free electron from `P` tries to enter the depletion region, the electric field pushes it back into the `N` region.  
@@ -56,7 +55,7 @@ The electric field between the ions is equivalent to a potential difference call
 At room temperature, the **barrier potential** is approximately `0.3V` for germanium diodes and `0.7V` for silicon diodes.  
 
 
-### &emsp;&emsp;&emsp; Forward Bias
+### Forward bias
 **p-type** is connected to the `positive` side of the source and the **n-type** to the `negative` side.
 
 ![Forward-biased junction diagram with the battery positive terminal on the p-side, pushing holes and electrons toward the junction and narrowing the depletion region](/images/basic%20electronics/forward_bias.png)
@@ -72,7 +71,7 @@ Since billions of electrons are flowing at the same time, a **continuous current
 ![Animated diagram of free electrons flowing one way through the diode and holes the other, recombining across the junction to form a continuous current](/images/basic%20electronics/flow_of_free_electrons_and_holes.gif)
 
 
-### &emsp;&emsp;&emsp; Reverse Bias
+### Reverse bias
 **p-type** is connected to the  `negative`side of the source and the **n-type** to `positive` side.
 
 
@@ -85,12 +84,12 @@ The width of the depletion region is proportional to the reverse voltage.
 The depletion region stops growing when its potential difference becomes equal to the applied reverse voltage.  
 
 
-#### &emsp;&emsp;&emsp; Reverse Current
+#### Reverse current
 The reverse current in a diode consists of the minority carrier current and the **surface leakage current**.  
 This reverse current is so small that it is considered to be `almost zero`.
 
 
-#### &emsp;&emsp;&emsp; Surface-Leakage Current
+#### Surface-leakage current
 In a **reverse biased diode**, there is another current.  
 A small current flows along the surface of the crystal, known as the surface leakage current.  
 The atoms on the top and bottom surfaces of the crystal `have no neighbors`, they have only 6 electrons in the valence orbit.  
@@ -101,11 +100,11 @@ This means that each surface atom **has 2 holes**.
 This causes electrons to move through the surface holes from the `negative` pole of the battery to the `positive` pole of the battery.  
 Thus, a small reverse current flows along the surface.
 
-#### &emsp;&emsp;&emsp; Breakdown
+#### Breakdown
 There is a limit to how much `reverse voltage` a diode can withstand before it reaches **breakdown voltage** and fails.  
 Once the breakdown voltage is reached, a large number of minority charge carriers are formed in the depletion region due to the `avalanche effect `and the diode begins to conduct current in **the reverse direction.**
 
-#### &emsp;&emsp;&emsp; Avalanche Effect
+#### Avalanche effect
 When the `reverse voltage` increases, it causes the minority carriers to move faster.  
 These minority carriers begin to move at a tremendous speed, colliding with the crystal atoms, knocking out valence electrons from them, creating more free electrons.  
 The number of free electrons increases in geometric progression 1, 2, 4, 8, 16....
@@ -115,7 +114,7 @@ The number of free electrons increases in geometric progression 1, 2, 4, 8, 16..
 This produces a significant reverse current in the diode and continues until the reverse current becomes large enough to destroy the diode.
 
 
-## &emsp;&emsp;&emsp; Diode Schematic Symbol
+## Diode schematic symbol
 
 An arrow pointing from the `p-side` to the `n-side`.  
 The p-side is called the **anode** and the n-side is called the **cathode**.
@@ -123,7 +122,7 @@ The p-side is called the **anode** and the n-side is called the **cathode**.
 ![Diode schematic symbol with its arrow pointing from the anode on the p-side to the cathode on the n-side](/images/basic%20electronics/diode_schematic_symbol.png)
 
 
-### &emsp;&emsp;&emsp; Diode I-V Characteristics
+### Diode I-V characteristics
 A basic diode circuit in which the diode is **forward biased**.
 A series resistor `RS` is typically used to limit the magnitude of the forward current `IF` .
 
@@ -143,7 +142,7 @@ Depending on the `voltage applied` to it, it will operate in one of 3 areas:
 2. reverse bias
 3. breakdown
 
-### &emsp;&emsp;&emsp; Forward Bias Region
+### Forward bias region
 When the diode voltage is `less` than the `barrier potential`, a small current flows through the diode.  
 When the diode voltage `exceeds` the `barrier potential`, the current flowing through the barrier increases rapidly.
 
@@ -152,7 +151,7 @@ When the diode voltage `exceeds` the `barrier potential`, the current flowing th
 The voltage at which the current begins to increase rapidly is called the **forward voltage** (VF) of the diode.   
 It is also called **cut-in voltage** or **knee voltage**. 
 
-### &emsp;&emsp;&emsp; Reverse Bias Region
+### Reverse bias region
 
 The reverse bias region exists between `zero current` and `breakdown`.
 In this region, a small reverse current flows through the diode.
@@ -160,7 +159,7 @@ In this region, a small reverse current flows through the diode.
 ![I-V curve close-up of the reverse-bias region, where a small nearly constant reverse current flows between zero and breakdown](/images/basic%20electronics/reverse_bias_region.png)
 
 
-### &emsp;&emsp;&emsp; Breakdown Region
+### Breakdown region
 
 If we continue to increase the reverse voltage, then eventually a `breakdown` state will be reached.  
 At this point, an avalanche breakdown occurs in the depleted layer of the semiconductor and the diode begins to actively break through the current in the reverse direction, which leads to its destruction.

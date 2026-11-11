@@ -1,10 +1,12 @@
 User-agent: *
 Allow: /
 
-# The legacy build.py generator's URLs. Each one has a stub page that
-# redirects; they exist to preserve inbound links, not to be indexed.
+# /archive/ and /page/ are stubs left by the previous generator. They redirect
+# to /blog/ and carry a noindex, so there is nothing there worth spending
+# crawl budget on. The tag pages under /tags/ are real pages and are not
+# listed here.
+
 Disallow: /archive/
-Disallow: /tags/
 Disallow: /page/
 
 Sitemap: https://maltsev-dev.github.io/sitemap.xml

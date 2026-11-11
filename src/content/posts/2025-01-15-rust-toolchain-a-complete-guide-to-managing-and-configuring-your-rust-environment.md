@@ -1,16 +1,16 @@
 ---
 title: "Rust Toolchain: A Complete Guide to Managing and Configuring Your Rust Environment"
 date: "2025-01-15"
+description: "How to manage Rust with rustup: release channels, toolchain overrides, components and build profiles."
 tags: ["rust", "basic"]
 ---
 The Rust toolchain is a collection of tools and components that streamline the development, building, and maintenance of Rust projects.  
 🟠 In this article, we’ll explore how to use rustup to manage Rust compiler versions and components, understand the different release channels, configure build profiles, and apply overrides for specific projects.  
 This practical guide will help you quickly master the essentials of the Rust toolchain and tailor it to your development needs.
 
-<!-- more -->
 ---
 
-## &emsp;&emsp;&emsp; 1. rustup
+## 1. rustup
 For those who want to start using Rust in their projects, please start here.
   - the basic [Rust](https://www.rust-lang.org/) setup is managed by the `rustup` utility.
 
@@ -52,7 +52,7 @@ x86_64-pc-windows-msvc
 C:\..\stable-x86_64-pc-windows-msvc\bin\rustc.exe
 ```
 
-## &emsp;&emsp;&emsp; 2. Channels
+## 2. Channels
 - Rust is developed in 3 parallel branches
   - **stable** — the most reliable, updated every `6 weeks`
   - **beta** — a “preview” of the next stable, updated every 6 weeks
@@ -78,7 +78,7 @@ C:\..\stable-x86_64-pc-windows-msvc\bin\rustc.exe
     rustup install 1.74.0-x86_64-pc-windows-msvc 
 ```
 
-## &emsp;&emsp;&emsp; 3. Override & Profiling
+## 3. Override & profiling
 
 - Set `default` toolchain for the system
 ```bash
@@ -105,7 +105,7 @@ lto = "fat"
 panic = "abort"
 ```
 
-## &emsp;&emsp;&emsp; 4. Components
+## 4. Components
 - Each installed toolchain can be upgraded with `components`
 ```bash
     rustup component add clippy fmt rust-src rust-analyzer
@@ -128,7 +128,7 @@ panic = "abort"
    rustup component remove clippy
 ```
 
-## &emsp;&emsp;&emsp; 5. Best Practice
+## 5. Best practice
 - To ensure that the program runs identically on different machines, it is recommended to use the `rust-toolchain.toml` file.
 ```toml
 [toolchain]

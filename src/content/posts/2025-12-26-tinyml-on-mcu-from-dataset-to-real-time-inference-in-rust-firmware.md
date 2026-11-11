@@ -8,11 +8,10 @@ from dataset preparation and model training to running TensorFlow Lite Micro on 
 
 This project intentionally spans multiple domains: embedded systems, machine learning, data engineering, and low-level systems programming in Rust.   
 
-<!-- more -->
 
 ---
 
-##     Defining the task and the TinyML pipeline
+## Defining the task and the TinyML pipeline
 
 The goal of the project is to deploy a binary classifier that determines whether a person is present in front of a camera — entirely on-device, without cloud inference.
 
@@ -31,7 +30,7 @@ The resulting pipeline looks like this:
 
 ---
 
-##     Dataset preparation: from camera frames to folders
+## Dataset preparation: from camera frames to folders
 
 High-quality labeled data is the single most important factor in supervised learning.   
 A model trained on weak or biased data will **fail silently**, especially on-device where debugging is expensive.   
@@ -71,7 +70,7 @@ dataset/
 
 ---
 
-##     Data augmentation pipeline
+## Data augmentation pipeline
 
 To ensure the model generalizes to real-world conditions, the dataset is passed through an augmentation pipeline during training.   
 
@@ -100,7 +99,7 @@ Preprocessing is intentionally embedded **inside the model graph** — this beco
 
 ---
 
-##     Model training strategy
+## Model training strategy
 
 The model must satisfy two constraints simultaneously:
 
@@ -134,7 +133,7 @@ After fine-tuning, the model consistently reaches **92–96% accuracy** on the t
 
 ---
 
-##     Evaluating the FP32 model
+## Evaluating the FP32 model
 
 Before quantization, the `.keras` model is evaluated to establish a **baseline**.  
 For binary classification, the most informative visualization is the **confusion matrix**, which exposes class-specific failure modes.  
@@ -146,7 +145,7 @@ Once the baseline met expectations, I moved on to model compression.
 
 ---
 
-##     INT8 quantization for MCU deployment
+## INT8 quantization for MCU deployment
 
 Quantizing the model to INT8:
 
@@ -165,7 +164,7 @@ and such a model **will not run** on TensorFlow Lite Micro.
 
 ---
 
-##     Post-quantization TFLite evaluation
+## Post-quantization TFLite evaluation
 
 Quantization inevitably reduces precision by collapsing FP32 weights into 8-bit integers.
 Before deploying to firmware, a sanity check is mandatory.

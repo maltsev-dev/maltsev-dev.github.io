@@ -1,5 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
+import { yearsOfExperience } from '../lib/profile';
 
 /*
   The Profile page answers "who is this and what are they like to work with",
@@ -74,7 +75,7 @@ const NOW = [
   <section class="hero hero-scroll about-hero">
     <div class="about-head">
       <span class="eyebrow" data-reveal><span class="pulse-dot"></span>Anatolii Maltsev</span>
-      <h1 data-reveal data-reveal-delay="60" data-anim="type">8 years building systems that do real work</h1>
+      <h1 data-reveal data-reveal-delay="60" data-anim="type">{yearsOfExperience()} years building systems that do real work</h1>
     </div>
 
     <div class="about-lead">
@@ -229,8 +230,8 @@ const NOW = [
     display: grid;
     gap: clamp(1.2rem, 3vw, 2.2rem);
     align-items: center;
-    /* The rail gives the hero a screen-height panel and centres its content.
-       `safe` keeps that centring without letting a hero taller than the
+    /* The rail gives the hero a screen-height panel and centers its content.
+       `safe` keeps that centering without letting a hero taller than the
        panel push its own headline off the top of the screen. */
     align-content: safe center;
     grid-template-columns: minmax(0, 1fr) minmax(0, 1.9fr);
@@ -257,7 +258,7 @@ const NOW = [
     font-size: clamp(1.5rem, 3.8cqw, 2.9rem);
   }
 
-  /* The subtitle is the accent colour, so the headline reads as the headline
+  /* The subtitle is the accent color, so the headline reads as the headline
      and this reads as commentary under it. */
   .about-lead {
     grid-column: 1;
@@ -373,7 +374,7 @@ const NOW = [
     list-style: none;
   }
 
-  /* Each habit gets a rule in the accent colour, the same marker the focus
+  /* Each habit gets a rule in the accent color, the same marker the focus
      list uses, so the two lists are visibly the same kind of thing. */
   .about-method-list li {
     display: grid;

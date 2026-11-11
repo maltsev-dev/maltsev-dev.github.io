@@ -1,0 +1,182 @@
+---
+import { graph } from '../lib/schema';
+import { DEFAULT_RAMP, THEMES, resolveRamp, themeColor } from '../data/themes';
+
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  /** What the social card shows. Defaults to the site's own line. */
+  imageAlt?: string;
+  type?: string;
+  /** Extra schema.org nodes for this page, added to the site graph. */
+  schema?: Record<string, unknown>[];
+}
+
+const {
+  title = 'Maltsev · Agentic Engineering',
+  description = 'AI operational systems, agentic engineering, embedded and distributed systems — built to carry real work.',
+  image = '/og.png',
+  imageAlt = 'Maltsev — agentic engineering that carries real work',
+  type = 'website',
+  schema = [],
+} = Astro.props;
+
+// The 404 route is the one page whose canonical must not be its own address.
+// The page is built to `/404.html` — that is the file GitHub Pages serves when
+// a URL is not found — while the route itself lives at `/404/`, which answers
+// 404. A canonical pointing at a URL that 404s is a signal no crawler can act
+// on, so the error document gets the address that actually serves it, and it
+// is marked noindex: it is not a page anybody should be searching for.
+const isErrorPage = /^\/404\/?$/.test(Astro.url.pathname);
+const canonical = isErrorPage
+  ? new URL('/404.html', Astro.site)
+  : new URL(Astro.url.pathname, Astro.site);
+
+// The title used to carry the domain: every page shipped `· maltsev.dev`,
+// but that domain does not serve this site — over HTTPS it does not answer
+// at all, and the canonical, the sitemap and the feed all point at
+// maltsev-dev.github.io. The brand goes in the title instead.
+const fullTitle = title === 'Maltsev · Agentic Engineering' ? title : `${title} · Maltsev`;
+
+// Every page declares who wrote it and what the site is, and a page that is
+// about one thing adds its own node on top. Without this the site had no
+// structured data at all: no author, no dates, nothing for a rich result.
+const siteUrl = new URL(Astro.site ?? 'https://maltsev-dev.github.io');
+const jsonLd = graph(siteUrl, schema);
+---
+
+<!--
+  The head of every page, in one place.
+
+  It was inline in Base.astro, which meant the error page had to load the
+  whole site chrome to be a page: the stylesheet for the header, the status
+  bar and the footer, the script that drives the palette and the two
+  dialogs, and the markup of all four. The 404 is the one page a visitor
+  arrives on by accident, and it was the heaviest page on the site.
+
+  Splitting the head out lets a second layout — the one the error page
+  uses — carry the same metadata, the same canonical, the same social card
+  and the same theme bootstrap without any of the chrome.
+-->
+<link rel="preload" href="/fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin />
+<link rel="preload" href="/fonts/jetbrains-mono-latin.woff2" as="font" type="font/woff2" crossorigin />
+
+<meta name="description" content={description} />
+<link rel="canonical" href={canonical} />
+{isErrorPage && <meta name="robots" content="noindex, follow" />}
+
+<!--
+  The icon. There was no `<link rel="icon">` at all: the browser went
+  looking for /favicon.ico, did not find one, and asked for /favicon.png —
+  a 512-pixel square that then had to be scaled down to 16 pixels by the
+  operating system. The mark is geometric, so it is authored as an SVG
+  (a few hundred bytes, sharp at any size) with a small ICO next to it for
+  the browsers that still want one.
+-->
+<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+<link rel="alternate icon" href="/favicon.ico" sizes="32x32" />
+<!-- iOS does not read SVG favicons: a home-screen shortcut asks for a PNG
+     and gets nothing if the site only offers the vector mark. -->
+<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+<link rel="manifest" href="/site.webmanifest" />
+
+<meta property="og:site_name" content="Maltsev · Agentic Engineering" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content={type} />
+<meta property="og:title" content={fullTitle} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={canonical} />
+<!--
+  The image path is site-rooted. It used to be `/static/favicon.png`, which
+  is where the file sits in the repo — but static/ IS the public dir, so the
+  built site serves it at `/favicon.png`. Every page was advertising a URL
+  that 404s, and every chat and social preview of the site rendered with no
+  image at all.
+-->
+<meta property="og:image" content={new URL(image, Astro.site)} />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content={imageAlt} />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={fullTitle} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={new URL(image, Astro.site)} />
+<meta name="twitter:image:alt" content={imageAlt} />
+
+<title>{fullTitle}</title>
+
+<script type="application/ld+json" set:html={jsonLd} />
+
+<!--
+  The browser chrome color. It has to be declared *before* the bootstrap
+  script below, not after: the script looks the tag up and rewrites it to
+  the stored theme's color, and a tag that does not exist yet cannot be
+  found — so the meta stayed on the dark default no matter which theme the
+  visitor had chosen.
+-->
+<meta name="theme-color" content={themeColor(DEFAULT_RAMP)} />
+
+<!--
+  Theme must be resolved before first paint, otherwise a visitor on a dark
+  theme sees the default ramp and then a jump. Render-blocking and
+  dependency-free; keep in sync with the ramps in global.css.
+
+  The stored value can be `system` — the reader asked the site to follow the
+  operating system. The script resolves it here, before the first paint,
+  because the page cannot render the light ramp and then jump to the dark
+  one: the flash is the whole point of the ramp being wrong for a moment.
+
+  define:vars serializes the value to a string, so it has to be parsed back
+  into an object before use — `hasOwnProperty` against a string is always
+  false, which silently reset the stored theme on every navigation.
+-->
+<script is:inline define:vars={{ themes: JSON.stringify(THEMES), system: JSON.stringify({
+  light: 'pierre', dark: 'phosphore',
+}) }}>
+  (function () {
+    try {
+      var list = JSON.parse(themes);
+      var sys = JSON.parse(system);
+      var id = localStorage.getItem('theme');
+      if (!id) return;
+
+      var ramp = id;
+      if (id === 'system') {
+        var light = window.matchMedia
+          && window.matchMedia('(prefers-color-scheme: light)').matches;
+        ramp = light ? sys.light : sys.dark;
+      }
+
+      var found = null;
+      for (var i = 0; i < list.length; i++) {
+        if (list[i].id === ramp) { found = list[i]; break; }
+      }
+      if (!found) return;
+
+      document.documentElement.dataset.theme = ramp;
+      var m = document.querySelector('meta[name="theme-color"]');
+      if (m) m.setAttribute('content', found.color);
+    } catch (e) { /* storage blocked — the default ramp stands */ }
+  })();
+</script>
+
+<!--
+  Reveal targets start at opacity 0 and are un-hidden by JS. Without this,
+  a visitor without JS sees blank gaps where the sections should be.
+-->
+<noscript>
+  <style>
+    [data-reveal] { opacity: 1 !important; transform: none !important; }
+  </style>
+</noscript>
+
+<style is:global>
+  /*
+    The skip link moves the focus into the content. The focus ring would
+    then be drawn around the entire page, which is noise rather than
+    information — but only when the focus arrived by pointer. A reader
+    navigating by keyboard still gets the ring.
+  */
+  main:focus:not(:focus-visible) { outline: none; }
+</style>

@@ -6,7 +6,6 @@ tags: ["embedded", "basic", "clock"]
 🟠 **Clock is the basis for timers and interrupts**
 The clock system sets the pace of all digital components of the microcontroller. Timers use its signals to generate interrupts and perform tasks with precise time control.
 
-<!-- more -->
 ---
 
 ## ⏱ What is a clock in an MCU?

@@ -76,7 +76,7 @@ hold.
 | `amount_hint` plus `amount_scale` | Material, split across two fields | The pair reconstructs the amount and neither field is the amount | The amount changes and the digest still matches |
 | `notes` | Informational | Free text on a refund, with no bearing on where the money goes | Correct as is. Including it makes approvals churn on every retry |
 | `trace_id`, `request_id`, `model`, `locale` | Informational | Context about the call, not the action | Live approvals get refused on every retry that carries a fresh trace ID |
-| `tags`, `labels`, `metadata`, `flags` | Informational | The same facts in a different order | The canonicaliser ends up deciding their order matters, a schema question nobody answered |
+| `tags`, `labels`, `metadata`, `flags` | Informational | The same facts in a different order | The canonicalizer ends up deciding their order matters, a schema question nobody answered |
 | `redirect_to` | Material until reviewed | A vendor-added field nobody has classified | A denylist of known-harmless fields stops covering it, with no signal anywhere |
 | Anything the tool has not declared | Material until reviewed | A schema-blind tool that accepts arbitrary JSON cannot be classified | This is why the default has to be material |
 
@@ -136,7 +136,7 @@ has a documentation page, a security review and an OAuth scope list. MCP
 has a name, a schema and a capability list. If you are not deciding what
 counts as material, nobody decided for you.
 
-## Canonicalisation is a policy decision
+## Canonicalization is a policy decision
 
 Equivalent JSON representations must produce the same identity, and
 different material values must not. Key ordering is the easy case; the
@@ -186,8 +186,8 @@ The pipeline that turns a payload into an identity runs like this:
 ```
 
 The tag wrappers are deliberate. Without them, the string `"true"` and
-the boolean `True` could canonicalise to the same thing, and a payload
-that says `{"verbose": "true"}` would authorise identically to one that
+the boolean `True` could canonicalize to the same thing, and a payload
+that says `{"verbose": "true"}` would authorize identically to one that
 says `{"verbose": true}`, which matters the moment a downstream tool
 coerces one to the other.
 
@@ -209,7 +209,7 @@ trip over, and compares directly against a threshold expressed in the
 same unit. A digest layer that accepts a float is carrying a precision
 problem it does not need to have.
 
-**Unicode.** `NFC` normalisation exists because `é` can arrive as one
+**Unicode.** `NFC` normalization exists because `é` can arrive as one
 code point (U+00E9) or as `e` plus a combining accent (U+0065 U+0301).
 They render identically, they hash differently, and if the downstream
 mail system treats them as the same address then your digest will refuse
@@ -227,28 +227,28 @@ A list of tags in a different order is the same action. A list of
 operations in a different order might not be: "transfer A then B" and
 "transfer B then A" can differ if the second transfer depends on the
 first one's result. A list of recipients is order-insensitive for
-authorisation while being order-sensitive for delivery, which is exactly
-the kind of thing nobody thinks about until the canonicaliser and the
+authorization while being order-sensitive for delivery, which is exactly
+the kind of thing nobody thinks about until the canonicalizer and the
 mailer disagree.
 
 Global sorting is the wrong default. The cheap correct rule is narrower
 than a config list: sort object keys, because an object's key order is
 carrying no meaning, and leave arrays alone, because whether an array's
 order is meaningful is a property of what the array means, and only the
-schema knows that. A canonicaliser that sorts arrays to be helpful has
+schema knows that. A canonicalizer that sorts arrays to be helpful has
 silently decided that every list your product has is a set.
 
 ## What to actually check
 
 Build an equivalence corpus. It is the only way to catch a
-canonicalisation bug, because the bug's signature is two payloads that
+canonicalization bug, because the bug's signature is two payloads that
 *should* be identical and are not, and eyeballing payloads does not find
 it.
 
 | Pair | Expected | What to assert |
 |---|---|---|
 | Keys in two different orders, at every nesting depth | Must hash the same | Canonical json equality, so a failure points at the sorter |
-| `{"amount": 100}` re-serialised by a different writer | Must hash the same | Canonical json equality |
+| `{"amount": 100}` re-serialized by a different writer | Must hash the same | Canonical json equality |
 | `é` as precomposed and as decomposed | Must hash the same | Canonical json equality after NFC |
 | `{"amount": 100}` and `{"amount": 101}` | Must not hash the same | Different digest |
 | `{"recipient": "a"}` and `{"recipient": "b"}` | Must not hash the same | Different digest |
@@ -262,18 +262,18 @@ the policy underneath it.
 
 Then run property-based tests over generated payloads, asserting that
 any two payloads differing only in key order hash identically. Write the
-corpus before you need it. A canonicaliser that has only been tested on
+corpus before you need it. A canonicalizer that has only been tested on
 hand-picked examples has been tested on five examples.
 
 ## Limitations worth stating
 
-The classification is a human judgement, and any code that consumes it
+The classification is a human judgment, and any code that consumes it
 only enforces the outcome. No amount of structure stops a vendor
 splitting one material field into two that each look informational, as
 `amount_hint` and `amount_scale` do. The fix is a review of the schema
-shape itself. Clever canonicalisation does not close that gap.
+shape itself. Clever canonicalization does not close that gap.
 
-Canonicalisation is where subtle bugs live, and the precision one is the
+Canonicalization is where subtle bugs live, and the precision one is the
 worst. JavaScript cannot represent integers above 2^53 exactly. A
 monetary amount of 9007199254740993 that passes through a JavaScript
 client arrives as 9007199254740992, with no error, no warning, and a
@@ -320,8 +320,8 @@ and there is no list in the system that can fall out of date.
 
 ### Does this belong in the policy definition or the code?
 
-The canonicalisation is code, and it has to be: a configurable
-canonicaliser is a way to make two different actions hash identically.
+The canonicalization is code, and it has to be: a configurable
+canonicalizer is a way to make two different actions hash identically.
 Classification, where you need one,
 is data. It is a property of the tool and belongs with the tool's
 registration.
@@ -347,7 +347,7 @@ approval is concerned.
 
 NullRun binds the whole envelope, and the envelope is a closed type. It
 is not a bag. The wire form is an enum, `Money` or `ToolCall`, and
-every field of the selected variant is canonicalised and hashed:
+every field of the selected variant is canonicalized and hashed:
 
 ```
 SHA-256( "nullrun/v1/business_impact:" || canonical_json(envelope) )
@@ -376,13 +376,13 @@ Three properties follow from hashing the whole thing:
   server. Rejecting the unrepresentable value is what keeps that promise
   unconditional.
 
-Canonicalisation sorts object keys recursively and leaves arrays in
+Canonicalization sorts object keys recursively and leaves arrays in
 their order, for the reason above: an object's key order carries no
 meaning, and whether an array's order does is a question only the schema
 can answer.
 
 The operational consequence is the one that matters. Changing an amount
 changes the digest and invalidates the prior approval, so the second
-call needs a new decision. That is the intended behaviour. The operator
+call needs a new decision. That is the intended behavior. The operator
 approved a specific number, and a different number is a different action.
 The [API reference](https://nullrun.io/docs/api) carries the wire shapes.

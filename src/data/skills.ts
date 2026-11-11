@@ -1,8 +1,8 @@
 /**
  * Every skill on the profile, stacked as a pyramid: the widest tier at the
  * bottom is what the rest is built on, and each tier above is narrower and
- * more specific. Ordering is the point — a flat list of twenty-three equal
- * chips says nothing about where a skill sits.
+ * more specific. Ordering is the point — a flat list of equal chips says
+ * nothing about where a skill sits.
  *
  * Each skill carries the three facts that are worth knowing about it and that
  * are not visible from the name: how many jobs it was used on, what certifies
@@ -19,9 +19,9 @@
  * - `certs` are the licences and certifications from the profile. Only
  *   credentials whose own skill list names this skill are attached, so the
  *   "+N skills" summaries are never guessed at. The Solana credentials are the
- *   one judgement call: the profile lists them under Solana, which is not one
- *   of the twenty-three, so they sit on Smart Contracts — the titles in the
- *   card say plainly what they are.
+ *   one judgment call: the profile lists them under Solana, which is not one
+ *   of the toolkit's own skills, so they sit on Smart Contracts — the titles in
+ *   the card say plainly what they are.
  * - `projects` are the milestones on /projects/, the blog posts behind them
  *   and the shipped work those posts document, named the short way they are
  *   usually called.
@@ -321,8 +321,8 @@ export const SKILL_TIERS: SkillTier[] = [
     ],
   },
   {
-    id: 'specialisation',
-    label: 'Specialisation',
+    id: 'specialization',
+    label: 'Specialization',
     skills: [
       {
         id: 'ai-agent-security',

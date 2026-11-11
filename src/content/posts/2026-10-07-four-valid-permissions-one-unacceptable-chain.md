@@ -32,7 +32,7 @@ because of a specific asymmetry. The number of paths through an agent's
 action space is combinatorial, while the number of individual actions is
 linear.
 
-An agent optimising for task completion will combine permissions,
+An agent optimizing for task completion will combine permissions,
 because the task requires it. It will not know that the combination is
 the thing nobody agreed to.
 
@@ -52,8 +52,8 @@ aggregate effect, which is the thing that actually became dangerous.
 
 | Approach | Why it fails |
 |---|---|
-| Flag any sequence longer than N | Too coarse, and it fails immediately on legitimate work. A research agent that reads two hundred documents, summarises them and sends one email is doing exactly its job, and it looks identical to the attack from the inside. |
-| Forbid this exact sequence | Too rigid in both directions. It does not generalise (the next variant uses a query instead of a CSV) and it is trivially defeated by inserting one harmless read between the steps. A composition check that a single extra action breaks is a per-action check with extra words. |
+| Flag any sequence longer than N | Too coarse, and it fails immediately on legitimate work. A research agent that reads two hundred documents, summarizes them and sends one email is doing exactly its job, and it looks identical to the attack from the inside. |
+| Forbid this exact sequence | Too rigid in both directions. It does not generalize (the next variant uses a query instead of a CSV) and it is trivially defeated by inserting one harmless read between the steps. A composition check that a single extra action breaks is a per-action check with extra words. |
 | Sum the permissions | Most real workflows both read and write, so "read access plus write access, therefore..." does not separate the malicious case from the ordinary one. It cannot be acted on without a false-positive rate that makes it useless. |
 | Block egress | Sound in principle, and it depends on two things you may not have: an egress control at the destination, and a way to classify the destination as external. It also blocks the agent's primary job. |
 
@@ -218,7 +218,7 @@ aggregate check, and it is the cleanest example of one working. For
 exfiltration, no: reading data is free under every budget model, and the
 counter never moves. The mechanism from
 [the budget article](/blog/2026-06-26-agent-budget-is-a-permission-not-a-limit/)
-generalises, but the signal does not.
+generalizes, but the signal does not.
 
 ### Is there a principled reason to think this is solvable?
 

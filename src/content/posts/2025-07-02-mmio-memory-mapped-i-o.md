@@ -9,7 +9,6 @@ tags: ["embedded", "basic", "mmio"]
 These addresses in the CPU do not store regular data, but allow reading and writing to the device control registers.  
 This means that the peripheral device can be accessed in the same way as regular memory - via regular memory read/write instructions (`LDR`, `STR`, `MOV`, etc.). at specific addresses.  
 
-<!-- more -->
 ---
 
 ## How does it work inside CPU?

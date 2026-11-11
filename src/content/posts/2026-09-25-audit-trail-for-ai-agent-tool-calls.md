@@ -83,7 +83,7 @@ Know which tiers are entitled before you answer that question.
 ## Tampering has to be detectable
 
 Blocking `UPDATE` and `DELETE` is table grants, and table grants are one
-`ALTER TABLE` away from gone. The durable defence is a hash chain: each
+`ALTER TABLE` away from gone. The durable defense is a hash chain: each
 row commits to the hash of the row before it, so modifying any
 historical row breaks every hash after it.
 
@@ -97,9 +97,9 @@ land before anyone reads the chain.
 
 Two details decide whether this is real:
 
-- **Canonicalisation must be total.** The hash is computed over a
-  canonical JSON serialisation, not over the storage row. If it hashes
-  the raw row and Postgres normalises anything on write, the verifier
+- **Canonicalization must be total.** The hash is computed over a
+  canonical JSON serialization, not over the storage row. If it hashes
+  the raw row and Postgres normalizes anything on write, the verifier
   disagrees with the writer and the chain reports false tampering.
 - **The verifier must be exercised against known-bad input.** A chain
   check that has only ever seen a clean database will pass on a broken
@@ -214,6 +214,6 @@ which is what the system stopped.
 
 The identity that ties the records together is server-minted and bound to
 the organization and the API key at the moment it is created, so a
-decision, the execution it authorised and the spend it produced are
+decision, the execution it authorized and the spend it produced are
 joinable without trusting a client-supplied identifier. The
 [integration docs](https://nullrun.io/docs) cover the write path.

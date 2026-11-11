@@ -5,13 +5,12 @@ tags: ["embedded", "basic", "clock", "timers", "interrupts"]
 ---
 🟠 **Synchronization** is a fundamental concept that ensures that the processor, peripherals, timers, and interrupts operate in a consistent and accurate manner based on a common clock source.
 
-<!-- more -->
 ---
 
 ## 🔁 How to achieve synchronization
 [Clocks](/blog/2025-07-15-mcu-clock-system/) provide the basis for [timers](/blog/2025-07-14-timers/) to work, and timers, in turn, generate [interrupts](/blog/2025-07-15-interrupts-isr-ivt-nvic/) to perform tasks with precise timing control.
 
-### 1. **Clock System**
+### 1. **Clock system**
 
 * Main synchronization source.
 * Provides a basic clock signal, which all other blocks are guided by.

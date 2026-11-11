@@ -28,7 +28,7 @@ problems that show up over the following months.
 |---|---|---|
 | It lives inside the agent | Expressed in whatever units the framework uses: steps, turns, messages, tokens. Two agents in the same company enforce different numbers against the same downstream service. | It is code, and code gets refactored. The cap sits three files from whatever feature the next engineer is adding, and nobody re-reads it. |
 | It does not compose | Twenty workers each capped at twenty-five steps make five hundred calls. The cap is per agent. | The failure is aggregate, so a limit that reads as generous in every single process is fatal in the fleet. |
-| It has no idea what anything costs | A loop of cheap lookups and a loop of large-context summarisation hit the same step cap. | They differ by an order of magnitude in money. The cap that matters asks what the calling cost and what it was going toward. |
+| It has no idea what anything costs | A loop of cheap lookups and a loop of large-context summarization hit the same step cap. | They differ by an order of magnitude in money. The cap that matters asks what the calling cost and what it was going toward. |
 | It cannot see a sick downstream | The agent's retry loop is a response to bad results, and it cannot tell "the tool is genuinely returning this" from "the tool is timing out and the framework is retrying underneath me". | One worker's bad hour is invisible to the other nineteen, so every worker discovers the outage independently and concurrently. |
 
 ## What a stopping boundary has to be
@@ -94,7 +94,7 @@ workers. A burst of slow calls can breach the downstream service while
 every individual worker's rate looks fine and the settled budget has not
 moved at all.
 
-### 4. Behavioural
+### 4. Behavioral
 
 A signal computed from the recent pattern of calls, not from any single
 call. This is the one that actually catches the loop.
@@ -144,7 +144,7 @@ class DepthExceeded(Refusal):   code = "chain_depth_exceeded"
 The caller needs to distinguish "this workflow is going in circles, stop
 it" from "the system is busy, back off" from "you are out of money".
 Without distinct codes, the application guesses, and the guess it makes
-under pressure is retry, which is the exact behaviour that produced the
+under pressure is retry, which is the exact behavior that produced the
 loop.
 
 ## The breaker has to be one object
@@ -236,7 +236,7 @@ it. It is a backstop, not a signal, and it should be set loose enough
 that it never fires on real work. Otherwise people tune it upward until
 it is decorative.
 
-These controls bound runaway behaviour. They do not stop a single call
+These controls bound runaway behavior. They do not stop a single call
 that is wrong. A loop that completes cleanly and does the wrong thing
 three times is not a loop problem.
 

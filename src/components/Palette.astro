@@ -22,12 +22,18 @@
       role="combobox"
       aria-expanded="false"
       aria-controls="paletteList"
+      aria-describedby="paletteEmpty"
       aria-autocomplete="list"
       aria-haspopup="listbox"
     />
 
     <ul class="palette-list" id="paletteList" role="listbox" aria-label="Results"></ul>
 
-    <p class="palette-empty" id="paletteEmpty" hidden>No match.</p>
+    <!--
+      The empty state is a live region: when a search matches nothing, the
+      line that appears on screen has to be heard as well, and the combobox
+      points at it so the same sentence is its description.
+    -->
+    <p class="palette-empty" id="paletteEmpty" role="status" aria-live="polite" hidden>No match.</p>
   </div>
 </div>

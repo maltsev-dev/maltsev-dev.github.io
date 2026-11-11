@@ -11,7 +11,6 @@ Each register has a specific function and bit capacity.
 🟠 When performing an arithmetic operation, the processor may load the operands into general-purpose registers, perform the operation, and then store the result in another register or in memory.
 
 
-<!-- more -->
 ---
 
 ## 📌 Why registers are important

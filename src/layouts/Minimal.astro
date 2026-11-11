@@ -1,0 +1,81 @@
+---
+import '../styles/fonts.css';
+import '../styles/global.css';
+import '../styles/animation.css';
+import Head from '../components/Head.astro';
+
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  /** What the social card shows. Defaults to the site's own line. */
+  imageAlt?: string;
+  type?: string;
+  /** Extra schema.org nodes for this page, added to the site graph. */
+  schema?: Record<string, unknown>[];
+}
+
+const { title, description, image, imageAlt, type, schema } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en" data-theme="phosphore">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <Head
+      title={title}
+      description={description}
+      image={image}
+      imageAlt={imageAlt}
+      type={type}
+      schema={schema}
+    />
+  </head>
+
+  <!--
+    The chrome-free layout.
+
+    The error page is the one page a visitor lands on by accident, and it
+    used to be the heaviest page on the site: the stylesheet for the header,
+    the status bar, the footer and the track, the script that drives the
+    palette and the two dialogs, and the markup of all of it — 26 KB of
+    HTML and 13 KB of CSS gzipped for a page that says four words.
+
+    This layout carries the same head — the same canonical, the same social
+    card, the same theme bootstrap — and nothing else. `animation.css` stays
+    because the `.btn` base rule lives there and the error page has buttons;
+    `os.css`, `track.css` and `skills.css` stay out because the error page
+    has no chrome to style.
+  -->
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <!--
+      The skip link moves the focus into the content, not only the scroll
+      position — see the note in Base.astro. The target is focusable
+      (`tabindex="-1"` on `<main>`), so the browser can take the focus; this
+      is what asks it to.
+    -->
+    <script is:inline>
+      (function () {
+        var link = document.querySelector('.skip-link');
+        if (!link) return;
+        link.addEventListener('click', function () {
+          var target = document.getElementById('main');
+          if (!target) return;
+          try {
+            target.focus({ preventScroll: true });
+          } catch (e) {
+            target.focus();
+          }
+        });
+      })();
+    </script>
+
+    <main id="main" class="wrap" tabindex="-1">
+      <slot />
+    </main>
+  </body>
+</html>

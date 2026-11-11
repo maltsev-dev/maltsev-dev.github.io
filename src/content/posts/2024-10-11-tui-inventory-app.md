@@ -1,15 +1,15 @@
 ---
 title: "🧾 TUI Inventory App"
 date: "2024-10-11"
+description: "A terminal inventory manager built with Rust and Cursive: create, list and delete items, persisted in a flat JSON file."
 tags: ["rust", "tui", "project"]
 ---
 **An old-school terminal-based inventory management system built with Rust and [Cursive](https://crates.io/crates/cursive).**  
-![cursive Version](https://img.shields.io/badge/cursive-0.21.1%20-orange)
+`cursive 0.21.1`
 
-<!-- more -->
 ---
 
-## 🖥️ Text-based User Interface (TUI) Inventory System
+## 🖥️ Text-based user interface (TUI) inventory system
 
 [📚 GitHub Repository](https://github.com/maltsev-dev/inventory_system_app)
 
@@ -19,16 +19,13 @@ Ideal for Rust learners and enthusiasts exploring terminal UI development.
 
 ---
 
-### ⚙️ Tools & Stack
+### ⚙️ Tools & stack
 
 <h3 style="text-align:center; margin-bottom:8px;">Tools</h3>
 <p align="center" style="margin:0; padding:0;">
-  <img style="display:inline-block; vertical-align:middle;"
-       src="https://img.shields.io/badge/rust-1.83.0%20-green" alt="Rust Version"/>
-  <img style="display:inline-block; vertical-align:middle;"
-       src="https://img.shields.io/badge/cursive-0.21.1%20-orange" alt="cursive Version"/>
-  <img style="display:inline-block; vertical-align:middle;"
-       src="https://github.com/chemyl/inventory_system_app/actions/workflows/rust.yml/badge.svg" alt="Build Status"/>
+  <code>rust 1.83.0</code>
+  <code>cursive 0.21.1</code>
+  <a href="https://github.com/chemyl/inventory_system_app/actions/workflows/rust.yml"><code>CI</code></a>
 </p>
 
 ---
@@ -67,7 +64,7 @@ Ideal for Rust learners and enthusiasts exploring terminal UI development.
 
 ---
 
-## 📦 Installation & Run
+## 📦 Installation & run
 
 1. **Clone the Repository**
 

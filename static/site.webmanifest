@@ -1,0 +1,29 @@
+{
+  "name": "Maltsev — Agentic Engineering",
+  "short_name": "Maltsev",
+  "description": "Agentic engineering that carries real work — AI operational systems, embedded and distributed systems, automation.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#14100a",
+  "theme_color": "#14100a",
+  "lang": "en",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    },
+    {
+      "src": "/favicon.ico",
+      "sizes": "32x32",
+      "type": "image/x-icon"
+    }
+  ]
+}

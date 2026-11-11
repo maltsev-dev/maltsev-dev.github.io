@@ -12,7 +12,7 @@ permission, and the permission has not changed.
 
 It issues a four-hundred-dollar refund.
 
-Nothing about the agent's behaviour was wrong against its permission
+Nothing about the agent's behavior was wrong against its permission
 set. Its evidence was stale, and this failure lives in the gap between
 those two facts.
 

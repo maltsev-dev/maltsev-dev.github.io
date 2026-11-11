@@ -8,11 +8,10 @@ tags: ["project", "rust", "cli", "graphics", "svg"]
 The project focuses on turning an image into a **structured, printable, and editable SVG pattern**, with full control over size and color palette.  
 It sits at the intersection of image processing, CLI tooling, and practical craft-oriented output.
 
-<!-- more -->
 
 ---
 
-##     From pixels to stitches: defining the problem
+## From pixels to stitches: defining the problem
 
 At a high level, the task sounds simple:  
 *“Convert an image into a cross-stitch pattern.”*
@@ -28,7 +27,7 @@ This project treats a pattern not as a bitmap, but as a **structured representat
 
 ---
 
-##     Image preprocessing and resizing
+## Image preprocessing and resizing
 
 The pipeline starts with loading a raster image (JPG / PNG) and resizing it to a target grid defined in **stitches**, not pixels.
 
@@ -38,7 +37,7 @@ This step establishes the spatial structure that everything else depends on.
 
 ---
 
-##     Color quantization and palette control
+## Color quantization and palette control
 
 A key requirement is controlling the number of colors in the final pattern.
 
@@ -51,7 +50,7 @@ By limiting colors explicitly, the generated pattern becomes:
 
 ---
 
-##     Pattern generation as vector graphics
+## Pattern generation as vector graphics
 
 Instead of producing another raster image, the project outputs **SVG**.
 
@@ -64,20 +63,21 @@ This choice deliberately prioritizes **editability and longevity** over quick vi
 
 ---
 
-##     CLI-first design
+## CLI-first design
 
 The tool is implemented as a command-line application.
 
 Example usage:
---- bash 
+
+```bash
 cargo run -p cli -- .\images\original_image.img -w 60 --height 75 --colors 16 -m needlepoint -o out.svg
----
+```
 
 ![Source raster image: a circular Japanese-style landscape with a coral sun, snow-capped mountain, teal pine trees and red camellia flowers](/images/original_image.jpg)
 
 ---
 
-![Generated SVG cross-stitch chart: the landscape redrawn on a stitch grid with a numbered 16-colour legend down the left side](/images/converted_image.png)
+![Generated SVG cross-stitch chart: the landscape redrawn on a stitch grid with a numbered 16-color legend down the left side](/images/converted_image.png)
 
 This makes the system:
 - scriptable,
@@ -88,7 +88,7 @@ The CLI design also keeps the core logic independent from any UI decisions.
 
 ---
 
-##     Why Rust
+## Why Rust
 
 Rust was chosen for this project because it encourages:
 - explicit data modeling,
@@ -99,7 +99,7 @@ For a tool that transforms data through several well-defined steps, Rust’s typ
 
 ---
 
-##     From hobby tool to reusable system
+## From hobby tool to reusable system
 
 Although the output targets a creative domain (needlepoint and cross-stitch), the project itself is a general example of:
 

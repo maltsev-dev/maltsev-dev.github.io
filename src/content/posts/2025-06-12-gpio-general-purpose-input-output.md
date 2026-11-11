@@ -5,7 +5,6 @@ tags: ["rust", "embedded", "basic", "gpio"]
 ---
 🟠 What is a general purpose input output (GPIO) of the MCU
 
-<!-- more -->
 ---
 
 ## GPIO
@@ -29,7 +28,7 @@ It can work as:
 * Alternate function : push-pull or open-drain with pull-up or pull-down capability.  
 ![Table of GPIO pin modes and their characteristics, listing input, output, analog and alternate function variants with pull-up, pull-down, push-pull and open-drain options](/images/emb/gpio_design_1.png)
 
-## GPIO Design
+## GPIO design
 
 Each GPIO pin of the microcontroller consists of **three key components**:  
 ![Block diagram of a GPIO pin showing its three key components: the enable line, the output buffer driving the pin, and the input buffer reading from it](/images/emb/gpio_design.png)
@@ -63,7 +62,7 @@ When a `0` signal is received on the pin, control passes through the `NMOS` tran
 When a `1` signal is received on the pin, control passes through the `PMOS` transistor and is powered from `+VCC`  
 ![Schematic of the GPIO input buffer reading a logic 1: the PMOS conducts so the pin is powered from VCC and is read as 1](/images/emb/input_buffer_one.png)
 
-## ⚙️ GPIO Modes
+## ⚙️ GPIO modes
 
 * **By default** all GPIOs on most microcontrollers are configured in **Input mode**.
 * In this mode they are **not connected to either Vcc or GND** - the pin is in the **High Impedance (Hi-Z)** state.

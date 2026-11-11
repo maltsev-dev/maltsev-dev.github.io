@@ -1,11 +1,11 @@
 ---
 title: "📱 Android Emulator Launcher"
 date: "2023-07-05"
+description: "A Java Swing desktop app that creates and launches Android emulators, downloads missing system images and lists running devices."
 tags: ["java", "android", "project"]
 ---
 **A desktop application built with Java Swing for easy configuration, creation, and management of Android emulators.**
 
-<!-- more -->
 ---
 
 ## 🔧 Overview
@@ -16,7 +16,7 @@ The interface displays the list of active emulators along with their connection 
 
 ---
 
-## 🛠️ Technologies & Tools
+## 🛠️ Technologies & tools
 
 * **Java 21**
 * **Java Swing** for desktop UI
@@ -39,7 +39,7 @@ The interface displays the list of active emulators along with their connection 
 
 ---
 
-## ⚙️ How to Use
+## ⚙️ How to use
 
 1. Configure the paths to the Android SDK tools (`avdmanager`, `sdkmanager`, `emulator`) within the application settings.
 2. Launch the application and select desired emulator parameters.

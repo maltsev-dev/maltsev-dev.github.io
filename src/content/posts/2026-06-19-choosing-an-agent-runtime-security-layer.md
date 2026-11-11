@@ -297,7 +297,7 @@ cases, because you do not have them yet. A zero block rate on last
 week's traffic means the layer is not firing on anything you have seen,
 which is not the same as it working.
 
-And the framework cannot tell you whether your organisation has the
+And the framework cannot tell you whether your organization has the
 operational capacity to run an approval process. Layers 1, 2 and 6 all
 depend on somebody reviewing something, and a control that routes to an
 unstaffed queue is a control you do not have. The
@@ -352,7 +352,7 @@ label implies more than the scope below:
 | Mechanism | How it works |
 |---|---|
 | The check | Runs in a separate process between the arguments existing and the effect happening, reading live policy and live state instead of a tool name |
-| Approval consumption | Approvals bind to the material fields of the payload and are consumed by a single conditional UPDATE guarded by status, organisation, execution id, key id and digest, which is what makes the consume atomic instead of a read followed by a write |
+| Approval consumption | Approvals bind to the material fields of the payload and are consumed by a single conditional UPDATE guarded by status, organization, execution id, key id and digest, which is what makes the consume atomic instead of a read followed by a write |
 | Budget reservation | Budgets are reserved against a period-bound counter before the call, and the reservation and the cap comparison happen inside one script on the store |
 | Payload derivation | Provenance is not an input to the decision; the material fields are, and they are re-derived server-side, so an injected payload field is caught by recomputation instead of being trusted |
 | Approval rule families | A money-amount threshold, and a condition on a named field inside the tool's own argument bag, both configured in the policy editor without a deploy |

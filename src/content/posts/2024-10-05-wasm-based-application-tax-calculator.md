@@ -1,24 +1,21 @@
 ---
 title: "🖥️ Wasm-based Application: Tax Calculator"
 date: "2024-10-05"
+description: "A Rust and wasm-bindgen experiment: build a WebAssembly tax calculator and serve it from a static page."
 tags: ["rust", "webassembly", "project"]
 ---
 An experiment using [wasm-bindgen](https://crates.io/crates/wasm-bindgen) to create a WebAssembly program.  
-![wasm-bindgen Version](https://img.shields.io/badge/wasm_bingen-0.2.95%20-orange)
+`wasm-bindgen 0.2.95`
 
-<!-- more -->
 ---
 
 [📚 GitHub Repository]](https://github.com/maltsev-dev/tax_app_webassembly)
 
 <h2 style="text-align:center; margin-bottom:8px;">Tools</h2>
 <p align="center" style="margin:0; padding:0;">
-  <img style="display:inline-block; vertical-align:middle;"
-       src="https://img.shields.io/badge/rust-1.83.0%20-green" alt="Rust Version"/>
-  <img style="display:inline-block; vertical-align:middle;"
-       src="https://img.shields.io/badge/wasm_test-0.3%20-orange" alt="Wasm Version"/>
-  <img style="display:inline-block; vertical-align:middle;"
-       src="https://github.com/chemyl/tax_app_webassembly/actions/workflows/rust.yml/badge.svg" alt="Build Status"/>
+  <code>rust 1.83.0</code>
+  <code>wasm_test 0.3</code>
+  <a href="https://github.com/chemyl/tax_app_webassembly/actions/workflows/rust.yml"><code>CI</code></a>
 </p>
 
 ## How to build and run:

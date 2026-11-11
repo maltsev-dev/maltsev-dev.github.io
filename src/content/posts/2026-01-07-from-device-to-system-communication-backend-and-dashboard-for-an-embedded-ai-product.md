@@ -8,11 +8,10 @@ I describe how inference results leave the MCU, travel through MQTT and HTTP, la
 
 This is the layer where a TinyML prototype turns into an actual **end-to-end product**.
 
-<!-- more -->
 
 ---
 
-##     From inference to communication: Wi-Fi, MQTT, and reliability
+## From inference to communication: Wi-Fi, MQTT, and reliability
 
 Once inference works reliably on-device, the next challenge is not accuracy — it’s **communication**.
 
@@ -49,7 +48,7 @@ Inference never blocks on network I/O — this separation is critical for real-t
 
 ---
 
-##     Backend architecture: Rust, Actix Web, and data ingestion
+## Backend architecture: Rust, Actix Web, and data ingestion
 
 On the server side, the backend acts as the **central nervous system** of the product.
 
@@ -81,7 +80,7 @@ This pattern avoids the classic IoT anti-pattern of “HTTP from devices”.
 
 ---
 
-##     API layer and authorization model
+## API layer and authorization model
 
 The HTTP API exposes structured access to collected data.
 
@@ -101,7 +100,7 @@ this keeps business logic clean and auditable.
 
 ---
 
-##     Backend as a deployment unit
+## Backend as a deployment unit
 
 The backend is built and deployed as a **minimal container**.
 
@@ -127,7 +126,7 @@ At this point, the system can be deployed locally or on a single VPS without mod
 
 ---
 
-##     Frontend dashboard: making data visible
+## Frontend dashboard: making data visible
 
 Raw inference data is useless without interpretation.
 
@@ -155,7 +154,7 @@ Because the backend serves the frontend assets directly, the system behaves as a
 
 ---
 
-##     System boundaries and responsibilities
+## System boundaries and responsibilities
 
 At this stage, the architecture has clear boundaries:
 
@@ -188,7 +187,7 @@ this is what turns a demo into a maintainable product.
 
 ---
 
-##     Closing thoughts
+## Closing thoughts
 
 This project deliberately spans:
 

@@ -1,16 +1,16 @@
 ---
 title: "🌐 std web_server"
 date: "2024-12-10"
+description: "A multi-threaded HTTP server written with the Rust standard library only: thread pool, TCP listener and static file serving."
 tags: ["rust", "sync", "project"]
 ---
 **Minimal yet functional multi-threaded web server implemented entirely using the Rust standard library.**
 No external dependencies — just pure `std`.
 
-<!-- more -->
 ---
 
 [📚 GitHub Repository](https://github.com/maltsev-dev/raw_web_server)
-![Rust Version](https://img.shields.io/badge/rust-1.83.0%20-green)
+`rust 1.83.0`
 
 This project demonstrates how to build a basic but concurrent HTTP server by leveraging only the **Rust Standard Library**.  
 It serves as a deep dive into Rust’s core capabilities around file `I/O`, `networking`, `threading`, and `concurrency`.  
@@ -23,7 +23,7 @@ An excellent hands-on learning example for:
 
 ---
 
-## 🛠 Tech Stack – std Only
+## 🛠 Tech stack – std only
 
 The server is powered by a **thread pool** and handles each TCP connection asynchronously using:
 
@@ -60,7 +60,7 @@ The server is powered by a **thread pool** and handles each TCP connection async
 
 ---
 
-## 📂 Project Structure
+## 📂 Project structure
 
 * `main.rs` – entry point, sets up listener and thread pool
 * `lib.rs` – contains thread pool implementation
@@ -68,7 +68,7 @@ The server is powered by a **thread pool** and handles each TCP connection async
 
 ---
 
-## 🧪 Example Usage
+## 🧪 Example usage
 
 ```bash
 cargo run
@@ -83,7 +83,7 @@ To simulate a delayed response:
 
 ---
 
-## 🧠 Educational Value
+## 🧠 Educational value
 
 This project mirrors the concepts from "The Rust Programming Language" book (Chapter 20), but it goes further with:
 

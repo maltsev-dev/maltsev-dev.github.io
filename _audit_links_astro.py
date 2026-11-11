@@ -11,13 +11,27 @@ on the site advertised an og:image URL that 404s — which is precisely the clas
 of defect a deploy gate exists to catch. Meta tags whose content points at the
 site's own origin are resolved against dist/ like any other reference; ones
 pointing off-site are left alone.
+
+The legacy URLs are checked as well. _gen_redirects.py writes a stub for every
+address the previous generator published and records them in _legacy-urls.json;
+that file is the list of links the old site handed out, and a stub that goes
+missing is a 404 for one of them. Nothing else in the build would notice,
+because nothing on the current site links to them any more.
 """
+import json
 import re
 import sys
 from pathlib import Path
 from urllib.parse import unquote, urlparse
 
-DIST = Path(__file__).parent / "dist"
+# The build to check. Defaults to `dist/` — the directory CI builds into — and
+# can be pointed elsewhere with a first argument, which is what an isolated
+# verification build does:
+#
+#   python _audit_links_astro.py dist-lead
+#
+DIST = Path(sys.argv[1]).resolve() if len(sys.argv) > 1 else Path(__file__).parent / "dist"
+MANIFEST = Path(__file__).parent / "_legacy-urls.json"
 SITE = "maltsev-dev.github.io"
 
 # href/src patterns, plus the HTML entities Astro emits for stray quotes.
@@ -64,9 +78,32 @@ def resolve(base: Path, url: str) -> Path | None:
     return candidate  # missing — caller reports it
 
 
+def check_manifest() -> list[str]:
+    """Every legacy URL the generator wrote a stub for must still resolve."""
+    if not MANIFEST.exists():
+        print("[INFO] no _legacy-urls.json — run `python _gen_redirects.py` to write one")
+        return []
+
+    try:
+        data = json.loads(MANIFEST.read_text(encoding="utf-8"))
+    except (OSError, ValueError) as exc:
+        print(f"[ERROR] _legacy-urls.json is unreadable: {exc}")
+        return ["<manifest unreadable>"]
+
+    stubs = data.get("stubs", {})
+    missing: list[str] = []
+    for route in sorted(stubs):
+        target = resolve(DIST, route)
+        if target is None or not target.exists():
+            missing.append(route)
+
+    print(f"[INFO] {len(stubs)} legacy URLs checked against the manifest")
+    return missing
+
+
 def main() -> int:
     if not DIST.exists():
-        print("[ERROR] dist/ not found — run `npm run build` first.")
+        print(f"[ERROR] {DIST} not found — run `npm run build` first.")
         return 2
 
     pages = sorted(DIST.rglob("*.html"))
@@ -86,6 +123,14 @@ def main() -> int:
 
     print(f"[INFO] {len(pages)} pages, {checked} local references checked")
 
+    missing_legacy = check_manifest()
+    if missing_legacy:
+        print(f"[FAIL] {len(missing_legacy)} legacy URL(s) lost their stub:")
+        for route in missing_legacy[:40]:
+            print(f"  {route}")
+        if len(missing_legacy) > 40:
+            print(f"  ... and {len(missing_legacy) - 40} more")
+
     if broken:
         # Post titles carry emoji and a Windows console defaults to cp1252, which
         # cannot encode them — a broken reference must not crash the gate that
@@ -95,6 +140,9 @@ def main() -> int:
             print(f"  {rel} -> {url!a}")
         if len(broken) > 40:
             print(f"  ... and {len(broken) - 40} more")
+        return 1
+
+    if missing_legacy:
         return 1
 
     print("[OK] no broken local references")

@@ -2,6 +2,8 @@
 import { getCollection } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 import ProjectCase from '../../components/ProjectCase.astro';
+import { formatDate } from '../../data/dates';
+import { CASE_YEARS } from '../../data/cases';
 // Loaded here rather than in the layout: these rules only ever apply to the
 // three case studies, and the site-wide bundle should not carry them.
 import '../../styles/case.css';
@@ -30,6 +32,20 @@ const data = cases[key]?.default ?? {};
 if (!cases[key]) {
   console.error(`[projects] no case data for ${project.data.slug} (looked for ${key})`);
 }
+
+// The date the case carries, formatted for a reader.
+//
+// The projects collection declares `date` as an optional field, so a case
+// that wants a date of its own can carry one in its front matter and it
+// reaches this page. None does at the moment, and the year in the case's own
+// legacy copyright line is the fallback until one does. A case with neither
+// renders without a date line rather than with an invented one.
+//
+// `updated` is not read here on purpose: it is when the case last changed,
+// and it belongs in the sitemap's `<lastmod>`, not under the title.
+const frontmatterDate = formatDate(project.data.date);
+const caseYear = CASE_YEARS[project.data.slug];
+const date = frontmatterDate || (caseYear ? String(caseYear) : '');
 ---
 
 <Base title={project.data.title} description={project.data.description}>
@@ -38,6 +54,6 @@ if (!cases[key]) {
       <a href="/projects/">← Projects</a>
     </p>
 
-    <ProjectCase data={data} />
+    <ProjectCase data={data} date={date} />
   </div>
 </Base>

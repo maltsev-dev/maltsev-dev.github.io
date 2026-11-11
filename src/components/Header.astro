@@ -1,22 +1,21 @@
 ---
+import { DEFAULT_RAMP, THEMES } from '../data/themes';
+
 interface Props {
   currentPath: string;
 }
 
 const { currentPath } = Astro.props;
 
-// Keep the theme names in sync with the ramps in global.css and the boot
-// script in Base.astro. A name missing from any one of the three falls back
-// to the default.
-const THEMES = [
-  ['phosphore', 'amber on black'],
-  ['acidule', 'green on teal'],
-  ['pierre', 'warm light'],
-];
+// The theme list lives in src/data/themes.ts, together with the ramps the
+// stylesheet defines and the chrome color of each one. It used to be
+// written out here as well as in the boot script in the head and in the
+// table of ramps in os.js — three copies of the same four names, free to
+// drift apart.
 
 const SOURCES = [
   { href: '/experience/', label: 'Experience', key: '1', desc: 'the road so far' },
-  { href: '/freelance/', label: 'Work Now', key: '2', desc: 'services and scope' },
+  { href: '/freelance/', label: 'Freelance', key: '2', desc: 'services and scope' },
   { href: '/projects/', label: 'Projects', key: '3', desc: 'shipped systems' },
   { href: '/about/', label: 'Profile', key: '4', desc: 'who and what I do' },
 ];
@@ -26,14 +25,22 @@ const isActive = (href: string) => currentPath.startsWith(href);
 
 <nav class="menu-bar" aria-label="Site">
   <div class="wrap">
-    <a href="/" class="menu-brand">A|M</a>
+    <!-- The glyph is the brand, but "A|M" is not a name: a screen reader read
+         it out as "A vertical bar M". The home link says what it is. -->
+    <a href="/" class="menu-brand" aria-label="Maltsev — home">A|M</a>
 
     <div class="menu-group">
     <div class="menu">
-      <button class="menu-btn" data-menu="sources" aria-expanded="false" aria-haspopup="true">
+      <!--
+        The panel is a disclosure, not a menu: it is a list of links, and it
+        does not implement the arrow-key menu interaction. Saying `menu` here
+        promised an interaction the site does not have, so the button says what
+        it actually controls instead.
+      -->
+      <button class="menu-btn" data-menu="sources" aria-expanded="false" aria-controls="menu-sources">
         Sources <span class="caret" aria-hidden="true">▾</span>
       </button>
-      <div class="dropdown" data-panel="sources" hidden>
+      <div class="dropdown" id="menu-sources" data-panel="sources" hidden>
         <p class="dropdown-title">Index</p>
         {
           SOURCES.map((s) => (
@@ -58,47 +65,47 @@ const isActive = (href: string) => currentPath.startsWith(href);
     <a
       href="/blog/"
       class="menu-btn menu-link"
-      aria-current={currentPath.startsWith('/blog') ? 'page' : undefined}>Blog</a
+      aria-current={currentPath.startsWith('/blog') ? 'page' : undefined}>Writing</a
     >
 
     <div class="menu">
-      <button class="menu-btn" data-menu="system" aria-expanded="false" aria-haspopup="true">
+      <button class="menu-btn" data-menu="system" aria-expanded="false" aria-controls="menu-system">
         System <span class="caret" aria-hidden="true">▾</span>
       </button>
-      <div class="dropdown dropdown-right" data-panel="system" hidden>
+      <div class="dropdown dropdown-right" id="menu-system" data-panel="system" hidden>
         <p class="dropdown-title" id="theme-group-label">Appearance</p>
         <!--
-          The three themes are one of three, so they are a radio group and not
-          three buttons. The role used to be `menuitemradio` inside a panel
+          The themes are one of several, so they are a radio group and not a
+          row of buttons. The role used to be `menuitemradio` inside a panel
           with no `menu` role, which left a screen reader announcing a menu
           item radio that belonged to no menu, and the panel's own `menu` role
           would have implied arrow-key navigation that was not implemented.
           `radio` in a `radiogroup` says exactly what this is; os.js gives the
-          group the arrow-key behaviour that goes with it.
+          group the arrow-key behavior that goes with it.
         -->
         <div role="radiogroup" aria-labelledby="theme-group-label" data-theme-group>
           {
-            THEMES.map(([id, desc]) => (
+            THEMES.map((theme) => (
               <button
                 class="dd-item"
-                data-set-theme={id}
+                data-set-theme={theme.id}
                 role="radio"
-                aria-checked="false"
-                tabindex="-1"
+                aria-checked={theme.id === DEFAULT_RAMP ? 'true' : 'false'}
+                tabindex={theme.id === DEFAULT_RAMP ? '0' : '-1'}
               >
                 {/* The glyph is drawn by CSS so the selected theme can show a
                     filled mark instead of the hollow one. */}
                 <span class="fig" aria-hidden="true" />
                 <span>
-                  {id}
-                  <span class="desc">{desc}</span>
+                  {theme.label}
+                  <span class="desc">{theme.desc}</span>
                 </span>
               </button>
             ))
           }
         </div>
         <div class="dd-sep"></div>
-        <a class="dd-item" href="/llm.txt">
+        <a class="dd-item" href="/llms.txt">
           <span class="fig" aria-hidden="true">≡</span>
           <span>
             llms.txt
@@ -215,11 +222,18 @@ const isActive = (href: string) => currentPath.startsWith(href);
       </a>
 
       <!-- `download` is same-origin, so the browser saves the file instead of
-           navigating to it. Drop the PDF at static/resume.pdf. -->
+           navigating to it. Drop the PDF at static/resume.pdf.
+
+           The saved name is spelled one way and one way only: the name of the
+           author, hyphenated, with the document named after it. The repo used
+           to carry three spellings of the same file — `Anatolii-Maltsev-resume.pdf`
+           at the root, `Anatolii_Maltsev_Resume.pdf` beside it, and `resume.pdf`
+           in `static/` — and the one the browser used did not match any of the
+           other two. -->
       <a
         class="social-link"
         href="/resume.pdf"
-        download="Anatolii-Maltsev-resume.pdf"
+        download="Anatolii-Maltsev-Resume.pdf"
         aria-label="Profile as PDF"
         title="Profile as PDF"
       >
@@ -246,7 +260,7 @@ const isActive = (href: string) => currentPath.startsWith(href);
       }
       <li>
         <a href="/blog/" class="nav-link" aria-current={currentPath.startsWith('/blog') ? 'page' : undefined}>
-          Blog
+          Writing
         </a>
       </li>
     </ul>
@@ -265,28 +279,8 @@ const isActive = (href: string) => currentPath.startsWith(href);
     color: var(--fort);
   }
 
-  .gh-link {
-    display: inline-flex;
-    align-items: center;
-    align-self: center;
-    padding: 0.4rem;
-    color: var(--encre);
-    transition: color 160ms ease, transform 160ms ease;
-  }
-
-  .gh-link:hover {
-    color: var(--braise);
-    transform: translateY(-1px);
-  }
-
   .dropdown-right {
     left: auto;
     right: 0;
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .gh-link {
-      transition: none;
-    }
   }
 </style>

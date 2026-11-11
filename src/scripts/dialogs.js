@@ -11,7 +11,7 @@
   if (!modals.length) return;
 
   var FOCUSABLE =
-    'a[href], button:not([disabled]), input, select, textarea, [tabindex]:not([tabindex="-1"])';
+    'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
   // Every panel lives in the DOM at once and all but one are hidden, so the
   // selector alone returns the close button of every panel. Trap only on what
@@ -49,9 +49,13 @@
       modal.hidden = false;
       // Re-point the dialog's accessible name at the panel now on screen. The
       // markup ships a default, but ten panels share one dialog and only the
-      // open one can describe it.
+      // open one can describe it. The box carries the same label: it is a
+      // group, and a group with no name of its own says nothing.
       var titleId = panel.querySelector('[id]') && panel.querySelector('[id]').id;
-      if (titleId) modal.setAttribute('aria-labelledby', titleId);
+      if (titleId) {
+        modal.setAttribute('aria-labelledby', titleId);
+        if (box) box.setAttribute('aria-labelledby', titleId);
+      }
       document.body.style.overflow = 'hidden';
       // The box is the scroller and is shared by every panel, so without this
       // the second item opens halfway down, where the last one was left.

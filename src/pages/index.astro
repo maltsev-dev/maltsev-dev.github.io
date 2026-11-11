@@ -2,6 +2,10 @@
 import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import AiStack from '../components/AiStack.astro';
+import { describe } from '../lib/summarize';
+import { AUTHOR } from '../lib/schema';
+import { tagSlug, tagLabel } from '../lib/tags';
+import { formatDate } from '../data/dates';
 
 const posts = (await getCollection('posts')).sort((a, b) =>
   (b.data.date ?? '').localeCompare(a.data.date ?? '')
@@ -9,24 +13,95 @@ const posts = (await getCollection('posts')).sort((a, b) =>
 const recent = posts.slice(0, 3);
 
 // The homepage is a directory, not a summary: the figure shows what the work
-// is, and the column beside it opens each part of the site.
+// is, and the column beside it opens each part of the site. The three cards
+// under the hero are the exception — they point at the newest writing, which
+// is the one thing a visitor cannot find from the directory alone.
 const SECTIONS = [
   { n: '01', href: '/experience/', title: 'Experience' },
-  { n: '02', href: '/freelance/', title: 'Work Now' },
+  { n: '02', href: '/freelance/', title: 'Freelance' },
   { n: '03', href: '/projects/', title: 'Projects' },
   { n: '04', href: '/about/', title: 'Profile' },
 ];
+
+// The same line the post index and the agent map use: the post's own
+// description when it has one, the first real sentence of the body when it
+// does not. A card of nothing but a title tells a visitor nothing.
+//
+// Every tag is listed, not the first three. A card that quietly drops the
+// rest of a post's tags says less about the post than the post's own page
+// does, and a reader cannot tell that anything was left out.
+const recentPosts = recent.map((post) => ({
+  href: `/blog/${post.id}/`,
+  title: post.data.title,
+  date: formatDate(post.data.date),
+  summary: describe(post.data.title, post.body, post.data.description),
+  tags: post.data.tags,
+}));
 
 ---
 
 <Base>
   <section class="hero hero-scroll home-hero">
-    <span class="eyebrow" data-reveal><span class="pulse-dot"></span>Anatoly Maltsev · applied AI</span>
+    <span class="eyebrow" data-reveal><span class="pulse-dot"></span>{AUTHOR.name} · applied AI</span>
     <h1 data-reveal data-reveal-delay="60" data-anim="type">Systems that carry real work.</h1>
     <p class="lede" data-reveal data-reveal-delay="120">
       AI automation, embedded Rust, and the reliability layer that keeps both
       honest when production pushes back.
     </p>
+  </section>
+
+  <!-- The newest writing, so the front page routes to what is new rather than
+       only to the list of everything. -->
+  <section class="section home-recent">
+    <div class="section-head">
+      <h2 data-reveal data-anim="underline">Recent writing</h2>
+      <a class="card-meta" href="/blog/">All writing →</a>
+    </div>
+
+    <div class="card-grid">
+      {
+        recentPosts.map((p, i) => (
+          <div class="card" data-reveal data-reveal-delay={i * 60}>
+            <span class="card-meta">{p.date}</span>
+            <h3>
+              {/*
+                The anchor carries the title and nothing else, so the link's
+                name is the title. That is the whole fix for the card: when
+                the anchor wrapped the whole card, its name was the card —
+                the title, the summary and every tag — and a screen reader
+                had to walk past all of it, once per card.
+
+                The name is not stretched to "Title — Read the post" the way
+                the project panels are, because here the anchor sits inside
+                the heading, and a label on it renames the heading too:
+                Chromium computes the heading's name from the contents of the
+                link, so the heading would be announced as "Title — Read the
+                post, heading". The section heading above already says what
+                these are.
+              */}
+              <a class="card-link" href={p.href}>
+                {p.title}
+              </a>
+            </h3>
+            {p.summary && <p>{p.summary}</p>}
+            {/*
+              The chips used to be spans: styled exactly like links, and
+              leading nowhere. They are links now, and every tag has a page
+              behind it.
+            */}
+            {p.tags.length > 0 && (
+              <div class="tag-row">
+                {p.tags.map((t) => (
+                  <a class="tag" href={`/tags/${tagSlug(t)}/`}>
+                    {tagLabel(t)}
+                  </a>
+                ))}
+              </div>
+            )}
+          </div>
+        ))
+      }
+    </div>
   </section>
 
   <!-- Figure on one side, directory on the other. -->
@@ -50,3 +125,45 @@ const SECTIONS = [
     </nav>
   </section>
 </Base>
+
+<style>
+  /*
+    The card is a link to the post, and the tag chips inside it are links to
+    the tag pages. Two links cannot nest, so the card is a box, the post link
+    is stretched over it with a pseudo-element, and the chip row sits above
+    it. The whole card is still the hit target, and a chip is still its own.
+    The same construction the post index uses.
+  */
+  .card {
+    position: relative;
+  }
+
+  .card-link {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .card-link::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+  }
+
+  .card h3 {
+    margin: 0;
+  }
+
+  .card .tag {
+    text-decoration: none;
+  }
+
+  .card .tag-row {
+    position: relative;
+    z-index: 1;
+  }
+
+  .card .tag:hover {
+    color: var(--braise);
+    border-color: var(--braise);
+  }
+</style>

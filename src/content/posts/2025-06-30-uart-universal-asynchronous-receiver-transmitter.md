@@ -7,10 +7,10 @@ A technical introduction to the **UART** - low-speed two-wire asynchronous multi
 **UART** The earliest serial protocol. Still commonly used in modern electronics.
 
 ![Two UART nodes connected by two wires, with the transmitter pin of each linked to the receiver pin of the other](/images/emb/uart_header.png)
-<!-- more -->
+
 ---
 
-## &emsp;&emsp;&emsp; UART
+## UART
 `UART - Universal Asynchronous Receiver / Transmitter`
 * Simple, inexpensive, and easy to implement
 * UART works by transmitting and receiving data over two wires: `TX` (transmit) and `RX` (receive).
@@ -26,7 +26,7 @@ In this configuration, data exchange can be:
 2. `half-duplex` - at the same time, either transmission or reception of data can occur. (Tx -> RX, RX -> TX)
 3. `full-duplex` - both nodes transmit data simultaneously. (TX <-> RX)
 
-### &emsp;&emsp;&emsp; UART Frame Format
+### UART frame format
 * `high(1)` level consists of
     * `start` and `stop` bits
     * `data` bits
@@ -34,7 +34,7 @@ In this configuration, data exchange can be:
 * When data is not transmitted (`idle`) the line is in `high(1)` state
 ![UART frame timing diagram showing the idle high line, the start bit, the data bits, the optional parity bit and the stop bit before returning to idle](/images/emb/uart_design.png)
 
-#### Start / Stop
+#### Start / stop
 The transmitter must inform the receiver that the data is ready to be transmitted.  
 The **start bit** is a transition from idle `high(1)` to `low(0)` state.  
 After sending the data, there is a **stop bit** which means that the sending is complete.  

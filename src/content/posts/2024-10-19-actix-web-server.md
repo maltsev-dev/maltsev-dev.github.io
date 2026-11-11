@@ -1,28 +1,22 @@
 ---
 title: "🌐 Actix-Web Server"
 date: "2024-10-19"
+description: "An async RESTful notes service built with Actix-Web, Tokio, SQLx and SQLite: the architecture, the routes and the setup."
 tags: ["rust", "actix_web", "project"]
 ---
 **A lightweight backend service built with modern Rust web technologies, ideal for full-stack or API-centric applications.**
 
-<!-- more -->
 ---
 
 [📚 GitHub Repository](https://github.com/maltsev-dev/raw_web_server)
 <h2 style="text-align:center; margin-bottom:8px;">Tools</h2>
 <p align="center" style="margin:0; padding:0;">
-  <img style="display:inline-block; vertical-align:middle;"
-       src="https://img.shields.io/badge/rust-1.83.0%20-green" alt="Rust Version"/>
-  <img style="display:inline-block; vertical-align:middle;"
-       src="https://img.shields.io/badge/actix_web-4.0%20-orange" alt="actix_web Version"/>
-  <img style="display:inline-block; vertical-align:middle;"
-       src="https://img.shields.io/badge/tokio-1.0%20-orange" alt="tokio version"/>
-  <img style="display:inline-block; vertical-align:middle;"
-       src="https://img.shields.io/badge/sqlx-0.8.2%20-blue" alt="sqlx version"/>
-  <img style="display:inline-block; vertical-align:middle;"
-       src="https://img.shields.io/badge/serde-1.0%20-blue" alt="serde version"/>
-  <img style="display:inline-block; vertical-align:middle;"
-       src="https://github.com/chemyl/note_service/actions/workflows/rust.yml/badge.svg" alt="Build status"/>
+  <code>rust 1.83.0</code>
+  <code>actix_web 4.0</code>
+  <code>tokio 1.0</code>
+  <code>sqlx 0.8.2</code>
+  <code>serde 1.0</code>
+  <a href="https://github.com/chemyl/note_service/actions/workflows/rust.yml"><code>CI</code></a>
 </p>
 
 This project showcases a **RESTful backend service** built with the [Actix-Web](https://crates.io/crates/actix-web) framework, ideal for handling fast, asynchronous HTTP operations.
@@ -36,7 +30,7 @@ It uses modern, production-ready Rust technologies like:
 
 ---
 
-## 🔧 Architecture Overview
+## 🔧 Architecture overview
 
 **Note Service** is structured as a standalone binary crate designed to perform common backend tasks:
 
@@ -64,7 +58,7 @@ It uses modern, production-ready Rust technologies like:
 
 ---
 
-## ⚙️ Installation & Setup
+## ⚙️ Installation & setup
 
 ### 1. Install Rust (if not already):
 
@@ -100,7 +94,7 @@ http://127.0.0.1:8080
 
 ---
 
-## 🌐 API Endpoints
+## 🌐 API endpoints
 
 | Method | Endpoint      | Description             |
 | ------ | ------------- | ----------------------- |
@@ -112,7 +106,7 @@ http://127.0.0.1:8080
 
 ---
 
-## 💡 Use Cases
+## 💡 Use cases
 
 * As a lightweight backend for a frontend SPA (e.g., Yew, React)
 * Great for learning real-world Actix patterns

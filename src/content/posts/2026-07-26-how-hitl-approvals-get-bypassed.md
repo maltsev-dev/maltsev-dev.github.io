@@ -60,7 +60,7 @@ coverage is what fails.
 
 | Bypass class | What the agent does | What the gate lets through | The check that catches it |
 |---|---|---|---|
-| **1. Alternate dispatch path** | Reaches the tool through a second interface the middleware was never attached to | The same behaviour, gated on only one of two routes | Canary over the full route list, re-run on every framework upgrade |
+| **1. Alternate dispatch path** | Reaches the tool through a second interface the middleware was never attached to | The same behavior, gated on only one of two routes | Canary over the full route list, re-run on every framework upgrade |
 | **2. Retry wrapper** | A retry or timeout wrapper re-invokes the tool *below* the middleware layer | A second invocation of an already-approved action | Make the tool fail once, then succeed. Two effects with one approval is the bug |
 | **3. Subagent delegation** | Spawns a child agent with a subset of the tools, and the child carries no middleware | The same effect, under a new principal | Give a child a tool the parent is gated on and confirm the child cannot reach it |
 | **4. Direct call in your own code** | A handler, post-processing step or retry in your application calls the tool function itself | The effect, with the framework entirely out of the loop | Grep the application for direct imports of tool functions outside the agent |
@@ -71,7 +71,7 @@ coverage is what fails.
 mechanism that does not include the middleware. In practice this is
 often a second tool interface: a direct-call helper, a streaming variant
 of the same tool, an MCP client registered separately from the
-framework's MCP integration. Two ways to reach the same behaviour, one
+framework's MCP integration. Two ways to reach the same behavior, one
 gated.
 
 **2. The retry wrapper.** A framework retry or timeout wrapper re-invokes

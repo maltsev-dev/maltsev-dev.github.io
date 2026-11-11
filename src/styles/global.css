@@ -30,9 +30,9 @@
   --braise-txt: #ec8a58;
   /* The focus ring has to clear 3:1 on every surface it lands on, and in this
      ramp the accent only reaches 2.17:1 on the rust chrome. The ring therefore
-     uses the text colour, which clears it on both the paper and the panels. */
+     uses the text color, which clears it on both the paper and the panels. */
   --focus-ring: #ffa02e;
-  /* Syntax colours live on the code panel, not on the page, so they need their
+  /* Syntax colors live on the code panel, not on the page, so they need their
      own ramp: one accent cannot be both a border and 4.5:1 text. */
   --code-kw: #ffc48a;
   --code-str: #b7e8c0;
@@ -44,7 +44,14 @@
   /* The placeholder of a form field, on the page ground and on the fill the
      field takes when it is focused. */
   --placeholder: #e6b894;
-  --theme-color: #14100a;
+  /* The rule that separates one table cell from the next. It is not the panel
+     color: --rouille is a fill, and as a cell boundary it measured 2.22:1
+     here, 2.38:1 in acidule and 1.25:1 on the light ramp. This is one step
+     out of that ramp, and it clears 3:1 on the page in every theme. */
+  --table-rule: #b0442a;
+  /* The browser chrome. The hex lives in --papier and nowhere else: this is
+     the same value, under the name the browser chrome needs. */
+  --theme-color: var(--papier);
 }
 
 :root[data-theme='acidule'] {
@@ -64,12 +71,11 @@
   --code-cm: #cfe6d1;
   --ok: #c8f0cf;
   --placeholder: #a7e0ac;
-  --theme-color: #01141d;
+  --table-rule: #11707e;
 }
 
 :root[data-theme='pierre'] {
   --papier: #f4efe6;
-  --grid: #ded3c0;
   --rouille: #e3d6bd;
   --braise: #b8431e;
   --encre: #3d3124;
@@ -84,7 +90,12 @@
   --code-cm: #5b4d3d;
   --ok: #1f6b2b;
   --placeholder: #5b4d3d;
-  --theme-color: #f4efe6;
+  --table-rule: #8a7a63;
+  /* The faint rules. On the light ramp the old value sat at 1.29:1 against
+     the paper, which is the same value as the page; this one is dark enough
+     to read as a drawn line. It is still a decorative hairline — the only
+     boundary that carries meaning is the table rule above. */
+  --grid: #c9bda6;
 }
 
 /* The art face, shipped rather than hoped for.
@@ -124,6 +135,70 @@
   --ui-zoom: 1;
   --wrap: 100%;
 
+  /* ----- The chrome stack -------------------------------------------------
+     Two elements sit at the top of every page: the status bar (1.9rem plus a
+     hairline) and the menu bar (44px plus a hairline). Together they are
+     about 4.8rem tall. Everything that has to clear them — an anchor target,
+     the sticky section heading — measures itself against this one number
+     rather than against a magic constant of its own. The narrow-screen value
+     lives in os.css, next to the rule that takes the menu bar out of the
+     stack. */
+  --chrome-h: 4.8rem;
+
+  /* ----- Type scale --------------------------------------------------------
+     Three steps below 1rem, plus the micro step between the label and the
+     body-small step. The label step carries the small uppercase mono labels,
+     the micro step the meta rows that sit between a label and body copy, the
+     body-small step the running text that is not body copy, and the lead-in
+     step the paragraph that opens a block. Anything at or above 1rem is set
+     from the element's own size. */
+  --fs-label: 0.75rem;
+  --fs-micro: 0.8rem;
+  --fs-small: 0.875rem;
+  --fs-lead: 0.95rem;
+
+  /* ----- Spacing scale -----------------------------------------------------
+     The gaps in the site were twenty-two different rem values with nothing
+     to match one against another. These are the steps: a rule that needs air
+     takes the nearest one, and the rhythm is the same everywhere. */
+  --sp-1: 0.25rem;
+  --sp-2: 0.5rem;
+  --sp-3: 0.75rem;
+  --sp-4: 1rem;
+  --sp-5: 1.5rem;
+  --sp-6: 2rem;
+  --sp-7: 3rem;
+
+  /* ----- Breakpoint ladder -------------------------------------------------
+     The site used eleven rem widths with no shared scale. These are the nine
+     widths the stylesheets actually query, in order. Every media query in
+     global.css, os.css, track.css, case.css and animation.css that carries a
+     rem width uses one of them and nothing else.
+
+     A custom property cannot be used inside a media-query condition, so the
+     queries use the literal value and this block is the index of them: when a
+     breakpoint moves, it moves here as well.
+
+       --bp-2xs   30rem   the narrowest phone: a card loses its second column
+       --bp-xs    34rem   a phone at its narrowest: single-column navigation
+       --bp-sm    40rem   a phone: the blocks that stack
+       --bp-md    44rem   a narrow column: the footer grid folds
+       --bp-lg    52rem   the menu collapses into the flat strip
+       --bp-xl    74rem   the homepage figure column goes wide
+       --bp-rail  52.1rem  the sideways track; must match isHorizontal() in
+                            track.js, which gates the same layout
+       --bp-wide  60rem   the section rail is dropped below this
+       --bp-hero  62rem   the homepage hero becomes two columns */
+  --bp-2xs: 30rem;
+  --bp-xs: 34rem;
+  --bp-sm: 40rem;
+  --bp-md: 44rem;
+  --bp-lg: 52rem;
+  --bp-xl: 74rem;
+  --bp-rail: 52.1rem;
+  --bp-wide: 60rem;
+  --bp-hero: 62rem;
+
   color-scheme: dark;
 }
 
@@ -134,9 +209,9 @@
   color-scheme: light;
 }
 
-/* Text selection is the one colour in the site that belongs to no theme
+/* Text selection is the one color in the site that belongs to no theme
    until this rule exists — the browser default blue on every page.
-   The page colour goes on the accent, not the other way round: the accent
+   The page color goes on the accent, not the other way round: the accent
    under the cream text measures 3.14:1 in phosphore and 1.95:1 in acidule,
    and selected text is text the reader then has to read. */
 ::selection {
@@ -170,6 +245,15 @@
 html {
   -webkit-text-size-adjust: 100%;
   scroll-behavior: smooth;
+}
+
+/* Anchor targets have to clear the chrome. The status bar and the menu bar
+   together are about 4.8rem tall, so an in-page jump used to park the first
+   line of the destination under them and the visitor saw the middle of a
+   section instead of its heading. The clearance is declared once, here, and
+   the sticky heading uses the same number (see --chrome-h in os.css). */
+[id] {
+  scroll-margin-top: var(--chrome-h);
 }
 
 body {
@@ -259,7 +343,7 @@ pre {
   background: var(--rouille);
   border: var(--filet) solid var(--braise);
   box-shadow: var(--ombre-sm);
-  padding: 1rem;
+  padding: var(--sp-4);
   overflow-x: auto;
   color: var(--fort);
 }
@@ -273,7 +357,7 @@ pre code {
    one — and the site theme picks which one is live. The inline style on each
    token names both; the rule below reads the one this theme wants. Without
    this the `code { color: var(--fort) }` above wins on every token Shiki
-   left uncoloured, which in the light theme is dark ink on a dark block. */
+   left uncolored, which in the light theme is dark ink on a dark block. */
 pre.astro-code {
   background-color: var(--shiki-dark-bg, var(--rouille));
   color: var(--shiki-dark, var(--fort));
@@ -312,7 +396,7 @@ blockquote {
   background: var(--papier);
   border: var(--filet) solid var(--braise);
   box-shadow: var(--ombre);
-  padding: 1.5rem;
+  padding: var(--sp-5);
 }
 
 /* ----- Header ----------------------------------------------------------- */
@@ -327,16 +411,16 @@ blockquote {
 .site-header .wrap {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: var(--sp-4);
   justify-content: space-between;
-  padding-block: 0.75rem;
+  padding-block: var(--sp-3);
   flex-wrap: wrap;
 }
 
 .brand {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: var(--sp-2);
   text-decoration: none;
   font-family: var(--font-display);
   font-size: 1.15rem;
@@ -352,7 +436,7 @@ blockquote {
 
 .main-nav ul {
   display: flex;
-  gap: 0.35rem;
+  gap: var(--sp-1);
   list-style: none;
   margin: 0;
   padding: 0;
@@ -367,7 +451,7 @@ blockquote {
   text-decoration: none;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  font-size: 0.85rem;
+  font-size: var(--fs-small);
   /* These are the primary navigation on a phone, and they were 29px tall.
      The padding stays; the floor is what makes the row tappable. */
   min-height: 44px;
@@ -385,7 +469,7 @@ blockquote {
 
 .header-tools {
   display: flex;
-  gap: 0.5rem;
+  gap: var(--sp-2);
   align-items: center;
 }
 
@@ -418,9 +502,9 @@ blockquote {
 
 .btn-row {
   display: flex;
-  gap: 0.75rem;
+  gap: var(--sp-3);
   flex-wrap: wrap;
-  margin-block: 1.5rem;
+  margin-block: var(--sp-5);
 }
 
 /* ----- Home ------------------------------------------------------------- */
@@ -437,8 +521,8 @@ blockquote {
 .eyebrow {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  font-size: 0.78rem;
+  gap: var(--sp-2);
+  font-size: var(--fs-label);
   letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--braise);
@@ -468,14 +552,14 @@ blockquote {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
-  gap: 1rem;
+  gap: var(--sp-4);
   flex-wrap: wrap;
   margin-bottom: 1.25rem;
 }
 
 .card-grid {
   display: grid;
-  gap: 1.25rem;
+  gap: var(--sp-4);
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr));
 }
 
@@ -490,7 +574,7 @@ blockquote {
    ---------------------------------------------------------------------- */
 .card-row {
   display: flex;
-  gap: 1.25rem;
+  gap: var(--sp-4);
   overflow-x: auto;
   overscroll-behavior-x: contain;
   scroll-snap-type: x proximity;
@@ -508,19 +592,17 @@ blockquote {
 }
 
 /* While the wheel is turning the row, snapping would tug each notch back
-   toward the nearest card and the strip would judder instead of travelling.
+   toward the nearest card and the strip would judder instead of traveling.
    Snap applies once the reader stops. */
 .card-row.is-auto {
   scroll-snap-type: none;
 }
 
 /* Keyboard focus has to remain findable now that the scrollbar is gone: it is
-   the only visible indication that the row can be scrolled without a pointer,
-   so it gets an outline in the row's own colour. */
-.card-row:focus-visible {
-  outline: var(--trait) solid var(--focus-ring);
-  outline-offset: 2px;
-}
+   the only visible indication that the row can be scrolled without a pointer.
+   The global :focus-visible rule already draws the ring — --trait thick, in
+   the focus color, two pixels off the edge — so the row needs no rule of
+   its own and does not get a thinner one. */
 
 /* A fade at the end of the row that still has content behind it. Chromium
    draws an overlay scrollbar that occupies no space and fades itself out, so
@@ -598,7 +680,7 @@ blockquote {
 .card {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: var(--sp-2);
   padding: 1.1rem;
   border: var(--filet) solid var(--braise);
   background: var(--papier);
@@ -616,11 +698,11 @@ blockquote {
 .card p {
   margin: 0;
   color: var(--fort);
-  font-size: 0.95rem;
+  font-size: var(--fs-lead);
 }
 
 .card-meta {
-  font-size: 0.8125rem;
+  font-size: var(--fs-micro);
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--braise);
@@ -628,14 +710,14 @@ blockquote {
 
 .tag-row {
   display: flex;
-  gap: 0.4rem;
+  gap: var(--sp-2);
   flex-wrap: wrap;
   margin-top: auto;
-  padding-top: 0.5rem;
+  padding-top: var(--sp-2);
 }
 
 .tag {
-  font-size: 0.75rem;
+  font-size: var(--fs-label);
   text-transform: uppercase;
   letter-spacing: 0.08em;
   border: var(--filet) solid var(--rouille);
@@ -649,13 +731,13 @@ blockquote {
 }
 
 .prose h2 {
-  margin-top: 2rem;
+  margin-top: var(--sp-6);
   padding-bottom: 0.3rem;
   border-bottom: var(--filet) solid var(--grid);
 }
 
 .prose h3 {
-  margin-top: 1.5rem;
+  margin-top: var(--sp-5);
 }
 
 .prose img {
@@ -666,13 +748,13 @@ blockquote {
 .prose table {
   width: 100%;
   border-collapse: collapse;
-  margin-block: 1.5rem;
-  font-size: 0.92rem;
+  margin-block: var(--sp-5);
+  font-size: var(--fs-lead);
 }
 
 .prose th,
 .prose td {
-  border: var(--filet) solid var(--rouille);
+  border: var(--filet) solid var(--table-rule);
   padding: 0.5rem 0.7rem;
   text-align: left;
 }
@@ -682,9 +764,23 @@ blockquote {
   color: var(--fort);
 }
 
+/* The scroll container around a table in a post. Without it a wide table
+   stretched the phone's layout viewport from 390px to 730px — Chrome widens
+   the viewport to fit overflowing content, and the header re-laid out around
+   it. The container takes the table's width instead of the page's: it never
+   grows past its own box, and the table scrolls inside it. */
 .table-scroll {
   overflow-x: auto;
+  max-width: 100%;
+  /* A sideways drag inside the table must not drag the page with it. */
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
 }
+
+/* The table keeps its own width inside the container. A table is never
+   narrower than the content it holds, so a wide one overflows the container
+   and scrolls there instead of widening the page — the container's overflow
+   is what stops the layout viewport from being stretched. */
 
 /* Project landing pages keep their marketing blocks. */
 .hero-lead {
@@ -694,9 +790,9 @@ blockquote {
 
 .metrics {
   display: flex;
-  gap: 1.5rem;
+  gap: var(--sp-5);
   flex-wrap: wrap;
-  margin-block: 1.5rem;
+  margin-block: var(--sp-5);
 }
 
 .metric strong {
@@ -707,7 +803,7 @@ blockquote {
 }
 
 .metric span {
-  font-size: 0.78rem;
+  font-size: var(--fs-label);
   text-transform: uppercase;
   letter-spacing: 0.1em;
 }
@@ -715,19 +811,19 @@ blockquote {
 .warning {
   border: var(--trait) solid var(--braise);
   background: var(--rouille);
-  padding: 1rem;
+  padding: var(--sp-4);
 }
 
 /* ----- Forms ------------------------------------------------------------ */
 .field {
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
+  gap: var(--sp-1);
   margin-bottom: 1.1rem;
 }
 
 .field label {
-  font-size: 0.8rem;
+  font-size: var(--fs-micro);
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--braise);
@@ -746,7 +842,7 @@ blockquote {
 }
 
 /* The focused field turns rust, so the text inside it has to turn with it:
-   the page colour on the panel measures 4.20:1 in phosphore and 4.14:1 in
+   the page color on the panel measures 4.20:1 in phosphore and 4.14:1 in
    acidule, under the AA floor at the moment the visitor most needs to read
    what they typed. */
 .field input:focus,
@@ -766,7 +862,7 @@ blockquote {
 }
 
 .form-status {
-  margin-top: 1rem;
+  margin-top: var(--sp-4);
   padding: 0.8rem 1rem;
   border: var(--trait) solid var(--braise);
   background: var(--rouille);
@@ -844,7 +940,7 @@ blockquote {
 .palette-empty {
   padding: 0.9rem 1rem;
   color: var(--braise);
-  font-size: 0.9rem;
+  font-size: var(--fs-small);
 }
 
 /* The group a result belongs to. This rule lives here and not in the
@@ -853,7 +949,7 @@ blockquote {
 .palette-group {
   display: inline-block;
   min-width: 5.5rem;
-  font-size: 0.7rem;
+  font-size: var(--fs-label);
   text-transform: uppercase;
   letter-spacing: 0.1em;
   opacity: 0.7;
@@ -864,15 +960,15 @@ blockquote {
    the two rules the shared layout needs are here.
    ---------------------------------------------------------------------- */
 .site-footer {
-  margin-top: 3rem;
+  margin-top: var(--sp-7);
   border-top: var(--trait) solid var(--braise);
   background: var(--rouille);
-  padding-block: 1.5rem;
+  padding-block: var(--sp-5);
 }
 
 .footer-links {
   display: flex;
-  gap: 0.9rem;
+  gap: var(--sp-4);
   flex-wrap: wrap;
 }
 
@@ -971,9 +1067,9 @@ blockquote {
 .lead-label {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: var(--sp-2);
   font-family: var(--font-mono);
-  font-size: 0.75rem;
+  font-size: var(--fs-label);
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--braise);
@@ -995,9 +1091,9 @@ blockquote {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 0.5rem;
+  gap: var(--sp-2);
   font-family: var(--font-mono);
-  font-size: 0.75rem;
+  font-size: var(--fs-label);
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--encre);
@@ -1018,7 +1114,7 @@ blockquote {
   color: var(--fort);
 }
 
-/* A labelled figure: pipeline, diagram, anything boxed with a caption. */
+/* A labeled figure: pipeline, diagram, anything boxed with a caption. */
 .figure {
   margin: 2rem 0;
   border: var(--filet) solid var(--braise);
@@ -1028,7 +1124,7 @@ blockquote {
 
 .figure-label {
   font-family: var(--font-mono);
-  font-size: 0.75rem;
+  font-size: var(--fs-label);
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--braise);
@@ -1040,7 +1136,7 @@ blockquote {
 .figure-body {
   display: flex;
   flex-direction: column;
-  gap: 0.15rem;
+  gap: var(--sp-1);
 }
 
 /* Pipeline rows: a rail down the left, a stage box, a cost chip. */
@@ -1048,7 +1144,7 @@ blockquote {
   display: grid;
   grid-template-columns: auto 1fr auto;
   align-items: center;
-  gap: 0.8rem;
+  gap: var(--sp-3);
   padding: 0.35rem 0;
 }
 
@@ -1088,18 +1184,18 @@ blockquote {
 
 .pipe-name {
   font-family: var(--font-mono);
-  font-size: 0.8rem;
+  font-size: var(--fs-micro);
   color: var(--fort);
 }
 
 .pipe-desc {
-  font-size: 0.84rem;
+  font-size: var(--fs-small);
   color: var(--encre);
 }
 
 .pipe-cost {
   font-family: var(--font-mono);
-  font-size: 0.75rem;
+  font-size: var(--fs-label);
   letter-spacing: 0.1em;
   text-transform: uppercase;
   border: var(--filet) solid currentColor;
@@ -1155,7 +1251,7 @@ blockquote {
 
 .card-body {
   margin: 0 0 0.6rem;
-  font-size: 0.9rem;
+  font-size: var(--fs-small);
   color: var(--encre);
 }
 
@@ -1163,10 +1259,10 @@ blockquote {
 .ctx-rule {
   display: grid;
   grid-template-columns: auto 1fr;
-  gap: 0.8rem;
+  gap: var(--sp-3);
   padding: 0.6rem 0;
   border-top: var(--filet) solid var(--grid);
-  font-size: 0.92rem;
+  font-size: var(--fs-lead);
 }
 
 .ctx-rule:first-of-type {
@@ -1175,7 +1271,7 @@ blockquote {
 
 .ctx-num {
   font-family: var(--font-mono);
-  font-size: 0.75rem;
+  font-size: var(--fs-label);
   color: var(--braise);
 }
 
@@ -1186,7 +1282,7 @@ blockquote {
 
 /* Inline code tokens. These sit on the code panel, not on the page, so the
    accent is not available to them: it measures 2.17:1 there in phosphore.
-   Each token class has a per-ramp colour that clears 4.5:1 on the panel. */
+   Each token class has a per-ramp color that clears 4.5:1 on the panel. */
 .t-kw,
 .t-cl {
   color: var(--code-kw);
@@ -1211,7 +1307,7 @@ blockquote {
 /* ==========================================================================
    Read column
 
-   The page container is full-bleed, so long-form articles centre themselves
+   The page container is full-bleed, so long-form articles center themselves
    inside it rather than stretching the measure across a wide monitor.
    ========================================================================== */
 .article,
@@ -1222,10 +1318,10 @@ blockquote {
 
 .article-back {
   font-family: var(--font-mono);
-  font-size: 0.75rem;
+  font-size: var(--fs-label);
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  margin-bottom: 1.5rem;
+  margin-bottom: var(--sp-5);
 }
 
 .article hr {
@@ -1235,14 +1331,14 @@ blockquote {
 }
 
 /* ----- The close of an article ------------------------------------------
-   A post used to end with its last line: no neighbour, no related post and
+   A post used to end with its last line: no neighbor, no related post and
    no way to ask a question about it. Three blocks close it now.
    ---------------------------------------------------------------------- */
 .post-nav {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-  margin-top: 3rem;
+  gap: var(--sp-4);
+  margin-top: var(--sp-7);
   padding-top: 1.2rem;
   border-top: var(--trait) solid var(--braise);
 }
@@ -1272,7 +1368,7 @@ blockquote {
 .post-nav-label {
   display: block;
   font-family: var(--font-mono);
-  font-size: 0.7rem;
+  font-size: var(--fs-label);
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--braise);
@@ -1291,7 +1387,7 @@ blockquote {
 
 .post-related-head {
   font-family: var(--font-mono);
-  font-size: 0.75rem;
+  font-size: var(--fs-label);
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--braise);
@@ -1303,14 +1399,14 @@ blockquote {
   margin: 0;
   padding: 0;
   display: grid;
-  gap: 0.5rem;
+  gap: var(--sp-2);
 }
 
 .post-related-list a {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
-  gap: 1rem;
+  gap: var(--sp-4);
   padding: 0.6rem 0.8rem;
   border: var(--filet) solid var(--grid);
   text-decoration: none;
@@ -1328,7 +1424,7 @@ blockquote {
 
 .post-related-date {
   font-family: var(--font-mono);
-  font-size: 0.75rem;
+  font-size: var(--fs-label);
   color: var(--encre);
   white-space: nowrap;
 }
@@ -1371,7 +1467,7 @@ blockquote {
    ========================================================================== */
 .project > .hero,
 .project .hero {
-  margin-bottom: 2rem;
+  margin-bottom: var(--sp-6);
   padding: 0;
 }
 
@@ -1387,7 +1483,7 @@ blockquote {
 
 .project .hero-fit {
   font-family: var(--font-mono);
-  font-size: 0.75rem;
+  font-size: var(--fs-label);
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--braise);
@@ -1418,9 +1514,9 @@ blockquote {
 
 .project .metric span {
   display: block;
-  margin-top: 0.25rem;
+  margin-top: var(--sp-1);
   font-family: var(--font-mono);
-  font-size: 0.75rem;
+  font-size: var(--fs-label);
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--encre);
@@ -1435,7 +1531,7 @@ blockquote {
 .project .btn-group {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.75rem;
+  gap: var(--sp-3);
   margin-block: 1.6rem;
 }
 

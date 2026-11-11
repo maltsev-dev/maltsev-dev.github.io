@@ -7,11 +7,7 @@ tags: ["ai", "engineering", "architecture"]
 
 <p class="lede">Most AI systems don't fail because of a bad model. They fail because there's no structure around it. Here's how to build one that holds in production.</p>
 
-<p class="lead-meta">
-<span>7 min read</span>
-<span class="lead-sep">·</span>
-<span>Framework agnostic · LLM agnostic</span>
-</p>
+<p>Framework agnostic · LLM agnostic</p>
 
 <p>I've seen production systems where the model was excellent — GPT-4, Claude, Gemini — and the surrounding code was a mess of hardcoded prompts, zero validation, and no separation of concerns. The model couldn't save them.</p>
 
@@ -314,5 +310,5 @@ result = pipeline.<span class="tok t-fn">run</span>(raw_input=<span class="tok t
 
 <div class="os-panel cta">
 <p>Building something like this?<br>Hit a pattern that worked better?</p>
-<div class="lead-meta">Drop a comment · ♻ Repost if this saves someone a refactor</div>
+<p>♻ Repost if this saves someone a refactor</p>
 </div>

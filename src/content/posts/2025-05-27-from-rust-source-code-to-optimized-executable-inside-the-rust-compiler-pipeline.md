@@ -8,9 +8,8 @@ This multi-stage pipeline ensures Rust’s guarantees of memory safety, zero-cos
 
 🟠 In this article, we’ll explore each key step, from tokenization and macro expansion to borrow checking, LLVM optimizations, and final linking—revealing how Rust transforms your code into a reliable executable.
 
-<!-- more -->
 ---
-## &emsp;&emsp;&emsp; I. Initial code processing and abstract representation
+## I. Initial code processing and abstract representation
 
 - **A. Lexical Analysis (Lexing): Tokenization of Source Code**  
     The very first step in the compilation pipeline is *lexical analysis*, or lexing.  
@@ -53,7 +52,7 @@ This multi-stage pipeline ensures Rust’s guarantees of memory safety, zero-cos
 
 ---
 
-## &emsp;&emsp;&emsp; II. High-level Intermediate Representation (HIR) and semantic analysis
+## II. High-level intermediate representation (HIR) and semantic analysis
 
 The next step is for the compiler to transform the concrete AST into a more abstract High-Level Intermediate Representation (HIR).  
 This step focuses on desugaring syntactic constructs and performing basic semantic analysis, including **type checking**, **type inference**, and **trait resolution**.
@@ -98,7 +97,7 @@ This step focuses on desugaring syntactic constructs and performing basic semant
 
 ---
 
-## &emsp;&emsp;&emsp; III. Middle-level Intermediate Representation (MIR) and Basic Security Checks
+## III. Middle-level intermediate representation (MIR) and basic security checks
 
 This step introduces MIR, a highly simplified control flow graph-based representation that is the basis for Rust's unique memory safety guarantees, in particular borrow checking, as well as various compiler optimizations.
 
@@ -158,7 +157,7 @@ This step introduces MIR, a highly simplified control flow graph-based represent
     
 ---
 
-## &emsp;&emsp;&emsp; IV. Backend: Code generation and machine-specific optimizations
+## IV. Backend: Code generation and machine-specific optimizations
 
 This final major stage of the `rustc` compiler involves translating the highly optimized MIR into **executable machine code**, using [LLVM](https://en.wikipedia.org/wiki/LLVM) for architecture-specific transformations and extensive optimizations.
 
@@ -203,7 +202,7 @@ This final major stage of the `rustc` compiler involves translating the highly o
 
 ---
 
-## &emsp;&emsp;&emsp; V. Linking: Building the final executable file
+## V. Linking: Building the final executable file
 
 The final stage of the compilation process involves combining all the compiled **object files** and **required libraries** into a single executable binary file or shared library. This is done by the linker.
 

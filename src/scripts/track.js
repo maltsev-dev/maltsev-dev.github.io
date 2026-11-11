@@ -2,12 +2,12 @@
 //
 // Two modes, told apart by `data-track-mode` on the runway:
 //
-//   scroll (/experience/, /projects/) — the page scrolls down and the runway's
-//          height carries the row's travel, exactly as before.
-//   wheel  (/experience/ only)         — the page does not scroll. The wrapper
-//          is one viewport tall and the wheel feeds the row directly: a
-//          trackpad swipe arrives as deltaX, a mouse wheel as deltaY, and both
-//          mean the same thing here. Arrow keys step one card at a time.
+//   scroll (/experience/) — the page scrolls down and the runway's height
+//          carries the row's travel, exactly as before.
+//   wheel  (/projects/)   — the page does not scroll. The wrapper is one
+//          viewport tall and the wheel feeds the row directly: a trackpad
+//          swipe arrives as deltaX, a mouse wheel as deltaY, and both mean the
+//          same thing here. Arrow keys step one card at a time.
 //
 // Both modes share one render path: a progress fraction in, a transform and a
 // lit panel out.
@@ -64,7 +64,7 @@
   // last panel — a row's end padding is not part of its scrollable overflow —
   // and that padding is what holds the last card clear of the frame's right edge
   // at the end of the travel. Without it the travel ends a card's width short
-  // and the last panel stops flush right instead of centred.
+  // and the last panel stops flush right instead of centered.
   function travel() {
     var w = row.scrollWidth;
     if (w <= track.clientWidth) return 0;
@@ -72,7 +72,7 @@
     return w + padEnd - track.clientWidth;
   }
 
-  // The centring padding at the head of the row: how far the row sits from where
+  // The centering padding at the head of the row: how far the row sits from where
   // it wants to start, once spent.
   function lead() {
     return parseFloat(window.getComputedStyle(row).paddingLeft) || 0;
@@ -101,27 +101,27 @@
     // frame to its left — a hole that only closes once the reader has scrolled.
     // So the row starts wound forward by its own leading padding and unwinds
     // across the travel: flush against the page margin at the start, last card
-    // centred at the end. Linear in p, so one constant speed the whole way.
+    // centered at the end. Linear in p, so one constant speed the whole way.
     var offset = -(lead() + span() * p);
     row.style.transform = 'translate3d(' + offset.toFixed(2) + 'px, 0, 0)';
     if (branches) branches.style.setProperty('--track-progress', p.toFixed(4));
     if (hudBar) hudBar.style.setProperty('--track-progress', p.toFixed(4));
 
-    // Light the panel nearest the centre of the frame, and only that one.
+    // Light the panel nearest the center of the frame, and only that one.
     //
     // Not by measuring the panels now — they are mid-transform, and the opening
     // one sits flush against the page margin rather than near the middle, so a
-    // proximity test lights its neighbour on arrival. Instead the same question
+    // proximity test lights its neighbor on arrival. Instead the same question
     // is asked of the geometry: at what fraction of the travel is each card
-    // centred? Each card is one pitch further along, so that fraction is linear
+    // centered? Each card is one pitch further along, so that fraction is linear
     // in the index.
     //
     // Clamped to the travel, because at the ends it falls outside: the first
-    // card is centred a little *before* the row starts and the last a little
+    // card is centered a little *before* the row starts and the last a little
     // after it ends. Left unclamped the first card would never be the nearest to
     // anything and the page would open one card along, with the panel the
     // reader actually arrived at sitting dark to the left. Clamped, a card owns
-    // the end of the travel its centre falls short of, which is what it is.
+    // the end of the travel its center falls short of, which is what it is.
     var current = 0;
     var reach = span();
     if (reach > 0 && panels.length > 1) {
@@ -193,7 +193,7 @@
     }
     if (t && t.isContentEditable) return;
     // And to whatever is open on top of the page: the letter modal has its own
-    // keyboard behaviour and must not have the background move under it.
+    // keyboard behavior and must not have the background move under it.
     if (t && t.closest && t.closest('[role="dialog"]')) return;
 
     var reach = span();

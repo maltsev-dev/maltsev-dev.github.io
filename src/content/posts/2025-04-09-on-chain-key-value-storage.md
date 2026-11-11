@@ -1,12 +1,12 @@
 ---
 title: "📦 On-Chain Key-Value Storage"
 date: "2025-04-09"
+description: "An Anchor program that stores and updates user-defined key-value entries on-chain, a small favorites manager."
 tags: ["rust", "solana", "anchor", "project"]
 ---
 **A Solana smart contract project that demonstrates how to send, store, and update data on-chain using keys.**
 Built with **Rust** and the **Anchor** framework.
 
-<!-- more -->
 ---
 
 [📚 GitHub Repository](https://github.com/maltsev-dev/send_data)
@@ -22,7 +22,7 @@ A great starting point for:
 
 ---
 
-## 🧰 Stack & Tools
+## 🧰 Stack & tools
 
 * 🦀 **Rust** (Solana smart contract logic)
 * ⚓ **Anchor** (framework for Solana programs)
@@ -51,9 +51,9 @@ A great starting point for:
 
 ---
 
-## 🚀 Getting Started
+## 🚀 Getting started
 
-### 1. 🧪 Start Local Solana Validator
+### 1. 🧪 Start local Solana validator
 
 Spin up a local blockchain testnet:
 
@@ -61,7 +61,7 @@ Spin up a local blockchain testnet:
 solana-test-validator
 ```
 
-### 2. 🛠 Build and Deploy
+### 2. 🛠 Build and deploy
 
 Compile and deploy the Anchor program:
 
@@ -69,7 +69,7 @@ Compile and deploy the Anchor program:
 anchor build && anchor deploy
 ```
 
-### 3. 👛 Add Wallet
+### 3. 👛 Add wallet
 
 Set your Solana CLI wallet path:
 
@@ -77,7 +77,7 @@ Set your Solana CLI wallet path:
 export ANCHOR_WALLET=~/.config/solana/id.json
 ```
 
-### 4. ✅ Run Tests
+### 4. ✅ Run tests
 
 Ensure everything works as expected with:
 
@@ -85,14 +85,14 @@ Ensure everything works as expected with:
 cargo test
 ```
 
-### 5. 🔍 View Transactions
+### 5. 🔍 View transactions
 
 Access the local explorer to track activity:
 [http://localhost:8899](http://localhost:8899)
 
 ---
 
-## 🧠 Use Cases & Ideas
+## 🧠 Use cases & ideas
 
 * ⭐ Store favorite quotes, URLs, or topics by key
 * 🧾 Use it as a base for decentralized note-taking or bookmarking

@@ -7,7 +7,6 @@ Microcontroller peripherals are functional blocks integrated into the chip that 
 
 🟠 When selecting a microcontroller, your choice should depend on the required peripherals, not the other way around.
 
-<!-- more -->
 ---
 
 The **peripherals of a microcontroller** act like its **senses**, enabling it to interact with the outside world, process analog signals, manage time, communicate with other devices, and perform various application-specific tasks.

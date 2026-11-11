@@ -21,7 +21,7 @@
   display: grid;
   place-items: center;
   background: var(--papier);
-  padding: 1.5rem;
+  padding: var(--sp-5);
 }
 
 .boot-overlay[hidden] {
@@ -43,7 +43,7 @@
 .boot-box {
   width: min(100%, 30rem);
   font-family: var(--font-mono);
-  font-size: 0.82rem;
+  font-size: var(--fs-micro);
   line-height: 1.9;
   color: var(--encre);
   border: var(--filet) solid var(--braise);
@@ -54,7 +54,7 @@
 
 .boot-line {
   display: flex;
-  gap: 0.6rem;
+  gap: var(--sp-2);
   white-space: nowrap;
   overflow: hidden;
 }
@@ -114,11 +114,18 @@
 .progress-rail i {
   display: block;
   height: 100%;
-  width: 0;
+  width: 100%;
   background: var(--braise);
+  /* Scaled, not resized. A width written on it every scroll frame makes the
+     browser lay the bar out again on every frame, and the layout is the
+     expensive part; a transform is only painted. The scroll fraction arrives
+     as `--progress` (0..1) from os.js, which falls back to sizing the bar by
+     width if this rule is not in the stylesheet it loaded. */
+  transform: scaleX(var(--progress, 0));
+  transform-origin: left center;
   /* Driven from JS on scroll; the transition keeps it smooth without
      running a rAF loop when the page is idle. */
-  transition: width 90ms linear;
+  transition: transform 90ms linear;
 }
 
 /* ----- Heading entrance --------------------------------------------------
@@ -456,7 +463,7 @@
     box-shadow: var(--ombre);
   }
 
-  /* Collapse the page transition to a single frame. Cancelling the animations
+  /* Collapse the page transition to a single frame. Canceling the animations
      outright is not an option: with no animation the outgoing snapshot stays
      on screen for the full duration before the browser tears it down, which
      reads as a freeze rather than as "no transition". */

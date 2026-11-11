@@ -2,6 +2,7 @@
 // Renders a project case study from its parsed JSON (see _parse_projects.py).
 // Replaces the legacy 300-line Bootstrap-ish HTML blob with site components,
 // so the case studies follow the theme and read like the rest of the site.
+import { AUTHOR } from '../lib/schema';
 
 interface Metric {
   value: string;
@@ -26,9 +27,14 @@ interface Props {
     risk?: { sub?: string; cards?: { title: string; text: string }[] };
     pricing?: { pairs?: { price: string; label: string }[]; note?: string };
   };
+  /**
+   * The case's date, already formatted for a reader. Optional: a case study
+   * with no date still renders, it just carries no date line.
+   */
+  date?: string;
 }
 
-const { data } = Astro.props;
+const { data, date } = Astro.props;
 
 const strip = (s?: string) =>
   (s || '').replace(/^[▲◆●¦■]\s*/, '').trim();
@@ -43,6 +49,23 @@ const has = (v: unknown[]) => Array.isArray(v) && v.length > 0;
     <h1 class="case-tagline">{data.tagline}</h1>
     {data.lead && <p class="lede">{data.lead}</p>}
     {data.fit && <p class="case-fit">{data.fit}</p>}
+
+    <!--
+      The byline. A case study is a piece of writing like any other, and the
+      reader is entitled to know whose account of the system they are reading.
+      The date sits in the same line when the case carries one.
+    -->
+    <p class="lead-meta">
+      <span>By {AUTHOR.name}</span>
+      {
+        date && (
+          <>
+            <span class="lead-sep" aria-hidden="true">·</span>
+            <span>{date}</span>
+          </>
+        )
+      }
+    </p>
 
     {has(data.metrics || []) && (
       <div class="case-metrics">
@@ -182,9 +205,34 @@ const has = (v: unknown[]) => Array.isArray(v) && v.length > 0;
     </section>
   )}
 
-  <section class="case-block">
-    <div class="btn-row">
-      <a class="btn" href="/projects/">All projects</a>
+  <!--
+    The close. The case used to end with a button that went back to the list
+    and nothing else — no way to ask about the work, and no reason to. It now
+    ends the way a post ends: with the person who did it and the way to reach
+    them.
+  -->
+  <section class="case-close">
+    <div class="post-cta">
+      <h2>Ask me about this</h2>
+      <p>
+        This is an account of a system that shipped. If something here is
+        close to the work you are trying to do, I am the person who built it —
+        half an hour on a call is enough for both of us to know whether it is
+        work I should be doing.
+      </p>
+      <div class="btn-row">
+        <button type="button" class="btn" data-open-letter>Write a message</button>
+        <a class="btn" href="/projects/">All projects</a>
+      </div>
     </div>
   </section>
 </article>
+
+<style>
+  /* The closing block sits below the last section without a rule of its own:
+     the CTA box carries the edge, and a hairline above it as well would draw
+     two lines a few pixels apart. */
+  .case-close {
+    margin-top: 2.4rem;
+  }
+</style>

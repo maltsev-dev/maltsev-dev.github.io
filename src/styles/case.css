@@ -39,7 +39,7 @@
 
 .case-fit {
   font-family: var(--font-mono);
-  font-size: 0.75rem;
+  font-size: var(--fs-label);
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--braise);
@@ -47,7 +47,7 @@
 }
 
 /* The metric strip: a hairline grid in the accent, cells in the paper
-   colour. The same construction as the legacy pages' .metrics, so the two
+   color. The same construction as the legacy pages' .metrics, so the two
    generations of page read as one. */
 .case-metrics {
   display: grid;
@@ -73,9 +73,9 @@
 
 .case-metric span {
   display: block;
-  margin-top: 0.25rem;
+  margin-top: var(--sp-1);
   font-family: var(--font-mono);
-  font-size: 0.75rem;
+  font-size: var(--fs-label);
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--encre);
@@ -83,7 +83,7 @@
 
 .case-trust {
   font-family: var(--font-mono);
-  font-size: 0.78rem;
+  font-size: var(--fs-label);
   color: var(--fort);
   border-left: var(--trait) solid var(--braise);
   padding-left: 0.85rem;
@@ -107,7 +107,7 @@
 .case-sub {
   max-width: 62ch;
   color: var(--fort);
-  margin-bottom: 1.5rem;
+  margin-bottom: var(--sp-5);
 }
 
 /* ----- The problem list -------------------------------------------------- */
@@ -117,14 +117,14 @@
   margin: 0;
   padding: 0;
   display: grid;
-  gap: 0.75rem;
+  gap: var(--sp-3);
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 19rem), 1fr));
 }
 
 .case-list li {
   display: grid;
   grid-template-columns: auto 1fr;
-  gap: 0.85rem;
+  gap: var(--sp-3);
   align-items: start;
   border: var(--filet) solid var(--grid);
   background: color-mix(in srgb, var(--rouille) 18%, var(--papier));
@@ -141,7 +141,7 @@
 .case-card-body {
   display: flex;
   flex-direction: column;
-  gap: 0.3rem;
+  gap: var(--sp-1);
 }
 
 .case-card-title {
@@ -149,7 +149,7 @@
 }
 
 .case-card-text {
-  font-size: 0.95rem;
+  font-size: var(--fs-lead);
   color: var(--encre);
 }
 
@@ -157,7 +157,7 @@
 
 .case-deltas {
   display: grid;
-  gap: 1rem;
+  gap: var(--sp-4);
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
 }
 
@@ -168,7 +168,7 @@
     'before arrow after'
     'label label label';
   align-items: baseline;
-  gap: 0.35rem 0.6rem;
+  gap: var(--sp-1) 0.6rem;
   border: var(--filet) solid var(--braise);
   background: var(--papier);
   padding: 0.9rem 1rem;
@@ -177,7 +177,7 @@
 .delta-before {
   grid-area: before;
   font-family: var(--font-mono);
-  font-size: 0.9rem;
+  font-size: var(--fs-small);
   color: var(--encre);
   opacity: 0.75;
   text-decoration: line-through;
@@ -201,7 +201,7 @@
 .delta-label {
   grid-area: label;
   font-family: var(--font-mono);
-  font-size: 0.72rem;
+  font-size: var(--fs-label);
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--braise);
@@ -227,14 +227,14 @@
   margin: 0;
   padding: 0;
   display: grid;
-  gap: 0.9rem;
+  gap: var(--sp-4);
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
 }
 
 .flow-step {
   display: grid;
   grid-template-columns: auto 1fr;
-  gap: 0.2rem 0.9rem;
+  gap: var(--sp-1) 0.9rem;
   align-items: start;
   border: var(--filet) solid var(--grid);
   background: color-mix(in srgb, var(--rouille) 18%, var(--papier));
@@ -251,7 +251,7 @@
   background: var(--braise);
   color: var(--papier);
   font-family: var(--font-mono);
-  font-size: 0.9rem;
+  font-size: var(--fs-small);
   font-weight: 700;
   line-height: 1;
 }
@@ -263,7 +263,7 @@
 
 .flow-step > span:not(.flow-n) {
   grid-column: 2;
-  font-size: 0.95rem;
+  font-size: var(--fs-lead);
   color: var(--encre);
 }
 
@@ -306,7 +306,7 @@
   background: var(--papier);
   padding: 1rem 1.1rem;
   display: grid;
-  gap: 0.3rem;
+  gap: var(--sp-1);
   align-content: start;
 }
 
@@ -319,7 +319,7 @@
 
 .price-cell span {
   font-family: var(--font-mono);
-  font-size: 0.75rem;
+  font-size: var(--fs-label);
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--encre);

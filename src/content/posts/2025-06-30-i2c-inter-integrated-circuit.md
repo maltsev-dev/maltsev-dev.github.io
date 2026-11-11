@@ -10,9 +10,8 @@ A technical introduction to the **I2C** - low-speed two-wire master-slave serial
 
 ![Master and slave chips connected by the two I2C lines: SDA for data and SCL for the clock](/images/emb/i2c_header.png)
 
-<!-- more -->
 ---
-## &emsp;&emsp;&emsp; I2C
+## I2C
 `I2C - Inter-Integrated Circuit`
 The most common protocol for transmitting data over `short distances`.  
 Synchronous `master-slave` protocol.  
@@ -28,7 +27,7 @@ Two wires are used -
 
 In addition, the wires are connected to the `Vcc` supply using one `pull-up` resistor.
 
-### &emsp;&emsp;&emsp; SDA Frame Format
+### SDA frame format
 
 ![Diagram of an I2C message frame showing the start condition, 7-bit slave address, R/W bit, acknowledge bit, data bytes and stop condition](/images/emb/i2c_message_frame.png)
 
@@ -40,12 +39,12 @@ In addition, the wires are connected to the `Vcc` supply using one `pull-up` res
 6. after data slave sends `Arc`, thus indicating that data is received
 7. communication is stopped by `stop condition`
 
-#### Start Condition
+#### Start condition
 As in [UART](/blog/2025-06-30-uart-universal-asynchronous-receiver-transmitter/), the `idle` state - for **SDA** and **SCL** - is `high(1)`
 * the `start condition` occurs when the node first pulls `low(0)` **SDA**, and then pulls `low(0)` **SCL**. Pulling down in this order occurs to capture the data bus.
 * after the data bus is captured - the node becomes the **master**. This prevents other nodes from capturing the bus and reduces the risk of conflicts.
 
-#### Slave Address
+#### Slave address
 * specifies which slave-node the master wants to communicate with.
 * each node on the bus has a `unique fixed address` usually `7 bits` with **MSB** first (most significant bit is one)
 * addresses can be hardcoded but sometimes they can be configured via wires
@@ -68,7 +67,7 @@ After the address bit come the **data bits** that are exchanged between the mast
 * data is always transmitted `8-bit` wide and MSB first  
 In most cases, multiple data transfers occur, with each `8-bit` having to be acknowledged separately
 
-#### Stop Condition
+#### Stop condition
 Mechanism to say that the last byte of data has been sent.
 Stop condition -
 * the **SCL** line goes `high(1)` and stays there
@@ -80,14 +79,14 @@ Stop condition -
 After the stop condition - the bus becomes inactive and there is no clock signal.  
 And any node on the bus can use the start condition to take over the bus and start a new communication.  
 
-### &emsp;&emsp;&emsp; Synchronization of data and clock pulses
+### Synchronization of data and clock pulses
 ![Timing diagram of I2C data and clock: SDA changes state only while SCL is low, and data is sampled in the middle of each clock pulse](/images/emb/i2c_sync.png)
 
 * data is always read in the `middle` of the clock pulse and never in the intervals between them.  
 This is necessary, because switching **SDA** at a `high(1)` level of the **SCL** signal would mean the `beginning` or `end` of the data transfer. (start / stop condition)
 * it turns out that **SDA** switches (0-1) only at a `low(0)` level  on **SCL**
 
-### &emsp;&emsp;&emsp; Open Drain
+### Open drain
 * usually **SDA** and **SDA** are `high(1)` because each of them is connected to the power supply (`+Vcc`) via a **pull-up** resistor, with one resistor per line, not one node.
 
 1. Each **I2C** device contains a logic device inside that can open and close the drain
@@ -97,13 +96,13 @@ This is necessary, because switching **SDA** at a `high(1)` level of the **SCL**
 When the lines are not in use, they are `high(1)` voltage, that is why **I2C** is called an open drain system
 ![Schematic of the I2C open-drain arrangement: the SDA or SCL line connects to ground through an open transistor and is pulled up to VCC by a resistor](/images/emb/i2c_open_drain.png)
 
-### &emsp;&emsp;&emsp; Pull- Up resistor
+### Pull-up resistor
 - Pulling down to **low(0)** faster than pull up to `idle` **high(1)**
 - the `higher` the resistor resistance, the more time is needed to raise the line, and this in turn limits the `speed of the bus.`
 - the `lower` the resistor resistance, the faster the communication occurs, but at the same time `more energy` is required
 * usually the values ​​of pull-up resistors for **I2C** are in the range of `1kOm` - `10kOm`
 
-### &emsp;&emsp;&emsp; Modes \ Speed
+### Modes and speed
 pull-up resistor values ​​are one of the factors limiting the maximum bus speed.  
 **I2C** speeds are usually called modes  
 **I2C** supports several speeds:

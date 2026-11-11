@@ -26,7 +26,7 @@ written against present-or-absent error signals has no path for it.
 
 ## Three responses, and what each one produces
 
-| Response | Caller behaviour | When the guess is wrong |
+| Response | Caller behavior | When the guess is wrong |
 |---|---|---|
 | Assume it succeeded | Does not retry | The action is silently lost. No refund, no record update, no alarm anywhere |
 | Assume it failed | Retries | The action happens twice. Double charge, second email, a delete that errors confusingly or destroys something adjacent |
@@ -63,7 +63,7 @@ class Outcome(Enum):
 
 If your state machine has only `applied` and `not_applied`, the code is
 **forced** to pick one. The type will not let it return neither, so every
-ambiguous path resolves in favour of whichever branch the author
+ambiguous path resolves in favor of whichever branch the author
 happened to write first, and no code review catches it because nothing
 looks wrong.
 
@@ -159,7 +159,7 @@ The same reasoning shows up in smaller forms all over an enforcement
 path, and in each case the system decides what an absent or unusable
 signal means:
 
-| Signal state | Gate behaviour | Why |
+| Signal state | Gate behavior | Why |
 |---|---|---|
 | Missing value | Fail closed, call refused | No data is not authorization |
 | Stale value | Fail open, bounded by the time-to-live | Staleness is a fact about timing, not an absence of information |
@@ -209,7 +209,7 @@ proposes under pressure is an auto-retry policy, which reintroduces the
 duplicate.
 
 And an agent blocked on unknown outcomes makes no progress. The workflow
-needs an escalation path. Without one the safe behaviour becomes "the
+needs an escalation path. Without one the safe behavior becomes "the
 agent stops", and stopping is exactly what fail-closed is supposed to
 avoid.
 
@@ -234,8 +234,8 @@ than to the endpoint.
 
 Those are the pleasant case: if the effect has not left the process, the
 outcome is knowable and there is nothing to reconcile. The difficulty
-scales with how far the effect travelled, and a tool that reaches a
-payment provider has travelled about as far as effects travel.
+scales with how far the effect traveled, and a tool that reaches a
+payment provider has traveled about as far as effects travel.
 
 ### How long does an unknown stay unknown?
 
@@ -263,11 +263,11 @@ execution identity to its organization and API key is valid for 24 hours;
 a budget reservation left idle is reclaimed after 300 seconds. Both
 windows are constants in the source, not tuning knobs that drift.
 
-The two replay behaviours above are the same rule applied to two
+The two replay behaviors above are the same rule applied to two
 resources. An approval is a grant, so re-consuming it is refused with a
 distinct replay-rejected code the agent reads as "this is a duplicate, do
 not retry". It never reads it as a failure that invites exactly that
-behaviour.
+behavior.
 A spend settlement is idempotent, so a retry after a network timeout
 settles once and reports success. Consumption of a reservation is atomic
 with the accounting it settles. Spend, ledger row and reservation release
