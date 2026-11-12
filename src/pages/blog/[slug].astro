@@ -2,7 +2,7 @@
 import { getCollection, render } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 import { describe, readingTime } from '../../lib/summarize';
-import { blogPostingNode, AUTHOR, postImage } from '../../lib/schema';
+import { blogPostingNode, AUTHOR, postImage, contactMailto } from '../../lib/schema';
 import { formatDate } from '../../data/dates';
 import { tagSlug, tagLabel } from '../../lib/tags';
 import { topicFor } from '../../data/topics';
@@ -152,8 +152,8 @@ const neighborLabel = related.length ? 'Related' : 'Recent writing';
     <!--
       The close of the article. The post used to end with its last line and
       nothing else: no way onward, no way to ask, no way back into the writing.
-      Three things now close it — the neighbors in time, the posts that share
-      its subject, and the way to start a conversation about it.
+      Three things close it now — the neighbors in time, the posts that share
+      its subject, and the invitation to write about it.
     -->
     <nav class="post-nav" aria-label="More posts">
       {
@@ -196,15 +196,24 @@ const neighborLabel = related.length ? 'Related' : 'Recent writing';
       )
     }
 
+    <!--
+      The close. The invitation stays; the button that repeated one the whole
+      site already carries is gone. The status bar's "available" indicator
+      opens the message form on every page, so a post that also carried a
+      "Write a message" button was the same offer twice on one screen. The
+      address in the sentence is the way to write without the script.
+    -->
     <section class="post-cta">
       <h2>Ask me about this</h2>
       <p>
         If this is close to the work you are trying to do, I am the person who
         wrote it. Half an hour on a call is enough for both of us to know
-        whether it is work I should be doing.
+        whether it is work I should be doing — so
+        <a class="post-cta-mail" href={contactMailto(`About: ${post.data.title}`)}>
+          write to me
+        </a>.
       </p>
       <div class="btn-row">
-        <button type="button" class="btn" data-open-letter>Write a message</button>
         <a class="btn" href="/freelance/">See the engagements</a>
       </div>
     </section>

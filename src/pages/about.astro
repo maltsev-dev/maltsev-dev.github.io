@@ -1,6 +1,14 @@
 ---
+import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import { yearsOfExperience } from '../lib/profile';
+
+/**
+ * How many notes there are. Counted, never typed: a number written into a
+ * sentence cannot be checked by a build, and the writing index is the thing
+ * this line points at.
+ */
+const postCount = (await getCollection('posts')).length;
 
 /*
   The Profile page answers "who is this and what are they like to work with",
@@ -43,25 +51,30 @@ const METHOD = [
   },
 ];
 
-// Right now. Three questions, answered plainly. Each answer is a list rather
-// than a run-on sentence — a single line of five items is unreadable.
+// Right now. Three questions, answered plainly.
 //
 // The third answer used to be the five service names, verbatim, from the
 // engagements page. The same list twice on one site is two places to update
 // and one place to read, so this one points at the page that holds it.
+//
+// The writing answer used to be two items — "agents" and "authorization, and
+// the systems underneath them" — which is one phrase split in half and
+// numbered as if it were two.
 const NOW = [
   {
     k: 'founding',
-    items: ['NullRun — runtime authorization for agents', 'Agentic Audit'],
+    lines: [
+      { text: 'NullRun — runtime authorization for agents', href: 'https://nullrun.io' },
+      { text: 'Agentic Audit' },
+    ],
   },
   {
     k: 'writing',
-    items: ['agents', 'authorization, and the systems underneath them'],
+    lines: [{ text: 'Agents, authorization, and the systems underneath them' }],
   },
   {
     k: 'taking on',
-    href: '/freelance/',
-    items: ['five fixed-scope engagements, one at a time'],
+    lines: [{ text: 'Five fixed-scope engagements, one at a time', href: '/freelance/' }],
   },
 ];
 ---
@@ -111,40 +124,15 @@ const NOW = [
     </figure>
 
     <!--
-      The habits underneath the focus. The list above says what the work is
-      about; this one says how it gets done, and the two are the same claim
-      from two sides: a system is only as trustworthy as the process that
-      produced it. That is why the closing line comes after both.
+      The habits underneath the focus used to live here, as a band of four
+      under the picture: test-driven development, systematic over ad-hoc,
+      complexity reduction, evidence over claims. Each of them is already
+      inside one of the four rules further down the page — "evidence over
+      claims" is "measure what matters", "systematic over ad-hoc" is "start
+      with the failure" — so the band was two lists of four saying the same
+      thing twice, one screen apart. The rules below are the longer version;
+      this page does not need the short one as well.
     -->
-    <div class="about-method" data-reveal data-reveal-delay="160">
-      <div class="about-method-head">
-        <span class="about-method-kicker">How the work gets done</span>
-        <p class="about-method-lead">
-          Looking past the happy path is only worth something if the way the
-          work is done can be repeated and checked. Four habits keep it that
-          way.
-        </p>
-      </div>
-
-      <ul class="about-method-list">
-        <li>
-          <span class="about-method-title">Test-Driven Development</span>
-          <span class="about-method-text">Write tests first, always.</span>
-        </li>
-        <li>
-          <span class="about-method-title">Systematic over ad-hoc</span>
-          <span class="about-method-text">Process over guessing.</span>
-        </li>
-        <li>
-          <span class="about-method-title">Complexity reduction</span>
-          <span class="about-method-text">Simplicity as the primary goal.</span>
-        </li>
-        <li>
-          <span class="about-method-title">Evidence over claims</span>
-          <span class="about-method-text">Verify before declaring success.</span>
-        </li>
-      </ul>
-    </div>
 
     <p class="about-conclusion" data-reveal data-reveal-delay="180">
       If a system can take action, its actions must be traceable, its failures
@@ -167,14 +155,18 @@ const NOW = [
           <article class="stage" data-stage>
             <div class="stage-num">{s.n}</div>
             <div class="stage-main">
-              <h3 class="stage-title">{s.title}</h3>
-              <p class="stage-lead">{s.lead}</p>
-              <p class="stage-body">{s.body}</p>
-              <ul class="stage-marks">
-                {s.marks.map((m) => (
-                  <li>{m}</li>
-                ))}
-              </ul>
+              <div class="stage-claim">
+                <h3 class="stage-title">{s.title}</h3>
+                <p class="stage-lead">{s.lead}</p>
+                <ul class="stage-marks">
+                  {s.marks.map((m) => (
+                    <li>{m}</li>
+                  ))}
+                </ul>
+              </div>
+              <div class="stage-detail">
+                <p class="stage-body">{s.body}</p>
+              </div>
             </div>
           </article>
         ))
@@ -182,40 +174,52 @@ const NOW = [
     </div>
   </section>
 
-  <!-- ---- Right now, over the artwork ---- -->
-  <section class="section">
-    <div class="now" data-reveal>
-      <div class="now-art" aria-hidden="true"></div>
-      <div class="now-body">
-        <h2 class="now-title">Right now</h2>
-        <dl class="now-list">
-          {
-            NOW.map((n) => (
-              <div class="now-row">
-                <dt>{n.k}</dt>
-                <dd>
-                  {n.href ? (
-                    /* One answer that is a door rather than a list: the
-                       engagements page holds the five offers in full, and
-                       repeating their names here is the duplication this
-                       page used to have. */
-                    <a class="now-link" href={n.href}>
-                      {n.items[0]}
+  <!--
+    Right now. Three answers side by side.
+  -->
+  <section class="section about-now">
+    <div class="section-head">
+      <h2 data-reveal data-anim="underline">Right now</h2>
+      <span class="card-meta">three answers</span>
+    </div>
+
+    <div class="now-grid" data-reveal>
+      {
+        NOW.map((n) => (
+          <div class="now-card">
+            <span class="now-k">{n.k}</span>
+            <ul class="now-lines">
+              {n.lines.map((l) => (
+                <li>
+                  {l.href ? (
+                    <a class="now-link" href={l.href}>
+                      {l.text}
+                      {/* The non-breaking space below binds the arrow to the
+                          last word: on a narrow card it used to fall onto a
+                          line of its own. */}
+                      {'\u00A0'}
+                      <span class="now-go" aria-hidden="true">
+                        →
+                      </span>
                     </a>
                   ) : (
-                    <ul class="now-items">
-                      {n.items.map((it) => (
-                        <li>{it}</li>
-                      ))}
-                    </ul>
+                    l.text
                   )}
-                </dd>
-              </div>
-            ))
-          }
-        </dl>
-      </div>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))
+      }
     </div>
+
+    <p class="now-close" data-reveal>
+      The same questions, answered at length: {postCount} notes so far.
+      <a class="now-link" href="/blog/">
+        Start with the newest{'\u00A0'}
+        <span class="now-go" aria-hidden="true">→</span>
+      </a>
+    </p>
   </section>
 </Base>
 
@@ -224,11 +228,11 @@ const NOW = [
      than in os.css. The tokens are the site's; only the arrangement is new. */
 
   /* ----- Hero: copy beside the portrait --------------------------------- */
-  /* Four rows. The headline spans the full width so it can be set as one
+  /* Three rows. The headline spans the full width so it can be set as one
      line — in a 1fr column it would wrap into a ragged stack no matter what
      size it is given. Below the headline the bullets take a narrow column and
-     the picture takes the rest; the method strip and the closing line run
-     across the full width underneath.
+     the picture takes the rest; the closing line runs across the full width
+     underneath.
 
      The `hero` class is also a rail panel, and the rail rule
      (`[data-rail='on'] > .hero`) turns it into a flex column. Both selectors
@@ -342,74 +346,12 @@ const NOW = [
     background: var(--papier);
   }
 
-  /* ---- The method strip, under the focus -------------------------------- */
-  /* A band across the full width: the left column says what the habits are
-     for, the right one lists them two by two. A hairline separates it from
-     the portrait above so the two blocks do not read as one long column. */
-  .about-method {
-    grid-column: 1 / -1;
-    grid-row: 3;
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 2.1fr);
-    gap: 0.8rem clamp(1rem, 3vw, 2.6rem);
-    align-items: start;
-    padding-top: clamp(1rem, 2.4vw, 1.6rem);
-    border-top: var(--filet) solid var(--grid);
-  }
-
-  .about-method-kicker {
-    display: block;
-    margin-bottom: 0.5rem;
-    font-family: var(--font-mono);
-    font-size: 0.75rem;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--braise);
-  }
-
-  .about-method-lead {
-    margin: 0;
-    max-width: 34ch;
-    font-size: 0.98rem;
-    color: var(--fort);
-  }
-
-  .about-method-list {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 0.9rem clamp(1rem, 2.6vw, 2rem);
-    margin: 0;
-    padding: 0;
-    list-style: none;
-  }
-
-  /* Each habit gets a rule in the accent color, the same marker the focus
-     list uses, so the two lists are visibly the same kind of thing. */
-  .about-method-list li {
-    display: grid;
-    gap: 0.1rem;
-    padding-left: 0.9rem;
-    border-left: var(--trait) solid var(--braise);
-  }
-
-  .about-method-title {
-    font-family: var(--font-display);
-    font-size: 0.98rem;
-    letter-spacing: 0.01em;
-    color: var(--encre);
-  }
-
-  .about-method-text {
-    font-size: 0.9rem;
-    color: var(--fort);
-  }
-
   /* ---- The closing line -------------------------------------------------- */
   /* The sentence the page argues for, so it gets the size: it is set larger
      than the commentary around it and given its own rule. */
   .about-conclusion {
     grid-column: 1 / -1;
-    grid-row: 4;
+    grid-row: 3;
     margin: 0;
     max-width: 52ch;
     padding-top: clamp(0.9rem, 2.2vw, 1.4rem);
@@ -417,6 +359,41 @@ const NOW = [
     font-size: clamp(1.1rem, 2.1vw, 1.45rem);
     line-height: 1.45;
     color: var(--encre);
+    text-wrap: balance;
+  }
+
+  /* ---- The four rules ----------------------------------------------------
+     The claim on the left, the argument on the right. The paragraph used to
+     sit in a 42rem column inside a panel a third wider, so half of every
+     rule was empty page, and the four rules read as a narrow list down the
+     middle of the screen. The keywords move up to the claim: they are its
+     summary, and the paragraph is what they summarise.
+     ---------------------------------------------------------------------- */
+  .stage-main {
+    display: grid;
+    gap: var(--sp-4);
+  }
+
+  @media (min-width: 60rem) {
+    .stage-main {
+      grid-template-columns: minmax(0, 25rem) minmax(0, 1fr);
+      column-gap: clamp(2rem, 5vw, 4rem);
+      align-items: start;
+    }
+  }
+
+  .stage-detail {
+    min-width: 0;
+  }
+
+  /* The keywords sit under the claim now, so they need air above them; the
+     paragraph is the last thing in its column, so it needs none below. */
+  .stage-claim .stage-marks {
+    margin-top: var(--sp-3);
+  }
+
+  .stage-detail .stage-body {
+    margin-bottom: 0;
   }
 
   /* A list of selves, not a caption: monospaced but not shouted, and left in
@@ -433,19 +410,23 @@ const NOW = [
   /* ---- The sticky marker over the assemble block ------------------------ */
   /* It sticks, so it has to earn it. A bare heading on an opaque slab reads
      as a leftover — it chops the panels off with a hard edge every time one
-     slides underneath. A kicker gives it a job, a hairline gives it an edge to
-     die out along, and the background fades rather than cuts. */
+     slides underneath. A kicker gives it a job and a hairline gives it an
+     edge to die out along.
+
+     The background behind it is solid rather than a gradient. The gradient
+     was there so the panels would fade under the heading instead of being
+     cut by it, but a fade is only as good as the band it lives in: the band
+     was about thirty pixels, which is one line of type, so a line caught in
+     it came out half-visible — the tags of one rule and the last sentence
+     of another, sitting side by side in the gap under the heading like a
+     rendering fault. Solid paper plus the hairline cuts the panels at a
+     line that was drawn to be there. */
   .about-sticky {
     display: grid;
     gap: 0.45rem;
     padding-block: 0.8rem 1.1rem;
     margin-bottom: 1.4rem;
-    background: linear-gradient(
-      to bottom,
-      var(--papier) 0%,
-      var(--papier) 68%,
-      transparent 100%
-    );
+    background: var(--papier);
   }
 
   .about-sticky-kicker {
@@ -462,81 +443,36 @@ const NOW = [
     background: linear-gradient(to right, var(--braise), transparent 78%);
   }
 
-  /* ---- Right now, over the artwork ------------------------------------- */
-  .now {
-    position: relative;
-    border: var(--trait) solid var(--braise);
-    box-shadow: var(--ombre);
-    overflow: hidden;
-    background: var(--papier);
-  }
+  /* ---- Right now ---------------------------------------------------------
+     Three answers side by side, each under its own rule — the same shape as
+     the "what this is not" block on the engagements page, because it is the
+     same kind of statement.
 
-  /* Same per-theme art as the hero, pushed far back so the type stays the
-     subject. The gradient does the work: opaque under the text, gone by the
-     time it reaches the right-hand side. */
-  .now-art {
-    position: absolute;
-    inset: 0;
-    background-size: cover;
-    background-position: center right;
-    opacity: 0.32;
-  }
-
-  :root[data-theme='phosphore'] .now-art {
-    background-image: url('/images/profile/desk-phosphore.webp');
-  }
-
-  :root[data-theme='acidule'] .now-art {
-    background-image: url('/images/profile/desk-acidule.webp');
-  }
-
-  :root[data-theme='pierre'] .now-art {
-    background-image: url('/images/profile/desk-pierre.webp');
-  }
-
-  .now-art::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    /* Stays opaque under the whole text column now that the column is wider:
-       the art is a texture at the right-hand edge, not a background the type
-       has to survive on. */
-    background: linear-gradient(
-      100deg,
-      var(--papier) 0%,
-      color-mix(in srgb, var(--papier) 90%, transparent) 62%,
-      color-mix(in srgb, var(--papier) 35%, transparent) 86%,
-      transparent 100%
-    );
-  }
-
-  .now-body {
-    position: relative;
-    padding: clamp(1.3rem, 3.4vw, 2.2rem);
-    max-width: 46rem;
-  }
-
-  .now-title {
-    margin: 0 0 1rem;
-    font-size: clamp(1.4rem, 3.4vw, 2rem);
-  }
-
-  .now-list {
-    margin: 0;
+     The band used to carry the desk artwork again, faded to a third and
+     pushed behind the text. The same picture twice on one page, at an opacity
+     low enough to read as a stain rather than as a picture, is noise: it took
+     the right half of the section and gave the reader nothing to look at.
+     The picture is in the hero, where it is the subject.
+     ---------------------------------------------------------------------- */
+  .now-grid {
     display: grid;
-    gap: 0.1rem;
+    gap: 1.6rem clamp(1.4rem, 3vw, 2.6rem);
+    grid-template-columns: 1fr;
   }
 
-  .now-row {
-    display: grid;
-    grid-template-columns: minmax(5.5rem, auto) 1fr;
-    align-items: start;
-    gap: 0.4rem 1.2rem;
-    padding: 0.7rem 0;
-    border-top: var(--filet) solid var(--grid);
+  @media (min-width: 48rem) {
+    .now-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
   }
 
-  .now-row dt {
+  .now-card {
+    border-top: var(--trait) solid var(--braise);
+    padding-top: 0.7rem;
+  }
+
+  .now-k {
+    display: block;
     font-family: var(--font-mono);
     font-size: 0.75rem;
     letter-spacing: 0.14em;
@@ -544,45 +480,61 @@ const NOW = [
     color: var(--braise);
   }
 
-  .now-row dd {
-    margin: 0;
+  .now-lines {
+    display: grid;
+    gap: 0.4rem;
+    margin: 0.55rem 0 0;
+    padding: 0;
+    list-style: none;
     color: var(--fort);
   }
 
-  /* The one answer that is a door. Drawn like a link because it is one. */
+  /* The two answers that are doors. Drawn like links because they are.
+
+     The underline is a text-decoration rather than a border, because the
+     longest of these answers — "NullRun — runtime authorization for agents"
+     — is 348px wide: on a border with `white-space: nowrap` it could not
+     shrink, so between 48rem and 54rem it ran out of its column and into
+     the next one. A decoration wraps with the text and breaks with it. */
   .now-link {
     color: var(--braise);
+    text-decoration: underline;
+    text-decoration-thickness: var(--filet);
     text-decoration-color: var(--braise);
+    text-underline-offset: 0.22em;
   }
 
   .now-link:hover {
     color: var(--fort);
+    text-decoration-color: var(--fort);
   }
 
-  /* Numbered like the stages above, so the three answers read as three short
-     lists rather than three sentences with commas in them. */
-  .now-items {
-    display: grid;
-    gap: 0.35rem;
-    margin: 0;
-    padding: 0;
-    list-style: none;
-    counter-reset: now-item;
+  .now-go {
+    display: inline-block;
+    margin-left: 0.3rem;
+    transition: transform 180ms ease;
   }
 
-  .now-items li {
-    display: grid;
-    grid-template-columns: 1.6rem 1fr;
-    gap: 0.2rem;
-    counter-increment: now-item;
+  .now-link:hover .now-go {
+    transform: translateX(3px);
   }
 
-  .now-items li::before {
-    content: counter(now-item, decimal-leading-zero);
-    font-family: var(--font-mono);
-    font-size: 0.75rem;
-    color: var(--braise);
-    padding-top: 0.15em;
+  /* The way out of the page. It closes the band the way the closing blocks
+     on the posts and the cases close their pages. */
+  .now-close {
+    margin: 2.2rem 0 0;
+    padding-top: 1rem;
+    border-top: var(--filet) solid var(--grid);
+    max-width: 52ch;
+    color: var(--fort);
+  }
+
+  /* The rail gives every section a screen of its own. This one holds three
+     answers: a screen's worth of panel around two hundred pixels of type
+     read as an empty screen rather than as a closing band, so it hugs what
+     it has. */
+  .section.about-now {
+    min-height: 0;
   }
 
   /* ----- Narrower screens ------------------------------------------------ */
@@ -596,7 +548,6 @@ const NOW = [
     .about-head,
     .about-lead,
     .portrait,
-    .about-method,
     .about-conclusion {
       grid-column: 1 / -1;
       grid-row: auto;
@@ -611,19 +562,11 @@ const NOW = [
     .portrait {
       order: -1;
     }
-
-    .about-method {
-      grid-template-columns: 1fr;
-    }
   }
 
-  @media (max-width: 34rem) {
-    .now-row {
-      grid-template-columns: 1fr;
-    }
-
-    .about-method-list {
-      grid-template-columns: 1fr;
+  @media (prefers-reduced-motion: reduce) {
+    .now-go {
+      transition: none;
     }
   }
 </style>

@@ -21,6 +21,20 @@ export const AUTHOR = {
   ],
 } as const;
 
+/**
+ * The one address the site writes to.
+ *
+ * It was written into five files by hand: the footer, the header, the
+ * engagements page, the script that opens the mail client and the agent map.
+ * An address that changes is a thing to change in one place, so it lives
+ * here and everywhere else asks for it.
+ */
+export const CONTACT_EMAIL = 'mr.a.maltsev@gmail.com';
+
+/** A mailto link to the address above. */
+export const contactMailto = (subject?: string): string =>
+  `mailto:${CONTACT_EMAIL}${subject ? `?subject=${encodeURIComponent(subject)}` : ''}`;
+
 /** The social card every page shares unless it has one of its own. */
 const SITE_IMAGE = '/og.png';
 

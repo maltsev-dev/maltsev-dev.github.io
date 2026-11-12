@@ -330,6 +330,11 @@ h4 {
   letter-spacing: 0.01em;
   margin: 0 0 0.6em;
   color: var(--fort);
+  /* A heading that has to wrap should not leave one word alone on the last
+     line. Balance evens the lines instead: "I build AI systems that survive
+     production." breaks in two halves rather than orphaning "production.",
+     and a four-line title breaks four ways instead of three and a stub. */
+  text-wrap: balance;
 }
 
 h1 {
@@ -562,6 +567,9 @@ blockquote {
   font-size: 1.1rem;
   max-width: 60ch;
   color: var(--fort);
+  /* A lede is two or three lines, so it is worth balancing: the last line
+     used to be able to hold a single word while the first took everything. */
+  text-wrap: balance;
 }
 
 .section {
@@ -1471,6 +1479,9 @@ blockquote {
 
 .post-related-title {
   color: var(--fort);
+  /* A related post's title is two lines at most; balanced, the second line
+     does not end up holding an acronym on its own. */
+  text-wrap: balance;
 }
 
 .post-related-date {
@@ -1482,17 +1493,53 @@ blockquote {
 
 .post-cta {
   margin-top: 2.8rem;
-  padding: 1.4rem 1.5rem;
+  padding: 1.6rem 1.5rem;
   border: var(--trait) solid var(--braise);
   background: var(--rouille);
+  /* A closing block is a sign-off, not another column of prose. Left
+     aligned it sat in the middle of an empty half-screen and read as
+     content that had run out; centred, it reads as the end of the page. */
+  text-align: center;
 }
 
 .post-cta h2 {
   margin-top: 0;
 }
 
+/* The paragraph keeps a readable measure even though the block around it
+   is as wide as the column. It is also set in the cream rather than in the
+   body colour: on the rouge ground the body colour measures 4.2:1, and the
+   cream measures 6.8:1. */
+.post-cta p {
+  max-width: 48ch;
+  margin-inline: auto;
+  color: var(--fort);
+}
+
 .post-cta .btn-row {
+  justify-content: center;
   margin-bottom: 0;
+}
+
+/* The address in the sentence. It is the only way to write on the page, so
+   it is drawn as a link rather than left as one more piece of prose.
+
+   The box it sits in is the rouge ground, and the accent on that ground
+   measures 2.17:1 — a link written in it would be unreadable. So the text
+   keeps the colour of the paragraph and the underline does the work, in the
+   cream that measures 6.8:1 on the same ground. */
+.post-cta-mail {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-color: var(--fort);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.18em;
+  /* A link that breaks across two lines breaks the underline too. */
+  white-space: nowrap;
+}
+
+.post-cta-mail:hover {
+  color: var(--fort);
 }
 
 @media (max-width: 34rem) {
@@ -1507,6 +1554,19 @@ blockquote {
 
 .article h1 {
   margin-bottom: 0.6rem;
+  /* A title may be wider than the column it sits in. The prose wants 46rem
+     to stay readable; a display title wants room, and "Rust Toolchain: A
+     Complete Guide to Managing and Configuring Your Rust Environment" was
+     four lines in a column that also holds 78-character paragraphs. The
+     heading breaks out of the column and centres itself on the page, so the
+     title takes two or three lines and the body stays where it was.
+
+     The offset is a margin rather than a transform on purpose: the reveal
+     animation sets `transform: none` when it ends, and a title that had
+     drifted half its width to the right would stay there. */
+  --title-w: min(56rem, calc(100vw - 2 * clamp(1rem, 4vw, 3rem)));
+  width: var(--title-w);
+  margin-left: calc(50% - var(--title-w) / 2);
 }
 
 /* ==========================================================================

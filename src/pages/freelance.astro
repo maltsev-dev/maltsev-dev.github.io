@@ -1,5 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
+import { contactMailto } from '../lib/schema';
 
 const num = (i: number) => String(i + 1).padStart(2, '0');
 
@@ -155,8 +156,16 @@ const NOT_THIS = [
         hard enough that a template won't do.
       </p>
 
+      <!--
+        One way forward here. The page used to open with a "Start a
+        conversation" button and close with a "Write a message" button that
+        both opened the same form the status bar already opens from every
+        page — the same offer twice, and a button on a page whose subject is
+        work that has already been scoped. The form is still one click away,
+        in the strip at the top of the screen; the close of the page is where
+        the writing happens.
+      -->
       <div class="btn-row eng-cta" data-reveal data-reveal-delay="180">
-        <button type="button" class="btn" data-open-letter>Start a conversation</button>
         <a class="btn" href="/projects/">See the work</a>
       </div>
     </div>
@@ -259,9 +268,11 @@ const NOT_THIS = [
   <!--
     The close. The page says what the work is, what it costs and what the
     reader ends up holding — and then it stops. A page about taking on work
-    has to end with a way to start it, so the two ways in sit side by side:
-    the form, and the plain address, so it still works with the script
-    blocked.
+    has to end with a way to start it, so this block is the one place on the
+    site where the invitation is the whole point: centred, measured to a
+    paragraph, and carrying one way to write. The form button that used to
+    sit beside it opened the same form as the strip at the top of the screen,
+    so the address in the sentence is the way to write without the script.
   -->
   <section class="section close-cta">
     <div class="close-inner">
@@ -269,12 +280,9 @@ const NOT_THIS = [
       <p data-reveal data-reveal-delay="60">
         Tell me what you are trying to build and where it is stuck. Half an hour
         on a call is enough for both of us to know whether this is work I should
-        be doing — and I will say so if it is not.
+        be doing — and I will say so if it is not. If you would rather write
+        first, <a class="post-cta-mail" href={contactMailto('An engagement')}>send me a note</a>.
       </p>
-      <div class="btn-row" data-reveal data-reveal-delay="120">
-        <button type="button" class="btn" data-open-letter>Write a message</button>
-        <a class="btn" href="mailto:mr.a.maltsev@gmail.com">Email directly</a>
-      </div>
     </div>
   </section>
 </Base>
@@ -356,7 +364,10 @@ const NOT_THIS = [
 
   @media (min-width: 52rem) {
     .eng {
-      grid-template-columns: minmax(13rem, 19rem) 1fr;
+      /* The title column was 19rem and every title that needed more than
+         that broke in the wrong place — "RAG Quality & Access-Control
+         Audit" left "Control Audit" alone on the second line. */
+      grid-template-columns: minmax(15rem, 22rem) 1fr;
       gap: var(--sp-6);
       align-items: start;
     }
@@ -380,6 +391,7 @@ const NOT_THIS = [
     margin: 0;
     font-size: clamp(1.05rem, 2.2vw, 1.25rem);
     line-height: 1.2;
+    text-wrap: balance;
   }
 
   .eng-facts {
@@ -499,20 +511,33 @@ const NOT_THIS = [
 
   /* ----- Close ------------------------------------------------------------
      The block that says what to do next. It is the only thing on the page
-     that asks for anything, so it is set apart: a rule above it, a measure
-     that reads as a paragraph rather than as a banner, and the two ways in
-     side by side — the form and the plain address, so the page still works
-     with the script blocked.
+     that asks for anything, so it is set apart: a rule above it, and a
+     measure that reads as a paragraph rather than as a banner. Centred, like
+     the closing blocks on the posts and the cases — a sign-off that sat in
+     the left third of an empty screen read as content that had run out
+     rather than as the end of the page.
      ---------------------------------------------------------------------- */
   .close-cta {
     border-top: var(--trait) solid var(--braise);
   }
 
   .close-inner {
-    max-width: 42rem;
+    max-width: 44rem;
+    margin-inline: auto;
+    text-align: center;
   }
 
   .close-inner p {
     color: var(--fort);
+    margin-bottom: 0;
+  }
+
+  /* On this page the address sits on the page ground rather than on the
+     rouge box, and the accent measures 4.8:1 there — so here it can be the
+     accent itself, which is what the rest of the site does with a link. */
+  .close-inner .post-cta-mail,
+  .close-inner .post-cta-mail:hover {
+    color: var(--braise);
+    text-decoration-color: var(--braise);
   }
 </style>

@@ -24,3 +24,31 @@ import Minimal from '../layouts/Minimal.astro';
     </div>
   </section>
 </Minimal>
+
+<style>
+  /* The one page a reader lands on by accident has nothing to line up with:
+     it is a signpost, not a document. So it stands in the middle of the
+     screen — centred, with the two ways out under the line that says what
+     happened — instead of hanging in the top-left corner of an empty page. */
+  .hero {
+    min-height: 100vh;
+    min-height: 100svh;
+    display: grid;
+    align-content: center;
+    justify-items: center;
+    text-align: center;
+    padding-block: 2rem;
+  }
+
+  .hero h1 {
+    margin-bottom: 0.3em;
+  }
+
+  .hero .lede {
+    margin-bottom: 1.8rem;
+  }
+
+  .hero .btn-row {
+    justify-content: center;
+  }
+</style>

@@ -1189,6 +1189,10 @@
   font-family: var(--font-display);
   font-size: clamp(1rem, 2.2vw, 1.25rem);
   color: var(--encre);
+  /* Two lines, and the second one used to hold a single word — "build.",
+     "boundaries.", "production." — because the first line took everything it
+     could. Balance evens them instead. */
+  text-wrap: balance;
 }
 
 /* The panel is 1200px wide and the paragraph used to fill all of it — 150

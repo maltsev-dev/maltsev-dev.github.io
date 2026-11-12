@@ -2,7 +2,7 @@
 // Renders a project case study from its parsed JSON (see _parse_projects.py).
 // Replaces the legacy 300-line Bootstrap-ish HTML blob with site components,
 // so the case studies follow the theme and read like the rest of the site.
-import { AUTHOR } from '../lib/schema';
+import { AUTHOR, contactMailto } from '../lib/schema';
 
 interface Metric {
   value: string;
@@ -210,6 +210,11 @@ const has = (v: unknown[]) => Array.isArray(v) && v.length > 0;
     and nothing else — no way to ask about the work, and no reason to. It now
     ends the way a post ends: with the person who did it and the way to reach
     them.
+
+    The message button is gone: the status bar's "available" indicator opens
+    the same form on every page, and a case study that carried its own copy
+    of it was the same offer twice on one screen. The address in the sentence
+    is the way to write without the script.
   -->
   <section class="case-close">
     <div class="post-cta">
@@ -218,10 +223,12 @@ const has = (v: unknown[]) => Array.isArray(v) && v.length > 0;
         This is an account of a system that shipped. If something here is
         close to the work you are trying to do, I am the person who built it —
         half an hour on a call is enough for both of us to know whether it is
-        work I should be doing.
+        work I should be doing — so
+        <a class="post-cta-mail" href={contactMailto('About the work')}>
+          write to me
+        </a>.
       </p>
       <div class="btn-row">
-        <button type="button" class="btn" data-open-letter>Write a message</button>
         <a class="btn" href="/projects/">All projects</a>
       </div>
     </div>

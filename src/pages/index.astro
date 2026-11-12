@@ -117,7 +117,7 @@ const work = cases.map((project) => ({
     </p>
 
     <div class="btn-row home-cta" data-reveal data-reveal-delay="180">
-      <button type="button" class="btn" data-open-letter>Work with me</button>
+      <button type="button" class="btn btn-primary" data-open-letter>Work with me</button>
       <a class="btn" href="/projects/">See what shipped</a>
     </div>
 
@@ -371,10 +371,14 @@ const work = cases.map((project) => ({
   }
 
   /* ----- The hero ----------------------------------------------------------
-     On a wide screen the headline takes the room and the lede takes a fixed
-     column beside it, with the eyebrow over the top of both. Below the
-     breakpoint they stack, because a lede beside a headline only works where
-     there is width for both.
+     On a wide screen the headline takes the full width, so it can be set on
+     one line — it measured 1001px against the 840px a column beside the lede
+     left it, and broke into a long line and a stub. The lede then takes the
+     wide column and the buttons take a fixed one at the other end of the
+     same row, and the numbers run across the bottom.
+
+     Below the breakpoint everything stacks, because a lede beside a headline
+     only works where there is width for both.
      ---------------------------------------------------------------------- */
   .home-hero {
     padding-block: clamp(2.2rem, 8vh, 5rem) clamp(1.5rem, 4vh, 3rem);
@@ -386,16 +390,18 @@ const work = cases.map((project) => ({
       grid-template-columns: minmax(0, 1fr) minmax(0, 27rem);
       grid-template-areas:
         'eyebrow eyebrow'
-        'title   lede'
-        'cta     cta'
+        'title   title'
+        'lede    cta'
         'stats   stats';
       column-gap: clamp(2rem, 5vw, 4.5rem);
+      row-gap: clamp(0.9rem, 2.2vw, 1.6rem);
       align-items: end;
     }
 
     .home-hero .eyebrow {
       grid-area: eyebrow;
       justify-self: start;
+      margin-bottom: 0;
     }
 
     .home-hero h1 {
@@ -410,6 +416,8 @@ const work = cases.map((project) => ({
 
     .home-hero .home-cta {
       grid-area: cta;
+      margin-block: 0;
+      justify-content: flex-end;
     }
 
     .home-hero .home-stats {
