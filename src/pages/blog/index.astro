@@ -4,7 +4,8 @@ import Base from '../../layouts/Base.astro';
 import { TOPICS, topicFor } from '../../data/topics';
 import { tagSlug, tagLabel } from '../../lib/tags';
 import { describe, isShort, readingTime, MAX_DESCRIPTION } from '../../lib/summarize';
-import { formatDate } from '../../data/dates';
+import { formatDateShort } from '../../data/dates';
+import { displayTitle } from '../../lib/text';
 
 const posts = (await getCollection('posts')).sort((a, b) =>
   (b.data.date ?? '').localeCompare(a.data.date ?? '')
@@ -16,23 +17,11 @@ const posts = (await getCollection('posts')).sort((a, b) =>
  * A post that writes its own description gets it; the rest get the first
  * real sentences of their body, cut at a sentence or a clause so the line
  * never ends mid-thought. The short ones — the notes rather than the essays —
- * get a line either way, because a card with a title and nothing else does
- * not tell a reader whether the post is worth opening.
+ * get a line either way, because a listing row with a title and nothing else
+ * does not tell a reader whether the post is worth opening.
  */
 const summaryOf = (post: (typeof posts)[number]): string =>
   describe(post.data.title, post.body, post.data.description, MAX_DESCRIPTION);
-
-/**
- * The emoji that open the older titles.
- *
- * A post page keeps its own title exactly as it was written. In a grid of
- * sixty-nine cards of the same shape they read as noise: one card opens with
- * a robot, the next with a game controller, the next with nothing at all, and
- * the reader ends up reading the pictograms instead of the titles. The grid
- * drops them; the post keeps them.
- */
-const bare = (title: string): string =>
-  title.replace(/^\p{Extended_Pictographic}\s*/u, '').trim() || title;
 
 /**
  * The tags worth a chip.
@@ -141,288 +130,318 @@ const cards = posts.map((post) => {
 
   return {
     href: `/blog/${post.id}/`,
-    title: bare(post.data.title),
-    date: formatDate(post.data.date),
+    title: displayTitle(post.data.title),
+    date: formatDateShort(post.data.date),
     iso: post.data.date ?? '',
     minutes: readingTime(post.body),
     short: isShort(post.body),
     summary,
     topic,
     topicId: topic?.id ?? '',
+    topicShort: topic?.short ?? '',
     tags: post.data.tags.map((t) => ({
       slug: tagSlug(t),
       label: tagLabel(t),
     })),
     // What the search box matches against: the title, the summary and the
     // tags, in one lowercase string.
-    text: [post.data.title, summary, tagNames.join(' ')].join(' ').toLowerCase(),
+    text: [displayTitle(post.data.title), summary, tagNames.join(' ')]
+      .join(' ')
+      .toLowerCase(),
   };
 });
 ---
 
 <Base
   title="Writing"
-  description="Notes on agent runtime security, embedded Rust and the parts that break in production — every post, newest first, filed by topic."
+  description="Notes on agent runtime security, embedded Rust and the parts that break in production. Every post, newest first, filed by topic."
 >
+  <!--
+    The page is one terminal window. The subjects are the directories, the
+    posts are the files, and the filter bar is the part of the machine that
+    narrows a listing down. A grid of sixty-nine cards was the same content
+    wearing a different costume; the listing is what the content actually
+    looks like.
+  -->
   <section class="hero">
-    <span class="eyebrow" data-reveal>Notes</span>
+    <span class="eyebrow" data-reveal><span class="pulse-dot"></span>Notes</span>
     <h1 data-reveal data-reveal-delay="60">Writing</h1>
+
+    <p class="tty-prompt" data-reveal data-reveal-delay="100">
+      <span class="who">root</span><span class="sep">@</span><span
+        >amaltsev</span>
+      ><span class="sep">:</span><span class="path">~/writing</span><span
+        class="sep"
+        >$</span
+      >
+      <span class="tty-cmd">ls -la</span>
+    </p>
+
     <p class="lede" data-reveal data-reveal-delay="120">
       {posts.length} notes on agent runtime security, embedded Rust, and the
       parts of a system that break in production.
     </p>
-
-    <!--
-      The subjects, before the list. A reader who came for one thread — the
-      authorization argument, or the firmware series — should be able to see
-      that the thread exists without reading the index.
-    -->
-    <ul class="topic-strip" data-reveal data-reveal-delay="180">
-      {
-        TOPICS.map((topic) => (
-          <li class="topic-strip-item">
-            <span class="topic-strip-name">{topic.label}</span>
-            <span class="topic-strip-count">{topic.posts.length}</span>
-            <span class="topic-strip-desc">{topic.desc}</span>
-          </li>
-        ))
-      }
-    </ul>
   </section>
 
   <section class="section">
-    <div class="section-head">
-      <h2 data-reveal data-anim="underline">All writing</h2>
-      <span class="card-meta" data-count>{posts.length} posts</span>
-    </div>
-
-    <!--
-      The filter bar is hidden until the script runs. A page without
-      JavaScript shows every post and no controls that do nothing, which is
-      better than a search box that silently never matches.
-    -->
-    <script is:inline>
-      document.documentElement.classList.add('js-filters');
-    </script>
-
-    <div class="filters" data-filters>
-      <div class="filters-search">
-        <label class="sr-only" for="blogSearch">Search the writing</label>
-        <input
-          id="blogSearch"
-          type="search"
-          placeholder="Search titles and summaries…"
-          autocomplete="off"
-          data-search
-        />
+    <div class="tty tty-index" data-reveal>
+      <div class="tty-bar">
+        <span class="tty-leds" aria-hidden="true">
+          <i class="led led-on"></i>
+          <i class="led led-off"></i>
+          <i class="led led-off"></i>
+        </span>
+        <span class="tty-title">~/writing</span>
+        <span class="tty-right" aria-hidden="true">{posts.length} entries</span>
       </div>
 
-      <div class="filters-row">
-        <span class="filters-legend" id="filterTopics">Subject</span>
-        <div class="filters-chips" role="group" aria-labelledby="filterTopics">
-          <button class="filter-chip is-on" type="button" data-topic="" aria-pressed="true">
-            All<span class="filter-chip-count">{posts.length}</span>
-          </button>
+      <div class="tty-body">
+        <!--
+          The subjects first. A reader who came for one thread — the
+          authorization argument, or the firmware series — should be able to
+          see that the thread exists without reading the listing. Each one is
+          a link into the filtered view, so the directory listing and the
+          filter are the same thing seen from two sides.
+        -->
+        <h2 class="index-h">Subjects</h2>
+
+        <div class="ls ls-topics">
+          <div class="ls-row ls-head">
+            <span class="ls-mode">mode</span>
+            <span class="ls-count">posts</span>
+            <span class="ls-name">name</span>
+            <span class="ls-desc">subject</span>
+          </div>
           {
             TOPICS.map((topic) => (
-              <button class="filter-chip" type="button" data-topic={topic.id} aria-pressed="false">
-                {topic.short}
-                <span class="filter-chip-count">{topic.posts.length}</span>
-              </button>
+              <div class="ls-row is-dir">
+                <span class="ls-mode">drwxr-xr-x</span>
+                <span class="ls-count">{topic.posts.length}</span>
+                <span class="ls-name">
+                  <a href={`/blog/?topic=${topic.id}`}>{topic.short}/</a>
+                </span>
+                <span class="ls-desc">{topic.desc}</span>
+              </div>
             ))
           }
         </div>
-      </div>
 
-      <div class="filters-row" data-row="tags">
-        <span class="filters-legend" id="filterTags">Tags</span>
-        <div class="filters-chips" role="group" aria-labelledby="filterTags">
+        <hr class="tty-rule" />
+
+        <!--
+          The filter bar is hidden until the script runs. A page without
+          JavaScript shows every post and no controls that do nothing, which is
+          better than a search box that silently never matches.
+        -->
+        <script is:inline>
+          document.documentElement.classList.add('js-filters');
+        </script>
+
+        <div class="filters" data-filters>
+          <div class="filters-search">
+            <label class="sr-only" for="blogSearch">Search the writing</label>
+            <input
+              id="blogSearch"
+              type="search"
+              placeholder="grep -i …"
+              autocomplete="off"
+              data-search
+            />
+          </div>
+
+          <div class="filters-row">
+            <span class="filters-legend" id="filterTopics">Subject</span>
+            <div class="filters-chips" role="group" aria-labelledby="filterTopics">
+              <button class="filter-chip is-on" type="button" data-topic="" aria-pressed="true">
+                All<span class="filter-chip-count">{posts.length}</span>
+              </button>
+              {
+                TOPICS.map((topic) => (
+                  <button class="filter-chip" type="button" data-topic={topic.id} aria-pressed="false">
+                    {topic.short}
+                    <span class="filter-chip-count">{topic.posts.length}</span>
+                  </button>
+                ))
+              }
+            </div>
+          </div>
+
+          <div class="filters-row" data-row="tags">
+            <span class="filters-legend" id="filterTags">Tags</span>
+            <div class="filters-chips" role="group" aria-labelledby="filterTags">
+              {
+                POPULAR.map((tag) => (
+                  <button
+                    class="filter-chip filter-chip--tag"
+                    type="button"
+                    data-tag={tag}
+                    aria-pressed="false"
+                  >
+                    {TAG_NAMES[tag] ?? tagLabel(tag)}
+                    <span class="filter-chip-count">{chipCounts.get(tag)}</span>
+                  </button>
+                ))
+              }
+            </div>
+          </div>
+        </div>
+
+        <h2 class="index-h">
+          All writing
+          <span class="card-meta" data-count>{posts.length} posts</span>
+        </h2>
+
+        <div class="ls ls-posts" data-grid>
+          <div class="ls-row ls-head">
+            <span class="ls-mode">mode</span>
+            <span class="ls-date">date</span>
+            <span class="ls-size">min</span>
+            <span class="ls-topic">topic</span>
+            <span class="ls-name">name</span>
+          </div>
           {
-            POPULAR.map((tag) => (
-              <button
-                class="filter-chip filter-chip--tag"
-                type="button"
-                data-tag={tag}
-                aria-pressed="false"
+            cards.map((post, i) => (
+              <article
+                class="post-row"
+                data-card
+                data-topic={post.topicId}
+                data-tags={post.tags.map((t) => t.slug).join(',')}
+                data-text={post.text}
+                data-reveal
+                data-reveal-delay={Math.min(i, 8) * 30}
               >
-                {TAG_NAMES[tag] ?? tagLabel(tag)}
-                <span class="filter-chip-count">{chipCounts.get(tag)}</span>
-              </button>
+                <h3 class="post-title">
+                  <span class="ls-row ls-row--post">
+                    <span class="ls-mode">-rw-r--r--</span>
+                    <span class="ls-date">
+                      <time datetime={post.iso}>{post.date}</time>
+                    </span>
+                    <span class="ls-size">{post.minutes}m</span>
+                    <span class="ls-topic">{post.topicShort}</span>
+                    <span class="ls-name">
+                      <a href={post.href}>{post.title}</a>
+                      {post.short && <span class="card-flag">note</span>}
+                    </span>
+                  </span>
+                </h3>
+
+                {post.summary && <p class="post-sum">{post.summary}</p>}
+
+                <div class="post-tags">
+                  {post.tags.map((t) => (
+                    <a class="tag" href={`/tags/${t.slug}/`}>
+                      {t.label}
+                    </a>
+                  ))}
+                </div>
+              </article>
             ))
           }
         </div>
+
+        <p class="filter-empty" data-empty hidden>
+          Nothing matches that. Clear the search, or pick another subject.
+        </p>
       </div>
     </div>
 
-    <div class="blog-grid" data-grid>
-      {
-        cards.map((post, i) => (
-          <article
-            class="card post-card"
-            data-card
-            data-topic={post.topicId}
-            data-tags={post.tags.map((t) => t.slug).join(',')}
-            data-text={post.text}
-            data-reveal
-            data-reveal-delay={Math.min(i, 8) * 30}
-          >
-            <div class="post-card-head">
-              <p class="post-card-meta">
-                <time datetime={post.iso}>{post.date}</time>
-                <span class="post-card-dot" aria-hidden="true">·</span>
-                <span>{post.minutes} min</span>
-                {post.short && <span class="card-flag">note</span>}
-              </p>
-
-              {/*
-                The topic on a line of its own. It used to be the third item
-                in the meta row, after the date and the reading time — and
-                because the row wraps at this width, the separator before it
-                was left dangling at the end of the first line on most cards:
-                "19 SEPTEMBER 2026 · 10 MIN ·" and then the subject on the
-                line below. The subject is also the thing the whole index is
-                filed by, so it gets its own line and the meta row is left
-                to say when and how long.
-              */}
-              {post.topic && <p class="post-card-topic">{post.topic.label}</p>}
-            </div>
-
-            <h3 class="post-card-title">
-              {/*
-                The anchor carries the title and nothing else, so the link's
-                name is the title. A card that wraps its whole contents in the
-                link makes a screen reader walk past the summary and every tag
-                to get to the name.
-              */}
-              <a class="card-link" href={post.href}>
-                {post.title}
-              </a>
-            </h3>
-
-            {post.summary && <p class="post-card-sum">{post.summary}</p>}
-
-            {/*
-              The chips used to be spans: styled exactly like links, and
-              leading nowhere. They are links now, and every tag has a page
-              behind it.
-            */}
-            <div class="tag-row">
-              {post.tags.map((t) => (
-                <a class="tag" href={`/tags/${t.slug}/`}>
-                  {t.label}
-                </a>
-              ))}
-            </div>
-          </article>
-        ))
-      }
-    </div>
-
-    <p class="filter-empty" data-empty hidden>
-      Nothing matches that. Clear the search, or pick another subject.
-    </p>
+    <script>
+      import '../../scripts/blog-filters.js';
+    </script>
   </section>
-
-  <script>
-    import '../../scripts/blog-filters.js';
-  </script>
 </Base>
 
 <style>
-  /* ----- The subjects, above the list ------------------------------------- */
-  /*
-    Five subjects, laid out as a strip rather than a grid of columns.
+  /* ----- The window --------------------------------------------------------
+     The whole index lives inside one terminal window: the subjects are the
+     directories, the posts are the files, and the filter bar is a control
+     panel set into the same box.
+     ---------------------------------------------------------------------- */
+  .tty-index .tty-body {
+    padding-block: 1.9rem 1.4rem;
+  }
 
-    A grid of three columns cannot hold five tiles without leaving a hole in
-    the last row — and the hole was visible, because the strip's own background
-    was set to `var(--filet)`, which is a length, not a colour, so the gap
-    fell through to the page and the empty cell showed the grid pattern
-    behind it. Flex has no such hole: the tiles share the row between them
-    and the last row stretches to fill whatever is left. The one-pixel gap
-    over an accent-coloured ground draws the separators, the same way the
-    three panels under "What I do" do on the front page.
-  */
-  .topic-strip {
-    list-style: none;
-    margin: 1.6rem 0 0;
-    padding: 0;
+  .index-h {
     display: flex;
-    flex-wrap: wrap;
-    gap: 1px;
-    background: var(--braise);
-    border: var(--filet) solid var(--braise);
-  }
-
-  .topic-strip-item {
-    /* Grow to share the row; the last row of two stretches to the full width
-       rather than leaving a third of the strip empty. */
-    flex: 1 1 21rem;
-    display: grid;
-    grid-template-columns: 1fr auto;
-    gap: 0.15rem 0.6rem;
-    padding: 0.75rem 0.9rem;
-    background: var(--papier);
-  }
-
-  .topic-strip-name {
-    font-family: var(--font-display);
-    font-size: 0.98rem;
-    letter-spacing: 0.01em;
-    color: var(--encre);
-  }
-
-  .topic-strip-count {
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    margin: 0 0 0.7rem;
     font-family: var(--font-mono);
-    font-size: 0.75rem;
+    font-size: var(--fs-label);
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
     color: var(--braise);
-    padding-top: 0.2em;
   }
 
-  .topic-strip-desc {
-    grid-column: 1 / -1;
+  .index-h .card-meta {
+    letter-spacing: 0.1em;
+  }
+
+  .index-note {
+    margin: 0.6rem 0 0;
+    font-family: var(--font-body);
+    font-size: 0.84rem;
+    line-height: 1.55;
+    color: var(--fort);
+    max-width: 76ch;
+  }
+
+  /* The subject of a directory, in the last column: the one line that says
+     what the thread is, so the reader does not have to open it to find out. */
+  .ls-topics .ls-row {
+    grid-template-columns: 9.5ch 6ch 15ch minmax(0, 1fr);
+  }
+
+  .ls-desc {
+    color: var(--fort);
+    font-family: var(--font-body);
     font-size: 0.82rem;
     line-height: 1.45;
-    color: var(--fort);
+    white-space: normal;
   }
 
-  /* ----- The filter bar --------------------------------------------------- */
-  /*
-    Hidden without JavaScript: a search box that never matches is worse than
-    no search box, and a row of chips that do nothing is a row of lies. The
-    inline script on the page adds `js-filters` before the first paint.
-  */
+  /* ----- The listing ------------------------------------------------------- */
+  .ls-topics {
+    margin-bottom: 0;
+  }
+
+  .ls-count {
+    color: var(--faible);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ----- The filter bar ----------------------------------------------------
+     Set into the window rather than floating above it: the controls belong
+     to the same machine as the listing they narrow.
+     ---------------------------------------------------------------------- */
   .filters {
     display: none;
   }
 
   :global(html.js-filters) .filters {
     display: grid;
-    /* The one column is capped at the width of the panel. Without the cap a
-       row of chips that cannot shrink — the scrolling tag strip on a phone —
-       stretches the track to its own width and takes the whole page sideways
-       with it. */
     grid-template-columns: minmax(0, 1fr);
     gap: 0.7rem;
-    margin-bottom: 1.6rem;
-    padding: 0.9rem 1rem 1rem;
-    border: var(--filet) solid var(--braise);
-    background: var(--papier);
-    box-shadow: var(--ombre-sm);
+    margin: 0 0 1.5rem;
+    padding: 0.85rem 0.9rem 0.9rem;
+    border: var(--filet) solid var(--grid);
+    background: var(--rouille);
   }
 
   .filters-search input {
     width: 100%;
-    padding: 0.65rem 0.7rem;
-    border: var(--filet) solid var(--braise);
+    padding: 0.55rem 0.7rem;
+    border: var(--filet) solid var(--grid);
     background: var(--papier);
-    color: inherit;
-    font: inherit;
+    color: var(--encre);
+    font-family: var(--font-mono);
     font-size: var(--fs-small);
   }
 
   .filters-search input::placeholder {
-    color: var(--fort);
-    opacity: 0.75;
+    color: var(--faible);
   }
 
   .filters-search input:focus-visible {
@@ -460,7 +479,7 @@ const cards = posts.map((post) => {
     align-items: center;
     gap: 0.35rem;
     padding: 0.25rem 0.5rem;
-    border: var(--filet) solid var(--braise);
+    border: var(--filet) solid var(--grid);
     background: none;
     color: var(--fort);
     font-family: var(--font-mono);
@@ -468,11 +487,12 @@ const cards = posts.map((post) => {
     letter-spacing: 0.06em;
     text-transform: uppercase;
     cursor: pointer;
-    transition: background 140ms ease, color 140ms ease;
+    transition: background 140ms ease, color 140ms ease, border-color 140ms ease;
   }
 
   .filter-chip:hover {
     color: var(--braise);
+    border-color: var(--braise);
   }
 
   .filter-chip.is-on {
@@ -528,118 +548,43 @@ const cards = posts.map((post) => {
     }
   }
 
-  /* ----- The grid --------------------------------------------------------- */
-  .blog-grid {
-    display: grid;
-    gap: var(--sp-4);
-    grid-template-columns: repeat(auto-fill, minmax(min(100%, 19rem), 1fr));
-  }
+  /* ----- Narrow screens ----------------------------------------------------
+     Below the breakpoint the subject of a directory folds under its name,
+     the way the title of a file does.
+     ---------------------------------------------------------------------- */
+  @media (max-width: 52rem) {
+    .ls-topics .ls-row {
+      grid-template-columns: 9.5ch 5ch minmax(0, 1fr);
+      grid-template-areas:
+        'mode count name'
+        'desc desc desc';
+      row-gap: 0.15rem;
+    }
 
-  .post-card {
-    position: relative;
-    gap: 0.5rem;
-  }
+    .ls-topics .ls-mode {
+      grid-area: mode;
+    }
 
-  /* A hidden card has to actually leave the grid: `.card` sets `display: flex`,
-     and an author rule beats the user-agent rule for `[hidden]`. */
-  .post-card[hidden] {
-    display: none;
-  }
+    .ls-topics .ls-count {
+      grid-area: count;
+    }
 
-  /* The head of the card: when it was written, how long it takes, and what
-     it is filed under. The subject sits on its own line under the two facts
-     rather than trailing them, so nothing wraps into a dangling separator. */
-  .post-card-head {
-    display: grid;
-    gap: 0.18rem;
-  }
+    .ls-topics .ls-name {
+      grid-area: name;
+    }
 
-  .post-card-meta {
-    display: flex;
-    align-items: center;
-    gap: 0.35rem;
-    flex-wrap: wrap;
-    margin: 0;
-    font-family: var(--font-mono);
-    font-size: 0.72rem;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--fort);
-  }
-
-  .post-card-dot {
-    opacity: 0.6;
-  }
-
-  .post-card-topic {
-    margin: 0;
-    font-family: var(--font-mono);
-    font-size: 0.68rem;
-    letter-spacing: 0.13em;
-    text-transform: uppercase;
-    color: var(--braise);
-  }
-
-  .post-card-title {
-    margin: 0;
-    font-size: 1.08rem;
-    line-height: 1.25;
-  }
-
-  .card-link {
-    color: inherit;
-    text-decoration: none;
-  }
-
-  .card-link::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-  }
-
-  .post-card:hover .card-link {
-    color: var(--braise);
-  }
-
-  .post-card-sum {
-    margin: 0;
-    font-size: 0.88rem;
-    line-height: 1.5;
-    color: var(--fort);
-  }
-
-  .post-card .tag {
-    text-decoration: none;
-  }
-
-  .post-card .tag-row {
-    position: relative;
-    z-index: 1;
-    margin-top: auto;
-    padding-top: 0.35rem;
-  }
-
-  .post-card .tag:hover {
-    color: var(--braise);
-    border-color: var(--braise);
-  }
-
-  /* A short post is a note, and the index says so rather than letting the
-     reader open it expecting an essay. */
-  .card-flag {
-    margin-left: 0.2rem;
-    padding: 0 0.3rem;
-    border: 1px solid var(--filet);
-    color: var(--fort);
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
+    .ls-topics .ls-desc {
+      grid-area: desc;
+    }
   }
 
   .filter-empty {
-    margin: 1.6rem 0 0;
-    padding: 1.1rem;
+    margin: 1.2rem 0 0;
+    padding: 0.9rem;
     border: var(--filet) dashed var(--braise);
     color: var(--fort);
     text-align: center;
+    font-family: var(--font-mono);
+    font-size: var(--fs-small);
   }
 </style>

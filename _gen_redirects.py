@@ -29,8 +29,10 @@ STATIC = BASE / "static"
 MANIFEST = BASE / "_legacy-urls.json"
 
 # Where a stub goes when the address it served is taken over by a real page.
-# Nothing under here is published: `legacy/` is outside the build.
-QUARANTINE = BASE / "legacy" / "static-legacy" / "tag-stubs"
+# Nothing under here is published: the directory is outside the build and out
+# of git. The URL it served stays in `_legacy-urls.json` and in
+# `docs/legacy-urls.txt`, so the record survives the stub.
+QUARANTINE = BASE / ".quarantine" / "tag-stubs"
 
 # The routes a human mistypes by capitalising them. Pages is case-sensitive,
 # so /BLOG/ and /About/ are a 404 rather than the page they look like.
@@ -300,10 +302,10 @@ def remove_shadowed_tags(live: set[str]) -> list[str]:
     shadow it: static/ is copied into the build next to the routes, so the
     stub and the page would fight over one file.
 
-    The stubs are moved to `legacy/static-legacy/tag-stubs/` rather than
-    deleted. They are tracked files, and a redirect stub is a small piece of
-    the site's history — the address it once served is still in git, and the
-    generator can put it back from there if a tag page ever goes away.
+    The stubs are moved to `.quarantine/tag-stubs/` rather than deleted. A
+    redirect stub is a small piece of the site's history, and the address it
+    once served is still in `_legacy-urls.json` and `docs/legacy-urls.txt`,
+    so the record of the URL outlives the file.
 
     Only a file this script wrote is moved — a directory whose index.html is
     not one of our stubs is left alone.
@@ -354,7 +356,7 @@ def main() -> int:
     print(f"[OK] {len(routes)} redirect stubs written into static/")
     print(f"     manifest: {MANIFEST.name} ({len(manifest['stubs'])} routes)")
     if removed:
-        print(f"     {len(removed)} shadowed tag stub(s) moved to legacy/: {', '.join(removed[:8])}")
+        print(f"     {len(removed)} shadowed tag stub(s) moved to .quarantine/: {', '.join(removed[:8])}")
     print(f"     e.g. {sorted(routes)[0]} -> {sorted(routes.items())[0][1]}")
     return 0
 

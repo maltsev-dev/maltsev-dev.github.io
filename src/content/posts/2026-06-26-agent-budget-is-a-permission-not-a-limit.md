@@ -16,9 +16,9 @@ return allow()
 ```
 
 This is accounting with a brake on it. Every call it authorizes is
-authorized against a balance that only exists on a dashboard, so the
-number it checks has already been spent. The difference shows up under
-load, which is exactly when it matters.
+checked against a balance that only exists on a dashboard, so the number
+it checks has already been spent. The difference shows up under load,
+which is exactly when it matters.
 
 ## The failure mode is a thousand small calls
 

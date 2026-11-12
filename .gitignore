@@ -5,10 +5,14 @@
 # dist-verifyN/ and friends; one rule covers the family.
 /dist*/
 
+# The scratch build the visual checks are served from. It is a build output
+# under another name, and it is the same rule as the one above.
+/.tmp-build/
+
 node_modules/
 .astro/
 
-# Python leftovers from the legacy build.py generator
+# Python leftovers from the generators
 __pycache__/
 *.py[cod]
 .venv/
@@ -16,14 +20,33 @@ venv/
 .eggs/
 
 # One-off scripts and audit artifacts from the Astro migration, all kept at the
-# repo root with a leading underscore. The three the build depends on stay tracked.
+# repo root with a leading underscore. The ones the build or the gates depend
+# on stay tracked.
 # (`python _audit_links_astro.py` gates the deploy; `_gen_redirects.py` writes
 # the legacy-URL stubs in static/; `_gen_og.mjs` draws static/og.png, which is
-# committed as a binary — the generator has to be in the repo to change it.)
+# committed as a binary — the generator has to be in the repo to change it;
+# `_gen_portrait.py` turns the ASCII portrait tool's page into
+# src/data/portrait.ts.)
+#
+# `_legacy-urls.json` is the manifest of the legacy URLs: it is the list the
+# link gate checks the built site against, so a clone that does not carry it
+# runs the gate with that check silently switched off.
+# `_verify_fixes.mjs` is the test runner the audit's fixes are verified with,
+# and `_qa_server.mjs` is the static server those runs are served from.
 /_*
 !/_audit_links_astro.py
 !/_gen_redirects.py
 !/_gen_og.mjs
+!/_gen_portrait.py
+!/_legacy-urls.json
+!/_verify_fixes.mjs
+!/_qa_server.mjs
+
+# The picture the portrait is drawn from. It stays on this machine: the
+# source page is not in the repo, and only the map is committed. The
+# generator is in the repo, so the map can be rebuilt from a new picture at
+# any time.
+/image.png
 
 # A single-line HTML fragment an audit script dumped here. It looks like Markdown
 # but is a slice of about.astro; src/pages/ is the source.
@@ -58,6 +81,13 @@ desktop.ini
 # and a copy of the built site. It is scratch space for the audit tooling, not
 # part of the site.
 /.gstack/
+
+# Playwright MCP scratch: the page snapshots the browser tooling writes.
+/.playwright-mcp/
+
+# Redirect stubs that a real page has taken the address of. The address itself
+# stays in _legacy-urls.json and docs/legacy-urls.txt; the file is scratch.
+/.quarantine/
 
 # The audit reports the QA tooling wrote. They are a working artifact of the
 # audit, not site content; the fixes they asked for live in src/.

@@ -13,7 +13,7 @@ export const AUTHOR = {
   name: 'Anatolii Maltsev',
   jobTitle: 'Agentic engineer',
   description:
-    'Builds AI operational systems, agentic engineering, embedded and distributed systems — the authorization layer, the failure handling and the hardware underneath it.',
+    'Builds AI operational systems, agentic engineering, embedded and distributed systems: the authorization layer, the failure handling and the hardware underneath it.',
   sameAs: [
     'https://github.com/maltsev-dev',
     'https://www.linkedin.com/in/a-maltsev',

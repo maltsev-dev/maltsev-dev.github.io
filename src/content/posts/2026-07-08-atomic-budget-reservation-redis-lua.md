@@ -19,7 +19,7 @@ concurrent calls all see 100 units available, all of them are under
 the 100-unit cap, and all twenty are allowed. You have enforced
 nothing and under-enforced by 20×.
 
-Redis is single-threaded, which is exactly why this is fixable.
+Redis is single-threaded, which is why this is fixable.
 
 ## Move the whole decision into the script
 
@@ -78,30 +78,35 @@ for older callers, see
 
 Atomicity covers the happy path. The rest needs its own argument.
 
-**1. Non-idempotent retries.** A network timeout on `EVAL` leaves the
-caller unable to tell whether the script ran. If it retries, the money
-is reserved twice. Every write in a money path needs an idempotency
-key, and the retry has to carry the same one.
+### 1. Non-idempotent retries
 
-**2. Reservations that never settle.** If settlement never arrives, the
-reserved amount stays held until the key expires. That TTL is a
-deliberate design and it is the backstop, but the consequence is that a
-crashed agent silently withholds budget from everything behind it, and
-"my agent stopped making calls" is the symptom. Track the count of
-outstanding reservations as a first-class metric rather than a
-debugging detail.
+A network timeout on `EVAL` leaves the caller unable to tell whether
+the script ran. If it retries, the money is reserved twice. Every write
+in a money path needs an idempotency key, and the retry has to carry
+the same one.
 
-**3. The binding check on the wrong side.** Doing the ownership
-comparison at reservation time but not at settlement time means the
-second half of the guarantee does not exist. Settlement has to
-re-read `org_id` and `api_key_id` and compare, atomically, before
+### 2. Reservations that never settle
+
+If settlement never arrives, the reserved amount stays held until the
+key expires. That TTL is a deliberate design and it is the backstop,
+but the consequence is that a crashed agent silently withholds budget
+from everything behind it, and "my agent stopped making calls" is the
+symptom. Track the count of outstanding reservations as a first-class
+metric rather than a debugging detail.
+
+### 3. The binding check on the wrong side
+
+Doing the ownership comparison at reservation time but not at settlement
+time means the second half of the guarantee does not exist. Settlement
+has to re-read `org_id` and `api_key_id` and compare, atomically, before
 touching the counter.
 
-**4. Settling more than was reserved.** Re-checking the budget at
-settlement time looks like a safety net. By then the decision to spend
-has already been made. Settlement compares the actual cost against the
-*authorized* reservation plus a fixed-cent epsilon, and rejects on
-overrun so the TTL can release the money.
+### 4. Settling more than was reserved
+
+Re-checking the budget at settlement time looks like a safety net. By
+then the decision to spend has already been made. Settlement compares
+the actual cost against the *authorized* reservation plus a fixed-cent
+epsilon, and rejects on overrun so the TTL can release the money.
 
 ## The resolution step is where most of the bugs live
 
@@ -163,8 +168,8 @@ subtracted away:
 
 Both push reconciliation drift in one direction only, so a drift of
 exactly zero is not reachable. Pick a tolerance, publish it, and track
-the genuinely unrecoverable cases as their own counter. A drift number
-with no idea of its own error floor measures nothing.
+the genuinely unrecoverable cases as their own counter, because a drift
+number with no idea of its own error floor measures nothing.
 
 ## Read the clock from inside the script
 
@@ -209,8 +214,8 @@ to run on the primary.
 NullRun does the reservation, the cap comparison and the ownership
 binding in one script on the primary. Read the counter, decide, write
 the counter: three operations with no interleaving point, because the
-script is the interleaving point. The two that most often leak money in
-a hand-rolled version are the check-then-act pair and the
+script is where interleaving would happen. The two that most often leak
+money in a hand-rolled version are the check-then-act pair and the
 reserve-then-consume pair, and this shape removes both by construction
 instead of by discipline.
 
@@ -218,7 +223,8 @@ The same script mints nothing. The execution identity is generated
 server-side beforehand and passed in, so the reservation records whose
 call it is at the moment it is written rather than at the moment it is
 settled. That is what lets the settle path re-check ownership atomically
-against a value that was captured under the same lock as the reserve.
+against a value that was captured under the same script run as the
+reserve.
 
 The scripts are loaded with `redis.call` semantics and no callbacks, so a
 slow invocation is bounded by the data store and nothing else. The wire

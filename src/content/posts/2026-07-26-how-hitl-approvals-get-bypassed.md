@@ -60,37 +60,43 @@ coverage is what fails.
 
 | Bypass class | What the agent does | What the gate lets through | The check that catches it |
 |---|---|---|---|
-| **1. Alternate dispatch path** | Reaches the tool through a second interface the middleware was never attached to | The same behavior, gated on only one of two routes | Canary over the full route list, re-run on every framework upgrade |
-| **2. Retry wrapper** | A retry or timeout wrapper re-invokes the tool *below* the middleware layer | A second invocation of an already-approved action | Make the tool fail once, then succeed. Two effects with one approval is the bug |
-| **3. Subagent delegation** | Spawns a child agent with a subset of the tools, and the child carries no middleware | The same effect, under a new principal | Give a child a tool the parent is gated on and confirm the child cannot reach it |
-| **4. Direct call in your own code** | A handler, post-processing step or retry in your application calls the tool function itself | The effect, with the framework entirely out of the loop | Grep the application for direct imports of tool functions outside the agent |
-| **5. Approval replay** | Presents a resume token or "continue" signal that is bound to nothing specific | A second execution of an already-approved payload | Digest the payload fields, store the digest with the approval, recompute and compare on resume |
-| **6. State that outlives the graph** | The process restarts mid-approval and the runtime trusts an "already approved" flag | A resume that skips re-interrupting | Interrupt a workflow, restart the process, resume, and confirm the approval is re-consulted |
+| 1. Alternate dispatch path | Reaches the tool through a second interface the middleware was never attached to | The same behavior, gated on only one of two routes | Canary over the full route list, re-run on every framework upgrade |
+| 2. Retry wrapper | A retry or timeout wrapper re-invokes the tool *below* the middleware layer | A second invocation of an already-approved action | Make the tool fail once, then succeed. Two effects with one approval is the bug |
+| 3. Subagent delegation | Spawns a child agent with a subset of the tools, and the child carries no middleware | The same effect, under a new principal | Give a child a tool the parent is gated on and confirm the child cannot reach it |
+| 4. Direct call in your own code | A handler, post-processing step or retry in your application calls the tool function itself | The effect, with the framework entirely out of the loop | Grep the application for direct imports of tool functions outside the agent |
+| 5. Approval replay | Presents a resume token or "continue" signal that is bound to nothing specific | A second execution of an already-approved payload | Digest the payload fields, store the digest with the approval, recompute and compare on resume |
+| 6. State that outlives the graph | The process restarts mid-approval and the runtime trusts an "already approved" flag | A resume that skips re-interrupting | Interrupt a workflow, restart the process, resume, and confirm the approval is re-consulted |
 
-**1. The alternate dispatch path.** The tool is reachable through a
-mechanism that does not include the middleware. In practice this is
-often a second tool interface: a direct-call helper, a streaming variant
-of the same tool, an MCP client registered separately from the
-framework's MCP integration. Two ways to reach the same behavior, one
-gated.
+### 1. The alternate dispatch path
 
-**2. The retry wrapper.** A framework retry or timeout wrapper re-invokes
-the tool *below* the middleware layer, because the wrapper's job is to
-recover from tool failures and it wraps the tool, not the graph. The
-first attempt was interrupted and approved. The retry is a fresh
-invocation that never passes the interrupt again. If the first attempt's
-effect was ambiguous, you now have two paths with one approval.
+The tool is reachable through a mechanism that does not include the
+middleware. In practice this is often a second tool interface: a
+direct-call helper, a streaming variant of the same tool, an MCP client
+registered separately from the framework's MCP integration. Two ways to
+reach the same behavior, one gated.
 
-**3. Subagent delegation.** The parent has the middleware. The child
-agent, spawned with a subset of the tools, often does not. The child's
-tool call is a new action by a new principal, and it reaches the same
-effect. If the middleware was attached to the parent agent's graph and
-not to the tool, the child's call is ungated.
+### 2. The retry wrapper
 
-**4. The direct call in your own code.** The most common one and the
-least obvious, because it is not in the agent framework at all. Some
-handler, some post-processing step, some retry in your application calls
-the tool function directly:
+A framework retry or timeout wrapper re-invokes the tool *below* the
+middleware layer, because the wrapper's job is to recover from tool
+failures and it wraps the tool, not the graph. The first attempt was
+interrupted and approved. The retry is a fresh invocation that never
+passes the interrupt again. If the first attempt's effect was ambiguous,
+you now have two paths with one approval.
+
+### 3. Subagent delegation
+
+The parent has the middleware. The child agent, spawned with a subset
+of the tools, often does not. The child's tool call is a new action by a
+new principal, and it reaches the same effect. If the middleware was
+attached to the parent agent's graph and not to the tool, the child's
+call is ungated.
+
+### 4. The direct call in your own code
+
+The most common one and the least obvious, because it is not in the
+agent framework at all. Some handler, some post-processing step, some
+retry in your application calls the tool function directly:
 
 ```python
 result = refund_customer(customer="A", amount=200)   # ← no middleware here
@@ -100,21 +106,25 @@ Your approval middleware is not involved because your own code is not
 going through the framework. Nothing warned you, because the framework
 cannot see a function you called yourself.
 
-**5. Approval replay.** The resume mechanism accepts a token or a signal
-that means "continue". If that signal is not bound to the specific action
-and the specific payload, it can be replayed by a stuck workflow, a
-retried job, a duplicate delivery, or an operator's tooling. This is the
-class covered in detail in
+### 5. Approval replay
+
+The resume mechanism accepts a token or a signal that means "continue".
+If that signal is not bound to the specific action and the specific
+payload, it can be replayed by a stuck workflow, a retried job, a
+duplicate delivery, or an operator's tooling. This is the class covered
+in detail in
 [human approval is not authorization](/blog/2026-08-01-human-approval-is-not-authorization/),
 and it is worth re-reading because the two failures compose: a bypassed
 route and a replayed grant are much worse together than either is alone.
 
-**6. The state that outlives the graph.** The workflow is interrupted,
-the process restarts, and on resume the runtime sees a workflow that was
-"already approved" and continues without re-interrupting. Whether it
-re-reads the approval or trusts a flag in the workflow state is the
-difference between a correct resume and a bypass. The answer belongs in
-durable state that a new instance can query, not in the graph's memory.
+### 6. The state that outlives the graph
+
+The workflow is interrupted, the process restarts, and on resume the
+runtime sees a workflow that was "already approved" and continues
+without re-interrupting. Whether it re-reads the approval or trusts a
+flag in the workflow state is the difference between a correct resume
+and a bypass. The answer belongs in durable state that a new instance
+can query, not in the graph's memory.
 
 ## Why this survives review
 
@@ -137,9 +147,6 @@ That is why the fix is architectural. Adding one more check to the code
 does not reach it.
 
 ## Make it a property of the effect
-
-The way to make this class of bug go away is to put the approval on the
-thing being approved.
 
 > If the tool cannot take effect without passing the approval check,
 > then no route to it bypasses the check. The check sits on the effect,
@@ -204,11 +211,11 @@ here is what would have failed if any of them had been open."
 
 | Check | How to run it | What a failure looks like |
 |---|---|---|
-| **Canary on every route.** | The test above, run over the full route list, on every framework upgrade. | A route you have not enumerated is a route you have not tested. |
-| **The retry path specifically.** | The most commonly missed route, and an easy one to test. Make the tool fail on the first attempt and succeed on the second, then count how many approvals happened. | Two effects with one approval. |
-| **The subagent path.** | Give a child agent a tool the parent is gated on. | The child reaches it, which means the gate was on the parent. |
-| **Your own call sites.** | Grep the application for direct imports of tool functions, outside the agent. | Any hit is a route that never touches the framework. |
-| **Resume after restart.** | Interrupt a workflow, restart the process, resume. | The approval is inferred from a flag, with no re-consult of durable state. |
+| Canary on every route. | The test above, run over the full route list, on every framework upgrade. | A route you have not enumerated is a route you have not tested. |
+| The retry path specifically. | The most commonly missed route, and an easy one to test. Make the tool fail on the first attempt and succeed on the second, then count how many approvals happened. | Two effects with one approval. |
+| The subagent path. | Give a child agent a tool the parent is gated on. | The child reaches it, which means the gate was on the parent. |
+| Your own call sites. | Grep the application for direct imports of tool functions, outside the agent. | Any hit is a route that never touches the framework. |
+| Resume after restart. | Interrupt a workflow, restart the process, resume. | The approval is inferred from a flag, with no re-consult of durable state. |
 
 ## Limitations worth stating
 

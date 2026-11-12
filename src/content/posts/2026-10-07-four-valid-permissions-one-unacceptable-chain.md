@@ -48,7 +48,7 @@ systems operate.
 ## Why the four obvious approaches fail
 
 Each of the four attacks the sequence. None of them attacks the
-aggregate effect, which is the thing that actually became dangerous.
+aggregate effect, which is what became dangerous.
 
 | Approach | Why it fails |
 |---|---|
@@ -115,11 +115,10 @@ the decision point. Reading it at the end is too late to block anything:
                                     └────────────────────┘
 ```
 
-This is a **per-evaluation pattern**: it runs at the gate, it reads
-what the run has accumulated so far, and it is what most practical
-mitigations actually are. It is cheap, it composes with everything else at the gate,
-and it catches the shape above without catching a long read-only
-workflow.
+This is a **per-evaluation pattern**: it runs at the gate, reads what the
+run has accumulated so far, and is what most practical mitigations are.
+It is cheap, composes with everything else at the gate, and catches the
+shape above without catching a long read-only workflow.
 
 The `sensitive_read_then_external_send` rule is the clearest example of
 the framing working. Neither half is suspicious: reading sensitive data
@@ -136,11 +135,11 @@ and running aggregates that catch some cumulative effects. Together they
 are a real improvement over per-action checks and they do stop the
 fourteen-gigabyte case.
 
-**Still open:** a general composition check. Nobody has one. The
-interesting question, how do you detect the bad sequence without making
-every legitimate sequence look bad, is genuinely open. A precise rule
-that forbids this exact sequence is too rigid to maintain, and a loose
-rule over sequences is too coarse to act on.
+**Still open:** a general composition check. The interesting question,
+how do you detect the bad sequence without making every legitimate
+sequence look bad, is genuinely open. A precise rule that forbids this
+exact sequence is too rigid to maintain, and a loose rule over sequences
+is too coarse to act on.
 
 The limitations here are practical rather than theoretical, and a
 design that claims coverage should be asked which of the three
@@ -152,7 +151,7 @@ composition types it actually detects:
 | Runaway cost | Reliably | The budget projection |
 | Privilege escalation via chaining | Not reliably | The aggregate is small and the signal is structural |
 
-Two of three are in good shape for a specific reason: their aggregates
+Two of those are in good shape for a specific reason: their aggregates
 are large and move in one direction. The third is the hard case, and it
 is the one where a system is most likely to be over-confident.
 
@@ -181,10 +180,10 @@ way the aggregate stops protecting you.
 
 | Limit | What it costs you |
 |---|---|
-| **Subagents fragment it** | If the parent reads nothing and delegates to a child that reads everything, the child's aggregate starts empty. The composition spans two aggregates and neither one sees the whole shape. This is a real hole and the patterns above do not close it. |
-| **Eviction is a security decision** | Aggregates held in memory cost something and something eventually discards them. Discarding an aggregate resets detection, which makes system memory pressure a control-plane input. Better said now than discovered in an incident. |
-| **False positives kill these systems faster than false negatives** | A signal that fires on the nightly export every night is muted by the third day, and a muted signal protects nothing while continuing to consume attention. The precision requirement is the thing that determines whether the mitigation exists in six months. |
-| **Thresholds are ceilings, and attackers know it** | Per-call limits and aggregate limits are both thresholds. A pattern that stays under them is indistinguishable from a slow legitimate workflow, which is the cost of getting precision right. There is no version of this that closes completely. |
+| Subagents fragment it | If the parent reads nothing and delegates to a child that reads everything, the child's aggregate starts empty. The composition spans two aggregates and neither one sees the whole shape. This is a real hole and the patterns above do not close it. |
+| Eviction is a security decision | Aggregates held in memory cost something and something eventually discards them. Discarding an aggregate resets detection, which makes system memory pressure a control-plane input. Better said now than discovered in an incident. |
+| False positives kill these systems faster than false negatives | A signal that fires on the nightly export every night is muted by the third day, and a muted signal protects nothing while continuing to consume attention. The precision requirement is the thing that determines whether the mitigation exists in six months. |
+| Thresholds are ceilings, and attackers know it | Per-call limits and aggregate limits are both thresholds. A pattern that stays under them is indistinguishable from a slow legitimate workflow, which is the cost of getting precision right. There is no version of this that closes completely. |
 
 ## FAQ
 
@@ -231,8 +230,8 @@ confident about the two it handles and vague about the one it does not.
 
 ## Where this runs
 
-NullRun is a per-evaluation layer, and it is worth being precise about
-which of the three composition types above it answers and why.
+NullRun is a per-evaluation layer. Here is which of the three
+composition types above it answers, and why.
 
 **Runaway cost is covered by exactly the mechanism this article
 describes.** The budget counter is a running aggregate, period-bound and
@@ -249,18 +248,18 @@ per call.
 
 **Exfiltration is a different question, and the aggregate has no answer
 for it.** Reading data is free under a budget model, and the counter does
-not move. That is precisely why the ceiling that stops a runaway does
-not stop a fourteen-gigabyte export. The gate's answer to that case is
-the per-evaluation one: the tool pattern, the money threshold and the
+not move. That is why the ceiling that stops a runaway does not stop a
+fourteen-gigabyte export. The gate's answer to that case is the
+per-evaluation one: the tool pattern, the money threshold and the
 argument rules are each evaluated against the live action, and each
 refusal is a typed decision with its own code in the audit trail. That is
-the layer that holds, and it holds exactly.
+the layer that holds.
 
 The honest position is the partial one, and it is a useful one to design
 around: use an aggregate where the effect is monotonic and the aggregate
 wins, and use the per-action layer as the exactness backstop everywhere
 else. The hard part of composition, catching a bad sequence without
-flagging every legitimate one, is not something a gate answer can be
-bought out of, and a design that implies otherwise is overselling. The
+flagging every legitimate one, cannot be solved by a gate decision, and
+a design that implies otherwise is overselling. The
 [integration docs](https://nullrun.io/docs) cover how a tool is put behind the per-call
 decision.

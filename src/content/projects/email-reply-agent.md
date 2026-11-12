@@ -1,7 +1,7 @@
 ---
 title: "AI Email Reply Agent"
 slug: "email-reply-agent"
-description: "Resolves inbound cold-outreach replies in minutes. It classifies the reply, drafts a response in the sender's own words, and books the meeting — so no lead goes quiet in an inbox."
+description: "Resolves inbound cold-outreach replies in minutes. It classifies the reply, drafts a response in the sender's own words, and books the meeting, so no lead goes quiet in an inbox."
 tags: ["LLM", "Gmail", "React"]
 ---
 
@@ -10,12 +10,14 @@ LEGACY SOURCE - this body is not rendered by the site.
 
 Only the frontmatter above reaches the pages. The case-study pages are built from
 the JSON sidecars in src/data/projects/ (one file per slug), and those sidecars
-are generated from this file by _parse_projects.py, which scrapes the HTML below
-for the metrics, problem and solution cards, before/after results, pipeline
-steps, risk cards and pricing.
+were generated from this file by _parse_projects.py, which scraped the HTML
+below for the metrics, problem and solution cards, before/after results,
+pipeline steps, risk cards and pricing.
 
-Keep this file as the source of truth for that HTML: change it here, then re-run
-_parse_projects.py to refresh the JSON. Do not hand-edit the JSON.
+That parser is not in the repository any more, so the JSON sidecars are the
+authority now: the pages render from them, and the HTML below is the frozen
+record of where they came from. Change the JSON when the page has to change,
+and keep this file in step with it by hand.
 -->
 
 <!-- Hero Section -->

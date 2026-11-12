@@ -38,9 +38,8 @@ It shows up in three places, and only the first is obvious:
 
 The instinct is to make the approval UI show a bigger diff. That helps
 the human and does nothing for the system, which still cannot prove after
-the fact which payload was authorized. A prettier card does not produce
-evidence, and you need the evidence when someone asks what was approved
-at 14:03.
+the fact which payload was authorized. You need that evidence when
+somebody asks what was approved at 14:03.
 
 ## What an approval ID proves and what it misses
 
@@ -117,9 +116,9 @@ in it is decision-relevant by construction and you hash all of it.
 | Closed envelope | Every field in an envelope you built for this purpose. | Nothing, at the cost of a narrower argument type. |
 
 The envelope approach resolves the material-field question by narrowing
-the type, with no set to maintain and no list that can fall out of date.
-The tradeoff is that an incidental field in the envelope invalidates live
-approvals, which is only tolerable because a well-shaped envelope does not
+the type, so there is no list to maintain. The tradeoff is that an
+incidental field in the envelope invalidates live approvals, which is
+only tolerable because a well-shaped envelope does not
 contain incidental fields. This is developed in
 [material fields and canonicalization](/blog/2026-08-14-material-fields-and-canonicalization/).
 
@@ -130,8 +129,7 @@ server has nothing to compare against. The server derives it twice, once
 from the payload the operator's card rendered and once from the live
 request at execution, and compares. If the server cannot reconstruct the
 payload from its own state, it refuses. Falling back to the client value
-would make the check optional, and an optional verification is not a
-verification.
+would make the check optional.
 
 ```
   approval time
@@ -304,8 +302,8 @@ for the re-check, and a payload the server cannot reconstruct gets a
 refusal, with no fallback path.
 
 The practical consequence is that an approval stops being a UI moment and
-becomes a row with a state machine. It can survive a crash. It can be
-recovered by a new instance that reconnects and asks what happened. An
+becomes a row. It can survive a crash. It can be recovered by a new
+instance that reconnects and asks what happened. An
 auditor can cite it later to establish what was authorized, as opposed to
 what was asked for. The [integration docs](https://nullrun.io/docs) cover wiring the gate
 into the tool path.

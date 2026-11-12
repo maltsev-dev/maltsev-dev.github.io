@@ -78,12 +78,13 @@ something nobody reviewed.
 
 This is the failure a review process does not catch. The review
 happened, the tool was approved, and the thing that got approved is no
-longer the thing that runs.
+longer the thing that runs, because the identity that bound them
+together did not change.
 
 ## A schema is the wrong contract
 
 The instinct is to read the tool's JSON schema at call time and match
-the policy against it. This does not work, for a structural reason.
+the policy against it. That does not work, for a structural reason.
 
 A schema says *this tool accepts a recipient, an amount, a currency, a
 destination account.* It cannot say *this tool may transfer at most
@@ -125,12 +126,12 @@ def tool_digest(name: str, schema: dict, server_id: str) -> str:
 The **identity** is the registered server plus the tool name. Both parts
 are load-bearing:
 
-- **`server_id`**: a registered identity, not a URL. A hostname is a
+- `server_id`: a registered identity, not a URL. A hostname is a
   mutable label too. It resolves differently from different networks,
   it moves behind a load balancer, it can be pointed somewhere else in
   a config change. The server's identity is whatever it registered as,
   bound at registration time and re-verified.
-- **`name`**: the part humans read, so it stays in the identifier.
+- `name`: the part humans read, so it stays in the identifier.
 
 The **digest** is a separate value that sits beside the identity. It
 hashes the canonicalized definition, which covers description, input
@@ -209,9 +210,8 @@ def reconcile(entry, current_schema: dict) -> None:
 ```
 
 The important property is the last line. Drift that nobody has reviewed
-suspends the tool instead of annotating it. A flag that does not stop
-anything is a log line, and a log line is exactly what the previous
-design already had.
+suspends the tool instead of annotating it. A flag that stops nothing is
+a log line, and a log line is what the previous design already had.
 
 The same logic applies to approvals. An approval binds to a shape of
 action; if the shape changes, the approval does not transfer to the new
@@ -324,9 +324,9 @@ arrives unreviewed, and inherits no approval that was granted for a
 different label. The catalog is loaded once per sweep instead of read
 per call, so the gate does not pay a lookup on the hot path.
 
-What that buys is worth stating precisely. Every tool the catalog holds
+What that buys is a claim about provenance. Every tool the catalog holds
 carries a human-accepted definition, and a definition that changes stops
-the tool. That is a claim about provenance. A matched definition still
-goes through the same action-level decision as everything else. The wire
-shapes are in the [API reference](https://nullrun.io/docs/api); the catalog is one of the
+the tool. A matched definition still goes through the same action-level
+decision as everything else. The wire shapes are in the
+[API reference](https://nullrun.io/docs/api); the catalog is one of the
 sources behind the [tool control](https://nullrun.io/security) page.

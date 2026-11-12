@@ -1,0 +1,910 @@
+/* ==========================================================================
+   TTY — the terminal parts of the site.
+
+   Everything in this file is a component that could be printed on a screen
+   of a machine from 1983: the window frame, the prompt, the listing, the
+   signal lamp, the block cursor, the meter.
+
+   Two rules hold it together:
+
+     1. A glyph is a glyph. Box drawing, block elements and arrows all come
+        from one face — the shipped Cascadia subset — because a drawing that
+        mixes two advance widths shears apart the moment it wraps.
+
+     2. Nothing here is decoration on top of the content. A frame that
+        carries a title is a frame that says what is inside it. A lamp that
+        blinks says the machine is doing something. A cursor that blinks
+        says there is somewhere to type.
+   ========================================================================== */
+
+/* ----- The window --------------------------------------------------------
+   A frame with a title bar. The bar sits on the top edge of the box and
+   carries the title in a chip that masks the line behind it, so the top of
+   the window reads as `── title ──` with the rule running out to either
+   side of it.
+   ---------------------------------------------------------------------- */
+.tty {
+  position: relative;
+  border: var(--filet) solid var(--grid);
+  background: var(--papier);
+  /* The bloom. A lit panel throws light onto the bezel around it. */
+  box-shadow: var(--ombre);
+}
+
+/* ----- A window that fits what is inside it --------------------------------
+   A window used to be as wide as the column it sat in, whatever was inside
+   it: a listing of six short lines lived in a window thirteen hundred pixels
+   wide, and six hundred of those pixels were paper. A window is a frame
+   around something, so the frame is the width of the thing — and this
+   wrapper is how a section says so.
+
+   The section head and the window live inside the same wrapper, so the two
+   edges of the section are the same two lines: the heading starts where the
+   window starts and its note ends where the window ends.
+   ---------------------------------------------------------------------- */
+.tty-fit {
+  width: fit-content;
+  max-width: 100%;
+  margin-inline: auto;
+}
+
+/* The title chip. Its background is the panel colour, so the rule behind it
+   stops on either side of the title and starts again after it. */
+.tty-bar {
+  position: absolute;
+  top: calc(-1 * var(--filet));
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0 0.6rem;
+  font-family: var(--font-mono);
+  font-size: var(--fs-label);
+  letter-spacing: 0.08em;
+  color: var(--fort);
+  pointer-events: none;
+}
+
+.tty-title {
+  background: var(--papier);
+  padding: 0 0.5ch;
+  color: var(--braise);
+  text-shadow: var(--glow);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tty-title::before {
+  content: '─ ';
+  color: var(--faible);
+}
+
+.tty-title::after {
+  content: ' ─';
+  color: var(--faible);
+}
+
+.tty-right {
+  margin-left: auto;
+  background: var(--papier);
+  padding: 0 0.5ch;
+  color: var(--faible);
+  white-space: nowrap;
+}
+
+/* The body of the window. The top padding clears the title bar, which sits
+   on the frame's edge rather than inside it. */
+.tty-body {
+  padding: 1.9rem 1rem 1rem;
+  font-family: var(--font-mono);
+  font-size: var(--fs-small);
+  line-height: 1.65;
+  color: var(--encre);
+}
+
+.tty-body > :first-child {
+  margin-top: 0;
+}
+
+.tty-body > :last-child {
+  margin-bottom: 0;
+}
+
+/* The prompt line: `user@host:~$` in front of whatever was typed.
+
+   It wraps rather than holding one line: a prompt with an argument on it —
+   `git log --author="maltsev"` — is wider than a phone, and a prompt that
+   runs off the side of the screen takes the page with it. */
+.tty-prompt {
+  color: var(--braise);
+}
+
+.tty-prompt .who {
+  color: var(--encre);
+}
+
+.tty-prompt .sep {
+  color: var(--faible);
+}
+
+/* The path in the prompt. It is where the command runs, not part of the
+   command, so it sits a step back from the accent that carries the rest. */
+.tty-prompt .path {
+  color: var(--fort);
+}
+
+/* The command itself, echoed. */
+.tty-cmd {
+  color: var(--creme);
+  text-shadow: var(--glow);
+}
+
+/* The output of a command. */
+.tty-out {
+  color: var(--fort);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.tty-out .ok {
+  color: var(--ok);
+}
+
+.tty-out .warn {
+  color: var(--led-warn);
+}
+
+.tty-out .err {
+  color: var(--erreur);
+}
+
+.tty-out .key {
+  color: var(--braise);
+}
+
+.tty-out .dim {
+  color: var(--faible);
+}
+
+/* ----- The cursor --------------------------------------------------------
+   A block that blinks. The classic terminal cursor is a solid block on the
+   character that is about to be typed over, and the old hardware blinked it
+   rather than made it a steady underline.
+   ---------------------------------------------------------------------- */
+.cursor {
+  display: inline-block;
+  width: 0.62em;
+  height: 1.05em;
+  vertical-align: -0.18em;
+  margin-left: 0.08em;
+  background: var(--encre);
+  box-shadow: var(--glow);
+  animation: cursor-blink 1.05s steps(1, end) infinite;
+}
+
+@keyframes cursor-blink {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
+}
+
+/* A cursor that is waiting rather than typing — it dims instead of going
+   out, so a reader can tell "idle" from "ready". */
+.cursor.is-idle {
+  background: var(--grid);
+  box-shadow: none;
+  animation: none;
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cursor {
+    animation: none;
+  }
+}
+
+/* ----- Signal lamps ------------------------------------------------------
+   A lamp is a small square of light. It says one of three things: the
+   machine is working, the machine is waiting, the machine is off.
+
+   The colour alone is never the message — the word next to the lamp is the
+   message, and the lamp is the punctuation. A reader who cannot tell amber
+   from green still reads the sentence.
+   ---------------------------------------------------------------------- */
+.led {
+  display: inline-block;
+  width: 0.5rem;
+  height: 0.5rem;
+  flex: 0 0 auto;
+  background: var(--led-off);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--led-off) 60%, transparent);
+}
+
+.led-on {
+  background: var(--led-on);
+  box-shadow: 0 0 6px color-mix(in srgb, var(--led-on) 70%, transparent);
+}
+
+.led-warn {
+  background: var(--led-warn);
+  box-shadow: 0 0 6px color-mix(in srgb, var(--led-warn) 70%, transparent);
+}
+
+/* The working lamp: it pulses, the way a drive light does. */
+.led-blink {
+  animation: led-pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes led-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.28;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .led-blink {
+    animation: none;
+  }
+}
+
+/* The lamp in the header, where three of them sit in a row like the lights
+   on a drive bay. */
+.tty-leds {
+  display: inline-flex;
+  gap: 0.3rem;
+  align-items: center;
+  background: var(--papier);
+  padding: 0 0.5ch;
+}
+
+/* ----- The meter ---------------------------------------------------------
+   A bar made of blocks. `[████████░░░░]` — the same shape the ANSI
+   progress bars in a build log have used for thirty years.
+   ---------------------------------------------------------------------- */
+.meter {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-mono);
+  font-size: var(--fs-label);
+  letter-spacing: 0.06em;
+  color: var(--fort);
+}
+
+.meter-track {
+  color: var(--grid);
+  letter-spacing: -0.02em;
+}
+
+.meter-fill {
+  color: var(--braise);
+  text-shadow: var(--glow);
+}
+
+.meter-value {
+  color: var(--encre);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ----- The listing -------------------------------------------------------
+   `ls -la` output: a directory of files, one per line, with the mode, the
+   size, the date and the name. The listing is a table, and a table of
+   monospaced text aligns on the grid without any of the CSS a table would
+   otherwise need.
+   ---------------------------------------------------------------------- */
+.ls {
+  font-family: var(--font-mono);
+  font-size: var(--fs-small);
+  line-height: 1.75;
+  color: var(--fort);
+  overflow-x: auto;
+}
+
+.ls-row {
+  display: grid;
+  grid-template-columns: 11ch 6ch 12ch minmax(0, 1fr);
+  gap: 0 1ch;
+  align-items: baseline;
+  white-space: nowrap;
+}
+
+/* ----- The shell's own listings ------------------------------------------
+   The rows the terminal prints are grids as well, and they are their own
+   class: the shell has its own columns (a mode, a date, a name) and its own
+   places, and they do not have to agree with the listings in the page. What
+   they have to agree on is the grid — a listing printed as one string of
+   text runs its columns into each other and reads as a single word.
+   ---------------------------------------------------------------------- */
+.tl-row {
+  display: grid;
+  gap: 0 1ch;
+  align-items: baseline;
+  white-space: nowrap;
+}
+
+.tl-row > :last-child {
+  white-space: normal;
+}
+
+/* `ls` in the home directory: a mode, the path, and what is on it. */
+.tl-row--dir {
+  grid-template-columns: 11ch 16ch minmax(0, 1fr);
+}
+
+/* `ls` in the writing directory: a mode, the date, the title. */
+.tl-row--write {
+  grid-template-columns: 11ch 12ch minmax(0, 1fr);
+}
+
+/* `projects`: a mode, how many tags, the tags, the title. */
+.tl-row--proj {
+  grid-template-columns: 11ch 6ch 24ch minmax(0, 1fr);
+}
+
+.tl-mode,
+.tl-date,
+.tl-tags {
+  color: var(--faible);
+  font-variant-numeric: tabular-nums;
+}
+
+.tl-name {
+  color: var(--encre);
+}
+
+.tl-desc {
+  color: var(--fort);
+}
+
+/* A column that is cut short says so with an ellipsis rather than by
+   running into the next one. */
+.tl-row--proj .tl-desc {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tl-row--dir .tl-name {
+  color: var(--braise);
+}
+
+.ls-row > :last-child {
+  white-space: normal;
+}
+
+/* The mode column. Directories end in a slash and are drawn in the accent;
+   ordinary files are drawn in the secondary text. */
+.ls-mode {
+  color: var(--faible);
+}
+
+.ls-row.is-dir .ls-mode,
+.ls-row.is-dir .ls-name {
+  color: var(--braise);
+}
+
+.ls-name {
+  color: var(--encre);
+}
+
+/*
+  A link in the name column.
+
+  The class sits on the cell in some listings and on the anchor in others, so
+  both are matched: an unstyled anchor in a listing gets the browser's own
+  underline, which on a dark ground is a bright rule under every row.
+*/
+.ls-row a.ls-name,
+.ls-row .ls-name a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.ls-row a.ls-name:hover,
+.ls-row .ls-name a:hover {
+  color: var(--braise);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+/* A directory name is a link to the directory; it is drawn in the accent
+   whether or not it is wrapped in an anchor. */
+.ls-row.is-dir .ls-name a {
+  color: var(--braise);
+}
+
+.ls-size,
+.ls-date {
+  color: var(--faible);
+  font-variant-numeric: tabular-nums;
+}
+
+.ls-head {
+  color: var(--faible);
+  border-bottom: var(--filet) solid var(--grid);
+  margin-bottom: 0.35rem;
+  padding-bottom: 0.2rem;
+}
+
+/* The writing listing: mode, date, minutes, name. The date is the column
+   that has to be right — it is eleven characters wide ("7 Apr 2026"), and the
+   default six-column slot it used to sit in pushed the minutes into the date
+   and the two of them printed on top of each other. */
+.ls-row--write {
+  grid-template-columns: 11ch 12ch 5ch minmax(0, 1fr);
+}
+
+/* The header row is a caption, not content: every label in it is drawn in
+   the faint tone, whatever colour the column it names uses below. */
+.ls-head .ls-name,
+.ls-head .ls-mode,
+.ls-head .ls-date,
+.ls-head .ls-size,
+.ls-head .ls-when,
+.ls-head .ls-cue {
+  color: var(--faible);
+}
+
+/* ----- The catalogue row -------------------------------------------------
+   Two shapes of listing, both shared by the pages that need them.
+
+   The catalogue row has four columns: mode, when, name, cue. The mode says
+   whether the entry is a directory or a file, the when says when it was, the
+   name is the entry and the cue is what its link does. The when column is
+   eighteen characters wide — `2025-07 → 2025-11` is seventeen — so a date
+   never pushes the name out of the way.
+
+   The dated row drops the mode: it is for a listing whose entries are all
+   the same kind of thing, where a column of identical permissions would say
+   nothing on every row but one.
+   ---------------------------------------------------------------------- */
+.ls-row--cat {
+  grid-template-columns: 11ch 18ch minmax(0, 1fr) 8ch;
+  align-items: baseline;
+  line-height: 1.6;
+}
+
+.ls-row--when {
+  grid-template-columns: 18ch minmax(0, 1fr) 8ch;
+  align-items: baseline;
+  line-height: 1.6;
+}
+
+/* A name longer than its column wraps onto the next line rather than
+   running into the cue: the listing is a grid, and a title that overruns
+   its cell would sit on top of the word that says what the link does. The
+   cue stays on the first line, because that is the line the eye starts
+   from. */
+.ls-row--cat .ls-name,
+.ls-row--cat .ls-name a,
+.ls-row--when .ls-name,
+.ls-row--when .ls-name a {
+  white-space: normal;
+  overflow-wrap: break-word;
+}
+
+/* The when column: a date, in the faint tone. */
+.ls-when {
+  color: var(--faible);
+  font-size: var(--fs-label);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* The cue: what the link does. It is the same word the screen reader gets,
+   so what a reader sees and what a reader hears are one sentence. */
+.ls-cue {
+  color: var(--faible);
+  font-size: var(--fs-label);
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+}
+
+@media (max-width: 52rem) {
+  /* Four columns do not fit on a phone. The mode is the first thing to go —
+     it is the least informative — and the rest stack under each other. */
+  .ls-row--cat,
+  .ls-row--when {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .ls-row--cat .ls-mode {
+    display: none;
+  }
+
+  .ls-row--cat .ls-when,
+  .ls-row--cat .ls-name,
+  .ls-row--cat .ls-cue,
+  .ls-row--when .ls-when,
+  .ls-row--when .ls-name,
+  .ls-row--when .ls-cue {
+    white-space: normal;
+  }
+}
+
+/* ----- The post listing ---------------------------------------------------
+   One post in a listing of posts. It is a block rather than a row: the
+   title sits on the first line and the summary and the tags hang under it,
+   the way a long listing puts the description of a file under its name.
+
+   Two pages show it — the writing index and the page of a single tag — and
+   they are the same listing seen under two queries, so the shape lives
+   here rather than in one of them.
+   ---------------------------------------------------------------------- */
+.post-row {
+  padding-block: 0.55rem;
+  border-bottom: var(--filet) solid color-mix(in srgb, var(--grid) 55%, transparent);
+}
+
+.post-row:last-child {
+  border-bottom: 0;
+}
+
+/* A hidden row has to actually leave the listing. */
+.post-row[hidden] {
+  display: none;
+}
+
+.post-title {
+  margin: 0;
+  font-size: inherit;
+  font-weight: inherit;
+}
+
+/* The columns of a post row: mode, date, minutes, topic, name. */
+.ls-row--post {
+  grid-template-columns: 11ch 11ch 4ch 13ch minmax(0, 1fr);
+  line-height: 1.6;
+}
+
+.ls-topic {
+  color: var(--braise);
+  font-size: var(--fs-label);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ls-row--post .ls-name {
+  font-size: 0.92rem;
+}
+
+.ls-row--post .ls-name a {
+  color: var(--encre);
+  text-decoration: none;
+}
+
+.ls-row--post .ls-name a:hover {
+  color: var(--braise);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+/* The summary under a title. It runs the width of the listing rather than
+   stopping at seventy-two characters: a summary capped there wrapped into
+   three lines while two thirds of the window beside it was paper, and what
+   a reader reads first is the wrap. The cap is gone, so the line ends
+   where the sentence ends and only the words that do not fit break. */
+.post-sum {
+  margin: 0.2rem 0 0 2ch;
+  font-family: var(--font-body);
+  font-size: 0.86rem;
+  line-height: 1.5;
+  color: var(--fort);
+}
+
+.post-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  margin: 0.35rem 0 0 2ch;
+}
+
+.post-tags .tag {
+  padding: 0.05rem 0.4rem;
+  border: var(--filet) solid var(--grid);
+  background: var(--papier);
+  color: var(--fort);
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.05em;
+  text-transform: none;
+  text-decoration: none;
+}
+
+.post-tags .tag:hover {
+  border-color: var(--braise);
+  color: var(--braise);
+}
+
+/* On a phone the chips are links, and a link needs a thumb-sized target.
+   The type does not change — only the padding around it. */
+@media (max-width: 40rem) {
+  .post-tags .tag {
+    padding: 0.7rem 0.6rem;
+  }
+}
+
+/* A short post is a note, and the listing says so rather than letting the
+   reader open it expecting an essay. */
+.card-flag {
+  margin-left: 0.5ch;
+  padding: 0 0.3rem;
+  border: var(--filet) solid var(--grid);
+  color: var(--faible);
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  vertical-align: 0.15em;
+}
+
+/* The columns of a listing are what a terminal has and a phone does not.
+   Below the breakpoint the row folds: the mode goes away (it was always
+   decoration), and the date and the reading time sit above the title. */
+@media (max-width: 52rem) {
+  .ls-row--post {
+    grid-template-columns: 11ch 4ch minmax(0, 1fr);
+    grid-template-areas:
+      'date min topic'
+      'name name name';
+    row-gap: 0.1rem;
+  }
+
+  .ls-row--post .ls-mode {
+    display: none;
+  }
+
+  .ls-row--post .ls-date {
+    grid-area: date;
+  }
+
+  .ls-row--post .ls-size {
+    grid-area: min;
+  }
+
+  .ls-row--post .ls-topic {
+    grid-area: topic;
+  }
+
+  .ls-row--post .ls-name {
+    grid-area: name;
+  }
+
+  .post-sum,
+  .post-tags {
+    margin-left: 0;
+  }
+}
+
+/* ----- The rule ----------------------------------------------------------
+   A dotted line that runs to the end of the column. The leader of a table
+   of contents and the underline of a section head are the same object.
+   ---------------------------------------------------------------------- */
+.rule {
+  height: 1px;
+  border: 0;
+  margin: 0;
+  background-image: linear-gradient(
+    to right,
+    var(--grid) 0 3px,
+    transparent 3px 6px
+  );
+  background-size: 6px 1px;
+  background-repeat: repeat-x;
+}
+
+/* The rule between two blocks of a window's output: the line a terminal
+   prints when a command is piped into another one. */
+.tty-rule {
+  height: 0;
+  margin: 1.4rem 0;
+  border: 0;
+  border-top: var(--filet) dashed var(--grid);
+}
+
+/* ----- The echoed command ------------------------------------------------
+   A command on its own line inside a window, under the prompt that ran it.
+   The prompt itself lives in the page's hero; this is the same line again,
+   where the output begins.
+   ---------------------------------------------------------------------- */
+.tty-cmd-line {
+  margin: 0 0 0.6rem;
+}
+
+/* The continuation line of a command too long for one row. The `>` is the
+   shell's own prompt for it. */
+.tty-cont-line {
+  margin-top: -0.35rem;
+}
+
+.tty-cont {
+  color: var(--braise);
+}
+
+/* ----- The keycap --------------------------------------------------------
+   A key on the keyboard. `Ctrl+K`, `↑ ↓`, `Tab`.
+   ---------------------------------------------------------------------- */
+.key {
+  display: inline-block;
+  padding: 0.05em 0.45em;
+  border: var(--filet) solid var(--grid);
+  background: var(--rouille);
+  color: var(--fort);
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+/* ----- The hash ----------------------------------------------------------
+   A commit hash, or any other opaque identifier. It is drawn in the dim
+   colour because it is a handle on something, not the thing itself.
+   ---------------------------------------------------------------------- */
+.hash {
+  color: var(--faible);
+  font-family: var(--font-mono);
+  letter-spacing: 0.06em;
+}
+
+/* ----- The tree ----------------------------------------------------------
+   A file tree: a connector on each leaf, drawn with the box-drawing
+   characters themselves.
+
+   There is no rule drawn with CSS: the vertical stroke of `├` runs the
+   whole height of its cell, so one connector per leaf stacks into one
+   continuous line — the same way a terminal draws a tree. The last leaf
+   gets `└`, which closes the line at the bottom. The connectors are set in
+   the art face, because the box-drawing glyphs have to come from a face with
+   one advance width, or the line breaks up.
+
+   The list itself is the tree — one level of branch, with the leaves in it.
+   ---------------------------------------------------------------------- */
+.tree {
+  list-style: none;
+  margin: 0;
+  padding: 0 0 0 2ch;
+  font-family: var(--font-mono);
+  font-size: var(--fs-small);
+  line-height: 1.7;
+  color: var(--fort);
+}
+
+.tree li {
+  position: relative;
+}
+
+.tree li::before {
+  content: '├─';
+  position: absolute;
+  left: -2ch;
+  color: color-mix(in srgb, var(--fort) 55%, transparent);
+  font-family: var(--font-art);
+}
+
+.tree li:last-child::before {
+  content: '└─';
+}
+
+/* ----- The framed panel --------------------------------------------------
+   A box drawn with characters rather than with borders: the panel's own
+   title is part of the drawing, so the frame follows the shape of the
+   content instead of boxing it in.
+   ---------------------------------------------------------------------- */
+.frame {
+  font-family: var(--font-art);
+  font-size: var(--fs-small);
+  line-height: 1.35;
+  color: var(--grid);
+  white-space: pre;
+  overflow-x: auto;
+  margin: 0;
+}
+
+/* The text inside a frame is set in the art face too, or the box-drawing
+   characters and the letters inside them come from two faces and the
+   columns stop lining up. */
+.frame .in {
+  color: var(--fort);
+  font-family: var(--font-art);
+}
+
+/* ----- The banner --------------------------------------------------------
+   The big block letters. They are drawn with block elements, so they come
+   from the art face and the columns line up exactly.
+
+   The size is not set here: the component scales the drawing to the column
+   it lands in, because the wordmark is ninety-eight columns wide and a fixed
+   size either overflows the column or shrinks the drawing for no reason.
+   ---------------------------------------------------------------------- */
+.banner {
+  font-family: var(--font-art);
+  font-weight: 400;
+  line-height: 1.05;
+  letter-spacing: 0;
+  color: var(--encre);
+  text-shadow: var(--glow-strong);
+  white-space: pre;
+  /* The drawing fits the column it is in, so there is nothing to scroll to.
+     The scrollbar it used to show was one pixel of overflow. */
+  overflow: hidden;
+  margin: 0;
+}
+
+/* ----- The tag row -------------------------------------------------------
+   A chip that reads like a file extension: `[rust]`.
+   ---------------------------------------------------------------------- */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.05rem 0.4rem;
+  border: var(--filet) solid var(--grid);
+  color: var(--fort);
+  font-family: var(--font-mono);
+  font-size: var(--fs-label);
+  letter-spacing: 0.06em;
+  text-decoration: none;
+  background: var(--papier);
+}
+
+a.chip:hover {
+  border-color: var(--braise);
+  color: var(--braise);
+}
+
+/* The section marker: a filled block in front of a label. */
+.mark {
+  color: var(--braise);
+  font-family: var(--font-mono);
+}
+
+/* The dimmed note under a section head. */
+.note {
+  font-family: var(--font-mono);
+  font-size: var(--fs-label);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--faible);
+}
+
+/* The number of a thing, set the way a count is set in a log line. */
+.count {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  color: var(--braise);
+}
+
+/* ----- The status strip --------------------------------------------------
+   The line under the header that says what the machine is doing.
+   ---------------------------------------------------------------------- */
+.tty-status {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-mono);
+  font-size: var(--fs-label);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fort);
+}
+
+.tty-status .k {
+  color: var(--faible);
+}
+
+.tty-status .v {
+  color: var(--encre);
+}

@@ -3,17 +3,11 @@ title: "From device to system: communication, backend, and dashboard for an embe
 date: "2026-01-07"
 tags: ["project", "rust", "nurse", "product"]
 ---
-🟠 In this final article, I connect the embedded AI device to the real world.
-I describe how inference results leave the MCU, travel through MQTT and HTTP, land in a Rust backend, and become visible through a web dashboard.
-
-This is the layer where a TinyML prototype turns into an actual **end-to-end product**.
-
-
----
+This final article connects the embedded AI device to the real world. It describes how inference results leave the MCU, travel through MQTT and HTTP, land in a Rust backend, and become visible through a web dashboard. This is the layer where a TinyML prototype turns into an actual end-to-end product.
 
 ## From inference to communication: Wi-Fi, MQTT, and reliability
 
-Once inference works reliably on-device, the next challenge is not accuracy — it’s **communication**.
+Once inference works reliably on-device, the hard part is communication.
 
 The MCU operates in an unstable environment:
 
@@ -23,7 +17,7 @@ The MCU operates in an unstable environment:
 
 Because of that, the device communication layer is built around a few principles:
 
-* **stateless inference**, stateful delivery;
+* stateless inference, stateful delivery;
 * retry-safe messaging;
 * decoupling inference from transport.
 
@@ -43,16 +37,11 @@ The device publishes inference results as compact messages:
 * prediction score;
 * optional debug metadata.
 
-If Wi-Fi drops, the MCU buffers messages and reconnects automatically.
-Inference never blocks on network I/O — this separation is critical for real-time behavior.
-
----
+If Wi-Fi drops, the MCU buffers messages and reconnects automatically. Inference never blocks on network I/O, and that separation is what keeps the real-time behavior intact.
 
 ## Backend architecture: Rust, Actix Web, and data ingestion
 
-On the server side, the backend acts as the **central nervous system** of the product.
-
-Its responsibilities:
+On the server side, the backend acts as the central nervous system of the product. Its responsibilities:
 
 * ingest data from devices via MQTT;
 * expose an HTTP API for clients;
@@ -74,17 +63,11 @@ The MQTT listener runs as a dedicated async task inside the backend process:
 * validates incoming payloads;
 * writes inference data into the database.
 
-Because MQTT and HTTP are decoupled, ingestion continues even if no users are connected.
-
-This pattern avoids the classic IoT anti-pattern of “HTTP from devices”.
-
----
+Because MQTT and HTTP are decoupled, ingestion continues even if no users are connected. This pattern avoids the classic IoT anti-pattern of "HTTP from devices".
 
 ## API layer and authorization model
 
-The HTTP API exposes structured access to collected data.
-
-Key design decisions:
+The HTTP API exposes structured access to collected data. Key design decisions:
 
 * JWT-based authentication;
 * protected routes via middleware;
@@ -92,19 +75,14 @@ Key design decisions:
 
 In Actix Web this maps cleanly to scoped routes:
 
-* `/api/auth/*` — login, profile, token refresh;
-* `/api/predictions/*` — protected inference data access.
+* `/api/auth/*` (login, profile, token refresh);
+* `/api/predictions/*` (protected inference data access).
 
-Middleware enforces authorization centrally, not per-handler —
-this keeps business logic clean and auditable.
-
----
+Middleware enforces authorization centrally rather than per-handler, which keeps business logic clean and auditable.
 
 ## Backend as a deployment unit
 
-The backend is built and deployed as a **minimal container**.
-
-The Docker setup follows a multi-stage pattern:
+The backend is built and deployed as a minimal container. The Docker setup follows a multi-stage pattern:
 
 * Rust build stage with cached dependencies;
 * slim Debian runtime with only OpenSSL and certificates.
@@ -124,83 +102,43 @@ Docker Compose ties everything together:
 
 At this point, the system can be deployed locally or on a single VPS without modification.
 
----
-
 ## Frontend dashboard: making data visible
 
-Raw inference data is useless without interpretation.
-
-The dashboard provides:
+Raw inference data is useless without interpretation. The dashboard provides:
 
 * a login-protected UI;
 * real-time and historical predictions;
 * device-level visibility;
 * documentation and onboarding pages.
 
-The frontend is a React SPA served as static assets via Nginx.
-
-Routing is handled client-side:
+The frontend is a React SPA served as static assets via Nginx. Routing is handled client-side:
 
 * core pages (login, dashboard, purchase);
 * static legal pages;
 * documentation sections;
 * graceful SPA fallback for unknown routes.
 
-Because the backend serves the frontend assets directly, the system behaves as a **single cohesive application** from the user’s perspective.
+Because the backend serves the frontend assets directly, the system behaves as a single cohesive application from the user's perspective.
 
 <video controls preload="none" poster="/media/posters/dev_nurse_project_web.jpg" width="720">
 <source src="/media/dev_nurse_project_web.webm" type="video/webm" />
-</video>  
-
----
+</video>
 
 ## System boundaries and responsibilities
 
 At this stage, the architecture has clear boundaries:
 
-* **MCU**
+* MCU: real-time inference, sensor interaction, unreliable network handling.
+* MQTT: transport layer, buffering and delivery guarantees.
+* Backend: data ingestion, persistence, authorization, API surface.
+* Frontend: visualization, analysis, user interaction.
 
-  * real-time inference;
-  * sensor interaction;
-  * unreliable network handling.
-
-* **MQTT**
-
-  * transport layer;
-  * buffering and delivery guarantees.
-
-* **Backend**
-
-  * data ingestion;
-  * persistence;
-  * authorization;
-  * API surface.
-
-* **Frontend**
-
-  * visualization;
-  * analysis;
-  * user interaction.
-
-Each layer can evolve independently without breaking the others —
-this is what turns a demo into a maintainable product.
-
----
+Each layer can evolve independently without breaking the others, and that is what turns a demo into a maintainable product.
 
 ## Closing thoughts
 
-This project deliberately spans:
-
-* TinyML and quantization;
-* low-level firmware concerns;
-* async backend design;
-* frontend product thinking.
-
-The key insight is simple but often missed:
+This project deliberately spans TinyML and quantization, low-level firmware concerns, async backend design, and frontend product thinking. The point that ties them together is simple:
 
 > An embedded AI model is only valuable when it is part of a system.
 
-By treating communication, backend, and UI as **first-class engineering problems**, the device stops being “just a model on a chip” and becomes a real, deployable AI product.
-
-This concludes the end-to-end pipeline —
-from camera frames and INT8 tensors to dashboards and users.
+Treating communication, backend, and UI as first-class engineering problems is what turns the device from "just a model on a chip" into a real, deployable AI product. The full path runs from camera frames and INT8 tensors on the device to dashboards and users.

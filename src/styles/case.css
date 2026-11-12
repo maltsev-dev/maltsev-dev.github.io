@@ -1,342 +1,404 @@
 /* ==========================================================================
    Case study — /projects/<slug>/
 
-   ProjectCase.astro renders the data lifted out of the legacy landing pages
-   into JSON (see _parse_projects.py) with site components. It shipped with
-   no stylesheet at all, so every one of its fifty-odd elements fell back to
-   the browser's block layout: the three pages that sell the product read as a
-   draft. The metrics hung as bare text, the before/after pairs ran together on
-   one line, and the pipeline steps carried two numbers each — the <ol>'s own
-   marker and the .flow-n span — with nothing separating them.
+   The three cases are read out of JSON that _parse_projects.py lifted out of
+   the legacy landing pages. They used to be drawn as web pages: a grid of
+   cards, a row of before-and-after pairs, a column of prose.
 
-   Everything here resolves through the theme tokens, so a case study looks
-   the same in all three ramps.
+   Now each part of a case is the output of a command, and the styles here
+   are the styles of that output. A log line is a line. A diff is a diff. A
+   script is a script. The grid of cards and the before-and-after arrows are
+   gone, because a terminal never drew them.
+
+   Everything resolves through the theme tokens, so a case study looks the
+   same in all three ramps.
    ========================================================================== */
 
 .wrap-sub {
+  max-width: 56rem;
   margin-inline: auto;
-  max-width: 58rem;
 }
 
-/* ----- Hero -------------------------------------------------------------- */
-
-.case {
-  padding-block: 0 3rem;
-}
-
+/* ----- The head ------------------------------------------------------------
+   A case study is a document like a post, so it opens the way a post opens:
+   what it is, the command that read it, the line under it, the byline, the
+   numbers.
+   ---------------------------------------------------------------------- */
 .case-hero {
-  padding-block: 1.5rem 0.5rem;
+  margin-bottom: 2rem;
 }
 
-.case-tagline {
-  font-family: var(--font-display);
-  font-size: clamp(1.9rem, 5.5vw, 3.2rem);
-  line-height: 1.08;
-  color: var(--fort);
-  margin: 0 0 0.7rem;
-  text-wrap: balance;
+.case-hero h1 {
+  margin-top: 0.5rem;
+  max-width: 24ch;
 }
 
 .case-fit {
-  font-family: var(--font-mono);
-  font-size: var(--fs-label);
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--braise);
-  margin-top: 0.9rem;
+  color: var(--fort);
 }
 
-/* The metric strip: a hairline grid in the accent, cells in the paper
-   color. The same construction as the legacy pages' .metrics, so the two
-   generations of page read as one. */
+/* The numbers. The same shape as the homepage's: a name, a dotted leader,
+   the value. */
 .case-metrics {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
-  gap: 1px;
-  background: var(--braise);
-  border: var(--trait) solid var(--braise);
-  margin-block: 1.8rem;
-}
-
-.case-metric {
-  background: var(--papier);
-  padding: 0.9rem 1.1rem;
-}
-
-.case-metric strong {
-  display: block;
-  font-family: var(--font-display);
-  font-size: clamp(1.5rem, 3.6vw, 2.1rem);
-  line-height: 1.1;
-  color: var(--braise);
-}
-
-.case-metric span {
-  display: block;
-  margin-top: var(--sp-1);
-  font-family: var(--font-mono);
-  font-size: var(--fs-label);
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--encre);
-}
-
-.case-trust {
-  font-family: var(--font-mono);
-  font-size: var(--fs-label);
-  color: var(--fort);
-  border-left: var(--trait) solid var(--braise);
-  padding-left: 0.85rem;
-}
-
-/* ----- Blocks ------------------------------------------------------------ */
-
-.case-block {
-  padding-block: 2.4rem;
-  border-top: var(--filet) solid var(--grid);
-}
-
-.case-block h2 {
-  font-family: var(--font-display);
-  font-size: clamp(1.4rem, 3.4vw, 2rem);
-  line-height: 1.15;
-  color: var(--fort);
-  margin: 0 0 0.8rem;
-}
-
-.case-sub {
-  max-width: 62ch;
-  color: var(--fort);
-  margin-bottom: var(--sp-5);
-}
-
-/* ----- The problem list -------------------------------------------------- */
-
-.case-list {
-  list-style: none;
-  margin: 0;
+  gap: 0.35rem 2rem;
+  margin: 1.6rem 0 0;
   padding: 0;
-  display: grid;
-  gap: var(--sp-3);
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 19rem), 1fr));
 }
 
-.case-list li {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: var(--sp-3);
-  align-items: start;
-  border: var(--filet) solid var(--grid);
-  background: color-mix(in srgb, var(--rouille) 18%, var(--papier));
-  padding: 0.85rem 1rem;
+@media (min-width: 40rem) {
+  .case-metrics {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
 }
 
-.case-bullet {
+.case-metrics .stat {
+  display: grid;
+  grid-template-columns: minmax(0, auto) minmax(1.5rem, 1fr);
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.case-metrics .stat dt {
+  font-family: var(--font-mono);
+  font-size: var(--fs-label);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--fort);
+  white-space: nowrap;
+}
+
+.case-metrics .stat dd {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  margin: 0;
+  min-width: 0;
+}
+
+/* The leader. The rule has to sit on the baseline of the number, so it is a
+   flex item rather than a border. */
+.case-metrics .stat .rule {
+  flex: 1 1 auto;
+  transform: translateY(-0.28em);
+}
+
+.case-metrics .stat-value {
   font-family: var(--font-mono);
   font-size: 1.05rem;
-  line-height: 1.5;
   color: var(--braise);
+  text-shadow: var(--glow);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
 }
 
-.case-card-body {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sp-1);
+/* The trust line. Each claim in it is a lamp and the words beside it, so the
+   line says what is true and the lamps say it is still true. */
+.case-trust {
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin: 1.3rem 0 0;
 }
 
-.case-card-title {
-  color: var(--fort);
+.case-trust .led {
+  margin-right: 0.1rem;
 }
 
-.case-card-text {
-  font-size: var(--fs-lead);
-  color: var(--encre);
+.case-trust-sep {
+  color: var(--faible);
+  margin: 0 0.3rem;
 }
 
-/* ----- Before / after ---------------------------------------------------- */
-
-.case-deltas {
-  display: grid;
-  gap: var(--sp-4);
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
-}
-
-.delta {
-  display: grid;
-  grid-template-columns: auto auto 1fr;
-  grid-template-areas:
-    'before arrow after'
-    'label label label';
-  align-items: baseline;
-  gap: var(--sp-1) 0.6rem;
-  border: var(--filet) solid var(--braise);
-  background: var(--papier);
-  padding: 0.9rem 1rem;
-}
-
-.delta-before {
-  grid-area: before;
+/* ----- The log ------------------------------------------------------------
+   A line in a log is a level, a key, and the message. The level is in the
+   column that carries colour, because the level is what the eye looks for
+   first.
+   ---------------------------------------------------------------------- */
+.case-log {
   font-family: var(--font-mono);
   font-size: var(--fs-small);
-  color: var(--encre);
-  opacity: 0.75;
-  text-decoration: line-through;
-  text-decoration-color: var(--braise);
+  line-height: 1.7;
 }
 
-.delta-arrow {
-  grid-area: arrow;
-  color: var(--braise);
-  font-weight: 700;
-}
-
-.delta-after {
-  grid-area: after;
-  font-family: var(--font-display);
-  font-size: 1.25rem;
-  line-height: 1.2;
-  color: var(--fort);
-}
-
-.delta-label {
-  grid-area: label;
-  font-family: var(--font-mono);
-  font-size: var(--fs-label);
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--braise);
-}
-
-.case-highlight {
-  margin-top: 1.6rem;
-  padding: 1rem 1.2rem;
-  border-left: var(--trait) solid var(--braise);
-  background: color-mix(in srgb, var(--rouille) 40%, var(--papier));
-  font-family: var(--font-display);
-  font-size: clamp(1.05rem, 2.4vw, 1.3rem);
-  color: var(--fort);
-}
-
-/* ----- The pipeline ------------------------------------------------------ */
-
-/* The list is a numbered sequence in the markup, but the number is drawn by
-   .flow-n so that it can sit in a box. The <ol>'s own marker would be a
-   second number, right beside it: `1. 1 Lead replies`. */
-.case-flow {
-  list-style: none;
+.case-log-row {
+  display: grid;
+  grid-template-columns: 5ch minmax(0, 24ch) minmax(0, 1fr);
+  gap: 0 1ch;
   margin: 0;
-  padding: 0;
-  display: grid;
-  gap: var(--sp-4);
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+  align-items: baseline;
 }
 
-.flow-step {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: var(--sp-1) 0.9rem;
-  align-items: start;
-  border: var(--filet) solid var(--grid);
-  background: color-mix(in srgb, var(--rouille) 18%, var(--papier));
-  padding: 0.9rem 1rem;
+.case-log-warn {
+  color: var(--led-warn);
+  letter-spacing: 0.06em;
 }
 
-.flow-n {
-  grid-column: 1;
-  grid-row: 1 / span 2;
+.case-log-key {
+  color: var(--encre);
+  /* The key breaks at a space and not inside a word. A hyphen is a joiner
+     here, not a break point: `follow-ups` split across two lines reads as
+     two words rather than as one. */
+  overflow-wrap: normal;
+}
+
+.case-log-text {
+  color: var(--fort);
+  font-family: var(--font-body);
+  font-size: 0.86rem;
+  line-height: 1.5;
+}
+
+.case-note {
+  margin: 1.3rem 0 0;
+  max-width: 62ch;
+  font-family: var(--font-body);
+  font-size: 0.92rem;
+  line-height: 1.6;
+  color: var(--fort);
+}
+
+.case-note--ok {
+  color: var(--ok);
+}
+
+/* ----- The service --------------------------------------------------------
+   What `systemctl status` prints: the unit, then the two lines that say
+   whether it is loaded and whether it is running.
+   ---------------------------------------------------------------------- */
+.case-unit {
   display: grid;
-  place-items: center;
-  width: 2rem;
-  height: 2rem;
-  background: var(--braise);
-  color: var(--papier);
+  grid-template-columns: 2ch minmax(0, auto) minmax(0, 1fr);
+  gap: 0 1ch;
+  margin: 0 0 0.4rem;
+  align-items: baseline;
   font-family: var(--font-mono);
   font-size: var(--fs-small);
-  font-weight: 700;
-  line-height: 1;
+  line-height: 1.7;
 }
 
-.flow-step strong {
-  grid-column: 2;
+.case-unit-dot {
+  color: var(--ok);
+}
+
+.case-unit-name {
+  color: var(--creme);
+  text-shadow: var(--glow);
+  overflow-wrap: break-word;
+}
+
+.case-unit-text {
   color: var(--fort);
+  font-family: var(--font-body);
+  font-size: 0.86rem;
+  line-height: 1.5;
 }
 
-.flow-step > span:not(.flow-n) {
-  grid-column: 2;
-  font-size: var(--fs-lead);
-  color: var(--encre);
+.case-unit-state {
+  display: grid;
+  grid-template-columns: 9ch minmax(0, 1fr);
+  gap: 0 1ch;
+  margin: 0 0 0.3rem;
+  padding-left: 3ch;
+  font-family: var(--font-mono);
+  font-size: var(--fs-small);
+  line-height: 1.7;
 }
 
-/* ----- Cards ------------------------------------------------------------- */
+.case-unit-key {
+  color: var(--faible);
+}
 
-.card-glyph {
-  display: inline-grid;
-  place-items: center;
-  width: 2rem;
-  height: 2rem;
-  border: var(--filet) solid var(--braise);
-  background: var(--papier);
+.case-unit-value {
+  color: var(--fort);
+  overflow-wrap: break-word;
+}
+
+.case-unit-value--ok {
+  color: var(--ok);
+}
+
+/* The modules of the layer, drawn as a tree. */
+.case-tree {
+  margin-top: 0.2rem;
+}
+
+.case-tree li {
+  padding-left: 0.2ch;
+}
+
+.case-tree-key {
+  color: var(--creme);
+}
+
+.case-tree-text {
+  color: var(--fort);
+  font-family: var(--font-body);
+  font-size: 0.86rem;
+  line-height: 1.5;
+}
+
+.case-tree-text::before {
+  content: ' — ';
+  color: var(--faible);
+  font-family: var(--font-mono);
+}
+
+/* ----- The diff -----------------------------------------------------------
+   A diff is a diff. The lines that went are drawn one way, the lines that
+   came are drawn another, and the label sits in the context line above,
+   which is where a context line sits in a real diff.
+   ---------------------------------------------------------------------- */
+.case-diff {
+  font-family: var(--font-mono);
+  font-size: var(--fs-small);
+  line-height: 1.6;
+}
+
+.case-diff p {
+  margin: 0;
+}
+
+.case-diff-label {
+  color: var(--faible);
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  letter-spacing: 0.04em;
+}
+
+.case-diff-hunk {
+  color: var(--faible);
+  padding-left: 1ch;
+}
+
+.case-diff-old {
+  color: var(--erreur);
+  padding-left: 1ch;
+}
+
+.case-diff-sep {
+  color: var(--faible);
+  padding-left: 1ch;
+}
+
+.case-diff-new {
+  color: var(--ok);
+  padding-left: 1ch;
+}
+
+/* ----- The script ---------------------------------------------------------
+   A script is read the way a script is read: the shebang, then the stages in
+   the order they run.
+   ---------------------------------------------------------------------- */
+.case-script {
+  font-family: var(--font-mono);
+  font-size: var(--fs-small);
+  line-height: 1.7;
+}
+
+.case-script p {
+  margin: 0;
+}
+
+.case-script-shebang {
+  color: var(--faible);
+}
+
+.case-script-step {
+  display: grid;
+  grid-template-columns: 3ch minmax(0, 17ch) minmax(0, 1fr);
+  gap: 0 1ch;
+  align-items: baseline;
+}
+
+.case-script-n {
   color: var(--braise);
-  font-family: var(--font-mono);
-  font-size: 1rem;
 }
 
-/* The risk cards are the argument against doing nothing, so they wear the
-   warning tint rather than the plain card ground. */
-.card-risk {
-  border-color: var(--rouille);
-  background: color-mix(in srgb, var(--rouille) 22%, var(--papier));
+.case-script-key {
+  color: var(--creme);
+  overflow-wrap: normal;
 }
 
-.card-risk h3 {
+.case-script-text {
   color: var(--fort);
+  font-family: var(--font-body);
+  font-size: 0.86rem;
+  line-height: 1.5;
 }
 
-/* ----- Pricing ----------------------------------------------------------- */
-
+/* ----- The price ---------------------------------------------------------- */
 .case-price {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
-  gap: 1px;
-  background: var(--braise);
-  border: var(--trait) solid var(--braise);
+  font-family: var(--font-mono);
+  font-size: var(--fs-small);
+  line-height: 1.8;
 }
 
-.price-cell {
-  background: var(--papier);
-  padding: 1rem 1.1rem;
+.case-price-row {
   display: grid;
-  gap: var(--sp-1);
-  align-content: start;
+  grid-template-columns: minmax(0, 18ch) minmax(0, 1fr);
+  gap: 0 1ch;
+  margin: 0;
+  align-items: baseline;
 }
 
-.price-cell strong {
-  font-family: var(--font-display);
-  font-size: clamp(1.3rem, 3vw, 1.8rem);
-  line-height: 1.15;
+.case-price-label {
   color: var(--fort);
 }
 
-.price-cell span {
-  font-family: var(--font-mono);
-  font-size: var(--fs-label);
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--encre);
+.case-price-value {
+  color: var(--braise);
+  text-shadow: var(--glow);
+  font-variant-numeric: tabular-nums;
 }
 
-/* ----- Narrow screens ---------------------------------------------------- */
+/* ----- The invitation ----------------------------------------------------- */
+.case-contact .post-cta-mail,
+.tty-contact .post-cta-mail {
+  color: var(--creme);
+}
 
-/* A delta is a row of three on a wide screen; on a phone the arrow sits
-   under the "before" instead of beside it, so the pair still reads as a
-   pair. */
-@media (max-width: 30rem) {
-  .delta {
-    grid-template-columns: 1fr;
-    grid-template-areas:
-      'before'
-      'arrow'
-      'after'
-      'label';
+.contact-note {
+  margin: 0.9rem 0 0;
+  max-width: 62ch;
+  color: var(--fort);
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.contact-go {
+  margin: 1.1rem 0 0;
+}
+
+/* ----- Narrow screens -----------------------------------------------------
+   A log line is three columns. On a phone the message drops under the key,
+   so the line still reads as one line of news rather than as three separate
+   fragments.
+   ---------------------------------------------------------------------- */
+@media (max-width: 44rem) {
+  .case-log-row,
+  .case-script-step {
+    grid-template-columns: 5ch minmax(0, 1fr);
+    row-gap: 0.1rem;
+  }
+
+  .case-log-text,
+  .case-script-text {
+    grid-column: 2;
+  }
+
+  .case-unit,
+  .case-unit-state {
+    grid-template-columns: minmax(0, 1fr);
+    padding-left: 0;
+  }
+
+  .case-unit-text,
+  .case-unit-value {
+    grid-column: 1;
+  }
+
+  .case-price-row {
+    grid-template-columns: minmax(0, 1fr);
   }
 }

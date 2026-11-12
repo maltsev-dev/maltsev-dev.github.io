@@ -7,8 +7,8 @@
  * lives here rather than inside either of them.
  *
  * Posts carry no summary field of their own, so the opening paragraph is what
- * an agent would read anyway — but taken raw it starts with emoji, headings,
- * `<!-- more -->` markers and tables. Skipping anything that is not a sentence
+ * an agent would read anyway — but taken raw it starts with a heading, a
+ * `<!-- more -->` marker or a table. Skipping anything that is not a sentence
  * keeps the result a description rather than a fragment.
  */
 
@@ -429,7 +429,7 @@ export function describe(
 /**
  * Below this many words a post is a note, not an essay.
  *
- * The corpus runs to a median of about nine hundred words, and thirteen of
+ * The corpus runs to a median of about nine hundred words, and nine of
  * the sixty-nine posts come in under a third of that. They are not broken —
  * a post that answers one question in three paragraphs is doing its job — but
  * the index cannot treat them the same as the long ones: a reader choosing

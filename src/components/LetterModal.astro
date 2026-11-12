@@ -1,7 +1,39 @@
 ---
-// One shared letter form. Any element with [data-open-letter] opens it; the
-// Contact page uses the same instance rather than keeping a second copy of the
-// markup and the validation.
+/**
+ * The contact dialog. Any element with [data-open-letter] opens it.
+ *
+ * There is no form in here. A form is a request for the visitor to write a
+ * message, to send it through a mail client that may not open, and to wait
+ * for a reply that has to arrive by email. Four links to four channels do
+ * the same job without the middle step, and the visitor picks the channel
+ * that suits them: a message for a brief, a profile for a look at the work.
+ */
+const CHANNELS = [
+  {
+    name: 'Telegram',
+    value: '@a_maltsev_dev',
+    href: 'https://t.me/a_maltsev_dev',
+    desc: 'The fastest way to reach me. A couple of lines is enough to start.',
+  },
+  {
+    name: 'GitHub',
+    value: 'github.com/maltsev-dev',
+    href: 'https://github.com/maltsev-dev',
+    desc: 'The code, the notes behind it, and the issues that are still open.',
+  },
+  {
+    name: 'LinkedIn',
+    value: 'linkedin.com/in/a-maltsev',
+    href: 'https://www.linkedin.com/in/a-maltsev',
+    desc: 'The work history, if you would rather read it than read the code.',
+  },
+  {
+    name: 'Email',
+    value: 'mr.a.maltsev@gmail.com',
+    href: 'mailto:mr.a.maltsev@gmail.com',
+    desc: 'For a brief with detail in it: scope, timeline, what breaks today.',
+  },
+];
 ---
 
 <div class="letter" id="letterModal" hidden role="dialog" aria-modal="true" aria-labelledby="letterTitle">
@@ -9,102 +41,43 @@
 
   <!--
     No `role="document"` on the box: inside a dialog it switches the screen
-    reader into browse mode for the whole form, and the reader then has to
-    switch back to forms mode to type into the message box. The dialog owns
-    its contents.
+    reader into browse mode for the whole panel, and the reader then has to
+    switch back to links mode to follow one. The dialog owns its contents.
   -->
   <div class="letter-box">
     <div class="letter-head">
-      <span id="letterTitle">new message</span>
+      <span id="letterTitle">contact</span>
       <button type="button" class="letter-x" data-close-letter aria-label="Close">✕</button>
     </div>
 
-    <form id="contactForm" novalidate>
-      <div class="letter-body">
-        <div class="field">
-          <label for="l-email">Your email</label>
-          <input
-            id="l-email"
-            name="email"
-            type="email"
-            placeholder="you@company.com"
-            autocomplete="email"
-            required
-            maxlength="254"
-          />
-        </div>
+    <div class="letter-body">
+      <p class="letter-note">
+        Four channels, all of them read. Pick the one that suits the question.
+      </p>
 
-        <div class="field">
-          <label for="l-subject">Subject</label>
-          <input
-            id="l-subject"
-            name="subject"
-            type="text"
-            placeholder="What are you building?"
-            autocomplete="off"
-            maxlength="120"
-          />
-        </div>
+      <ul class="letter-channels">
+        {
+          CHANNELS.map((channel) => (
+            <li>
+              <a
+                class="letter-channel"
+                href={channel.href}
+                rel={channel.href.startsWith('http') ? 'noopener' : undefined}
+              >
+                <span class="letter-channel-name">{channel.name}</span>
+                <span class="letter-channel-value">{channel.value}</span>
+                <span class="letter-channel-desc">{channel.desc}</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
 
-        <div class="field">
-          <label for="l-kind">Project type</label>
-          <select id="l-kind" name="kind">
-            <option value="Agentic AI">Agentic AI system</option>
-            <option value="Automation">Workflow automation</option>
-            <option value="Embedded">Embedded / firmware</option>
-            <option value="Audit">Technical audit</option>
-            <option value="Other">Something else</option>
-          </select>
-        </div>
-
-        <div class="field">
-          <label for="l-timeline">Timeline</label>
-          <select id="l-timeline" name="timeline">
-            <option value="soon">As soon as possible</option>
-            <option value="quarter">This quarter</option>
-            <option value="later">Later this year</option>
-            <option value="discuss">Let's discuss first</option>
-          </select>
-        </div>
-
-        <div class="field">
-          <label for="l-message">Message</label>
-          <textarea
-            id="l-message"
-            name="message"
-            rows="6"
-            required
-            minlength="10"
-            maxlength="5000"
-            placeholder="What are you trying to automate? What breaks today?"></textarea>
-        </div>
-
-        <!--
-          Honeypot: hidden from people, filled in by most bots. It is kept out
-          of the accessibility tree, out of the tab order and out of the
-          autofill's reach — a disabled field is none of those three, and a
-          field a password manager can fill is a field that can silently
-          swallow a real message. The script reads the value straight off the
-          element, since a disabled field is not part of the form data.
-        -->
-        <div class="hp" aria-hidden="true">
-          <label for="l-challenge">Leave this field empty</label>
-          <input
-            id="l-challenge"
-            name="challenge"
-            type="text"
-            tabindex="-1"
-            autocomplete="off"
-            disabled
-            data-honeypot="challenge"
-          />
-        </div>
-      </div>
-
-      <div class="letter-foot">
-        <button class="btn btn-primary" type="submit">Send</button>
-        <p class="form-status" id="formStatus" role="status" aria-live="polite"></p>
-      </div>
-    </form>
+    <div class="letter-foot">
+      <p class="letter-hint">
+        Where to start: a short question goes to Telegram, a brief goes to email.
+      </p>
+    </div>
   </div>
 </div>

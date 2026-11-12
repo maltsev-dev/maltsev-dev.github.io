@@ -1,0 +1,369 @@
+---
+/**
+ * A working shell on the front page.
+ *
+ * The window is not a recording of a terminal: it is one. The commands read
+ * the same data files the rest of the site reads, so `skills` cannot disagree
+ * with /experience/ and `projects` cannot disagree with /projects/.
+ *
+ * Everything the shell prints is assembled on the client from a JSON payload
+ * rendered into the page at build time. Nothing is fetched at runtime, and
+ * nothing about the site is hidden behind the script — the payload is the
+ * same data the pages already ship.
+ */
+import { getCollection } from 'astro:content';
+import { displayTitle } from '../lib/text';
+import { SKILL_TIERS } from '../data/skills';
+import { MILESTONES } from '../data/milestones';
+import { TOPICS } from '../data/topics';
+import { THEMES } from '../data/themes';
+import { SKILL_COUNT, yearsOfExperience } from '../lib/profile';
+import { formatDate, formatDateShort } from '../data/dates';
+import { describe, MAX_DESCRIPTION } from '../lib/summarize';
+
+const posts = (await getCollection('posts')).sort((a, b) =>
+  (b.data.date ?? '').localeCompare(a.data.date ?? '')
+);
+const cases = await getCollection('projects');
+
+const SKILLS = SKILL_TIERS.map((tier) => ({
+  label: tier.label,
+  skills: tier.skills.map((s) => s.name),
+}));
+
+const PROJECTS = [
+  ...cases.map((p) => ({
+    title: p.data.title,
+    href: `/projects/${p.data.slug}/`,
+    summary: p.data.description ?? '',
+    tags: p.data.tags,
+  })),
+  ...MILESTONES.filter((m) => m.period !== 'Current').map((m) => ({
+    title: m.short ?? m.title,
+    href: m.href ?? '',
+    summary: m.summary,
+    tags: m.tags,
+  })),
+];
+
+const POSTS = posts.slice(0, 12).map((p) => ({
+  title: displayTitle(p.data.title),
+  href: `/blog/${p.id}/`,
+  date: formatDate(p.data.date),
+  /* The short date is what the shell prints in a listing: a listing is a
+     table, and a spelled-out month does not fit in a column. */
+  dateShort: formatDateShort(p.data.date),
+  iso: p.data.date ?? '',
+  summary: describe(p.data.title, p.body, p.data.description, MAX_DESCRIPTION),
+  topic: TOPICS.find((t) => t.posts.includes(p.id))?.label ?? '',
+}));
+
+const STATS = [
+  { k: 'years of practice', v: yearsOfExperience() },
+  { k: 'skills in the toolkit', v: SKILL_COUNT },
+  { k: 'systems shipped', v: MILESTONES.length + cases.length },
+  { k: 'notes written', v: posts.length },
+];
+
+/**
+ * The logo `neofetch` prints.
+ *
+ * Every line is the same width, and the box is drawn with the same
+ * characters the rest of the site uses for frames. The name inside is
+ * spaced out by hand rather than generated, because a generated one would
+ * be one character wider on the day somebody changed it.
+ */
+const LOGO = [
+  '   ┌───────────────────────┐',
+  '   │ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ │',
+  '   │ █  M A L T S E V    █ │',
+  '   │ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ │',
+  '   └───────────────────────┘',
+];
+
+/**
+ * The directories the shell knows about.
+ *
+ * Each one is a page of the site, and the description is the line the page
+ * itself opens with — so `ls` is an index of the site, not a decoration.
+ */
+const DIRS: Record<string, { desc: string; href: string }> = {
+  '~': { desc: 'the front page', href: '/' },
+  '~/about': { desc: 'how I work, and what is on the desk right now', href: '/about/' },
+  '~/experience': { desc: 'six stops, oldest first', href: '/experience/' },
+  '~/engagements': { desc: 'five fixed-scope shapes of work', href: '/freelance/' },
+  '~/projects': { desc: 'what shipped, and where it is running', href: '/projects/' },
+  '~/writing': { desc: 'every note, newest first', href: '/blog/' },
+  '~/tags': { desc: 'the taxonomy, one page per subject', href: '/blog/' },
+};
+
+/** The files the shell can print. */
+const FILES: Record<string, { desc: string; body: string[] }> = {
+  'about.md': {
+    desc: 'who this is and what the work is',
+    body: [
+      'Anatolii Maltsev, Forward Deployed Engineer.',
+      '',
+      'I build AI systems that survive production: agent runtime security,',
+      'retrieval quality, and the reliability layer underneath both.',
+      '',
+      'The work I care about is what happens beyond the happy path: whether',
+      'failures are detected, traced and understood; what an agent is allowed',
+      'to access and execute; how a system recovers; and what keeps autonomous',
+      'execution under control.',
+    ],
+  },
+  'contact.txt': {
+    desc: 'how to reach me',
+    body: [
+      'email    mr.a.maltsev@gmail.com',
+      'github   github.com/maltsev-dev',
+      'linkedin linkedin.com/in/a-maltsev',
+      'telegram @a_maltsev_dev',
+      'resume   /resume.pdf',
+    ],
+  },
+  'stats.txt': {
+    desc: 'the numbers, counted from the collections',
+    body: STATS.map((s) => `${String(s.v).padStart(4, ' ')}  ${s.k}`),
+  },
+};
+
+/** The commands, for `help` and for tab completion. */
+const COMMANDS = [
+  ['help', 'this list'],
+  ['whoami', 'who is typing'],
+  ['neofetch', 'the machine, in one screen'],
+  ['ls [dir]', 'list a directory'],
+  ['cd <dir>', 'change directory'],
+  ['pwd', 'where am I'],
+  ['cat <file>', 'print a file'],
+  ['skills', 'the toolkit, by tier'],
+  ['projects', 'what shipped'],
+  ['writing', 'the newest notes'],
+  ['topics', 'the threads the writing is filed under'],
+  ['stats', 'the numbers'],
+  ['contact', 'how to reach me'],
+  ['theme [name]', 'switch the phosphor'],
+  ['history', 'what has been typed'],
+  ['date', 'the time, on this machine'],
+  ['echo <text>', 'say it back'],
+  ['clear', 'empty the scrollback'],
+];
+
+/**
+ * The payload the shell runs on.
+ *
+ * It is rendered into the page rather than fetched, so the terminal works on
+ * the first paint and on a connection that never gets past the HTML.
+ */
+const payload = {
+  dirs: DIRS,
+  files: FILES,
+  skills: SKILLS,
+  projects: PROJECTS,
+  posts: POSTS,
+  topics: TOPICS.map((t) => ({ label: t.label, desc: t.desc, count: t.posts.length })),
+  stats: STATS,
+  commands: COMMANDS,
+  logo: LOGO,
+  /* The ramp id → the name of the tube. The shell says "p3-amber" where the
+     page says "P3 amber", because a shell says things in lower case. */
+  phosphors: Object.fromEntries(
+    THEMES.filter((t) => t.id !== 'system').map((t) => [t.id, t.phosphor])
+  ),
+  contact: {
+    email: 'mr.a.maltsev@gmail.com',
+    github: 'https://github.com/maltsev-dev',
+    linkedin: 'https://www.linkedin.com/in/a-maltsev',
+    telegram: 'https://t.me/a_maltsev_dev',
+  },
+};
+---
+
+<div class="tty tty-term" data-term>
+  <div class="tty-bar">
+    <span class="tty-leds" aria-hidden="true">
+      <i class="led led-on"></i>
+      <i class="led led-off"></i>
+      <i class="led led-off"></i>
+    </span>
+    <span class="tty-title">root@amaltsev</span>
+    <span class="tty-right" aria-hidden="true">80&times;24</span>
+  </div>
+
+  <div class="tty-body">
+    <!--
+      The scrollback. It is a log, so a screen reader is told when something
+      is printed into it. `aria-live="polite"` rather than `assertive`: a
+      reader who is halfway through a paragraph should not be interrupted by
+      the output of a command they ran.
+    -->
+    <div
+      class="term-out"
+      data-term-out
+      role="log"
+      aria-live="polite"
+      aria-label="Terminal output"
+    >
+      <!--
+        The first thing on the page, printed before any script runs. A reader
+        without JavaScript still sees a terminal that says something.
+      -->
+      <p class="tty-out">
+        <span class="key">MaltsevOS</span> 4.2 — <span class="dim">tty1</span><br />
+        <span class="dim">last login: today on ttys001</span><br />
+        Type <span class="key">help</span> for the command list, or
+        <span class="key">neofetch</span> for the machine.
+      </p>
+    </div>
+
+    <!--
+      The prompt. The echo below the input is what the reader sees: a block
+      cursor sits at the end of the typed text. The input itself is
+      transparent and sits over the echo, so the caret is ours and the
+      selection is the browser's.
+    -->
+    <form class="term-line" data-term-form autocomplete="off">
+      <span class="tty-prompt" aria-hidden="true">
+        <span class="who">root</span><span class="sep">@</span><span
+          >amaltsev</span>
+        ><span class="sep">:</span><span data-term-path>~</span><span class="sep">$</span>
+      </span>
+
+      <span class="term-field">
+        <label class="sr-only" for="term-input">Terminal command</label>
+        <span class="term-echo" aria-hidden="true">
+          <span data-term-text></span><span class="cursor" data-term-cursor></span>
+        </span>
+        <input
+          id="term-input"
+          class="term-input"
+          data-term-input
+          type="text"
+          maxlength="160"
+          autocomplete="off"
+          autocapitalize="off"
+          autocorrect="off"
+          spellcheck="false"
+          aria-describedby="term-keys"
+        />
+      </span>
+    </form>
+
+    <p id="term-keys" class="term-keys">
+      <span class="key">&uarr;&darr;</span> history &nbsp;
+      <span class="key">Tab</span> complete &nbsp;
+      <span class="key">Ctrl+K</span> command palette &nbsp;
+      <span class="key">Esc</span> clear the line
+    </p>
+  </div>
+</div>
+
+<script id="term-data" type="application/json" set:html={JSON.stringify(payload)} is:inline />
+
+<script>
+  import '../scripts/terminal.js';
+</script>
+
+<style>
+  /* The window takes the full width of its column and the scrollback has a
+     height of its own: a terminal is a fixed number of rows, and the
+     scrollback is what is above them. */
+  .tty-term {
+    min-width: 0;
+  }
+
+  .tty-term .tty-body {
+    padding-bottom: 0.8rem;
+  }
+
+  /* The scrollback. */
+  .term-out {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+    min-height: 9rem;
+    max-height: 26rem;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--faible) transparent;
+    margin-bottom: 0.4rem;
+  }
+
+  .term-out > * {
+    margin: 0;
+  }
+
+  /* The prompt line. */
+  .term-line {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5ch;
+    flex-wrap: nowrap;
+  }
+
+  /* The field the input sits in, with the echo underneath it. */
+  .term-field {
+    position: relative;
+    flex: 1 1 auto;
+    min-width: 0;
+    display: block;
+  }
+
+  /* What the reader sees: the typed text and the block cursor. */
+  .term-echo {
+    display: block;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    min-height: 1.65em;
+    color: var(--creme);
+  }
+
+  /* The input is over the echo and invisible: the block cursor is the caret,
+     and a native caret next to a block cursor is two cursors. */
+  .term-input {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: transparent;
+    caret-color: transparent;
+    font: inherit;
+    line-height: inherit;
+  }
+
+  .term-input:focus {
+    outline: none;
+  }
+
+  /* The focus ring is drawn around the whole line instead, so a keyboard
+     reader can still see where they are. */
+  .term-line:focus-within {
+    box-shadow: -0.4ch 0 0 var(--braise);
+  }
+
+  /* The key hints under the window. */
+  .term-keys {
+    margin: 0.6rem 0 0;
+    font-family: var(--font-mono);
+    font-size: var(--fs-label);
+    letter-spacing: 0.06em;
+    color: var(--faible);
+    text-transform: uppercase;
+  }
+
+  @media (max-width: 40rem) {
+    .term-keys {
+      display: none;
+    }
+
+    .term-out {
+      max-height: 18rem;
+    }
+  }
+</style>

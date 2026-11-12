@@ -1,5 +1,21 @@
 ---
 import Minimal from '../layouts/Minimal.astro';
+import '../styles/tty.css';
+
+/**
+ * The places a reader can go from here.
+ *
+ * A 404 is the one page nobody chose to land on, so it has one job: get
+ * the reader somewhere else. The way the site says that is a directory
+ * listing, and the directory is the site's own home — so the way out of a
+ * dead end is the same machine that got them there.
+ */
+const PLACES = [
+  { href: '/', name: 'about', desc: 'who this is and what the work is' },
+  { href: '/blog/', name: 'writing', desc: 'every post, newest first' },
+  { href: '/projects/', name: 'projects', desc: 'the systems, with the numbers' },
+  { href: '/freelance/', name: 'engagements', desc: 'how the work is done' },
+];
 ---
 
 <!--
@@ -7,48 +23,180 @@ import Minimal from '../layouts/Minimal.astro';
   It also drops the reveal animation: the reveal is un-hidden by the site's
   script, and this page ships no script — so the text would stay at opacity
   zero.
+
+  It does keep the terminal stylesheet: the way this site reports a missing
+  page is the way a machine reports a missing file, and that is the one
+  voice a reader who has just been shown a dead end will recognise.
 -->
 <Minimal
   title="Not found"
-  description="That page isn't here. The link may be old, or the page may have moved."
+  description="That page is not here. The link may be old, or the page may have moved."
 >
-  <section class="hero">
-    <span class="eyebrow">Error 404</span>
-    <h1>That page isn't here</h1>
-    <p class="lede">
-      The link may be old, or the page may have moved.
-    </p>
-    <div class="btn-row">
-      <a class="btn btn-primary" href="/">Back to home</a>
-      <a class="btn" href="/blog/">Browse writing</a>
+  <section class="notfound">
+    <div class="tty tty-404">
+      <div class="tty-bar">
+        <span class="tty-leds" aria-hidden="true">
+          <i class="led led-warn"></i>
+          <i class="led led-off"></i>
+          <i class="led led-off"></i>
+        </span>
+        <span class="tty-title">~</span>
+        <span class="tty-right" aria-hidden="true">404</span>
+      </div>
+
+      <div class="tty-body">
+        <p class="tty-prompt tty-cmd-line">
+          <span class="who">root</span><span class="sep">@</span><span
+            >amaltsev</span>
+          ><span class="sep">:</span><span class="path">~</span><span class="sep">$</span>
+          <span class="tty-cmd">ls <span class="tty-path" data-path>the page you asked for</span></span>
+        </p>
+
+        <p class="tty-err">
+          ls: cannot access '<span class="tty-path" data-path>the page you asked for</span>': No such file or directory
+        </p>
+
+        <p class="tty-prompt tty-cmd-line tty-cont-line">
+          <span class="who">root</span><span class="sep">@</span><span
+            >amaltsev</span>
+          ><span class="sep">:</span><span class="path">~</span><span class="sep">$</span>
+          <span class="tty-cmd">ls</span>
+        </p>
+
+        <div class="ls ls-dirs">
+          <div class="ls-row ls-head">
+            <span class="ls-mode">mode</span>
+            <span class="ls-dir-name">name</span>
+            <span class="ls-dir-desc">what is there</span>
+          </div>
+
+          {
+            PLACES.map((place) => (
+              <div class="ls-row ls-row--dir">
+                <span class="ls-mode">drwxr-xr-x</span>
+                <span class="ls-dir-name">
+                  <a href={place.href}>{place.name}/</a>
+                </span>
+                <span class="ls-dir-desc">{place.desc}</span>
+              </div>
+            ))
+          }
+        </div>
+
+        <p class="tty-note">
+          The link may be old, or the page may have moved. The main pages of
+          the site are listed above.
+        </p>
+      </div>
     </div>
   </section>
+
+  <!--
+    The path the reader asked for.
+
+    The 404 page is one file, built once, and the server hands it out for
+    every missing address — so the address is not known when the page is
+    written. It is known when the page runs, and this is the only script
+    on the page: it reads the address the browser actually asked for and
+    writes it into the error line. Without it the line still reads true;
+    it just does not name the file.
+  -->
+  <script is:inline>
+    (function () {
+      var path = window.location.pathname;
+      if (!path || path === '/404/' || path === '/404') return;
+      var nodes = document.querySelectorAll('[data-path]');
+      for (var i = 0; i < nodes.length; i++) nodes[i].textContent = path;
+    })();
+  </script>
 </Minimal>
 
 <style>
-  /* The one page a reader lands on by accident has nothing to line up with:
+  /* ----- The page ---------------------------------------------------------
+     The one page a reader lands on by accident has nothing to line up with:
      it is a signpost, not a document. So it stands in the middle of the
-     screen — centred, with the two ways out under the line that says what
-     happened — instead of hanging in the top-left corner of an empty page. */
-  .hero {
+     screen — centred, with the way out inside the window rather than
+     hanging in the top-left corner of an empty page.
+     ---------------------------------------------------------------------- */
+  .notfound {
     min-height: 100vh;
     min-height: 100svh;
     display: grid;
     align-content: center;
     justify-items: center;
-    text-align: center;
     padding-block: 2rem;
   }
 
-  .hero h1 {
-    margin-bottom: 0.3em;
+  .tty-404 {
+    width: min(46rem, 100%);
   }
 
-  .hero .lede {
-    margin-bottom: 1.8rem;
+  .tty-404 .tty-body {
+    padding-block: 1.9rem 1.5rem;
   }
 
-  .hero .btn-row {
-    justify-content: center;
+  /* The error line. It is the only line on the page that is red, and it is
+     red because it is the one thing that went wrong. */
+  .tty-err {
+    margin: 0.4rem 0 1.2rem;
+    font-family: var(--font-mono);
+    font-size: var(--fs-small);
+    line-height: 1.6;
+    color: var(--erreur);
+    overflow-wrap: anywhere;
+  }
+
+  .tty-err .tty-path {
+    color: var(--braise-txt);
+  }
+
+  /* The listing of the site's own directories. */
+  .ls-dirs .ls-row {
+    grid-template-columns: 9.5ch 16ch minmax(0, 1fr);
+    line-height: 1.7;
+  }
+
+  .ls-dir-name {
+    color: var(--braise);
+  }
+
+  .ls-dir-name a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .ls-dir-name a:hover {
+    color: var(--encre);
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+
+  .ls-dir-desc {
+    color: var(--fort);
+    font-family: var(--font-body);
+    font-size: 0.82rem;
+    line-height: 1.45;
+    white-space: normal;
+  }
+
+  .tty-note {
+    margin: 1.2rem 0 0;
+    max-width: 56ch;
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    line-height: 1.55;
+    color: var(--fort);
+  }
+
+  /* Four columns do not fit on a phone: the mode goes first, and the
+     description of each place folds under its name. */
+  @media (max-width: 52rem) {
+    .ls-dirs .ls-row {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .ls-dirs .ls-mode {
+      display: none;
+    }
   }
 </style>

@@ -3,6 +3,7 @@ import '../styles/fonts.css';
 import '../styles/global.css';
 import '../styles/animation.css';
 import '../styles/os.css';
+import '../styles/tty.css';
 import Head from '../components/Head.astro';
 import StatusBar from '../components/StatusBar.astro';
 import Header from '../components/Header.astro';
@@ -10,12 +11,11 @@ import LetterModal from '../components/LetterModal.astro';
 import Palette from '../components/Palette.astro';
 import Footer from '../components/Footer.astro';
 
-// `track.css` and `skills.css` are not imported here. They style two pages
-// and two pages only — the sideways track on /projects/ and /experience/ and
-// the skills pyramid on /experience/ — and importing them from the layout put
-// 36 KB of CSS on every page of the site, including the ones that have no
-// track and no pyramid. The two pages import them themselves; Astro then
-// emits them as a chunk that only those pages load.
+// `skills.css` is not imported here. It styles one page and one page only —
+// the toolkit tree on /experience/ — and importing it from the layout put it
+// on every page of the site, including the ones that have no tree. The page
+// imports it itself; Astro then emits it as a chunk that only that page
+// loads.
 
 interface Props {
   title?: string;
@@ -24,18 +24,11 @@ interface Props {
   /** What the social card shows. Defaults to the site's own line. */
   imageAlt?: string;
   type?: string;
-  rail?: boolean;
   /** Extra schema.org nodes for this page, added to the site graph. */
   schema?: Record<string, unknown>[];
 }
 
-const { title, description, image, imageAlt, type, rail = false, schema } = Astro.props;
-
-// The projects catalog is one viewport tall and its wheel is spent on the
-// row of panels, so the full footer would sit below a fold the page cannot
-// scroll to. It gets the compact form instead, which is pinned to the bottom
-// of the screen and carries the copyright and the contact.
-const compactFooter = Astro.url.pathname === '/projects/';
+const { title, description, image, imageAlt, type, schema } = Astro.props;
 ---
 
 <!doctype html>
@@ -74,6 +67,18 @@ const compactFooter = Astro.url.pathname === '/projects/';
          while reading. -->
     <div class="bg-grid" aria-hidden="true"></div>
     <div class="bg-glow" aria-hidden="true"></div>
+
+    <!--
+      The tube. A single nearly-invisible layer that brightens and dims the
+      whole page by about one percent, the way a CRT's refresh never quite
+      settles. It sits above the content and takes no pointer events, so it
+      costs one composited layer and no layout.
+
+      Under `prefers-reduced-motion` the stylesheet drops it to nothing: a
+      page that cannot stop moving should not have a light that never stops
+      moving either.
+    -->
+    <div class="tube-flicker" aria-hidden="true"></div>
 
     <a class="skip-link" href="#main">Skip to content</a>
 
@@ -127,11 +132,9 @@ const compactFooter = Astro.url.pathname === '/projects/';
       back into the navigation they just tried to skip. With the target
       focusable, the browser moves the focus there as well.
     -->
-    <main id="main" class="wrap" tabindex="-1" data-rail={rail ? 'on' : undefined}>
+    <main id="main" class="wrap" tabindex="-1">
       <slot />
     </main>
-
-    {rail && <div class="section-rail" aria-hidden="true"><i id="railFill"></i></div>}
 
     <!--
       The dialogs come before the footer on purpose. The footer is the last
@@ -142,7 +145,7 @@ const compactFooter = Astro.url.pathname === '/projects/';
     <LetterModal />
     <Palette />
 
-    <Footer compact={compactFooter} />
+    <Footer />
 
     <script>
       import '../scripts/os.js';

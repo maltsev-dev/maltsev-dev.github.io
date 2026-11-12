@@ -1,74 +1,74 @@
 {
-  "tagline": "Your leads are texting. You're not replying fast enough.",
-  "lead": "AI that responds instantly via SMS & WhatsApp, qualifies leads, and books meetings — automatically.",
+  "tagline": "Leads text you, and you answer in minutes.",
+  "lead": "An agent that replies over SMS or WhatsApp within minutes, qualifies the lead, and books the meeting.",
   "fit": "For teams getting 50+ inbound leads/month (ads, forms, funnels)",
   "trust": "SMS / WhatsApp automation • LLM-driven • CRM-ready",
   "metrics": [
     {
       "value": "<2 min",
-      "label": "Response Time"
+      "label": "Response time"
     },
     {
       "value": "70%",
-      "label": "Less Manual Work"
+      "label": "Less manual work"
     },
     {
       "value": "+40–70%",
-      "label": "More Meetings"
+      "label": "More meetings"
     }
   ],
   "problem": {
-    "sub": "Speed is everything — and you're losing it",
+    "sub": "Leads go cold within minutes.",
     "cards": [
       {
         "icon": "●",
         "title": "No instant response",
-        "text": "No instant response when leads come in"
+        "text": "The team does not answer right away"
       },
       {
         "icon": "¦",
         "title": "Unqualified leads",
-        "text": "Sales wastes time on unqualified leads"
+        "text": "Sales time goes to messages that never convert"
       },
       {
         "icon": "●",
         "title": "Hot prospects go cold",
-        "text": "Hot prospects go cold within minutes"
+        "text": "Interest fades within minutes"
       },
       {
         "icon": "●",
         "title": "Follow-ups slip",
-        "text": "Follow-ups fall through the cracks"
+        "text": "The ones that go quiet get no follow-up"
       }
     ]
   },
   "solution": {
-    "sub": "A real-time qualification system that never sleeps",
+    "sub": "A qualification system that runs around the clock.",
     "cards": [
       {
         "icon": "◆",
         "title": "Instant Messaging",
-        "text": "Replies via SMS / WhatsApp within seconds"
+        "text": "Replies via SMS or WhatsApp within seconds"
       },
       {
         "icon": "◆",
         "title": "Smart Qualification",
-        "text": "Dynamic questions filter serious buyers"
+        "text": "Questions that separate serious buyers from the rest"
       },
       {
         "icon": "◆",
         "title": "Lead Scoring",
-        "text": "Scores based on responses and behavior"
+        "text": "The score comes from their replies and their activity"
       },
       {
         "icon": "¦",
         "title": "Auto-Booking",
-        "text": "Meetings scheduled without friction"
+        "text": "It books the meeting"
       }
     ]
   },
   "results": {
-    "sub": "From slow + reactive → fast + predictable",
+    "sub": "Slow and reactive becomes fast and predictable.",
     "cards": [
       {
         "before": "5–10 min",
@@ -91,35 +91,35 @@
         "label": "Pipeline coverage"
       }
     ],
-    "highlight": "▲ Most teams qualify leads 2–3x faster and book more meetings without expanding sales teams"
+    "highlight": "Most teams qualify leads 2–3x faster and book more meetings without expanding the sales team"
   },
   "flow": {
-    "sub": "Acts like a 24/7 SDR inside your messaging channels",
+    "sub": "It works the messaging channels like a 24/7 SDR.",
     "steps": [
       {
         "n": "1",
         "title": "Lead Enters",
-        "text": "Form submission or ad click triggers instantly"
+        "text": "A form submission or ad click starts it"
       },
       {
         "n": "2",
         "title": "Instant Outreach",
-        "text": "AI starts conversation via SMS / WhatsApp"
+        "text": "It starts a conversation over SMS or WhatsApp"
       },
       {
         "n": "3",
         "title": "Smart Qualification",
-        "text": "Dynamic questions filter serious buyers"
+        "text": "It asks questions that sort serious buyers from the rest"
       },
       {
         "n": "4",
         "title": "Conversion",
-        "text": "Books meeting or routes to sales instantly"
+        "text": "Books a meeting or routes it to sales, right away"
       }
     ]
   },
   "risk": {
-    "sub": "This is already happening in your pipeline",
+    "sub": "Slow replies cost you in four ways.",
     "cards": [
       {
         "title": "▲ Speed wins deals",
@@ -131,11 +131,11 @@
       },
       {
         "title": "▲ Silent revenue leak",
-        "text": "Revenue leaks silently every day"
+        "text": "Revenue leaks out of the pipeline every day"
       },
       {
         "title": "▲ SDR burnout",
-        "text": "Sales team burns out on junk leads"
+        "text": "The team spends its day on leads that will not buy"
       }
     ]
   },
@@ -150,6 +150,6 @@
         "label": "Monthly running"
       }
     ],
-    "note": "◆ 1–2 closed deals usually cover the full system cost"
+    "note": "1–2 closed deals usually cover the full system cost"
   }
 }

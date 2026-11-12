@@ -1,7 +1,22 @@
 ---
-// Renders a project case study from its parsed JSON (see _parse_projects.py).
-// Replaces the legacy 300-line Bootstrap-ish HTML blob with site components,
-// so the case studies follow the theme and read like the rest of the site.
+/**
+ * A case study, read off a machine.
+ *
+ * The three cases were lifted out of the legacy landing pages into JSON, and
+ * they used to be read as web pages: a column of prose, a grid of cards, a
+ * row of before-and-after pairs. That was the old identity, and a reader who
+ * had just learned the site's grammar — a command, then its output — arrived
+ * at a case study and found it in a different language.
+ *
+ * So each part of a case gets the command that would produce it. The
+ * symptoms are lines in a log. The solution is a service that is running.
+ * The results are a diff between the two files. The pipeline is a script.
+ * The cost of waiting is the tail of a log that is still going. The price is
+ * a text file.
+ *
+ * Nothing here invents a fact. The words are the words that were in the
+ * legacy pages; what changed is the machine they come out of.
+ */
 import { AUTHOR, contactMailto } from '../lib/schema';
 
 interface Metric {
@@ -27,6 +42,8 @@ interface Props {
     risk?: { sub?: string; cards?: { title: string; text: string }[] };
     pricing?: { pairs?: { price: string; label: string }[]; note?: string };
   };
+  /** The case's own name, used for the paths in the commands. */
+  slug: string;
   /**
    * The case's date, already formatted for a reader. Optional: a case study
    * with no date still renders, it just carries no date line.
@@ -34,176 +51,402 @@ interface Props {
   date?: string;
 }
 
-const { data, date } = Astro.props;
-
-const strip = (s?: string) =>
-  (s || '').replace(/^[▲◆●¦■]\s*/, '').trim();
+const { data, slug, date } = Astro.props;
 
 const has = (v: unknown[]) => Array.isArray(v) && v.length > 0;
+
+/**
+ * The ornament that came with the legacy markup, taken off.
+ *
+ * The icons in the JSON were bullets and diamonds from the old design. The
+ * site's grammar has a better way of saying what a line is — a status word
+ * in a column — so the ornaments are dropped rather than carried over.
+ */
+const strip = (s?: string) => (s || '').replace(/^[▲◆●¦■]\s*/, '').trim();
+
+/**
+ * A name for a unit of work.
+ *
+ * A service has a unit name, a stage in a pipeline has a stage name, and
+ * both are the same idea: the title of the thing, written the way a machine
+ * would file it.
+ */
+const slugify = (s: string) =>
+  s
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '');
+
+/** The trust line, split into the parts it is made of. */
+const trust = (data.trust || '')
+  .split('•')
+  .map((t) => t.trim())
+  .filter(Boolean);
 ---
 
 <article class="case">
-  <!-- ---- Hero ---- -->
+  <!--
+    The head. A case study is a document like a post, so it opens the way a
+    post opens: what it is, the command that read it, and the line under it
+    that says what the thing does.
+  -->
   <header class="case-hero">
-    <span class="eyebrow">Case study</span>
-    <h1 class="case-tagline">{data.tagline}</h1>
-    {data.lead && <p class="lede">{data.lead}</p>}
-    {data.fit && <p class="case-fit">{data.fit}</p>}
+    <p class="article-back">
+      <a href="/projects/">← Projects</a>
+    </p>
 
-    <!--
-      The byline. A case study is a piece of writing like any other, and the
-      reader is entitled to know whose account of the system they are reading.
-      The date sits in the same line when the case carries one.
-    -->
-    <p class="lead-meta">
-      <span>By {AUTHOR.name}</span>
+    <span class="eyebrow" data-reveal><span class="pulse-dot"></span>Case study</span>
+
+    <h1 data-reveal data-reveal-delay="60">{data.tagline}</h1>
+
+    <p class="tty-prompt" data-reveal data-reveal-delay="100">
+      <span class="who">root</span><span class="sep">@</span><span
+        >amaltsev</span>
+      ><span class="sep">:</span><span class="path">~/cases</span><span class="sep">$</span>
+      <span class="tty-cmd">cat {slug}.md</span>
+    </p>
+
+    {data.lead && <p class="lede" data-reveal data-reveal-delay="120">{data.lead}</p>}
+
+    <p class="lead-meta" data-reveal data-reveal-delay="140">
+      {date && <span>{date}</span>}
+      {date && <span class="lead-sep" aria-hidden="true">·</span>}
+      <span>{AUTHOR.name}</span>
       {
-        date && (
+        data.fit && (
           <>
             <span class="lead-sep" aria-hidden="true">·</span>
-            <span>{date}</span>
+            <span class="case-fit">{data.fit}</span>
           </>
         )
       }
     </p>
 
     {has(data.metrics || []) && (
-      <div class="case-metrics">
-        {data.metrics!.map((m) => (
-          <div class="case-metric">
-            <strong>{m.value}</strong>
-            <span>{m.label}</span>
-          </div>
-        ))}
-      </div>
+      <dl class="case-metrics" data-reveal data-reveal-delay="160">
+        {
+          data.metrics!.map((m) => (
+            <div class="stat">
+              <dt>{m.label}</dt>
+              <dd>
+                <span class="rule" aria-hidden="true" />
+                <span class="stat-value">{m.value}</span>
+              </dd>
+            </div>
+          ))
+        }
+      </dl>
     )}
 
-    <div class="btn-row">
-      <a class="btn" href="#how">See how it works</a>
-    </div>
-
-    {data.trust && <p class="case-trust">{data.trust}</p>}
+    {has(trust) && (
+      <p class="tty-status case-trust" data-reveal data-reveal-delay="180">
+        {trust.map((t, i) => (
+          <>
+            {i > 0 && <span class="case-trust-sep" aria-hidden="true">·</span>}
+            <span class="led led-on" aria-hidden="true" />
+            <span>{t}</span>
+          </>
+        ))}
+      </p>
+    )}
   </header>
 
-  <!-- ---- Problem ---- -->
-  {has(data.problem?.cards || []) && (
-    <section class="case-block">
-      <span class="lead-label">The problem</span>
-      <h2>What breaks today</h2>
-      {data.problem?.sub && <p class="case-sub">{data.problem.sub}</p>}
-
-      <ul class="case-list">
-        {data.problem!.cards!.map((c) => (
-          <li data-reveal>
-            <span class="case-bullet" aria-hidden="true">{c.icon}</span>
-            <span class="case-card-body">
-              {c.title && <strong class="case-card-title">{c.title}</strong>}
-              <span class="case-card-text">{c.text}</span>
+  <!--
+    The symptoms. A log does not explain itself; it says what happened. So
+    the problem is read as the lines it produced, with the part of the line
+    that is the news in the column that carries colour.
+  -->
+  {
+    has(data.problem?.cards || []) && (
+      <section class="section">
+        <div class="tty tty-problem" data-reveal>
+          <div class="tty-bar">
+            <span class="tty-leds" aria-hidden="true">
+              <i class="led led-warn" />
+              <i class="led led-off" />
+              <i class="led led-off" />
             </span>
-          </li>
-        ))}
-      </ul>
-    </section>
-  )}
-
-  <!-- ---- Solution ---- -->
-  {has(data.solution?.cards || []) && (
-    <section class="case-block">
-      <span class="lead-label">The solution</span>
-      <h2>What replaces it</h2>
-      {data.solution?.sub && <p class="case-sub">{data.solution.sub}</p>}
-
-      <div class="card-grid" data-anim="tilt">
-        {data.solution!.cards!.map((c, i) => (
-          <div class="card" data-reveal data-reveal-delay={i * 60}>
-            <span class="card-glyph" aria-hidden="true">{c.icon}</span>
-            <h3>{c.title}</h3>
-            <p>{c.text}</p>
+            <span class="tty-title">~/logs/inbox.log</span>
+            <span class="tty-right" aria-hidden="true">
+              {data.problem!.cards!.length} symptoms
+            </span>
           </div>
-        ))}
-      </div>
-    </section>
-  )}
 
-  <!-- ---- Results: before / after ---- -->
-  {has(data.results?.cards || []) && (
-    <section class="case-block">
-      <span class="lead-label">After deployment</span>
-      <h2>What changes</h2>
-      {data.results?.sub && <p class="case-sub">{data.results.sub}</p>}
+          <div class="tty-body">
+            <p class="tty-prompt tty-cmd-line">
+              <span class="who">root</span><span class="sep">@</span>
+              <span>amaltsev</span>><span class="sep">:</span>
+              <span class="path">~/logs</span><span class="sep">$</span>
+              <span class="tty-cmd">grep -E "SLOW|MISSED|MANUAL|OVERLOAD" inbox.log</span>
+            </p>
 
-      <div class="case-deltas">
-        {data.results!.cards!.map((c, i) => (
-          <div class="delta" data-reveal data-reveal-delay={i * 50}>
-            <span class="delta-before">{c.before}</span>
-            <span class="delta-arrow" aria-hidden="true">→</span>
-            <span class="delta-after">{c.after}</span>
-            <span class="delta-label">{c.label}</span>
+            <div class="case-log">
+              {data.problem!.cards!.map((c) => (
+                <p class="case-log-row">
+                  <span class="case-log-warn">WARN</span>
+                  <span class="case-log-key">{strip(c.title)}</span>
+                  <span class="case-log-text">{c.text}</span>
+                </p>
+              ))}
+            </div>
+
+            {data.problem?.sub && <p class="case-note">{data.problem.sub}</p>}
           </div>
-        ))}
-      </div>
+        </div>
+      </section>
+    )
+  }
 
-      {data.results?.highlight && (
-        <p class="case-highlight">{strip(data.results.highlight)}</p>
-      )}
-    </section>
-  )}
-
-  <!-- ---- Flow ---- -->
-  {has(data.flow?.steps || []) && (
-    <section class="case-block" id="how">
-      <span class="lead-label">How it works</span>
-      <h2>The pipeline</h2>
-      {data.flow?.sub && <p class="case-sub">{data.flow.sub}</p>}
-
-      <ol class="case-flow">
-        {data.flow!.steps!.map((s, i) => (
-          <li class="flow-step" data-reveal data-reveal-delay={i * 70}>
-            <span class="flow-n">{s.n}</span>
-            <strong>{s.title}</strong>
-            <span>{s.text}</span>
-          </li>
-        ))}
-      </ol>
-    </section>
-  )}
-
-  <!-- ---- Risk ---- -->
-  {has(data.risk?.cards || []) && (
-    <section class="case-block">
-      <span class="lead-label">If nothing changes</span>
-      <h2>The cost of waiting</h2>
-      {data.risk?.sub && <p class="case-sub">{data.risk.sub}</p>}
-
-      <div class="card-grid" data-anim="tilt">
-        {data.risk!.cards!.map((c, i) => (
-          <div class="card card-risk" data-reveal data-reveal-delay={i * 60}>
-            <h3>{strip(c.title)}</h3>
-            <p>{c.text}</p>
+  <!--
+    The layer. A service that is running is the shortest true statement of
+    what a solution is: the machine says it is up, and then says what it is
+    made of.
+  -->
+  {
+    has(data.solution?.cards || []) && (
+      <section class="section">
+        <div class="tty tty-solution" data-reveal>
+          <div class="tty-bar">
+            <span class="tty-leds" aria-hidden="true">
+              <i class="led led-on led-blink" />
+              <i class="led led-off" />
+              <i class="led led-off" />
+            </span>
+            <span class="tty-title">~/cases/{slug}</span>
+            <span class="tty-right" aria-hidden="true">active</span>
           </div>
-        ))}
-      </div>
-    </section>
-  )}
 
-  <!-- ---- Pricing ---- -->
-  {has(data.pricing?.pairs || []) && (
-    <section class="case-block">
-      <span class="lead-label">Investment</span>
-      <h2>Pricing</h2>
+          <div class="tty-body">
+            <p class="tty-prompt tty-cmd-line">
+              <span class="who">root</span><span class="sep">@</span>
+              <span>amaltsev</span>><span class="sep">:</span>
+              <span class="path">~</span><span class="sep">$</span>
+              <span class="tty-cmd">systemctl status nullrun-{slug}</span>
+            </p>
 
-      <div class="case-price">
-        {data.pricing!.pairs!.map((p) => (
-          <div class="price-cell">
-            <strong>{p.price}</strong>
-            <span>{p.label}</span>
+            <p class="case-unit">
+              <span class="case-unit-dot" aria-hidden="true">
+                ●
+              </span>
+              <span class="case-unit-name">nullrun-{slug}.service</span>
+              <span class="case-unit-text">
+                {data.solution?.sub ?? 'AI layer, running'}
+              </span>
+            </p>
+
+            <p class="case-unit-state">
+              <span class="case-unit-key">Loaded</span>
+              <span class="case-unit-value">
+                loaded (/etc/systemd/system/nullrun-{slug}.service; enabled)
+              </span>
+            </p>
+
+            <p class="case-unit-state">
+              <span class="case-unit-key">Active</span>
+              <span class="case-unit-value case-unit-value--ok">
+                active (running)
+              </span>
+            </p>
+
+            <hr class="tty-rule" />
+
+            <ul class="tree case-tree">
+              {data.solution!.cards!.map((c) => (
+                <li>
+                  <span class="case-tree-key">{slugify(c.title)}</span>
+                  <span class="case-tree-text">{c.text}</span>
+                </li>
+              ))}
+            </ul>
           </div>
-        ))}
-      </div>
+        </div>
+      </section>
+    )
+  }
 
-      {data.pricing?.note && <p class="case-highlight">{strip(data.pricing.note)}</p>}
-    </section>
-  )}
+  <!--
+    The results. A diff is the honest way to show that something changed:
+    two files, the lines that differ, and the label that says which line is
+    which.
+  -->
+  {
+    has(data.results?.cards || []) && (
+      <section class="section">
+        <div class="tty tty-results" data-reveal>
+          <div class="tty-bar">
+            <span class="tty-leds" aria-hidden="true">
+              <i class="led led-on" />
+              <i class="led led-off" />
+              <i class="led led-off" />
+            </span>
+            <span class="tty-title">~/cases/{slug}</span>
+            <span class="tty-right" aria-hidden="true">before / after</span>
+          </div>
+
+          <div class="tty-body">
+            <p class="tty-prompt tty-cmd-line">
+              <span class="who">root</span><span class="sep">@</span>
+              <span>amaltsev</span>><span class="sep">:</span>
+              <span class="path">~/cases/{slug}</span><span class="sep">$</span>
+              <span class="tty-cmd">diff before.txt after.txt</span>
+            </p>
+
+            <div class="case-diff">
+              {data.results!.cards!.map((c, i) => (
+                <>
+                  <p class="case-diff-label">  {c.label}</p>
+                  <p class="case-diff-hunk">
+                    {i + 1}c{i + 1}
+                  </p>
+                  <p class="case-diff-old">&lt; {c.before}</p>
+                  <p class="case-diff-sep">---</p>
+                  <p class="case-diff-new">&gt; {c.after}</p>
+                </>
+              ))}
+            </div>
+
+            {data.results?.highlight && (
+              <p class="case-note case-note--ok">{strip(data.results.highlight)}</p>
+            )}
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  <!--
+    The pipeline. A script, read the way a script is read: the stages in the
+    order they run, each with what it does.
+  -->
+  {
+    has(data.flow?.steps || []) && (
+      <section class="section" id="how">
+        <div class="tty tty-flow" data-reveal>
+          <div class="tty-bar">
+            <span class="tty-leds" aria-hidden="true">
+              <i class="led led-on" />
+              <i class="led led-off" />
+              <i class="led led-off" />
+            </span>
+            <span class="tty-title">~/cases/{slug}/pipeline.sh</span>
+            <span class="tty-right" aria-hidden="true">
+              {data.flow!.steps!.length} stages
+            </span>
+          </div>
+
+          <div class="tty-body">
+            <p class="tty-prompt tty-cmd-line">
+              <span class="who">root</span><span class="sep">@</span>
+              <span>amaltsev</span>><span class="sep">:</span>
+              <span class="path">~/cases/{slug}</span><span class="sep">$</span>
+              <span class="tty-cmd">cat pipeline.sh</span>
+            </p>
+
+            <div class="case-script">
+              <p class="case-script-shebang">#!/bin/sh</p>
+              {data.flow!.steps!.map((s, i) => (
+                <p class="case-script-step">
+                  <span class="case-script-n">{String(i + 1).padStart(2, '0')}</span>
+                  <span class="case-script-key">{slugify(s.title)}</span>
+                  <span class="case-script-text">{s.text}</span>
+                </p>
+              ))}
+            </div>
+
+            {data.flow?.sub && <p class="case-note">{data.flow.sub}</p>}
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  <!--
+    The cost of waiting. The tail of a log that has not stopped: the last
+    lines, each one a way the situation gets worse on its own.
+  -->
+  {
+    has(data.risk?.cards || []) && (
+      <section class="section">
+        <div class="tty tty-risk" data-reveal>
+          <div class="tty-bar">
+            <span class="tty-leds" aria-hidden="true">
+              <i class="led led-warn led-blink" />
+              <i class="led led-off" />
+              <i class="led led-off" />
+            </span>
+            <span class="tty-title">~/logs/risk.log</span>
+            <span class="tty-right" aria-hidden="true">still going</span>
+          </div>
+
+          <div class="tty-body">
+            <p class="tty-prompt tty-cmd-line">
+              <span class="who">root</span><span class="sep">@</span>
+              <span>amaltsev</span>><span class="sep">:</span>
+              <span class="path">~/logs</span><span class="sep">$</span>
+              <span class="tty-cmd">
+                tail -n {data.risk!.cards!.length} risk.log
+              </span>
+            </p>
+
+            <div class="case-log">
+              {data.risk!.cards!.map((c) => (
+                <p class="case-log-row">
+                  <span class="case-log-warn">WARN</span>
+                  <span class="case-log-key">{strip(c.title)}</span>
+                  <span class="case-log-text">{c.text}</span>
+                </p>
+              ))}
+            </div>
+
+            {data.risk?.sub && <p class="case-note">{data.risk.sub}</p>}
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  <!--
+    The price. A text file with two lines in it, which is what a price is.
+  -->
+  {
+    has(data.pricing?.pairs || []) && (
+      <section class="section">
+        <div class="tty tty-pricing" data-reveal>
+          <div class="tty-bar">
+            <span class="tty-leds" aria-hidden="true">
+              <i class="led led-on" />
+              <i class="led led-off" />
+              <i class="led led-off" />
+            </span>
+            <span class="tty-title">~/cases/{slug}/pricing.txt</span>
+            <span class="tty-right" aria-hidden="true">terms</span>
+          </div>
+
+          <div class="tty-body">
+            <p class="tty-prompt tty-cmd-line">
+              <span class="who">root</span><span class="sep">@</span>
+              <span>amaltsev</span>><span class="sep">:</span>
+              <span class="path">~/cases/{slug}</span><span class="sep">$</span>
+              <span class="tty-cmd">cat pricing.txt</span>
+            </p>
+
+            <div class="case-price">
+              {data.pricing!.pairs!.map((p) => (
+                <p class="case-price-row">
+                  <span class="case-price-label">{p.label}</span>
+                  <span class="case-price-value">{p.price}</span>
+                </p>
+              ))}
+            </div>
+
+            {data.pricing?.note && (
+              <p class="case-note case-note--ok">{strip(data.pricing.note)}</p>
+            )}
+          </div>
+        </div>
+      </section>
+    )
+  }
 
   <!--
     The close. The case used to end with a button that went back to the list
@@ -216,30 +459,44 @@ const has = (v: unknown[]) => Array.isArray(v) && v.length > 0;
     of it was the same offer twice on one screen. The address in the sentence
     is the way to write without the script.
   -->
-  <section class="case-close">
-    <div class="post-cta">
-      <h2>Ask me about this</h2>
-      <p>
-        This is an account of a system that shipped. If something here is
-        close to the work you are trying to do, I am the person who built it —
-        half an hour on a call is enough for both of us to know whether it is
-        work I should be doing — so
-        <a class="post-cta-mail" href={contactMailto('About the work')}>
-          write to me
-        </a>.
-      </p>
-      <div class="btn-row">
-        <a class="btn" href="/projects/">All projects</a>
+  <section class="section">
+    <div class="tty tty-contact" data-reveal>
+      <div class="tty-bar">
+        <span class="tty-leds" aria-hidden="true">
+          <i class="led led-on" />
+          <i class="led led-off" />
+          <i class="led led-off" />
+        </span>
+        <span class="tty-title">~/contact</span>
+        <span class="tty-right" aria-hidden="true">open</span>
+      </div>
+
+      <div class="tty-body">
+        <p class="tty-prompt tty-cmd-line">
+          <span class="who">root</span><span class="sep">@</span><span
+            >amaltsev</span>
+          ><span class="sep">:</span><span class="path">~</span><span class="sep">$</span>
+          <span class="tty-cmd">mail -s "About: {data.tagline}" \</span>
+        </p>
+
+        <p class="tty-prompt tty-cmd-line tty-cont-line">
+          <span class="tty-cont" aria-hidden="true">&gt;</span>
+          <a class="post-cta-mail" href={contactMailto(`About: ${data.tagline}`)}>
+            mr.a.maltsev@gmail.com
+          </a>
+        </p>
+
+        <p class="contact-note">
+          This is an account of a system that shipped. If something here is
+          close to the work you are trying to do, I am the person who built it.
+          Half an hour on a call is enough for both of us to know whether it
+          is work I should be doing.
+        </p>
+
+        <p class="contact-go">
+          <a class="btn" href="/projects/">All projects</a>
+        </p>
       </div>
     </div>
   </section>
 </article>
-
-<style>
-  /* The closing block sits below the last section without a rule of its own:
-     the CTA box carries the edge, and a hairline above it as well would draw
-     two lines a few pixels apart. */
-  .case-close {
-    margin-top: 2.4rem;
-  }
-</style>

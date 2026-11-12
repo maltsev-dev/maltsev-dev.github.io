@@ -38,7 +38,7 @@ accidentally remove. The limit then lives in a component the agent cannot
 edit, and the decision happens before the call rather than after the
 failure.
 
-Four independent signals, each failing differently, so you want all of
+Four independent signals, each failing differently, and you want all of
 them. The sketches below are a design you implement against your own
 agent; what matters is that each of the four is evaluated somewhere the
 agent cannot edit.
@@ -184,7 +184,7 @@ breaker is open, or one that looks dead while it is serving traffic.
 Two state machines, two columns, and neither implicitly changes the
 other.
 
-## Depth and count are different bounds
+## A depth cap is not a rate cap
 
 A rate cap bounds how fast. A chain-depth cap bounds how *far*, meaning
 how deep one line of reasoning can go before it has to come back with a
@@ -229,7 +229,7 @@ per tool, a large tool surface means a lot of state and a lot of half-open
 coordination. Keyed more coarsely, one noisy tool opens the breaker for
 its whole service.
 
-The depth cap is the coarsest of the four and the least specific. It
+The depth cap is the coarsest of these bounds and the least specific. It
 bounds reasoning depth without knowing what the depth is for, so a
 legitimately long investigation and a stuck loop are the same event to
 it. It is a backstop, not a signal, and it should be set loose enough
@@ -237,7 +237,7 @@ that it never fires on real work. Otherwise people tune it upward until
 it is decorative.
 
 These controls bound runaway behavior. They do not stop a single call
-that is wrong. A loop that completes cleanly and does the wrong thing
+that is wrong: a loop that completes cleanly and does the wrong thing
 three times is not a loop problem.
 
 ## FAQ

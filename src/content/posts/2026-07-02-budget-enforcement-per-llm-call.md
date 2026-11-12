@@ -5,11 +5,9 @@ tags: ["budget", "enforcement"]
 ---
 Every "control your LLM spend" guide reaches the same place: you set
 a monthly cap somewhere and hope the number on the dashboard means
-something. It does not. A monthly cap that is read *after* the money
-is spent is a report, and the gap between a report and a control is the
-gap between a budget and a bill.
-
-This is what a real cap looks like.
+something. The number means nothing, because a monthly cap read *after*
+the money is spent is a report, and the gap between a report and a
+control is the gap between a budget and a bill.
 
 ## A cap has to be taken before the call
 
@@ -20,10 +18,10 @@ leaves your infrastructure.
 
 That means three operations per tool call, in this order:
 
-1. **Reserve**: take the maximum the call could cost out of the
+1. Reserve: take the maximum the call could cost out of the
    period counter, atomically. If the remainder cannot cover it, block.
-2. **Execute**: the agent runs the tool.
-3. **Settle**: convert the reservation into the amount actually
+2. Execute: the agent runs the tool.
+3. Settle: convert the reservation into the amount actually
    charged, and release the difference.
 
 ```text
@@ -53,8 +51,6 @@ the cap is enforced in the first box, and nothing after it can
 stop an overspend that has already happened
 ```
 
-Collapse this into one operation at the end and you have a dashboard.
-
 ## The counter has to be period-bound
 
 A `monthly_cost` field on a row is a running total. It can drift, and
@@ -71,10 +67,10 @@ where `period_stamp` is computed by exact UTC calendar arithmetic in
 Rust, once per execution. Two properties matter here, and they are
 easy to get wrong:
 
-- **The period comes from the server.** A client that computes its own
+- The period comes from the server. A client that computes its own
   month boundary can choose a period with more room in it. The backend
   is the trust boundary precisely because the client is not trustworthy.
-- **It is computed once per call.** If the period were resolved at both
+- It is computed once per call. If the period were resolved at both
   reserve time and settle time, a call that straddles midnight on the
   31st would be checked against January's budget and charged to
   February's, spending both months' headroom on a single call.
@@ -97,11 +93,11 @@ settled ≤ reserved + ε
 where `ε` is a fixed number of **cents**, one by default. Two details
 in that sentence carry real money:
 
-- **Fixed cents, never a percentage.** A 0.1% epsilon on a large
+- Fixed cents, never a percentage. A 0.1% epsilon on a large
   reservation is unbounded money; a fixed one-cent epsilon on a tiny
   reservation is just tolerance. A percentage is more flexible and
   wrong.
-- **Over-budget settlement is rejected, never absorbed.** When the
+- Over-budget settlement is rejected, never absorbed. When the
   settled amount exceeds the reservation plus epsilon, the right move
   is to reject the settlement and let the reservation's TTL release the
   money. Silently re-reserving the difference is an implicit second
@@ -109,14 +105,14 @@ in that sentence carry real money:
 
 Settlement exceeds reservation because the exact cost is only knowable
 after the model responds, so you are reserving against an estimate. The
-epsilon absorbs estimator error. It is not headroom.
+epsilon absorbs estimator error and nothing more.
 
 ## Fail closed, and mean it
 
 The cheapest way to make a budget layer fail open is to write the
-infrastructure error handler as `return allow`. It looks defensive and
-is the opposite: an unreachable Redis becomes an unlimited agent, and
-the failure mode is silent.
+infrastructure error handler as `return allow`. It looks defensive. An
+unreachable Redis becomes an unlimited agent, and the failure mode is
+silent.
 
 ```rust
 // The correct shape. Infrastructure failure is a block.
@@ -140,10 +136,9 @@ dashboard.
 | Settle | Reservation missing, TTL already fired | Reject, nothing moves |
 | Settle | `actual > reserved + ε` | Reject, TTL releases the envelope |
 
-Two of those rows carry the design. A caller that cannot reach the
-counter gets a refusal, and a caller whose settlement overruns its own
-reservation gets a refusal, and those two refusals reach the caller as
-different answers.
+Two of those rows carry the design. The two refusals, an unreachable
+counter and a settlement that overran its own reservation, reach the
+caller as different answers.
 
 ## Why millicents
 
@@ -181,13 +176,13 @@ to prove which calls actually passed through the gate.
 
 ## Order of checks
 
-Cheap and decisive checks go first, so a blocked call costs as little
-as possible:
+A blocked call should cost as little as possible, so cheap and decisive
+checks go first:
 
-1. **Tool block**: is this tool denied outright? Hard, always.
-2. **Rate limit**: sliding window, per org and per key. Hard, always.
-3. **Budget cache**: is there an obvious early reject? Advisory, cheap.
-4. **Reservation**: the atomic spend check. Fails closed.
+1. Tool block: is this tool denied outright? Hard, always.
+2. Rate limit: sliding window, per org and per key. Hard, always.
+3. Budget cache: is there an obvious early reject? Advisory, cheap.
+4. Reservation: the atomic spend check. Fails closed.
 
 If you put the budget check first, every request pays for a Redis
 round trip even the ones that were going to be blocked by policy

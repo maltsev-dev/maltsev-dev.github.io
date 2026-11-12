@@ -23,7 +23,7 @@ Yes or no, decided once at setup, and then forgotten. That question
 fits a build step that shells out to a compiler. Anything that moves
 money, sends mail, or deletes things needs a different question.
 
-The question an operator actually needs answered is different:
+The question an operator needs answered is different:
 
 > Should *this specific invocation*, of this function, with *these
 > arguments*, against *this resource*, happen *now*?
@@ -65,8 +65,8 @@ job description is a category. The decisions are instances.
 
 ## Three dimensions a category check holds constant
 
-A permission holds three things steady that a real decision cannot hold
-steady.
+A permission holds three things constant that only a real decision can
+vary.
 
 | Dimension | What the category assumes | What the invocation carries |
 |---|---|---|
@@ -150,8 +150,8 @@ allowed to apply credits. The combination moved a card number into a
 context that had no reason to see it.
 
 No permission was violated here, which is exactly why every role table
-reports clean. This is the composition problem: individual actions
-authorized, composed outcome not authorized. General composition
+reports clean. This is the composition problem: the individual actions
+are authorized, the composed outcome is not. General composition
 detection is hard, and the useful question is how to catch a bad
 sequence without flagging every legitimate one. A rule that flags any
 sequence of N actions is too coarse, and a rule that names the exact bad
@@ -168,30 +168,35 @@ one.
 Per-instance authorization costs more than per-category authorization,
 and compute is a small part of it.
 
-**Latency at the gate.** The check above reads an account and a recent
-count. That is two reads that were not there before, on the path
-between "the agent decided" and "the tool ran". In an interactive
-workflow it is invisible; in a batch of forty thousand actions it is a
-throughput number somebody has to own.
+### Latency at the gate
 
-**False refusals move work to humans.** This is the one that gets
-underestimated and then causes the whole control to be quietly relaxed.
-A genuine customer with a legitimate large claim hits the ceiling and
-gets refused. The agent cannot proceed. A person has to handle it. Do
-that often enough and the team asks for the ceiling to be raised, and
-then raised again, until the ceiling is above the largest thing anyone
-can imagine doing. The control is still present. It is no longer doing
-anything.
+The check above reads an account and a recent count. That is two reads
+that were not there before, on the path between "the agent decided" and
+"the tool ran". In an interactive workflow it is invisible; in a batch of
+forty thousand actions it is a throughput number somebody has to own.
 
-**Someone has to choose the thresholds.** There is no default. Every
-number in that function is a business decision that has to be made
-explicitly, reviewed, and revisited. Most of them will be wrong at
-first. This is real work that appears in no architecture diagram.
+### False refusals move work to humans
 
-**The data can be wrong in the permissive direction.** Every check here
-consults a source that can be stale, incomplete, or wrong.
-Instance-level checks do not make the underlying data more accurate.
-They make the system more dependent on it.
+This is the one that gets underestimated and then causes the whole
+control to be quietly relaxed. A genuine customer with a legitimate large
+claim hits the ceiling and gets refused. The agent cannot proceed. A
+person has to handle it. Do that often enough and the team asks for the
+ceiling to be raised, and then raised again, until the ceiling is above
+the largest thing anyone can imagine doing. The control is still present.
+It is no longer doing anything.
+
+### Someone has to choose the thresholds
+
+There is no default. Every number in that function is a business decision
+that has to be made explicitly, reviewed, and revisited. Most of them
+will be wrong at first. This is real work that appears in no architecture
+diagram.
+
+### The data can be wrong in the permissive direction
+
+Every check here consults a source that can be stale, incomplete, or
+wrong. Instance-level checks do not make the underlying data more
+accurate. They make the system more dependent on it.
 
 ## What to actually check
 

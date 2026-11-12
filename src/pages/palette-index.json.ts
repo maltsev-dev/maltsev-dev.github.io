@@ -1,4 +1,5 @@
 import type { APIRoute } from 'astro';
+import { displayTitle } from '../lib/text';
 import { getCollection } from 'astro:content';
 
 // The command palette's index.
@@ -29,7 +30,7 @@ export const GET: APIRoute = async () => {
       group: 'Project',
     })),
     ...POSTS.map((p) => ({
-      label: p.data.title,
+      label: displayTitle(p.data.title),
       href: `/blog/${p.id}/`,
       group: 'Post',
     })),

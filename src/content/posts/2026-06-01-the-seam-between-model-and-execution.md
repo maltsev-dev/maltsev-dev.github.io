@@ -22,9 +22,8 @@ system. It is two, joined at a seam.
 - The operational side: the executor, the tools, the APIs, the
   databases, the external side effects. It decides what happens.
 
-Three kinds of control are routinely grouped together under the word
-"guardrails", and the grouping hides the seam. Adding a fourth makes the
-position of each one visible.
+Three kinds of control get grouped together under the word "guardrails",
+and the grouping hides the seam. A fourth kind sits outside that word.
 
 | Control | Where it reads | What it decides |
 |---|---|---|
@@ -87,17 +86,14 @@ sounding, and the reasoning trace looks fine. The executor receives
 material value changed, and not one of them is present in the text a
 filter would inspect.
 
-Both seams have the same shape, and both are invisible from the side
-that produced the text.
-
 | Seam | What exists on one side | What exists on the other | Who can see the transition |
 |---|---|---|---|
 | Approval | Payload A, signed by a human | Payload B, arriving at the executor | Nothing that reads the model's output |
 | Tool argument | Text the model emitted | Recipient, amount, currency, direction | A content filter, which reads text |
 
-This is why a material field can change authorization semantics without
-the model understanding that it happened. The model never saw the value,
-so it genuinely does not know.
+A material field can change authorization semantics without the model
+understanding that it happened. The model never saw the value, so it
+genuinely does not know.
 
 ## The rule: every crossing gets a decision
 
@@ -161,9 +157,9 @@ refund. Something else stopped it, or nothing did, and the difference
 only becomes visible during an incident.
 
 Guardrails fire too early to catch a bad business decision, and
-observability shows up too late to stop one. Neither is useless.
-Neither answers the question that sits at the seam, which is what happens
-between "the model decided" and "the state changed".
+observability shows up too late to stop one. Neither answers the question
+that sits at the seam, which is what happens between "the model decided"
+and "the state changed".
 
 ## What to actually check
 
@@ -241,11 +237,11 @@ it. That is the case the seam model is actually for.
 
 ## Where this runs
 
-NullRun sits on the seam rather than beside it: after the model has
-decided and before the state changes. That position is the only one that
-catches both the approval mismatch and the mutated tool argument, because
-both are invisible to anything looking at the model's output and already
-past anything looking at the system's logs.
+NullRun sits on the seam: after the model has decided and before the
+state changes. That position is the only one that catches both the
+approval mismatch and the mutated tool argument, because both are
+invisible to anything looking at the model's output and already past
+anything looking at the system's logs.
 
 Practically it means the agent's tools resolve through one place, the
 decision there is made against the action itself, and every refusal is

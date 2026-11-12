@@ -22,8 +22,8 @@ never in the schema, because the schema was never asked.
 
 A schema contains many fields. Most are informational. Some are
 material, meaning changing them changes what the action *is*. A
-recipient is material. An amount is material. A destination is
-material. A trace identifier is context.
+recipient, an amount and a destination are material. A trace identifier
+is context.
 
 That classification is what determines what a digest covers, and
 therefore what an approval is bound to. Get it wrong in one direction and
@@ -63,9 +63,6 @@ is informational. A field named `refund_reason_code` is a different
 story: the policy routes differently on the reason, so it is material
 even though it reads like metadata.
 
-The last column is the part that decides whether your approvals
-hold.
-
 | Field | Material? | Why | If it is left out of the hash |
 |---|---|---|---|
 | `recipient` | Material | The operator approved a payment to a specific party | An approval for one recipient carries over to every other recipient |
@@ -85,7 +82,7 @@ hold.
 Once you have the classification, there are two ways to build on it, and
 the choice matters more than the classification does.
 
-**Design one: classify, then allowlist the informational fields.**
+### Design one: classify, then allowlist the informational fields
 
 ```python
 INFORMATIONAL = frozenset({"trace_id", "request_id", "model", "locale"})
@@ -100,7 +97,7 @@ tool version adds `redirect_to` and the digest stops covering it with no
 signal anywhere, because a denylist of known-harmless fields only fails
 in the direction nobody is watching.
 
-**Design two: bind the whole envelope.**
+### Design two: bind the whole envelope
 
 If the thing you are hashing has a small, closed, reviewed shape, a
 type instead of a bag, then there is no classification to get wrong.
@@ -117,18 +114,17 @@ nothing can fall out of the hash without changing that type.
 | Where it fits | An argument bag you do not control | An envelope you do control |
 
 The usual objection to design two is that an incidental field change
-invalidates a live approval. That is a real objection, but it is smaller
-than it looks: it bites only if the envelope actually carries
-incidental fields. A purpose-built envelope, the one whose fields are
-the decision-relevant facts and nothing else, does not have them, because
-adding a trace ID to a security envelope is a design error you catch
-immediately.
+invalidates a live approval. The objection is smaller than it looks: it
+bites only if the envelope actually carries incidental fields. A
+purpose-built envelope, the one whose fields are the decision-relevant
+facts and nothing else, does not have them, because adding a trace ID to
+a security envelope is a design error you catch immediately.
 
 So the rule that falls out is: **the narrower the envelope, the more of
 it you can hash unconditionally.** A free-form argument bag needs a
 classification to be defensible. A closed typed envelope does not, and
-for a closed typed envelope the unconditional hash is both simpler and
-stronger, because there is no list in the system that can go stale.
+the unconditional hash is simpler and stronger, because there is no list
+in the system that can go stale.
 
 This matters more for MCP than for a traditional API, because a schema
 is close to the only artifact the protocol surfaces. A traditional API
@@ -191,10 +187,12 @@ that says `{"verbose": "true"}` would authorize identically to one that
 says `{"verbose": true}`, which matters the moment a downstream tool
 coerces one to the other.
 
-**Numbers.** `100`, `100.0` and `1e2` are the same amount of money and
-must produce the same digest, or every retry that goes through a JSON
-round trip gets a spurious refusal. There are two defensible answers and
-both are in production use. Collapse the integral floats onto the
+### Numbers
+
+`100`, `100.0` and `1e2` are the same amount of money and must produce
+the same digest, or every retry that goes through a JSON round trip gets
+a spurious refusal. There are two defensible answers and both are in
+production use. Collapse the integral floats onto the
 integer form, as above. Or refuse them: reject the value at validation
 with a typed error, so that the caller has to send an integer or a
 string and the ambiguity never reaches the hasher. The second is the
@@ -209,8 +207,10 @@ trip over, and compares directly against a threshold expressed in the
 same unit. A digest layer that accepts a float is carrying a precision
 problem it does not need to have.
 
-**Unicode.** `NFC` normalization exists because `é` can arrive as one
-code point (U+00E9) or as `e` plus a combining accent (U+0065 U+0301).
+### Unicode
+
+`NFC` normalization exists because `é` can arrive as one code point
+(U+00E9) or as `e` plus a combining accent (U+0065 U+0301).
 They render identically, they hash differently, and if the downstream
 mail system treats them as the same address then your digest will refuse
 an action that would have gone to the same place.
@@ -256,9 +256,8 @@ it.
 | `{"verbose": true}` and `{"verbose": "true"}` | Must not hash the same | Different digest |
 | `{"amount": 100}` and `{"amount": 100.0}`, if the design rejects floats | Must not reach the hasher | A typed validation error, not a digest comparison |
 
-That last row earns its place. A test that asserts "these two hash the
-same" is testing the wrong layer, and it keeps passing after you change
-the policy underneath it.
+A test that asserts "these two hash the same" is testing the wrong
+layer, and it keeps passing after you change the policy underneath it.
 
 Then run property-based tests over generated payloads, asserting that
 any two payloads differing only in key order hash identically. Write the
@@ -283,9 +282,9 @@ declared per-call ceiling: the ceiling and the unit make the pathological
 value unrepresentable instead of merely unlikely.
 
 An allowlist, if you take design one, is also a maintenance commitment.
-Every entry is a claim that a field does not affect the action, and that
-claim is true only until the tool's semantics change. At that point it is
-the [schema drift problem](/blog/2026-09-01-mcp-tool-identity-not-tool-name/)
+Every entry holds only until the tool's semantics change. At that point
+it is the
+[schema drift problem](/blog/2026-09-01-mcp-tool-identity-not-tool-name/)
 arriving through the classification layer instead of the identity layer.
 That is the argument for design two on any envelope you control.
 
@@ -298,11 +297,12 @@ the default from the start.
 
 ### Why not hash the entire payload?
 
-A free-form argument bag is design one. Any change to a live approval
-invalidates it, and operators stop approving anything once the refusals
-become unexplainable. That reasoning does not settle the question,
-because the cost lands on correctness rather than convenience: a payload
-that is not in the hash cannot fail to match.
+A free-form argument bag leaves you on design one, and hashing the whole
+payload on top of that invalidates a live approval on any incidental
+change. Operators stop approving anything once the refusals become
+unexplainable. That reasoning does not settle the question, because the
+cost lands on correctness rather than convenience: a payload that is not
+in the hash cannot fail to match.
 
 Which of the two is right depends entirely on whether you control the
 envelope's shape. A bag you do not control needs a classification. An
@@ -345,8 +345,8 @@ approval is concerned.
 
 ## Where this runs
 
-NullRun binds the whole envelope, and the envelope is a closed type. It
-is not a bag. The wire form is an enum, `Money` or `ToolCall`, and
+NullRun binds the whole envelope, and the envelope is a closed type
+rather than a bag. The wire form is an enum, `Money` or `ToolCall`, and
 every field of the selected variant is canonicalized and hashed:
 
 ```
@@ -356,19 +356,18 @@ SHA-256( "nullrun/v1/business_impact:" || canonical_json(envelope) )
 The domain prefix is the part worth naming. It means a digest computed
 for an action can never collide with a digest computed for anything else
 in the system, so a hex string from one namespace cannot be replayed
-into another. That is what you want from a value that is going to be
-stored, compared and trusted.
+into another.
 
 Three properties follow from hashing the whole thing:
 
-- **There is no allowlist to go stale.** A field cannot be added to a
+- There is no allowlist to go stale. A field cannot be added to a
   tool and silently fall out of the binding, because the binding is the
   type, and adding a field is a change somebody makes to the type.
-- **The value cannot be replaced.** The digest is recomputed server-side
+- The value cannot be replaced. The digest is recomputed server-side
   from the payload that arrived on `/execute`, and a stored approval is
   refused if the recomputation disagrees, `APPROVAL_DIGEST_MISMATCH`. The
   client does not supply the value that gets compared.
-- **Ambiguity is refused.** Money arrives as
+- Ambiguity is refused. Money arrives as
   `amount_minor`, an integer in minor units with a declared per-call
   ceiling. A payload carrying a float or a non-finite number is rejected
   during validation with a typed error, because a digest is only a
@@ -377,12 +376,11 @@ Three properties follow from hashing the whole thing:
   unconditional.
 
 Canonicalization sorts object keys recursively and leaves arrays in
-their order, for the reason above: an object's key order carries no
-meaning, and whether an array's order does is a question only the schema
-can answer.
+their order, because an object's key order carries no meaning and
+whether an array's order does is a question only the schema can answer.
 
-The operational consequence is the one that matters. Changing an amount
-changes the digest and invalidates the prior approval, so the second
-call needs a new decision. That is the intended behavior. The operator
-approved a specific number, and a different number is a different action.
+Changing an amount changes the digest and invalidates the prior
+approval, so the second call needs a new decision. That is the intended
+behavior. The operator approved a specific number, and a different number
+is a different action.
 The [API reference](https://nullrun.io/docs/api) carries the wire shapes.

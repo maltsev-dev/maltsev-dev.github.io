@@ -20,6 +20,8 @@ export interface Theme {
   label: string;
   /** The one-line description under the name. */
   desc: string;
+  /** The short code the status line shows: `p1-amber`, `p3-green`. */
+  phosphor: string;
   /** The browser chrome color — the page's paper, in hex. */
   color: string;
 }
@@ -37,10 +39,10 @@ export const SYSTEM_LIGHT: Ramp = 'pierre';
 export const SYSTEM_DARK: Ramp = 'phosphore';
 
 export const THEMES: Theme[] = [
-  { id: 'phosphore', label: 'phosphore', desc: 'amber on black', color: '#14100a' },
-  { id: 'acidule', label: 'acidule', desc: 'green on teal', color: '#01141d' },
-  { id: 'pierre', label: 'pierre', desc: 'warm light', color: '#f4efe6' },
-  { id: 'system', label: 'system', desc: 'follow the system', color: '#14100a' },
+  { id: 'phosphore', label: 'P3 amber', desc: 'amber phosphor', phosphor: 'p3-amber', color: '#0d0a05' },
+  { id: 'acidule', label: 'P1 green', desc: 'green phosphor', phosphor: 'p1-green', color: '#000a06' },
+  { id: 'pierre', label: 'P4 paper', desc: 'warm white, black ink', phosphor: 'p4-paper', color: '#f4efe6' },
+  { id: 'system', label: 'system', desc: 'follow the system', phosphor: 'auto', color: '#0d0a05' },
 ];
 
 /** The ramp a theme id resolves to. `system` follows the OS preference. */

@@ -21,10 +21,10 @@ on the table.
 | 3. Add a middleware node in the agent graph | A node in the graph, not a property of the tool | Any route around the node, and routing around a node is something frameworks do for legitimate reasons |
 | 4. Own the path out | One client is the only way out, and the check lives in that client | Nothing. There is one route, and it is the one being checked |
 
-Options 1, 2 and 3 all intercept a call. Option 4 makes a different
+Options 1, 2 and 3 all intercept a call, and each of them announces its
+own failure at runtime, in production. Option 4 makes a different
 architectural claim, and it is the only one whose coverage does not
-depend on enumerating paths. The first three all announce their own
-failure at runtime, in production.
+depend on enumerating paths.
 
 ```
         model                          agent process
@@ -78,8 +78,8 @@ Option 4 survives for one reason, which is worth stating as a design rule:
 > then enforcement is one place, and it cannot be bypassed by taking a
 > different code path.
 
-That is the whole argument. It does not require you to enumerate every
-route, because there is one route.
+It does not require you to enumerate every route, because there is one
+route.
 
 ```python
 class GatedToolClient:
@@ -150,11 +150,11 @@ is the other half of this design.
 Sometimes you have no choice: the framework invokes tools through an
 internal you cannot wrap. Two things make it less fragile.
 
-**Patch the narrowest thing that works.** If the tool callable can be
+Patch the narrowest thing that works. If the tool callable can be
 wrapped, wrap it. Reach for the framework's dispatch only when wrapping
 is genuinely unavailable.
 
-**Assert coverage at runtime, not at build time.** A static check tells
+Assert coverage at runtime, not at build time. A static check tells
 you which call sites are patched. It cannot tell you which route the
 framework will take at runtime in the next version. A runtime assertion
 can:

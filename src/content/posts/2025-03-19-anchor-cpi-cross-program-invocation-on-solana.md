@@ -1,61 +1,39 @@
 ---
-title: "🔗 Anchor CPI – Cross-Program Invocation on Solana"
+title: "Anchor CPI: Cross-Program Invocation on Solana"
 date: "2025-03-19"
 description: "Two Anchor programs where one calls the other through a CPI, with a System Program transfer alongside it."
 tags: ["rust", "solana", "anchor", "project"]
 ---
-**A working example of Anchor-based CPI (Cross Program Invocation) — when one Solana program calls another.**
-This project demonstrates best practices for inter-program communication using the Anchor framework.
+A working example of Anchor-based CPI, where one Solana program calls another.
 
----
+[GitHub Repository](https://github.com/maltsev-dev/anchor_cpi)
 
-[📚 GitHub Repository](https://github.com/maltsev-dev/anchor_cpi)
+The project has two Solana programs, `program-a` and `program-b`. Program A performs a CPI to Program B, and also interacts with the System Program for SOL transfers.
 
-This project illustrates how to structure two Solana programs (`program-a` and `program-b`) where **Program A** performs a CPI to **Program B**, and also interacts with **System Program** (for SOL transfers).
+CPI is a building block for modular, reusable smart contracts on Solana. The example suits:
 
-CPI (Cross-Program Invocation) is a critical building block for modular, reusable smart contracts on Solana. This example is ideal for:
+- Developers learning advanced Solana development
+- Those building protocol layers or modular dApps
+- Projects where multiple programs need to coordinate actions
 
-* Developers learning advanced Solana development
-* Those building protocol layers or modular dApps
-* Projects where multiple programs need to coordinate actions
+## Stack and tools
 
----
+- Rust, the primary language
+- Anchor, the Solana framework
+- CPI pattern
+- Transaction explorer
+- Anchor tests with a local validator
 
-## 🔧 Stack & tools
+## Features
 
-* 🦀 **Rust** — primary language
-* ⚓ **Anchor** — Solana framework
-* 🔁 **CPI Pattern**
-* 🔍 **Transaction Explorer**
-* 🧪 **Anchor tests with local validator**
+1. Call another program from your program. The CPI pattern with `invoke_signed()` in Anchor.
+2. Pass accounts and instruction data. Structured instruction building for inner program calls.
+3. Work with the System Program. Shows how to invoke built-in programs, for example SOL transfers.
+4. Observe the execution flow. The log output shows the sequence of program interactions.
 
----
+## Setup and usage
 
-## ✨ Features
-
-1. **Call Another Program from Your Program**
-
-   * CPI pattern with `invoke_signed()` in Anchor
-
-2. **Pass Accounts & Instruction Data**
-
-   * Structured instruction building for inner program calls
-
-3. **Work with System Program**
-
-   * Demonstrates how to invoke built-in programs (e.g., SOL transfers)
-
-4. **Observe Execution Flow**
-
-   * View log output to understand program interaction sequence
-
----
-
-## 🚀 Setup & usage
-
-### 1. 🏗️ Initialize projects
-
-Create two Anchor programs:
+1. Initialize the projects:
 
 ```bash
 anchor init program-a
@@ -63,9 +41,7 @@ cd ..
 anchor init program-b
 ```
 
-### 2. 🔁 Configure dependencies
-
-In `Cargo.toml` of `program-a`, add:
+2. Configure the dependencies. In `Cargo.toml` of `program-a`, add:
 
 ```toml
 program-b = { path = "../program-b", features = ["cpi"] }
@@ -81,36 +57,26 @@ program_b = "..." # Your local key
 program-b = { path = "../program-b", features = ["cpi"], resolution = false }
 ```
 
----
-
-### 3. 🧪 Run tests
-
-Build and test CPI interaction:
+3. Run the tests:
 
 ```bash
 anchor build && anchor test
 ```
 
----
-
-### 4. 🧱 Start local validator
+4. Start the local validator:
 
 ```bash
 cd .anchor/
 solana-test-validator
 ```
 
----
-
-### 5. 🔍 View transactions
+5. View the transactions:
 
 1. Open [explorer.solana.com](https://explorer.solana.com)
-2. Switch to "Localhost" network
-3. Find your transaction signature in test output logs
+2. Switch to the "Localhost" network
+3. Find your transaction signature in the test output logs
 
----
-
-## 🖥️ Sample logs
+## Sample logs
 
 ```bash
 Program logged: "Instruction: Initialize"
@@ -124,14 +90,8 @@ Program consumed: 676 of 190087 compute units
 Program returned success
 ```
 
-These logs show:
+The logs show the instruction flow through both programs, the System-level interaction, and the success or failure of each step.
 
-* Instruction flow through both programs
-* System-level interaction
-* Success/failure of each step
+## License
 
----
-
-## 📄 License
-
-This project is licensed under the **MIT License** — free to use, modify, and extend.
+This project is licensed under the MIT License. Free to use, modify, and extend.

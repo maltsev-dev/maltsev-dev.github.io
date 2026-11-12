@@ -22,7 +22,10 @@ Most governance treats authority as a single fact established at grant
 time. Permission: yes or no. Evidence: assumed valid. The grant is the
 answer and it is durable.
 
-Those are two facts with two different lifetimes.
+A grant that captures authority without evidence is a snapshot of a
+policy that no longer exists. Evidence changes far more often than
+authority does, which is the opposite of what the grant-time design
+assumes.
 
 | | Authority to act | Authority of the evidence |
 |---|---|---|
@@ -30,10 +33,6 @@ Those are two facts with two different lifetimes.
 | Created when | Someone edits a role definition or issues a key | Whenever one of those underlying facts moves, which is constantly |
 | Ends when | The role definition is edited or the key is revoked | At the next read |
 | Read from | The role table | The systems that currently hold truth |
-
-A grant that captures the first without the second is a snapshot of a
-policy that no longer exists. And the second changes far more often
-than the first, which is the assumption the design bakes in.
 
 ```
   authority (durable)                     evidence (re-read on every call)
@@ -60,11 +59,11 @@ The concrete list of things that move under a standing permission:
 
 | Evidence | Changes when | Nobody tells the agent |
 |---|---|---|
-| Policy hash | The policy is edited | ✓ |
-| Account state | A customer is flagged, closed, restricted | ✓ |
-| Exception window | A temporary override expires | ✓ |
-| Budget reservation | The budget is consumed by another workflow | ✓ |
-| Budget headroom | A concurrent workflow reserves against it | ✓ |
+| Policy hash | The policy is edited | yes |
+| Account state | A customer is flagged, closed, restricted | yes |
+| Exception window | A temporary override expires | yes |
+| Budget reservation | The budget is consumed by another workflow | yes |
+| Budget headroom | A concurrent workflow reserves against it | yes |
 
 Four of those five change routinely. A system that reads them at grant
 time and never again is stale within minutes.
@@ -82,8 +81,7 @@ def authorize_at_use(principal, request, live_state):
     return decision
 ```
 
-The important part is where `live_state` comes from. This function
-reads it from the systems that currently hold truth. A caller that
+The important part is where `live_state` comes from. A caller that
 assembles the state and hands it over can assemble stale state, and
 freshness then becomes an assumption at every call site that no single
 place owns.
@@ -112,11 +110,10 @@ def policy_changed_since(principal, seen_hash: str) -> bool:
 ```
 
 This turns a full re-evaluation into a string comparison on the hot
-path. It is a genuinely good optimization and it has a precondition that
-people skip: the signal must exist and must be derived from the rules.
-Many policy stores are documents without either, and retrofitting them
-is real work. If you do not have it, the honest position is that you
-re-read every time.
+path, and it has a precondition that people skip: the signal must exist
+and must be derived from the rules. Many policy stores are documents
+without either, and retrofitting them is real work. If you do not have
+it, the honest position is that you re-read every time.
 
 **A short TTL on the grant.** Cap how long a standing grant can be used
 without re-derivation. This bounds the window in which stale evidence
@@ -189,12 +186,11 @@ store is a cache that can serve a stale document, the hash it hands back
 is the hash of the stale rules, and the comparison confidently agrees
 with itself.
 
-Re-evaluation makes the decision *current*. Whether it makes it *better*
-is a separate question. The judgment, should this amount be permitted
-for this account, is still a judgment, and freshness does not improve
-it. A policy that is wrong will be wrong immediately and consistently
-after this change, which is arguably worse than a policy that is right
-and slowly goes stale.
+Re-evaluation makes the decision *current*, and freshness does not make
+it *better*. The judgment, should this amount be permitted for this
+account, is still a judgment. A policy that is wrong will be wrong
+immediately and consistently after this change, which is arguably worse
+than a policy that is right and slowly goes stale.
 
 ## FAQ
 

@@ -1,62 +1,62 @@
 ---
-title: "🖥️ Wasm-based Application: Tax Calculator"
+title: "Wasm-based Application: Tax Calculator"
 date: "2024-10-05"
 description: "A Rust and wasm-bindgen experiment: build a WebAssembly tax calculator and serve it from a static page."
 tags: ["rust", "webassembly", "project"]
 ---
-An experiment using [wasm-bindgen](https://crates.io/crates/wasm-bindgen) to create a WebAssembly program.  
-`wasm-bindgen 0.2.95`
+An experiment using [wasm-bindgen](https://crates.io/crates/wasm-bindgen) to create a WebAssembly program. Built with `wasm-bindgen 0.2.95`.
 
----
+[GitHub Repository](https://github.com/maltsev-dev/tax_app_webassembly)
 
-[📚 GitHub Repository]](https://github.com/maltsev-dev/tax_app_webassembly)
+## Tools
 
-<h2 style="text-align:center; margin-bottom:8px;">Tools</h2>
-<p align="center" style="margin:0; padding:0;">
-  <code>rust 1.83.0</code>
-  <code>wasm_test 0.3</code>
-  <a href="https://github.com/chemyl/tax_app_webassembly/actions/workflows/rust.yml"><code>CI</code></a>
-</p>
+- `rust 1.83.0`
+- `wasm_test 0.3`
+- [CI](https://github.com/chemyl/tax_app_webassembly/actions/workflows/rust.yml)
 
-## How to build and run:
+## How to build and run
 
-* Create a library crate:
+1. Create a library crate:
 
-  ```bash
-  cargo new project --lib
-  ```
-* Add crate type annotation for the compiler:
+   ```bash
+   cargo new project --lib
+   ```
 
-  ```toml
-  [lib]
-  crate-type = ["cdylib"]
-  ```
-* Create a basic `index.html` skeleton and extend the script block to handle loading and interacting with the wasm module.
-* Install wasm-pack:
+2. Add the crate type annotation for the compiler:
 
-  ```bash
-  cargo install wasm-pack
-  ```
-* Build the project with wasm-pack:
+   ```toml
+   [lib]
+   crate-type = ["cdylib"]
+   ```
 
-  ```bash
-  wasm-pack build --target web
-  ```
-* Install a simple web server globally (if not installed):
+3. Create a basic `index.html` skeleton and extend the script block to handle loading and interacting with the wasm module.
 
-  ```bash
-  npm install -g http-server
-  ```
-* Start the web server from the project root folder:
+4. Install wasm-pack:
 
-  ```bash
-  http-server .
-  ```
+   ```bash
+   cargo install wasm-pack
+   ```
+
+5. Build the project with wasm-pack:
+
+   ```bash
+   wasm-pack build --target web
+   ```
+
+6. Install a simple web server globally (if not installed):
+
+   ```bash
+   npm install -g http-server
+   ```
+
+7. Start the web server from the project root folder:
+
+   ```bash
+   http-server .
+   ```
 
 ![Browser recording of the WebAssembly tax calculator page, where a USD income is entered into a numeric field and the Calculate Tax button returns the result](/media/wasm_tax_app.gif)
 
----
-
-### **License**
+## License
 
 This project is licensed under the [MIT License](https://github.com/maltsev-dev/tax_app_webassembly?tab=MIT-1-ov-file).

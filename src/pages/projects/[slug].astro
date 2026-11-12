@@ -50,10 +50,6 @@ const date = frontmatterDate || (caseYear ? String(caseYear) : '');
 
 <Base title={project.data.title} description={project.data.description}>
   <div class="wrap-sub">
-    <p class="article-back">
-      <a href="/projects/">← Projects</a>
-    </p>
-
-    <ProjectCase data={data} date={date} />
+    <ProjectCase data={data} slug={project.data.slug} date={date} />
   </div>
 </Base>

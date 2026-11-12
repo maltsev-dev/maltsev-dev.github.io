@@ -1,10 +1,14 @@
-"""Download the three web fonts the site uses and self-host them.
+"""Download the two web fonts the site uses and self-host them.
 
 The site used to pull Anton, Inter and JetBrains Mono from Google Fonts at
 runtime: a third-party stylesheet in the critical path, and a request that
 leaves the visitor's browser for a third party before a single word is drawn.
 Both are avoidable — the faces are open licences, and the whole point of
 self-hosting is that the site depends on nothing but its own origin.
+
+Anton is no longer among them. The headings are the terminal face now — a
+site that reads as a terminal cannot have a condensed poster face carrying
+them — so the script does not ask for it and the files it needed are gone.
 
 Run it, and it rewrites `src/styles/fonts.css` from whatever Google currently
 serves. The subsets that come back are kept as separate files with the
@@ -34,8 +38,7 @@ UA = (
 
 GOOGLE_CSS = (
     "https://fonts.googleapis.com/css2"
-    "?family=Anton"
-    "&family=Inter:wght@100..900"
+    "?family=Inter:wght@100..900"
     "&family=JetBrains+Mono:wght@400..800"
     "&display=swap"
 )
@@ -44,7 +47,7 @@ GOOGLE_CSS = (
 # are not in the new set are stale — the weight-specific copies of the
 # variable faces — and are removed. The art face is not this script's job and
 # is not in this list.
-MANAGED = ("anton-", "inter-", "jetbrains-mono-")
+MANAGED = ("inter-", "jetbrains-mono-")
 
 # The subsets the site can actually render. Latin covers English and the
 # punctuation the design uses; cyrillic is there because the blog posts
@@ -153,6 +156,10 @@ def main() -> int:
         " * twice under two names, and the deployment carried 19 byte-identical\n"
         " * copies of the same two faces. One declaration with a weight range is\n"
         " * both smaller and one request.\n"
+        " *\n"
+        " * Anton is gone. The headings are the terminal face now — a site that reads\n"
+        " * as a terminal cannot have a condensed poster face carrying them — and with\n"
+        " * it the two font files it needed.\n"
         " */\n\n"
     )
 

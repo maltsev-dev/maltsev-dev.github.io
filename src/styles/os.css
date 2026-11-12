@@ -7,8 +7,10 @@
    ========================================================================== */
 
 /* ----- Status bar --------------------------------------------------------
-   Sits above the menu bar, like the top strip of a desktop OS: identity on
-   the left, machine state on the right, most importantly the clock.
+   The top strip of a terminal: where you are, what the machine is, and the
+   clock. It is a status line rather than a bar of chrome — the fields are
+   separated by the pipe a terminal has always used between them, and each
+   field says one thing.
    ---------------------------------------------------------------------- */
 .status-bar {
   position: sticky;
@@ -16,7 +18,7 @@
   z-index: 50;
   background: var(--rouille);
   color: var(--fort);
-  border-bottom: var(--filet) solid var(--braise);
+  border-bottom: var(--filet) solid var(--grid);
   font-family: var(--font-mono);
   font-size: var(--fs-label);
   letter-spacing: 0.06em;
@@ -26,7 +28,7 @@
 .status-bar .wrap {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: space-between;
   gap: var(--sp-4);
   min-height: var(--status-h);
   padding-block: 0;
@@ -36,23 +38,32 @@
 .status-right {
   display: flex;
   align-items: center;
-  gap: var(--sp-4);
+  gap: 0.7rem;
   min-width: 0;
 }
 
 .status-item {
   display: inline-flex;
   align-items: center;
+  gap: 0.4rem;
   white-space: nowrap;
   color: var(--fort);
 }
 
+/* The field separator. */
+.status-sep {
+  color: var(--faible);
+  user-select: none;
+}
+
+/* The name of the field in the dim colour and the value beside it in the
+   bright one — the same split a status line has always had. */
 .status-item .k {
-  /* The label is a whole text run on the accent bar. At 0.65 it measured
-     3.78:1 in phosphore and 3.82:1 in acidule; 0.85 keeps it quieter than the
-     clock it labels and clears 4.5:1 in all three themes. */
-  opacity: 0.85;
-  margin-right: 0.35rem;
+  color: var(--faible);
+}
+
+.status-item .v {
+  color: var(--encre);
 }
 
 /* The clock is a live region so a screen reader is not interrupted every
@@ -60,11 +71,29 @@
 .clock {
   font-variant-numeric: tabular-nums;
   font-feature-settings: 'tnum';
+  color: var(--encre);
+}
+
+/* The lamp beside the availability indicator. It is the one thing in the
+   strip that moves, and it moves because it means something: the machine is
+   taking work. */
+.status-cta .led {
+  margin-right: 0.1rem;
+}
+
+@media (max-width: 52rem) {
+  .status-hide-sm {
+    display: none;
+  }
 }
 
 @media (max-width: 40rem) {
-  .status-hide-sm {
+  .status-left {
     display: none;
+  }
+
+  .status-bar .wrap {
+    justify-content: flex-end;
   }
 }
 
@@ -82,7 +111,8 @@
   display: flex;
   align-items: stretch;
   gap: var(--sp-3);
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+  min-width: 0;
 }
 
 /*
@@ -101,35 +131,180 @@
   The hairline under the bar is counted in the token, so the wrap is the
   token less that line.
 */
-@media (min-width: 52.1rem) {
-  .menu-bar .wrap {
-    height: calc(var(--menu-h) - var(--filet));
-    align-items: center;
-    padding-block: 0;
+.menu-bar .wrap {
+  height: calc(var(--menu-h) - var(--filet));
+  align-items: center;
+  padding-block: 0;
+}
+
+/*
+  The brand is a path, not a logo: `~/maltsev` is what a shell would show
+  for this machine, and it says what the site is without needing to be
+  decoded. The tilde is dim and the name is bright, the way a prompt marks
+  the part you type.
+*/
+.menu-brand {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.1ch;
+  flex-shrink: 0;
+  padding: 0.5rem 0;
+  text-decoration: none;
+  font-family: var(--font-mono);
+  font-size: var(--fs-small);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--creme);
+  white-space: nowrap;
+}
+
+.menu-brand .brand-tilde {
+  color: var(--braise);
+}
+
+.menu-brand:hover {
+  color: var(--braise);
+}
+
+.menu-brand:hover .brand-tilde {
+  color: var(--fort);
+}
+
+/* The divider between the prompt and the commands. */
+.menu-sep {
+  flex-shrink: 0;
+  color: var(--faible);
+  font-family: var(--font-mono);
+  font-size: var(--fs-small);
+  user-select: none;
+}
+
+/*
+  The command bar.
+
+  Every destination is one `[key] name` pair, laid out on one line. The
+  number is the shortcut that opens the page from anywhere on the site, so
+  it is printed rather than implied — a shortcut that is not written down
+  is a shortcut nobody uses.
+*/
+.menu-nav {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-1);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+  /* The strip is the only thing in the bar that is allowed to give up room:
+     it scrolls sideways. Everything else holds its width, so the strip is
+     what ends up narrow on a phone rather than the whole bar. */
+  flex: 1 1 0;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x proximity;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  --edge-fade: 2rem;
+}
+
+.menu-nav::-webkit-scrollbar {
+  display: none;
+}
+
+.menu-nav > li {
+  flex: 0 0 auto;
+  scroll-snap-align: start;
+}
+
+.cmd-link {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.4ch;
+  padding: 0.4rem 0.45rem;
+  text-decoration: none;
+  font-family: var(--font-mono);
+  font-size: var(--fs-label);
+  letter-spacing: 0.04em;
+  color: var(--fort);
+  white-space: nowrap;
+  border: var(--filet) solid transparent;
+  transition: color 140ms ease, border-color 140ms ease;
+}
+
+.cmd-link:hover {
+  color: var(--creme);
+  border-color: var(--faible);
+}
+
+.cmd-link[aria-current='page'] {
+  color: var(--creme);
+  background: var(--rouille);
+  border-color: var(--braise);
+}
+
+.cmd-link .cmd-key {
+  color: var(--braise);
+  opacity: 0.85;
+}
+
+.cmd-link[aria-current='page'] .cmd-key {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cmd-link {
+    transition: none;
   }
 }
 
-.menu-brand {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--sp-2);
-  padding: 0.5rem 0;
-  text-decoration: none;
-  font-family: var(--font-display);
-  font-size: 1.05rem;
-  color: var(--fort);
-  /* "A|M" is 41px wide in the display face — one pixel under the 44px
-     platform minimum for a tap target. The floor costs nothing and the mark
-     stays centered in it. */
-  min-width: 44px;
+/* The strip only overflows on the narrowest screens, so the fade at the
+   edge that still has content behind it cannot be a fixed rule. The classes
+   are set by the quickNav module in os.js. */
+.menu-nav.is-scrollable {
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    #000 var(--edge-fade),
+    #000 calc(100% - var(--edge-fade)),
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    #000 var(--edge-fade),
+    #000 calc(100% - var(--edge-fade)),
+    transparent 100%
+  );
 }
 
-.menu-brand .brand-mark {
-  width: 0.85em;
-  height: 0.85em;
-  background: var(--braise);
-  box-shadow: 2px 2px 0 var(--rouille);
+.menu-nav.is-scrollable.at-start {
+  -webkit-mask-image: linear-gradient(
+    to right,
+    #000 0,
+    #000 calc(100% - var(--edge-fade)),
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to right,
+    #000 0,
+    #000 calc(100% - var(--edge-fade)),
+    transparent 100%
+  );
+}
+
+.menu-nav.is-scrollable.at-end {
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    #000 var(--edge-fade),
+    #000 100%
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    #000 var(--edge-fade),
+    #000 100%
+  );
 }
 
 .menu {
@@ -283,108 +458,11 @@
   top: 0;
 }
 
-/* Flat fallback list: only used on narrow screens, where dropdowns are
-   replaced by an always-visible scrollable row.
-
-   The strip is wider than a phone — five links in a box that fits three — so
-   it scrolls sideways, and it needs the same cues every other horizontal
-   scroller on the site has. Without them the last visible word is sliced at
-   the viewport edge, which reads as a broken layout rather than as "there is
-   more". The fade at the edge that still has content behind it says it, the
-   snap makes the strip stop on a link rather than between two, and the
-   scrollbar stays hidden because the fade is the cue. The classes are set by
-   the quickNav module in os.js: the strip only overflows on the narrowest
-   screens, so the fade cannot be a fixed rule. */
-.menu-quick {
-  display: none;
-  gap: var(--sp-1);
-  list-style: none;
-  margin: 0;
-  padding: 0 0 0.5rem;
-  overflow-x: auto;
-  overscroll-behavior-x: contain;
-  scroll-snap-type: x proximity;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-  --edge-fade: 2.5rem;
-}
-
-.menu-quick::-webkit-scrollbar {
-  display: none;
-}
-
-.menu-quick > li {
-  flex: 0 0 auto;
-  scroll-snap-align: start;
-}
-
-.menu-quick.is-scrollable {
-  -webkit-mask-image: linear-gradient(
-    to right,
-    transparent 0,
-    #000 var(--edge-fade),
-    #000 calc(100% - var(--edge-fade)),
-    transparent 100%
-  );
-  mask-image: linear-gradient(
-    to right,
-    transparent 0,
-    #000 var(--edge-fade),
-    #000 calc(100% - var(--edge-fade)),
-    transparent 100%
-  );
-}
-
-.menu-quick.is-scrollable.at-start {
-  -webkit-mask-image: linear-gradient(
-    to right,
-    #000 0,
-    #000 calc(100% - var(--edge-fade)),
-    transparent 100%
-  );
-  mask-image: linear-gradient(
-    to right,
-    #000 0,
-    #000 calc(100% - var(--edge-fade)),
-    transparent 100%
-  );
-}
-
-.menu-quick.is-scrollable.at-end {
-  -webkit-mask-image: linear-gradient(
-    to right,
-    transparent 0,
-    #000 var(--edge-fade),
-    #000 100%
-  );
-  mask-image: linear-gradient(
-    to right,
-    transparent 0,
-    #000 var(--edge-fade),
-    #000 100%
-  );
-}
-
-@media (max-width: 52rem) {
-  .menu-bar .menu {
-    display: none;
-  }
-
-  .menu-quick {
-    display: flex;
-  }
-
-  .menu-bar {
-    position: static;
-  }
-
-  /* The menu bar leaves the chrome stack, so the stack is the status bar
-     alone: its own height plus the hairline under it. The sticky heading and
-     the anchor targets both measure against this number. */
-  :root {
-    --chrome-h: calc(var(--status-h) + var(--filet));
-  }
-}
+/* The command bar is always visible now, so the narrow-screen rules only
+   have to decide what to leave out. They live with the rules they override,
+   at the end of the header block, because a media query that comes before
+   the rule it is meant to beat loses to it on order and silently does
+   nothing. */
 
 /* ----- Timeline (Experience) ---------------------------------------------
    A vertical rule with nodes. The rule fills as the visitor scrolls; the
@@ -567,35 +645,6 @@
   }
 }
 
-/* The compact form: the same bar, pinned to the bottom of the screen. It is
-   what the projects catalog gets, because that page is one viewport tall and
-   its wheel is spent on the row of panels - a footer in the flow would sit
-   under a fold the page cannot scroll to. */
-.site-footer--compact {
-  padding-block: 0.45rem;
-}
-
-/* The same condition the track asks: only where the row travels sideways is
-   the page unable to scroll, and only there does the footer have to be
-   pinned rather than sit at the end of the flow. */
-@media (min-width: 52.1rem) and (hover: hover) and (pointer: fine)
-  and (prefers-reduced-motion: no-preference) {
-  .site-footer--compact {
-    position: fixed;
-    inset: auto 0 0 0;
-    z-index: 38;
-    margin-top: 0;
-    background: var(--papier);
-    border-top: var(--filet) solid var(--braise);
-  }
-
-  .site-footer--compact .wrap {
-    display: flex;
-    align-items: center;
-    width: 100%;
-  }
-}
-
 /* ----- Scroll-linked motion ---------------------------------------------
    These read a --scroll custom property written by JS on <body>. They are
    additive: with no JS the default value of 0 applies and the layout is
@@ -712,114 +761,67 @@
   }
 }
 
-/* The mark reads as a logo, not a link label. */
-.menu-brand {
-  font-family: var(--font-display);
-  font-size: 1.15rem;
-  letter-spacing: 0.06em;
-  color: var(--fort);
-  padding-right: 0.6rem;
-  margin-right: 0.2rem;
-  border-right: var(--filet) solid var(--grid);
-}
+/* ----- The bar on a narrow screen ----------------------------------------
+   Three rules, in the order they matter.
 
-/* ----- Section rail ------------------------------------------------------
-   Opt-in per page via the `rail` prop on Base. Reading order stays vertical —
-   each section becomes a full-height panel — and a fixed track down the right
-   edge shows where the reader is, with one node per section that lights up as
-   it reaches the middle of the screen.
+   The social row is the first thing to go: five icons at forty-four pixels
+   each is two hundred and thirty-six pixels of a three-hundred-and-fifty
+   pixel bar, and the command strip has nowhere left to scroll. The same
+   links are in the footer, one tap away at the end of the page.
 
-   The nodes themselves are built by os.js so they always match the sections
-   that actually rendered.
+   Then the bar wraps. The command strip drops onto its own line under the
+   prompt and the system button, where it has the full width to scroll in.
+
+   Then the key hint goes. The number is a shortcut, and a shortcut nobody
+   can see is a shortcut nobody uses — but the shortcut still works, and the
+   footer carries the keys.
    ---------------------------------------------------------------------- */
-[data-rail='on'] {
-  padding-right: clamp(2.5rem, 6vw, 5rem);
-}
-
-.section-rail {
-  position: fixed;
-  right: clamp(0.9rem, 2.4vw, 1.8rem);
-  top: 50%;
-  transform: translateY(-50%);
-  width: var(--trait);
-  height: min(46vh, 26rem);
-  background: var(--grid);
-  z-index: 55;
-  pointer-events: none;
-}
-
-.section-rail i {
-  display: block;
-  width: 100%;
-  height: 100%;
-  transform: scaleY(var(--rail-progress, 0));
-  transform-origin: top;
-  background: var(--braise);
-  transition: transform 140ms linear;
-}
-
-.section-rail b {
-  position: absolute;
-  left: 50%;
-  width: 0.7rem;
-  height: 0.7rem;
-  margin-left: -0.35rem;
-  margin-top: -0.35rem;
-  background: var(--papier);
-  border: var(--trait) solid var(--braise);
-  transform: rotate(45deg);
-  transition: background 200ms ease, transform 200ms ease;
-}
-
-.section-rail b.is-on {
-  background: var(--braise);
-  transform: rotate(45deg) scale(1.25);
-}
-
-/* Panels take the screen as they pass through, which is what makes the page
-   read as a sequence rather than a long scroll.
-
-   The two selectors are wrapped in :where(), which contributes no specificity
-   of its own. Without it the rule reached (0,2,0) and beat a page's own
-   scoped .hero — the homepage's hero is a two-column grid at 62rem, and
-   switching the rail on there would have quietly replaced it with a flex
-   column, at every width, with nothing to point at the cause. Now the rule
-   is (0,1,0): a page that styles its own hero names it and wins, and a page
-   that does not still gets the full-height panel. */
-[data-rail='on'] > :where(.section, .hero) {
-  min-height: 76vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-
-/* A panel whose content is genuinely taller than the viewport must still be
-   reachable — centering it would clip the ends behind the next section. */
-[data-rail='on'] > .section > :last-child {
-  margin-bottom: 0;
-}
-
-@media (max-width: 60rem) {
-  /* The rail would sit on top of the text at this width, so drop it and give
-     the page its full width back. */
-  .section-rail {
+@media (max-width: 46rem) {
+  .social {
     display: none;
   }
 
-  [data-rail='on'] {
-    padding-right: clamp(1rem, 4vw, 3rem);
+  .menu-bar .wrap {
+    flex-wrap: wrap;
+    height: auto;
+    padding-block: 0.3rem;
   }
 
-  [data-rail='on'] > :where(.section, .hero) {
-    min-height: 0;
-    display: block;
+  .menu-nav {
+    order: 10;
+    flex: 1 0 100%;
+    padding-bottom: 0.2rem;
+  }
+
+  .menu-brand {
+    order: 1;
+  }
+
+  .menu-sep {
+    order: 2;
+  }
+
+  .menu-right {
+    order: 3;
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .section-rail i,
-  .section-rail b {
-    transition: none;
+@media (max-width: 30rem) {
+  .menu-nav .cmd-key {
+    display: none;
+  }
+}
+
+/* The bar leaves the chrome stack when it wraps, because a two-line bar
+   cannot be measured by a token that describes one line. The stack on a
+   phone is the status strip alone. */
+@media (max-width: 46rem) {
+  :root {
+    --chrome-h: calc(var(--status-h) + var(--filet));
+  }
+
+  .menu-bar {
+    position: static;
   }
 }
 
@@ -963,313 +965,9 @@
   }
 }
 
-/* ----- Roadmap ----------------------------------------------------------
-   A vertical route with stops. The rail fills as the page scrolls, and each
-   stop's project marks light up as that stop passes through the viewport.
-   ---------------------------------------------------------------------- */
-.roadmap {
-  position: relative;
-  display: grid;
-  gap: var(--sp-6);
-  margin-top: var(--sp-6);
-  padding-left: clamp(1.5rem, 4vw, 2.5rem);
-}
-
-.roadmap-rail {
-  position: absolute;
-  left: 0;
-  top: 0.5rem;
-  bottom: 0.5rem;
-  width: var(--trait);
-  background: var(--grid);
-}
-
-.roadmap-rail i {
-  display: block;
-  width: 100%;
-  height: 100%;
-  transform: scaleY(var(--road, 0));
-  transform-origin: top;
-  background: var(--braise);
-  transition: transform 140ms linear;
-}
-
-.stop {
-  position: relative;
-}
-
-.stop::before {
-  content: '';
-  position: absolute;
-  left: calc(-1 * clamp(1.5rem, 4vw, 2.5rem) - 1px);
-  top: 0.35rem;
-  width: calc(var(--trait) + 2px);
-  height: calc(var(--trait) + 2px);
-  background: var(--papier);
-  border: var(--trait) solid var(--braise);
-  transition: background 220ms ease, transform 220ms ease;
-}
-
-.stop.is-seen::before {
-  background: var(--braise);
-  transform: scale(1.35);
-}
-
-.stop-head {
-  margin-bottom: 0.6rem;
-}
-
-.stop-when {
-  display: inline-block;
-  font-family: var(--font-mono);
-  font-size: var(--fs-label);
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--braise);
-  border: var(--filet) solid var(--braise);
-  padding: 0.1rem 0.5rem;
-}
-
-.stop-role {
-  margin: 0.5rem 0 0.15rem;
-  font-size: clamp(1.4rem, 3.6vw, 2.1rem);
-}
-
-.stop-where {
-  font-family: var(--font-mono);
-  font-size: var(--fs-micro);
-  letter-spacing: 0.06em;
-  color: var(--encre);
-}
-
-.stop-body {
-  max-width: 62ch;
-  color: var(--fort);
-  margin-bottom: 1.1rem;
-}
-
-.stop-projects {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  gap: var(--sp-3);
-}
-
-/* Each project mark lights up when its stop is reached. */
-.mark {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: var(--sp-3);
-  align-items: start;
-  padding: 0.7rem 0.9rem;
-  border: var(--filet) solid var(--grid);
-  background: color-mix(in srgb, var(--rouille) 22%, var(--papier));
-  opacity: 0.45;
-  transform: translateX(-4px);
-  transition:
-    opacity 320ms ease,
-    transform 320ms cubic-bezier(0.2, 0.9, 0.2, 1),
-    border-color 320ms ease;
-}
-
-.stop.is-seen .mark {
-  opacity: 1;
-  transform: none;
-  border-color: var(--braise);
-}
-
-.mark-dot {
-  width: 0.6rem;
-  height: 0.6rem;
-  margin-top: 0.35rem;
-  background: var(--braise);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--braise) 25%, transparent);
-}
-
-.mark strong {
-  display: block;
-  font-family: var(--font-display);
-  font-weight: 400;
-  font-size: 1.05rem;
-  color: var(--fort);
-}
-
-.mark span {
-  font-size: var(--fs-small);
-  color: var(--encre);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .roadmap-rail i,
-  .stop::before,
-  .mark {
-    transition: none;
-  }
-
-  .mark {
-    opacity: 1;
-    transform: none;
-  }
-}
-
-/* ----- Assembled structure (Profile) -------------------------------------
-   Panels assemble one at a time as the section scrolls: each slides in from
-   its own side and the rail between them fills. Base state is fully visible,
-   so without JS or with reduced motion the content is simply all there.
-   ---------------------------------------------------------------------- */
-.assemble {
-  position: relative;
-  display: grid;
-  gap: clamp(1.5rem, 4vw, 2.6rem);
-  margin-top: var(--sp-6);
-}
-
-.assemble-rail {
-  position: absolute;
-  left: 1.15rem;
-  top: 0;
-  bottom: 0;
-  width: var(--trait);
-  background: var(--grid);
-}
-
-.assemble-rail i {
-  display: block;
-  width: 100%;
-  height: 100%;
-  transform: scaleY(var(--asm, 0));
-  transform-origin: top;
-  background: var(--braise);
-  transition: transform 140ms linear;
-}
-
-.stage {
-  position: relative;
-  display: grid;
-  grid-template-columns: 2.3rem 1fr;
-  gap: var(--sp-4);
-  align-items: start;
-  padding-left: 2.6rem;
-}
-
-/* Node sits on the rail. */
-.stage::before {
-  content: '';
-  position: absolute;
-  left: calc(1.15rem - var(--trait) / 2 - 1px);
-  top: 0.5rem;
-  width: calc(var(--trait) + 2px);
-  height: calc(var(--trait) + 2px);
-  background: var(--papier);
-  border: var(--trait) solid var(--braise);
-  transition: background 240ms ease, transform 240ms ease;
-}
-
-.stage.is-seen::before {
-  background: var(--braise);
-  transform: scale(1.3);
-}
-
-.stage-num {
-  font-family: var(--font-mono);
-  font-size: var(--fs-label);
-  letter-spacing: 0.12em;
-  color: var(--braise);
-  padding-top: 0.35rem;
-}
-
-.stage-title {
-  margin: 0 0 0.25rem;
-  font-size: clamp(1.35rem, 3.2vw, 1.9rem);
-}
-
-.stage-lead {
-  margin: 0 0 0.6rem;
-  font-family: var(--font-display);
-  font-size: clamp(1rem, 2.2vw, 1.25rem);
-  color: var(--encre);
-  /* Two lines, and the second one used to hold a single word — "build.",
-     "boundaries.", "production." — because the first line took everything it
-     could. Balance evens them instead. */
-  text-wrap: balance;
-}
-
-/* The panel is 1200px wide and the paragraph used to fill all of it — 150
-   characters on a line, well past the 45–90 that reading research puts a
-   comfortable measure at. `ch` is the width of a zero, not of an average
-   character, so 120ch is 1200px here and the ribbon of empty column to the
-   right of every line was the tell. 42rem is about 78 characters: still wide
-   enough to hold the panel's shape, short enough to find the next line's
-   start. */
-.stage-body {
-  margin: 0 0 0.9rem;
-  max-width: 42rem;
-  color: var(--fort);
-}
-
-.stage-marks {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--sp-2);
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-.stage-marks li {
-  font-family: var(--font-mono);
-  font-size: var(--fs-label);
-  letter-spacing: 0.06em;
-  color: var(--fort);
-  border: var(--filet) solid var(--braise);
-  padding: 0.15rem 0.5rem;
-  background: color-mix(in srgb, var(--rouille) 35%, var(--papier));
-}
-
-/* The assemble motion itself. */
-.assemble.is-live .stage {
-  opacity: 0;
-  transform: translateX(-18px);
-  animation: asm-in 520ms cubic-bezier(0.2, 0.9, 0.2, 1) both;
-  animation-delay: calc(var(--i, 0) * 90ms);
-}
-
-@keyframes asm-in {
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
-
-@media (max-width: 40rem) {
-  .stage {
-    grid-template-columns: 1fr;
-    gap: var(--sp-1);
-    padding-left: 2.2rem;
-  }
-
-  .stage-num {
-    padding-top: 0;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .assemble.is-live .stage {
-    opacity: 1;
-    transform: none;
-    animation: none;
-  }
-
-  .assemble-rail i,
-  .stage::before {
-    transition: none;
-  }
-}
-
 /* ----- Letter modal ------------------------------------------------------
-   Opens from the status bar and from the Contact page. Same instance for
-   both — one form, one validation path.
+   Opens from the status bar and from the front page. Same instance for
+   both — one dialog, one set of links.
    ---------------------------------------------------------------------- */
 .letter {
   position: fixed;
@@ -1360,6 +1058,73 @@
   margin: 0;
   flex: 1;
   min-width: 12rem;
+}
+
+/* The four channels. Each one is a link the size of a row: the name of the
+   channel, the handle that reaches it, and one line on what it is for. */
+.letter-note {
+  margin: 0 0 1rem;
+  color: var(--fort);
+  font-size: var(--fs-lead);
+}
+
+.letter-channels {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 1px;
+  background: var(--grid);
+  border: var(--filet) solid var(--grid);
+}
+
+.letter-channel {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.15rem;
+  padding: 0.8rem 0.9rem 0.9rem;
+  background: var(--papier);
+  text-decoration: none;
+  color: inherit;
+}
+
+.letter-channel:hover,
+.letter-channel:focus-visible {
+  background: var(--rouille);
+}
+
+.letter-channel-name {
+  font-family: var(--font-mono);
+  font-size: var(--fs-label);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--braise);
+}
+
+.letter-channel:hover .letter-channel-name,
+.letter-channel:focus-visible .letter-channel-name {
+  color: var(--encre);
+}
+
+.letter-channel-value {
+  font-family: var(--font-mono);
+  font-size: var(--fs-small);
+  color: var(--encre);
+  overflow-wrap: anywhere;
+}
+
+.letter-channel-desc {
+  font-size: 0.86rem;
+  line-height: 1.45;
+  color: var(--fort);
+}
+
+.letter-hint {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: var(--fs-label);
+  letter-spacing: 0.06em;
+  color: var(--faible);
 }
 
 /* Per-field error, injected by the submit handler in os.js. The field already
@@ -1683,6 +1448,15 @@
 .stack-art code {
   font-family: var(--font-art);
   font-variant-ligatures: none;
+  /* The drawing is centred in the panel it is in. `width: max-content` gives
+     the block exactly the width of the art, and the auto margins then centre
+     it in whatever space is left over. On a narrow screen the art is wider
+     than the panel, the margins collapse to zero and the drawing stays at the
+     left edge where it can be scrolled to — centring it with `text-align`
+     would push the first column out of reach. */
+  display: block;
+  width: max-content;
+  margin-inline: auto;
 }
 
 .stack-zone {
@@ -2100,6 +1874,7 @@
     --papier: #ffffff;
     --encre: #1a1a1a;
     --fort: #1a1a1a;
+    --faible: #767676;
     --braise: #8c2a18;
     --braise-txt: #8c2a18;
     --erreur: #8c2a18;

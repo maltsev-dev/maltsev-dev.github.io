@@ -1,18 +1,4 @@
 ---
-interface Props {
-  /**
-   * The compact form is the same bar, pinned to the bottom of the screen.
-   *
-   * The projects catalog is a one-viewport page whose wheel is spent on the
-   * row of panels, so a footer in the flow would sit under a fold the page
-   * cannot scroll to. There the footer is pinned to the bottom of the screen
-   * instead, and the header carries the site links.
-   */
-  compact?: boolean;
-}
-
-const { compact = false } = Astro.props;
-
 const year = new Date().getFullYear();
 
 /*
@@ -31,10 +17,10 @@ const year = new Date().getFullYear();
 */
 
 const ELSEWHERE = [
-  { href: 'mailto:mr.a.maltsev@gmail.com', label: 'Email', external: false },
-  { href: 'https://github.com/maltsev-dev', label: 'GitHub', external: true },
-  { href: 'https://www.linkedin.com/in/a-maltsev', label: 'LinkedIn', external: true },
-  { href: '/rss.xml', label: 'RSS', external: false },
+  { href: 'mailto:mr.a.maltsev@gmail.com', label: 'email', external: false },
+  { href: 'https://github.com/maltsev-dev', label: 'github', external: true },
+  { href: 'https://www.linkedin.com/in/a-maltsev', label: 'linkedin', external: true },
+  { href: '/rss.xml', label: 'rss', external: false },
 ];
 ---
 
@@ -43,7 +29,7 @@ const ELSEWHERE = [
   space: no way on from a finished article, and no <footer> landmark for a
   screen reader to jump to.
 -->
-<footer class:list={['site-footer', compact && 'site-footer--compact']}>
+<footer class="site-footer">
   <div class="wrap footer-bar">
     <span class="footer-copy">© {year} Anatolii Maltsev</span>
 
@@ -53,15 +39,18 @@ const ELSEWHERE = [
       repeat it for a reader who scrolled the whole way down.
     -->
     <p class="footer-line">
-      Agentic systems that carry real work — built to be measured, not admired.
+      Agentic systems that carry real work, built to be measured.
     </p>
 
     <nav class="footer-links" aria-label="Elsewhere">
       {
-        ELSEWHERE.map((s) => (
-          <a href={s.href} rel={s.external ? 'noopener' : undefined} target={s.external ? '_blank' : undefined}>
-            {s.label}
-          </a>
+        ELSEWHERE.map((s, i) => (
+          <>
+            {i > 0 && <span class="footer-sep" aria-hidden="true">│</span>}
+            <a href={s.href} rel={s.external ? 'noopener' : undefined} target={s.external ? '_blank' : undefined}>
+              {s.label}
+            </a>
+          </>
         ))
       }
     </nav>

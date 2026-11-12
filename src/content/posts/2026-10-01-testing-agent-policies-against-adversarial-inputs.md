@@ -7,8 +7,6 @@ A policy has a test suite. The tests pass. Then someone finds an input
 that gets through, and the retrospective is always the same shape: the
 policy worked exactly as written, on an input nobody had considered.
 
-The cause sits in where policy tests come from.
-
 ## Why the suite confirms intent
 
 Every policy test is written by the same person who wrote the policy,
@@ -152,9 +150,6 @@ does when it is handed a value the author never wrote a branch for.
 | Float where the schema says integer | `50.0` | Truncates to `50`, so `50` and `50.5` collide on one digest | `block` |
 | Integer where the schema says enum | `7` on a two-valued enum | Coerces to the nearest declared variant | `block` |
 
-A policy that compares `amount <= CAP` in Python will happily accept the
-string `"999999999"` through a JSON coercion bug two layers down.
-
 ### 3. Path tests
 
 Every route that reaches the effect must be gated. The canary technique
@@ -219,7 +214,6 @@ the reason.
 
 The six ways a fail-closed design quietly becomes fail-open are laid out
 in [fail-closed is not a switch](/blog/2026-07-20-fail-closed-is-not-a-single-switch/).
-This is the suite that catches a regression in any of them.
 
 ### 6. Concurrency tests
 
@@ -235,8 +229,7 @@ def test_approval_consumed_once():
 
 ### 7. Differential tests against provenance
 
-This is the one that has no equivalent outside agent security, and it is
-the most valuable class in the list.
+This is the one that has no equivalent outside agent security.
 
 The invariant: **the decision depends on the action. Where the action came
 from has no weight in it.**
@@ -282,13 +275,12 @@ amount.
 
 ## Test the decision function
 
-It is worth being explicit about what the adversarial input is here. The
-model is the adversary. You are fuzzing the decision function it feeds.
-Fuzzing generations produces no reproducible failures, because a generation
-is not a function. The model is one unreliable source of inputs to that
-decision function, and that framing is what makes the tests reproducible:
-fix a payload, fix the live state it is evaluated against, get a
-deterministic decision, assert on it.
+The adversarial input here is the model. You are fuzzing the decision
+function it feeds. Fuzzing generations produces no reproducible failures,
+because a generation is not a function. The model is one unreliable
+source of inputs to that decision function, and that framing is what
+makes the tests reproducible: fix a payload, fix the live state it is
+evaluated against, get a deterministic decision, assert on it.
 
 Every snippet in this piece uses `p`, `digest`, `authorize`, `approve`,
 `execute` and `run_concurrently` as stand-ins for the decision entry point
@@ -313,7 +305,7 @@ zero behavioral coverage of it.
 It is the only technique here that tests the tests, and it is the one that
 most reliably turns up a suite passing for the wrong reason.
 
-## Branch coverage is the number that matters
+## Branch coverage over line coverage
 
 Line coverage on a policy engine is close to meaningless. Every rule has
 an allow path and a block path, and a suite that only exercises allow
@@ -353,7 +345,7 @@ legitimate call that happened to be weird, and telling them apart costs
 more than finding them. Treat discovered inputs as leads to triage, not
 as a defect queue.
 
-The composition case is the one where this approach genuinely runs out.
+The composition case is the one where this approach runs out.
 The suite can test every action and every sequence of two. The
 interesting failure sits in a sequence of nine, which is
 [four valid permissions and one chain](/blog/2026-10-07-four-valid-permissions-one-unacceptable-chain/),

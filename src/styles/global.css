@@ -10,77 +10,114 @@
    encre   primary text         creme   inverted surface
    ---------------------------------------------------------------------- */
 
+/* ----- Terminal ramps ----------------------------------------------------
+   Three real machines, not three decorations.
+
+     phosphore  P3 amber phosphor — the DEC VT-series in its amber trim and
+                the IBM 3278 readout. A long-persistence amber tube on a
+                near-black face. This is the default: it is the oldest of the
+                three and the one the rest of the site's language comes from.
+
+     acidule    P1 green phosphor — the same tube in its green trim, and the
+                colour of the IBM 5151 as it shipped. The genuine article
+                from the era when a terminal was furniture.
+
+     pierre     P4 paper-white — the reflective LCD panels and the
+                amber-on-cream monitors of the late eighties. Light mode with
+                the same discipline, for the screens where a dark page is a
+                dark room.
+
+   The phosphor numbers are the real ones. P1 is green (525 nm) and P3 is
+   amber (602 nm) — the numbering runs from the first phosphor anyone
+   commercialised, not from the order the colours look best in. The names
+   are the old ones — phosphore, acidule, pierre — because they are stored
+   in localStorage and used to pick the portrait artwork, and because they
+   were good names. What changed is what they point at.
+
+   Contrast was measured, not guessed. On the default ramp:
+     --encre on --papier        10.8:1
+     --fort  on --rouille        7.8:1
+     --braise on --papier        7.6:1   (also the border colour, needs 3:1)
+   ---------------------------------------------------------------------- */
+
 :root[data-theme='phosphore'],
 :root[data-theme='acidule'],
 :root[data-theme='pierre'] {
-  --papier: #14100a;
-  --grid: #3a2a14;
-  --rouille: #8c2a18;
-  --braise: #e0501e;
-  --encre: #ffa02e;
-  --creme: #ffe2b0;
-  --fort: #ffe2b0;
-  /* Form errors need their own token: --braise is an accent, tuned to read as
-     a border or a shadow, not to carry 12px text at 4.5:1 on the dark paper. */
-  --erreur: #ff9a6b;
-  /* The same problem again, for the accent that does have to carry small text:
-     --braise sits on a tinted ground here, and on a tint it drops under 4.5:1.
-     --braise-txt is the same hue pulled toward the text end of the ramp, so it
-     can hold a 12px label on a tinted panel without the panel being dimmed. */
-  --braise-txt: #ec8a58;
-  /* The focus ring has to clear 3:1 on every surface it lands on, and in this
-     ramp the accent only reaches 2.17:1 on the rust chrome. The ring therefore
-     uses the text color, which clears it on both the paper and the panels. */
-  --focus-ring: #ffa02e;
-  /* Syntax colors live on the code panel, not on the page, so they need their
-     own ramp: one accent cannot be both a border and 4.5:1 text. */
-  --code-kw: #ffc48a;
+  /* The page. Not pure black: a phosphor face is never truly black, and a
+     hair of warmth keeps the amber from looking like a screensaver. */
+  --papier: #0d0a05;
+  /* The panel — one step up from the page, the way a window sits on a desk. */
+  --rouille: #1a1207;
+  /* The rule. A drawn line, not a shadow. */
+  --grid: #402c0e;
+  /* The accent. Amber monitors had one colour; the accent is the hotter
+     orange of a phosphor that is being driven harder. */
+  --braise: #ff7a18;
+  /* The text. */
+  --encre: #ffb000;
+  /* The brightest text: headings, the cursor, the thing the eye lands on. */
+  --creme: #ffe0a8;
+  /* The secondary text: body copy inside a panel. */
+  --fort: #e09a20;
+  /* The faint text: dates, modes, labels that are metadata rather than
+     content. It used to be --grid, the rule colour — and a rule is a line,
+     not letters: at 1.5:1 the dates and the file modes were unreadable on
+     the dark themes and no better on the light one. This is the same idea
+     drawn with type: dimmer than the copy, but still over 4.5:1. */
+  --faible: #a8752a;
+  --erreur: #ff7a5c;
+  --braise-txt: #ff9a5c;
+  --focus-ring: #ffb000;
+  --code-kw: #ffd08a;
   --code-str: #b7e8c0;
-  --code-num: #ffc48a;
+  --code-num: #ffd08a;
   --code-cm: #e6b894;
-  /* The one green in the palette. It carries "this is good", so it has to be
-     readable as small text on the page and on a panel. */
-  --ok: #c8f0cf;
-  /* The placeholder of a form field, on the page ground and on the fill the
-     field takes when it is focused. */
-  --placeholder: #e6b894;
-  /* The rule that separates one table cell from the next. It is not the panel
-     color: --rouille is a fill, and as a cell boundary it measured 2.22:1
-     here, 2.38:1 in acidule and 1.25:1 on the light ramp. This is one step
-     out of that ramp, and it clears 3:1 on the page in every theme. */
-  --table-rule: #b0442a;
-  /* The browser chrome. The hex lives in --papier and nowhere else: this is
-     the same value, under the name the browser chrome needs. */
+  --ok: #7dffa0;
+  --placeholder: #c08a2a;
+  --table-rule: #6b4715;
   --theme-color: var(--papier);
+
+  /* The lamps. Three states, three colours, and they are the only place the
+     site is allowed to use green or red: a signal lamp says something a
+     colour cannot be said any other way. */
+  --led-on: #7dffa0;
+  --led-warn: #ffb000;
+  --led-off: #4a340f;
 }
 
 :root[data-theme='acidule'] {
-  --papier: #01141d;
-  --grid: #0f323f;
-  --rouille: #0b5a66;
-  --braise: #82ba88;
-  --encre: #faa4b5;
-  --creme: #fff183;
-  --fort: #fff183;
-  --erreur: #ffb3a0;
-  --braise-txt: #95c49a;
-  --focus-ring: var(--braise);
+  --papier: #000a06;
+  --rouille: #03150c;
+  --grid: #14432f;
+  --braise: #00e5c0;
+  --encre: #35ff8a;
+  --creme: #c2ffdb;
+  --fort: #24b96a;
+  --faible: #1e9c58;
+  --erreur: #ff8f6e;
+  --braise-txt: #5fe6c2;
+  --focus-ring: var(--encre);
   --code-kw: #a7e0ac;
   --code-str: #b7e8c0;
   --code-num: #ffd0dc;
   --code-cm: #cfe6d1;
-  --ok: #c8f0cf;
-  --placeholder: #a7e0ac;
-  --table-rule: #11707e;
+  --ok: #7dffa0;
+  --placeholder: #1e9c58;
+  --table-rule: #1c6b47;
+  --led-on: #35ff8a;
+  --led-warn: #ffd24a;
+  --led-off: #0d3b26;
 }
 
 :root[data-theme='pierre'] {
   --papier: #f4efe6;
-  --rouille: #e3d6bd;
-  --braise: #b8431e;
-  --encre: #3d3124;
-  --creme: #fffdf7;
-  --fort: #241c12;
+  --rouille: #e9e1d0;
+  --grid: #c9bda6;
+  --braise: #a8431a;
+  --encre: #2f2618;
+  --creme: #1a1409;
+  --fort: #6b5c42;
+  --faible: #6f6147;
   --erreur: #a32c0c;
   --braise-txt: #9a3b1c;
   --focus-ring: var(--braise);
@@ -91,11 +128,9 @@
   --ok: #1f6b2b;
   --placeholder: #5b4d3d;
   --table-rule: #8a7a63;
-  /* The faint rules. On the light ramp the old value sat at 1.29:1 against
-     the paper, which is the same value as the page; this one is dark enough
-     to read as a drawn line. It is still a decorative hairline — the only
-     boundary that carries meaning is the table rule above. */
-  --grid: #c9bda6;
+  --led-on: #1f6b2b;
+  --led-warn: #a8431a;
+  --led-off: #c9bda6;
 }
 
 /* The art face, shipped rather than hoped for.
@@ -120,10 +155,22 @@
 :root {
   /* Metrics shared by every theme. */
   --filet: 1px;
-  --trait: 3px;
-  --trait-fin: 2px;
-  --ombre: 6px 6px 0 var(--braise);
-  --ombre-sm: 3px 3px 0 var(--braise);
+  /* The heavy rule. It used to be three pixels, because the site was a
+     print design with hard shadows under every panel. A terminal has one
+     weight of line — the hairline — and a bezel. So the heavy rule is now
+     the hairline, and depth comes from the phosphor glow instead. */
+  --trait: 1px;
+  --trait-fin: 1px;
+  /* What a raised panel casts. Not a hard offset shadow: a hard shadow is
+     paper. This is the light a phosphor tube throws onto the bezel around
+     it — a wide, very soft bloom in the accent colour. */
+  --ombre: 0 0 18px -6px color-mix(in srgb, var(--braise) 55%, transparent);
+  --ombre-sm: 0 0 10px -4px color-mix(in srgb, var(--braise) 45%, transparent);
+  /* The glow a lit character throws onto its neighbours. Text-shadow is
+     expensive over a whole page, so it is used on the things that are
+     "on": the cursor, the lamps, the banner. */
+  --glow: 0 0 6px color-mix(in srgb, var(--encre) 45%, transparent);
+  --glow-strong: 0 0 14px color-mix(in srgb, var(--encre) 60%, transparent);
   /*
     How tall the status strip is. It is a token rather than a literal because
     two places depend on the number: the strip itself, and the menu bar below
@@ -143,10 +190,19 @@
     sticky section heading sat under the menu bar and drew a line through its
     own kicker.
   */
-  --menu-h: 4.5rem;
-  --font-display: 'Anton', 'Arial Narrow', sans-serif;
+  --menu-h: 3.5rem;
+  /* The display face is the terminal face. A site that wants to read as a
+     terminal cannot have a second typeface carrying the headings: the
+     headline is what the eye lands on, and on a terminal everything is
+     monospaced. Anton is gone with it — the file it came from is not
+     downloaded any more. */
+  --font-display: 'JetBrains Mono', ui-monospace, 'Cascadia Mono', monospace;
   --font-ui: 'Inter', system-ui, -apple-system, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, 'Cascadia Mono', monospace;
+  /* The prose face. The chrome is mono, because the chrome is labels; but a
+     paragraph of small mono is a chore to read, so anything that is a
+     sentence rather than a label is set here. */
+  --font-body: 'Inter', system-ui, -apple-system, sans-serif;
   /* The shipped face comes first, so the diagram is drawn in the same font
      everywhere; the system faces behind it are the fallback for the browser
      that has the file but has not loaded it yet. */
@@ -162,8 +218,7 @@
      section heading, the sideways track's frame — measures itself against
      this one number rather than against a magic constant of its own. It is
      computed from the two halves so that neither can drift without the
-     stack moving with it. The narrow-screen value lives in os.css, next to
-     the rule that takes the menu bar out of the stack. */
+     stack moving with it. */
   --chrome-h: calc(var(--status-h) + var(--filet) + var(--menu-h));
 
   /* ----- Type scale --------------------------------------------------------
@@ -193,7 +248,7 @@
   /* ----- Breakpoint ladder -------------------------------------------------
      The site used eleven rem widths with no shared scale. These are the nine
      widths the stylesheets actually query, in order. Every media query in
-     global.css, os.css, track.css, case.css and animation.css that carries a
+     global.css, os.css, case.css and animation.css that carries a
      rem width uses one of them and nothing else.
 
      A custom property cannot be used inside a media-query condition, so the
@@ -206,9 +261,7 @@
        --bp-md    44rem   a narrow column: the footer grid folds
        --bp-lg    52rem   the menu collapses into the flat strip
        --bp-xl    74rem   the homepage figure column goes wide
-       --bp-rail  52.1rem  the sideways track; must match isHorizontal() in
-                            track.js, which gates the same layout
-       --bp-wide  60rem   the section rail is dropped below this
+       --bp-wide  60rem   the widest layouts and the two-column heroes
        --bp-hero  62rem   the homepage hero becomes two columns */
   --bp-2xs: 30rem;
   --bp-xs: 34rem;
@@ -216,7 +269,6 @@
   --bp-md: 44rem;
   --bp-lg: 52rem;
   --bp-xl: 74rem;
-  --bp-rail: 52.1rem;
   --bp-wide: 60rem;
   --bp-hero: 62rem;
 
@@ -319,17 +371,28 @@ button {
   cursor: pointer;
 }
 
-/* ----- Typography ------------------------------------------------------- */
+/* ----- Typography -------------------------------------------------------
+   Two typefaces, not three.
+
+   The interface is monospaced: headings, labels, captions, the ASCII art,
+   the listings. That is the whole point — a terminal has one typeface and
+   everything is set in it.
+
+   The prose is not. A three-thousand-word note set in a monospace face has
+   an uneven rag, a hyphenless hyphenation and a word-per-line rhythm that
+   costs the reader. Long-form text stays in Inter; everything that frames
+   it is terminal.
+   ---------------------------------------------------------------------- */
 h1,
 h2,
 h3,
 h4 {
   font-family: var(--font-display);
-  font-weight: 400;
-  line-height: 1.15;
-  letter-spacing: 0.01em;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.005em;
   margin: 0 0 0.6em;
-  color: var(--fort);
+  color: var(--creme);
   /* A heading that has to wrap should not leave one word alone on the last
      line. Balance evens the lines instead: "I build AI systems that survive
      production." breaks in two halves rather than orphaning "production.",
@@ -338,15 +401,58 @@ h4 {
 }
 
 h1 {
-  font-size: clamp(2rem, 6vw, 3.6rem);
+  font-size: clamp(1.75rem, 5vw, 3.1rem);
+  line-height: 1.12;
 }
 
 h2 {
-  font-size: clamp(1.5rem, 3.6vw, 2.2rem);
+  font-size: clamp(1.3rem, 3vw, 1.9rem);
 }
 
 h3 {
-  font-size: clamp(1.15rem, 2.4vw, 1.45rem);
+  font-size: clamp(1.05rem, 2.2vw, 1.3rem);
+}
+
+/* The headline of a page is a banner, so it is set the way a banner is set:
+   capitals, tight, and with the phosphor glow that a lit character throws.
+   A post's own title is not a banner — it is a sentence someone wrote — so
+   the article title keeps its case and loses the glow. */
+.hero h1 {
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  text-shadow: var(--glow);
+  /* A monospaced face is much wider than the poster face this replaced: at
+     the old 3.1rem the headline ran to a thousand pixels and broke into one
+     very long line and a stub. The clamp comes down so the claim fits on
+     one or two deliberate lines at every width. */
+  font-size: clamp(1.35rem, 3.6vw, 2.4rem);
+}
+
+.article h1,
+.project h1 {
+  text-transform: none;
+  letter-spacing: -0.01em;
+  text-shadow: none;
+}
+
+/* A section heading is a label on a panel. It gets a block in front of it,
+   the way a terminal marks a line it has just highlighted. */
+.section-head h2,
+.sticky-head h2 {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6ch;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: clamp(1rem, 2.2vw, 1.25rem);
+}
+
+.section-head h2::before,
+.sticky-head h2::before {
+  content: '▌';
+  color: var(--braise);
+  font-size: 1.15em;
+  line-height: 1;
 }
 
 p {
@@ -414,6 +520,17 @@ blockquote {
 /* ----- Layout ----------------------------------------------------------- */
 .wrap {
   width: var(--wrap);
+  /*
+    The column stops growing at ninety-six rem.
+
+    Without a ceiling the content is the width of the screen: on a wide
+    monitor the lede ran for a metre and a half, the four numbers were
+    scattered across a table with a hand's width of paper between each of
+    them, and the wordmark sat in the corner of an empty field. The site is
+    a machine, not a poster — a machine has a screen of a fixed size, and
+    the content sits in the middle of it rather than running off both edges.
+  */
+  max-width: 96rem;
   margin-inline: auto;
   padding-inline: clamp(1rem, 4vw, 3rem);
 }
@@ -789,6 +906,109 @@ blockquote {
   max-width: 68ch;
 }
 
+/* The body of a post, read inside a terminal window.
+
+   The window is mono — a terminal is mono — but the prose inside it is not:
+   a paragraph of small monospace is a chore to read, and the writing is the
+   one thing on the page that must be read comfortably. The headings stay in
+   the terminal face, because they are the structure of the document rather
+   than sentences of it.
+
+   These rules live here, and not in the page's own style block, because a
+   scoped selector never reaches the rendered markdown: the elements the
+   markdown produced carry no scope attribute, so `.post-prose h2` in the
+   page matched nothing and the headings came out at the browser's default
+   size. */
+.prose.post-prose {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  line-height: 1.72;
+  color: var(--fort);
+  max-width: 64ch;
+}
+
+.post-prose > :first-child {
+  margin-top: 0;
+}
+
+.post-prose h1,
+.post-prose h2,
+.post-prose h3,
+.post-prose h4 {
+  font-family: var(--font-display);
+  color: var(--encre);
+  letter-spacing: -0.01em;
+  text-transform: none;
+  text-shadow: none;
+}
+
+.post-prose h1 {
+  font-size: 1.35rem;
+}
+
+.post-prose h2 {
+  font-size: 1.2rem;
+}
+
+.post-prose h3 {
+  font-size: 1.05rem;
+}
+
+.post-prose strong {
+  color: var(--encre);
+}
+
+.post-prose a {
+  color: var(--braise-txt);
+}
+
+.post-prose a:hover {
+  color: var(--creme);
+}
+
+.post-prose blockquote {
+  margin-inline: 0;
+  padding-left: 1rem;
+  border-left: var(--trait) solid var(--braise);
+  color: var(--fort);
+}
+
+.post-prose code {
+  font-family: var(--font-mono);
+  font-size: 0.88em;
+  color: var(--code-kw);
+}
+
+.post-prose pre {
+  background: var(--rouille);
+  border: var(--filet) solid var(--grid);
+  padding: 0.9rem 1rem;
+  overflow-x: auto;
+  font-size: var(--fs-small);
+  line-height: 1.6;
+}
+
+.post-prose pre code {
+  font-size: inherit;
+  color: var(--encre);
+}
+
+/* A rule in a post is a section break, not a divider in a drawing: a hairline
+   and a dash, where the browser's own `hr` is a three-pixel slab. */
+.post-prose hr {
+  border: 0;
+  border-top: var(--filet) dashed var(--grid);
+  margin: 2rem 0;
+}
+
+.post-prose li {
+  margin-block: 0.3rem;
+}
+
+.post-prose p {
+  margin-block: 1.1rem;
+}
+
 .prose h2 {
   margin-top: var(--sp-6);
   padding-bottom: 0.3rem;
@@ -1092,9 +1312,15 @@ blockquote {
   border: 0;
 }
 
-/* ----- Scanline overlay -------------------------------------------------
-   The CRT effect is two repeating-linear-gradients over a fixed overlay, not
-   a shader — it costs nothing and survives reduced-motion.
+/* ----- The tube ---------------------------------------------------------
+   The CRT effect is three fixed layers over the page, all of them pure CSS:
+   the scanlines, the aperture grille and the vignette. Not a shader — a
+   shader costs a WebGL context and a draw call per frame to reproduce what
+   two gradients do for free, and it survives reduced-motion for nothing.
+
+   The layers are drawn on top of the content and are pointer-transparent.
+   They are also faint: a real scanline pitch is invisible at arm's length,
+   and the moment a reader can see the grid the text starts costing them.
    ---------------------------------------------------------------------- */
 .crt::after {
   content: '';
@@ -1102,16 +1328,79 @@ blockquote {
   inset: 0;
   z-index: 80;
   pointer-events: none;
-  background: repeating-linear-gradient(
-    to bottom,
-    color-mix(in srgb, var(--papier) 0%, transparent) 0 2px,
-    transparent 2px 4px
-  );
-  opacity: 0.35;
+  background:
+    /* The aperture grille: three vertical stripes to a pixel cell. */
+    repeating-linear-gradient(
+      to right,
+      rgba(0, 0, 0, 0.16) 0 1px,
+      transparent 1px 3px
+    ),
+    /* The scanlines: a dark line every third pixel of the pitch. */
+    repeating-linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0.28) 0 1px,
+      transparent 1px 3px
+    );
+  opacity: 0.55;
+  mix-blend-mode: multiply;
+}
+
+/* The vignette: the corners of a tube are dimmer than the middle, and the
+   glass curves away from the reader there. */
+.crt::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 79;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      120% 90% at 50% 45%,
+      transparent 55%,
+      color-mix(in srgb, var(--papier) 55%, transparent) 100%
+    );
+  opacity: 0.9;
+}
+
+/* The glass itself: a slow, shallow flicker, the way a tube that is losing
+   its brightness modulates. Kept under 3% so it reads as alive rather than
+   as a fault. */
+.crt .tube-flicker {
+  position: fixed;
+  inset: 0;
+  z-index: 81;
+  pointer-events: none;
+  background: var(--papier);
+  opacity: 0.014;
+  animation: tube-flicker 7s steps(1, end) infinite;
+}
+
+@keyframes tube-flicker {
+  0%,
+  96% {
+    opacity: 0.014;
+  }
+  97% {
+    opacity: 0.05;
+  }
+  98% {
+    opacity: 0.006;
+  }
+  100% {
+    opacity: 0.014;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .crt::after {
+    display: none;
+  }
+
+  .crt::before {
+    opacity: 0.55;
+  }
+
+  .crt .tube-flicker {
     display: none;
   }
 }

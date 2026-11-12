@@ -1,79 +1,53 @@
 ---
-title: "🍅 TUI Pomodoro App"
+title: "TUI Pomodoro App"
 date: "2024-10-07"
 description: "A keyboard-driven Pomodoro timer built with Rust and Cursive, with a configurable session length and a minimal interface."
 tags: ["rust", "tui", "project"]
 ---
-**A terminal-based Pomodoro timer built with Rust and [Cursive](https://crates.io/crates/cursive), replicating the feel of vintage console tools.**  
-`cursive 0.21.1`
+A terminal-based Pomodoro timer built with Rust and [Cursive](https://crates.io/crates/cursive), with the feel of a vintage console tool. Built with `cursive 0.21.1`.
 
----
+[GitHub Repository](https://github.com/maltsev-dev/tui_pomodoro)
 
-## ⏳ Text-based user interface pomodoro timer
+This project is an experimental implementation of the Pomodoro Technique in a text-based user interface, using the [`cursive`](https://crates.io/crates/cursive) crate to build a clean, keyboard-navigated experience in the terminal.
 
-[📚 GitHub Repository](https://github.com/maltsev-dev/tui_pomodoro)
+It suits Rust developers who want to:
 
-This project is an experimental implementation of the **Pomodoro Technique** in a text-based user interface, leveraging the [`cursive`](https://crates.io/crates/cursive) crate to build a clean, keyboard-navigated experience in the terminal.
+- Practice TUI development
+- Create distraction-free productivity tools
+- Understand timer-based logic in async or event-driven environments
 
-Ideal for Rust developers looking to:
+## Tools and tech
 
-* Practice TUI development
-* Create distraction-free productivity tools
-* Understand timer-based logic in async or event-driven environments
+- `rust 1.83.0`
+- `cursive 0.21.1`
+- [CI](https://github.com/maltsev-dev/tui_pomodoro/actions/workflows/rust.yml)
 
----
+## Features
 
-### ⚙️ Tools & tech
+1. Set a custom timer. Configure the session length, for example 25 minutes of focus.
+2. Start and stop the timer. Manual control over timer execution, designed for single-session focus tracking.
+3. Minimal interface. Clean and distraction-free, suitable for full-screen terminal use.
 
-<h3 style="text-align:center; margin-bottom:8px;">Tools</h3>
-<p align="center" style="margin:0; padding:0;">
-  <code>rust 1.83.0</code>
-  <code>cursive 0.21.1</code>
-  <a href="https://github.com/maltsev-dev/tui_pomodoro/actions/workflows/rust.yml"><code>CI</code></a>
-</p>
-
----
-
-## ✨ Features
-
-1. **⏲️ Set Custom Timer**
-
-   * Configure session length (e.g., 25 minutes of focus)
-
-2. **▶️ Start / ⏹️ Stop Timer**
-
-   * Manual control over timer execution
-   * Designed for single-session focus tracking
-
-3. **🧘 Minimal Interface**
-
-   * Clean and distraction-free
-   * Suitable for full-screen terminal use
-
----
-
-### 🖼️ Demo
+## Demo
 
 ![Terminal recording of the Pomodoro timer window counting down a 25-minute session, with keyboard shortcuts to adjust the time, start or stop it, and exit](/media/tui_pomodoro_app.gif)
 
----
+## Installation and usage
 
-## 📦 Installation & usage
-
-1. **Clone the Repository**
+1. Clone the repository:
 
    ```bash
    git clone https://github.com/maltsev-dev/tui_pomodoro
    cd tui_pomodoro
    ```
 
-2. **Build the Project**
+2. Build the project:
 
    ```bash
    cargo build --release
    ```
 
-3. **Run the Application**
+3. Run the application:
 
    ```bash
    cargo run
@@ -81,8 +55,6 @@ Ideal for Rust developers looking to:
 
 Use arrow keys to navigate the TUI and manage your Pomodoro sessions.
 
----
+## License
 
-## 📄 License
-
-This project is open-source under the **MIT License** — use, modify, and distribute freely.
+This project is open-source under the MIT License. Use it, modify it and distribute it freely.

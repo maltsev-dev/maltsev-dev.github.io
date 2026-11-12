@@ -1,105 +1,69 @@
 ---
-title: "📦 On-Chain Key-Value Storage"
+title: "On-Chain Key-Value Storage"
 date: "2025-04-09"
 description: "An Anchor program that stores and updates user-defined key-value entries on-chain, a small favorites manager."
 tags: ["rust", "solana", "anchor", "project"]
 ---
-**A Solana smart contract project that demonstrates how to send, store, and update data on-chain using keys.**
-Built with **Rust** and the **Anchor** framework.
+A Solana smart contract project that shows how to send, store and update data on-chain using keys. Written in Rust with the Anchor framework.
 
----
+[GitHub Repository](https://github.com/maltsev-dev/send_data)
 
-[📚 GitHub Repository](https://github.com/maltsev-dev/send_data)
+The project interacts with a Solana program by writing and updating user-defined data directly on-chain. It is a simple "favorites" manager: users send strings or numbers to the chain, associate them with a unique key, and update those entries later.
 
-This project explores how to interact with a **Solana program** by writing and updating user-defined data directly on-chain.
-It simulates a simple **“favorites” manager** — where users can send strings or numbers to the chain, associate them with a unique key, and later update those entries.
+It is a good starting point for:
 
-A great starting point for:
+- Understanding persistent on-chain state
+- Managing user-specific data using derived accounts
+- Creating decentralized CRUD-style apps
 
-* Understanding persistent on-chain state
-* Managing user-specific data using derived accounts
-* Creating decentralized CRUD-style apps
+## Stack and tools
 
----
+- Rust, for the Solana smart contract logic
+- Anchor, the framework for Solana programs
+- A local test validator
+- Rust unit and integration tests
 
-## 🧰 Stack & tools
+## Features
 
-* 🦀 **Rust** (Solana smart contract logic)
-* ⚓ **Anchor** (framework for Solana programs)
-* 🧪 **Local test validator**
-* 🧪 **Rust unit/integration tests**
+1. Send arbitrary data to the blockchain. Insert a value associated with a custom key.
+2. Update stored data by key. Modify entries via a transaction that targets a specific key.
+3. A simple chain storage pattern. Uses Solana accounts to persist user-defined values.
+4. Full test coverage. Rust-based tests validate the program logic locally.
 
----
+## Getting started
 
-## ✨ Features
+1. Start a local Solana validator:
 
-1. **Send Arbitrary Data to the Blockchain**
+   ```bash
+   solana-test-validator
+   ```
 
-   * Insert a value associated with a custom key.
+2. Build and deploy:
 
-2. **Update Stored Data by Key**
+   ```bash
+   anchor build && anchor deploy
+   ```
 
-   * Modify entries via a transaction that targets a specific key.
+3. Add your wallet:
 
-3. **Simple Chain Storage Pattern**
+   ```bash
+   export ANCHOR_WALLET=~/.config/solana/id.json
+   ```
 
-   * Uses Solana accounts to persist user-defined values.
+4. Run the tests:
 
-4. **Full Test Coverage**
+   ```bash
+   cargo test
+   ```
 
-   * Rust-based tests validate program logic locally.
+5. View the transactions at the local explorer: [http://localhost:8899](http://localhost:8899)
 
----
+## Use cases
 
-## 🚀 Getting started
+- Store favorite quotes, URLs or topics by key
+- Use it as a base for decentralized note-taking or bookmarking
+- Extend it with access control and per-user namespaces
 
-### 1. 🧪 Start local Solana validator
+## License
 
-Spin up a local blockchain testnet:
-
-```bash
-solana-test-validator
-```
-
-### 2. 🛠 Build and deploy
-
-Compile and deploy the Anchor program:
-
-```bash
-anchor build && anchor deploy
-```
-
-### 3. 👛 Add wallet
-
-Set your Solana CLI wallet path:
-
-```bash
-export ANCHOR_WALLET=~/.config/solana/id.json
-```
-
-### 4. ✅ Run tests
-
-Ensure everything works as expected with:
-
-```bash
-cargo test
-```
-
-### 5. 🔍 View transactions
-
-Access the local explorer to track activity:
-[http://localhost:8899](http://localhost:8899)
-
----
-
-## 🧠 Use cases & ideas
-
-* ⭐ Store favorite quotes, URLs, or topics by key
-* 🧾 Use it as a base for decentralized note-taking or bookmarking
-* 🔑 Extend it with access control and per-user namespaces
-
----
-
-## 📄 License
-
-This project is licensed under the **MIT License** — free for personal and commercial use.
+This project is licensed under the MIT License, free for personal or commercial use.

@@ -3,82 +3,86 @@ title: "GPIO (General Purpose Input / Output)"
 date: "2025-06-12"
 tags: ["rust", "embedded", "basic", "gpio"]
 ---
-🟠 What is a general purpose input output (GPIO) of the MCU
-
----
+A general purpose input/output (GPIO) is an MCU pin whose function the software chooses.
 
 ## GPIO
 
-GPIO stands for general purpose input/output. It is a type of pin found on an integrated circuit that does not have a specific function.  
-While most pins have a dedicated purpose, such as sending a signal to a certain component, the function of a **GPIO pin is customizable** and can be controlled by the software.  
+GPIO stands for general purpose input/output. It is a type of pin found on an integrated circuit that does not have a specific function. While most pins have a dedicated purpose, such as sending a signal to a certain component, the function of a GPIO pin is customizable and can be controlled by the software.
 
-It can work as:
-📥 Input (reads logical signals, such as from a button)  
-📤 Output (controls something - LED, relay, motor)  
-🔄 Sometimes - both as an input and as an output (push-pull)  
+It can work as an input, reading logical signals such as from a button. It can work as an output, controlling something like an LED, a relay or a motor. Sometimes a pin does both, as an input and as an output (push-pull).
 
-## Pin 
-**Pin Mode** : Each port bit of the general-purpose I/O (GPIO) ports can be individually configured by software in several modes:
-* input or output
-* analog
-* alternate function (AF).
-**Pin characteristics** :
-* Input : no `pull-up` and no `pull-down` or pull-up or pull-down
-* Output : `push-pull` or `open-drain` with pull-up or pull-down capability
-* Alternate function : push-pull or open-drain with pull-up or pull-down capability.  
+## Pin
+
+Each port bit of the general-purpose I/O (GPIO) ports can be individually configured by software in several modes:
+
+- input or output
+- analog
+- alternate function (AF)
+
+Pin characteristics:
+
+- Input: no `pull-up` and no `pull-down`, or pull-up or pull-down
+- Output: `push-pull` or `open-drain` with pull-up or pull-down capability
+- Alternate function: push-pull or open-drain with pull-up or pull-down capability
+
 ![Table of GPIO pin modes and their characteristics, listing input, output, analog and alternate function variants with pull-up, pull-down, push-pull and open-drain options](/images/emb/gpio_design_1.png)
 
 ## GPIO design
 
-Each GPIO pin of the microcontroller consists of **three key components**:  
+Each GPIO pin of the microcontroller consists of three key components:
+
 ![Block diagram of a GPIO pin showing its three key components: the enable line, the output buffer driving the pin, and the input buffer reading from it](/images/emb/gpio_design.png)
 
-1.  **Enable Line**
+### Enable line
 
-* Configures the pin mode: `input`, `output`, `alternate function`, `analog`, etc.
-* Controls the activation of internal pull-up resistors
-* Enables/disables **input/output buffers** and logic enable
+- Configures the pin mode: `input`, `output`, `alternate function`, `analog`, etc.
+- Controls the activation of internal pull-up resistors
+- Enables/disables input/output buffers and logic enable
 
-2.  **Output Buffer**
+### Output buffer
 
-* It is a combination of **two transistors (PMOS + NMOS)**
-* In **Push-Pull** mode both can work
-* In **Open-Drain** only `NMOS` is active
-* Allows to output logic levels to an external pin
+- It is a combination of two transistors (PMOS + NMOS)
+- In push-pull mode both can work
+- In open-drain only `NMOS` is active
+- Allows to output logic levels to an external pin
 
-When the signal `0` comes out, control goes through the `NMOS` transistor and no logical one is supplied to the pin.  
+When the signal `0` comes out, control goes through the `NMOS` transistor and no logical one is supplied to the pin.
+
 ![Schematic of the GPIO output buffer driving a logic 0: the NMOS gate is high, the PMOS is off, and the pin sinks current to ground](/images/emb/output_buffer_zero.png)
-When the signal `1` comes out, control goes through the `PMOS` transistor and a logical one is supplied to the pin.  
+
+When the signal `1` comes out, control goes through the `PMOS` transistor and a logical one is supplied to the pin.
+
 ![Schematic of the GPIO output buffer driving a logic 1: the PMOS gate is low, the NMOS is off, and the pin sources current from VCC](/images/emb/output_buffer_one.png)
 
-3. **Input Buffer**
+### Input buffer
 
-* Monitors the signal level on the pin
-* Can be **enabled or disabled** - for example to disable reading during output
-* Used to read logic level or generate interrupts
+- Monitors the signal level on the pin
+- Can be enabled or disabled, for example to disable reading during output
+- Used to read the logic level or generate interrupts
 
-When a `0` signal is received on the pin, control passes through the `NMOS` transistor and goes to `GND`  
+When a `0` signal is received on the pin, control passes through the `NMOS` transistor and goes to `GND`.
+
 ![Schematic of the GPIO input buffer reading a logic 0: the NMOS conducts so the pin level passes through to ground and is read as 0](/images/emb/input_buffer_zero.png)
-When a `1` signal is received on the pin, control passes through the `PMOS` transistor and is powered from `+VCC`  
+
+When a `1` signal is received on the pin, control passes through the `PMOS` transistor and is powered from `+VCC`.
+
 ![Schematic of the GPIO input buffer reading a logic 1: the PMOS conducts so the pin is powered from VCC and is read as 1](/images/emb/input_buffer_one.png)
 
-## ⚙️ GPIO modes
+## GPIO modes
 
-* **By default** all GPIOs on most microcontrollers are configured in **Input mode**.
-* In this mode they are **not connected to either Vcc or GND** - the pin is in the **High Impedance (Hi-Z)** state.
-* This means that the **GPIO is not "involved" in the circuit's operation**, but may be subject to **noise and flow currents**, especially if the input is left "floating".
+By default all GPIOs on most microcontrollers are configured in input mode. In this mode they are not connected to either Vcc or GND, and the pin is in the High Impedance (Hi-Z) state. This means that the GPIO is not "involved" in the circuit's operation, but may be subject to noise and flow currents, especially if the input is left floating.
 
 | Mode | Description | Example |
 | ---------------------- | ---------------------------------------- | ------------------------- |
-| **Input** | Reading signal from outside | Button, sensor |
-| **Input Pull-Up** | Input with pull-up to Vcc (internal resistor) | Button to GND |
-| **Input Pull-Down** | Input with pull-up to GND | Button to Vcc |
-| **Output Push-Pull** | Normal output (0 or 1) | LED, relay |
-| **Output Open-Drain** | Only "0", "1" — via external resistor | I²C, external bus |
-| **Analog** | ADC/DAC is used on the output | Temperature sensor, audio |
-| **Alternate Function** | Used by peripherals (SPI, PWM, UART) | SPI, I²C, PWM |
+| Input | Reading signal from outside | Button, sensor |
+| Input Pull-Up | Input with pull-up to Vcc (internal resistor) | Button to GND |
+| Input Pull-Down | Input with pull-down to GND | Button to Vcc |
+| Output Push-Pull | Normal output (0 or 1) | LED, relay |
+| Output Open-Drain | Only "0", "1" via external resistor | I²C, external bus |
+| Analog | ADC/DAC is used on the output | Temperature sensor, audio |
+| Alternate Function | Used by peripherals (SPI, PWM, UART) | SPI, I²C, PWM |
 
-If we wanted to use some Pin as an input, we would use either `.into_pull_up_input()`, `.into_pull_down_input()` to tell the chip to expect the system voltage (3.3 volts) to be `present` or `absent`, and react if that changes.
+If we wanted to use some pin as an input, we would use either `.into_pull_up_input()` or `.into_pull_down_input()` to tell the chip to expect the system voltage (3.3 volts) to be present or absent, and react if that changes.
 
 ```rust
 // RP2040 (Rust embedded-hal, hi-Z)
@@ -96,20 +100,17 @@ If we wanted to use some Pin as an input, we would use either `.into_pull_up_inp
 
 ### Push-Pull
 
-* GPIO uses **two transistors**: **PMOS** (to supply "1") and **NMOS** (to supply "0").
-* In Push-Pull mode, the pin can actively:
-    * Supply the line with **logical 1 (Vcc)** via PMOS
-    * Supply **logical 0 (GND)** via NMOS
-* This is the standard mode for driving LEDs, relays and other loads.
+- GPIO uses two transistors: `PMOS` (to supply "1") and `NMOS` (to supply "0")
+- In push-pull mode, the pin can actively supply the line with logical 1 (Vcc) via PMOS, and logical 0 (GND) via NMOS
+- This is the standard mode for driving LEDs, relays and other loads
 
 ### Open-Drain
 
-* In this mode, GPIO **can only short the pin to ground (0)** via **NMOS**.
-* Internal **PMOS is missing** or disabled → you **cannot** apply "1" directly.
-* When GPIO is driven to logic "1" → transistor **is off** and pin becomes **floating**.
-* To make the line to be logic "1", a **pull-up resistor** is used:
-    * **Internal** (enabled by software if available)
-    * **External** (usually 4.7k–10k Ohm to Vcc)
+- In this mode, GPIO can only short the pin to ground (0) via `NMOS`
+- The internal `PMOS` is missing or disabled, so you cannot apply "1" directly
+- When GPIO is driven to logic "1", the transistor is off and the pin becomes floating
+- To make the line logic "1", a pull-up resistor is used:
+    - Internal (enabled by software if available)
+    - External (usually 4.7k to 10k Ohm to Vcc)
 
-Useful when
-When need a **common bus** with **many devices** connected to it. (All participants can **only "pull down"** to avoid conflict)
+This is useful when you need a common bus with many devices connected to it. All participants can only pull down, which avoids a conflict.

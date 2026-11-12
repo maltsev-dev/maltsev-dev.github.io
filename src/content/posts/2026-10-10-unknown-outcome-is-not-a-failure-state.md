@@ -258,10 +258,11 @@ missing value in the budget check is fail-closed. A stale value is
 fail-open with a time-to-live that bounds the open period. Both are
 consequences of the same rule: the system decides what an absent or
 unusable signal means, deliberately, and no default decides it for them.
-The numbers are explicit. The execution binding that ties a server-minted
-execution identity to its organization and API key is valid for 24 hours;
-a budget reservation left idle is reclaimed after 300 seconds. Both
-windows are constants in the source, not tuning knobs that drift.
+The numbers are explicit. The execution binding that ties a
+server-minted execution identity to its organization and API key is valid
+for 24 hours; a budget reservation left idle is reclaimed after 300
+seconds. Both windows are constants in the source, not tuning knobs that
+drift.
 
 The two replay behaviors above are the same rule applied to two
 resources. An approval is a grant, so re-consuming it is refused with a

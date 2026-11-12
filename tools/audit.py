@@ -35,8 +35,8 @@ DIST = Path(sys.argv[1]).resolve() if len(sys.argv) > 1 else ROOT / "dist"
 
 # The stylesheets the build actually ships are the ones in src/styles/. The
 # old gate pointed at static/css/style.css — the file the previous generator
-# wrote — and that file moved to legacy/static-legacy/ when the site moved to
-# Astro. A gate that reads a file nothing ships checks nothing.
+# wrote — and that file is gone now that the site is on Astro. A gate that
+# reads a file nothing ships checks nothing.
 STYLE_DIR = ROOT / "src" / "styles"
 
 SKIP_PREFIX = ("http://", "https://", "//", "mailto:", "tel:", "data:", "javascript:")

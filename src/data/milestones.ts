@@ -39,13 +39,13 @@ export const MILESTONES: Milestone[] = [
     short: 'NullRun',
     period: 'Current',
     summary:
-      'A runtime authorization layer for agents: tool execution, approvals, budgets and policy. An agent acts inside a limit instead of an assumption — every call gated, every grant recorded.',
+      'A runtime authorization layer for agents: tool execution, approvals, budgets and policy. An agent acts inside a limit instead of an assumption: every call gated, every grant recorded.',
     tags: ['Agent runtime', 'Authorization', 'Policy'],
     href: 'https://nullrun.io',
   },
   {
     slug: 'ai-social-media-agent',
-    title: 'AI Social Media Agent: 7-Platform Publishing with Human-in-the-Loop',
+    title: 'Social Media Agent: 7-Platform Publishing with Human Review',
     short: 'Social Media Agent',
     period: 'Mar 2026',
     summary:
@@ -54,16 +54,16 @@ export const MILESTONES: Milestone[] = [
   },
   {
     slug: 'permission-aware-rag',
-    title: 'Internal Knowledge: Permission-aware RAG That Never Lies',
+    title: 'Internal Knowledge: Permission-aware RAG',
     short: 'Internal Knowledge',
     period: 'Mar 2026',
     summary:
-      'A 13-stage hybrid retrieval pipeline — dense and BM25, merged by Reciprocal Rank Fusion, reranked by a cross-encoder. GPT-4o synthesis refuses to answer without grounded sources, so the system cannot invent a citation.',
+      'A 13-stage hybrid retrieval pipeline: dense and BM25, merged by Reciprocal Rank Fusion, reranked by a cross-encoder. GPT-4o synthesis refuses to answer without grounded sources, so the system cannot invent a citation.',
     tags: ['Python', 'RAG', 'ChromaDB', 'Slack'],
   },
   {
     slug: 'telegram-support-agent',
-    title: 'AI-Powered Telegram Customer Support Multi-Agent System',
+    title: 'Telegram Support Multi-Agent System',
     short: 'Telegram Support',
     period: 'Feb 2026',
     summary:
@@ -96,7 +96,7 @@ export const MILESTONES: Milestone[] = [
     short: 'UE5 Shooter',
     period: 'Jul 2024 — Aug 2024',
     summary:
-      'A shooter that never gets boring because you made it with your own hands. The sci-fi story and the combat both exceeded what I expected from a two-month project.',
+      'A shooter I built with my own hands. The sci-fi story and the combat both exceeded what I expected from a two-month project.',
     tags: ['C++', 'Unreal Engine 5'],
     href: '/blog/2024-09-15-exploring-c-game-development-with-unreal-engine-5/',
   },
@@ -116,7 +116,7 @@ export const MILESTONES: Milestone[] = [
     short: 'Dev Stories Blog',
     period: 'Jun 2023 — Dec 2025',
     summary:
-      'Technical writing that takes my own projects apart piece by piece. It doubles as self-reflection on the engineering journey behind them.',
+      'Technical writing that takes my own projects apart piece by piece, and doubles as reflection on the work behind them.',
     tags: ['TinyML', 'Embedded', 'Writing'],
     href: '/blog/',
   },

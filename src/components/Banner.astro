@@ -1,0 +1,197 @@
+---
+/**
+ * The wordmark, drawn in block characters.
+ *
+ * It is not an image: it is seven lines of text in the art face, so it is
+ * selectable, searchable, scales with the page's zoom, and costs no
+ * request.
+ *
+ * The letters are drawn from a seven-by-five pixel face. Each pixel is a
+ * full block, and the rows are seven tall — close enough to the proportion
+ * of a terminal character cell that the wordmark sits on the same grid as
+ * everything else drawn in block characters.
+ *
+ * The whole name is drawn, not the surname alone: it is a wordmark, and the
+ * wordmark is the name a visitor is looking for.
+ *
+ * The name is drawn twice, in two lockups. Side by side it is a hundred and
+ * seven columns wide — the drawing for a wide screen, in a column wide
+ * enough to read it. Stacked, one word above the other, it is forty-nine
+ * columns wide, which is what a narrow column has room for: the same name
+ * at twice the size, because a wordmark scaled down to five pixels a letter
+ * is not a wordmark but a texture. Which one is shown is decided by the
+ * width of the column the banner lands in.
+ *
+ * The shadow under the letters is not drawn here. It was a second copy of
+ * the same lines offset by a fraction of an em, and at this size the two
+ * copies overlapped into something that read as a smudge rather than as a
+ * reflection. The wordmark now stands on its own, lit.
+ */
+
+/** One glyph per letter, five columns wide and seven rows tall. */
+const GLYPHS: Record<string, string[]> = {
+  A: [' ███ ', '█   █', '█   █', '█████', '█   █', '█   █', '█   █'],
+  E: ['█████', '█    ', '█    ', '████ ', '█    ', '█    ', '█████'],
+  I: ['█████', '  █  ', '  █  ', '  █  ', '  █  ', '  █  ', '█████'],
+  L: ['█    ', '█    ', '█    ', '█    ', '█    ', '█    ', '█████'],
+  M: ['█   █', '██ ██', '█ █ █', '█   █', '█   █', '█   █', '█   █'],
+  N: ['█   █', '██  █', '█ █ █', '█  ██', '█   █', '█   █', '█   █'],
+  O: [' ███ ', '█   █', '█   █', '█   █', '█   █', '█   █', ' ███ '],
+  S: [' ████', '█    ', '█    ', ' ███ ', '    █', '    █', '████ '],
+  T: ['█████', '  █  ', '  █  ', '  █  ', '  █  ', '  █  ', '  █  '],
+  V: ['█   █', '█   █', '█   █', '█   █', '█   █', ' █ █', '  █  '],
+};
+
+/** Two columns between two letters, four between the two words. */
+const LETTER_GAP = '  ';
+const WORD_GAP = '    ';
+
+const WORDS = 'ANATOLII MALTSEV'.split(' ');
+
+/** The seven rows of one word. */
+const wordRows = (word: string): string[] =>
+  [0, 1, 2, 3, 4, 5, 6].map((r) =>
+    word
+      .split('')
+      /* Every glyph is five columns wide. A row that does not use all five
+         — the foot of a V, the tail of an S — is padded out, so the drawing
+         stays on its grid whatever the glyphs look like. */
+      .map((ch) => GLYPHS[ch][r].padEnd(5, ' '))
+      .join(LETTER_GAP)
+  );
+
+/**
+ * How wide a drawing is, in ems of the art face.
+ *
+ * A glyph is 0.586em wide in that face, so a hundred columns is 58.6em, and
+ * the font size that makes the drawing fit a column of W pixels is
+ * W / 58.6. It is worked out here because a stylesheet cannot divide by an
+ * expression it does not know the value of.
+ */
+const emWidth = (rows: string[]): number =>
+  +((Math.max(...rows.map((r) => r.length)) + 2) * 0.586).toFixed(3);
+
+/** The drawing, as one string. The cursor is a span of its own after it. */
+const drawing = (rows: string[]): string => rows.join('\n') + ' ';
+
+/** The name in one line: the two words side by side. */
+const SIDE_ROWS = Array.from({ length: 7 }, (_, r) =>
+  WORDS.map((w) => wordRows(w)[r]).join(WORD_GAP)
+);
+
+/**
+ * The name in two: one word above the other.
+ *
+ * There is a blank row between them. Without it the bottom row of the first
+ * word and the top row of the second are on adjacent lines, and the two
+ * words read as one drawing — the feet of the letters above touching the
+ * heads of the letters below.
+ */
+const STACK_ROWS = [
+  ...wordRows(WORDS[0]),
+  '',
+  ...wordRows(WORDS[1]),
+];
+---
+
+<div class="banner-wrap">
+  <pre
+    class="banner banner--side"
+    aria-label="Anatolii Maltsev"
+    style={`--banner-em: ${emWidth(SIDE_ROWS)}`}>{drawing(SIDE_ROWS)}<span class="banner-cursor" aria-hidden="true">█</span></pre>
+
+  <pre
+    class="banner banner--stack"
+    aria-label="Anatolii Maltsev"
+    style={`--banner-em: ${emWidth(STACK_ROWS)}`}>{drawing(STACK_ROWS)}<span class="banner-cursor" aria-hidden="true">█</span></pre>
+</div>
+
+<style>
+  /*
+    The wrapper is the container the drawing scales itself against. It is the
+    grid item; the <pre> inside it is sized from the wrapper's width, so the
+    wordmark fits the column it lands in at every screen size instead of
+    being drawn once and clipped.
+  */
+  .banner-wrap {
+    container-type: inline-size;
+    min-width: 0;
+  }
+
+  /*
+    The wordmark is a picture of the name, so it is hidden from the
+    accessibility tree and the name is given to it as a label instead. A
+    screen reader that read seven lines of block characters aloud would be
+    useless; one that says "Anatolii Maltsev" is exactly right.
+  */
+  .banner {
+    margin: 0;
+    /* The global `pre` rule is for code: it draws a border and a panel
+       behind the text. The wordmark is not code, and the box it drew around
+       itself was a frame around nothing. */
+    padding: 0;
+    border: 0;
+    background: none;
+    box-shadow: none;
+    /* No scrollbar. The wordmark is sized to fit the column it is in, so
+       there is nothing to scroll to — and the box it used to scroll in was
+       one pixel short of its own content, which is enough for a scrollbar
+       to appear on a drawing that fits. */
+    overflow: hidden;
+    /* The size of the drawing. The width of the drawing is known at build
+       time and handed to the stylesheet as a custom property, so the block
+       scales itself to the column it lands in and the art is never clipped. */
+    font-size: min(0.92rem, calc((100cqw - 0.25rem) / var(--banner-em)));
+  }
+
+  /*
+    Which lockup is shown. The side-by-side name is a hundred and seven
+    columns wide; below about forty-four rem of column it is drawn at ten
+    pixels a letter or less, and the stacked name takes over — the same
+    name, twice the letter size, in half the width.
+
+    The one that is not shown is taken out of the page entirely, so a screen
+    reader is not given the name twice.
+  */
+  .banner--stack {
+    display: none;
+  }
+
+  @container (max-width: 44rem) {
+    .banner--side {
+      display: none;
+    }
+
+    .banner--stack {
+      display: block;
+    }
+  }
+
+  /*
+    The cursor. A block at the end of the name, blinking the way a terminal
+    cursor blinks, and lit rather than plain: it is the only thing on the
+    wordmark that is alive.
+  */
+  .banner-cursor {
+    color: var(--braise);
+    text-shadow: var(--glow-strong);
+    animation: banner-cursor-blink 1.05s steps(1, end) infinite;
+  }
+
+  @keyframes banner-cursor-blink {
+    0%,
+    49% {
+      opacity: 1;
+    }
+    50%,
+    100% {
+      opacity: 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .banner-cursor {
+      animation: none;
+    }
+  }
+</style>

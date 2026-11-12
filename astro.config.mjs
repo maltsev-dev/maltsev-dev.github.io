@@ -4,6 +4,7 @@ import mdx from '@astrojs/mdx';
 import rehypeImageAttrs from './src/plugins/rehype-image-attrs.mjs';
 import rehypeTableScroll from './src/plugins/rehype-table-scroll.mjs';
 import rehypeHeadingIds from './src/plugins/rehype-heading-ids.mjs';
+import rehypeStripPictograms from './src/plugins/rehype-strip-pictograms.mjs';
 
 // Static output, matching the legacy generator: GitHub Pages serves `dist/`
 // from the repo root, so every route is pre-rendered to plain HTML.
@@ -11,9 +12,10 @@ export default defineConfig({
   site: 'https://maltsev-dev.github.io',
   output: 'static',
   trailingSlash: 'always',
-  // `public/` still holds the output of the legacy build.py generator. Left as
+  // The retired generator's output used to sit in `public/`. Left as
   // publicDir, Astro would copy those stale HTML pages into dist/ alongside
-  // the real routes; the live assets already live in static/.
+  // the real routes; the live assets live in static/, and that is the public
+  // directory.
   publicDir: './static',
   build: {
     format: 'directory',
@@ -34,7 +36,17 @@ export default defineConfig({
     // Every image in a post body gets its intrinsic size, `loading="lazy"`
     // and `decoding="async"`. Without them the browser reserves no space
     // for a figure and the article jumps as each one lands.
-    rehypePlugins: [rehypeImageAttrs, rehypeTableScroll, rehypeHeadingIds],
+    rehypePlugins: [
+      rehypeImageAttrs,
+      rehypeTableScroll,
+      rehypeHeadingIds,
+      // The pictograms out of the bodies. The corpus is a decade of writing
+      // made on a platform with a button for inserting an emoji, and those
+      // emoji are the only full-colour thing on an otherwise monochrome
+      // page. The rule leaves the ASCII art alone — the arrows, the
+      // triangles and the box drawing the diagrams are drawn with.
+      rehypeStripPictograms,
+    ],
     shikiConfig: {
       themes: { light: 'github-light', dark: 'github-dark-default' },
       defaultColor: false,

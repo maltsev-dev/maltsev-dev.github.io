@@ -59,8 +59,14 @@ static/               images, og cards, fonts, robots.txt
 Two directories carry the same names and only one of them is live:
 
 - `src/content/` — the Astro content collections. **This is where posts go.**
-- `content/` — the retired generator's tree, kept for reference by
-  `legacy/build.py`. It is not built and not served.
+- `content/` — the retired generator's corpus. Nothing builds it any more; it
+  is kept because `_gen_redirects.py` reads it to derive the legacy URLs the
+  redirect stubs are made from. It is not built and not served.
+
+The URL set the retired generator published is recorded twice: the 138 stubs
+that still ship are listed in `_legacy-urls.json`, and the complete list of
+392 URLs it once served — including the tag pages that no longer have stubs —
+is in `docs/legacy-urls.txt`.
 
 ## Adding a post
 

@@ -29,8 +29,8 @@ each other:
 | `approvals` | Who said yes |
 
 The decisions are append-only and a correction is a new row, which is
-the difference between a ledger and a mutable document, and why the hash
-chain below is even possible.
+the difference between a ledger and a mutable document. It is why the
+hash chain below is even possible.
 
 ## The execution ID must be minted by the server
 
@@ -54,8 +54,8 @@ identity that asked, and re-compares that binding at settlement.
    carries a rough chronology and concurrent mints stay monotonic.
 2. The server binds `org_id` + `api_key_id` to that ID, in the same
    atomic operation as the reservation.
-3. At settlement, the org and key are **re-read and compared
-   atomically**. A mismatch rejects the settlement.
+3. At settlement, the org and key are re-read and compared
+   atomically. A mismatch rejects the settlement.
 
 Step 3 is the one that gets skipped. Binding on the way in and not
 re-checking on the way out means an approved action can be replayed
@@ -173,7 +173,8 @@ Worth testing on a schedule:
 | Does a cross-org write attempt leave anything readable behind? | The write is refused and a follow-up read returns nothing | The attempt used an org the reader already had access to |
 | Does an outbox row survive a dispatcher restart? | The row drains after the restart | The dispatcher was never stopped |
 
-The pattern across all four is the same.
+Each check pairs a real failure against the version that would pass
+without proving anything.
 
 ## FAQ
 

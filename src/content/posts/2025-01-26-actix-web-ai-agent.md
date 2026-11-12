@@ -1,94 +1,83 @@
 ---
-title: "🤖 Actix-web AI Agent"
+title: "Actix-web AI Agent"
 date: "2025-01-26"
 tags: ["rust", "actix_web", "open_ai", "project"]
 ---
-Actix-web AI Agent. Built with 🤎 in Rust  
-[Effortless Backend Prototyping with Rust](https://www.linkedin.com/pulse/effortless-backend-prototyping-rust-anatolii-maltsev-hvvce/?trackingId=lGXFeD6ET%2ByFSocPHYS9qg%3D%3D)  
+RestOn is an agent that generates backend code from a text query. It is built in Rust on top of Actix-web.
+
+[Effortless Backend Prototyping with Rust](https://www.linkedin.com/pulse/effortless-backend-prototyping-rust-anatolii-maltsev-hvvce/?trackingId=lGXFeD6ET%2ByFSocPHYS9qg%3D%3D)
 [Documentation](https://github.com/maltsev-dev/rest_on)
+[rest_on](https://github.com/maltsev-dev/rest_on)
 
----
+The agent automates the generation of backend code for projects and prototypes. It handles both a simple `CRUD app` and a more involved `SAAS platform`.
 
-## **RestOn**
-[📚 rest_on](https://github.com/maltsev-dev/rest_on)
+## Features
 
-RestOn is an advanced tool that leverages the power of OpenAI's GPT to automate the generation of backend code for your projects and prototypes.
-It aims to streamline your development process, enabling the automatic creation of full-stack web applications and more complex systems.
-Whether you need a simple `CRUD app` or a sophisticated `SAAS platform`, Auto GPT Agent has you covered.
+- Automatic code generation. Uses the GPT API to generate backend code for services built with `actix-web` and other popular Rust libraries.
+- CRUD operations. Generates the standard operations for data manipulation (Create, Read, Update, Delete).
+- Template flexibility. Adapts the web server templates to different requirements.
+- Ease of use. A simple interface to interact with the project.
 
-## **Features**
-- **🌟 Automatic Code Generation**: Use GPT API to generate backend code for services built with `actix-web` and other popular Rust libraries.
-- **🔥 CRUD Operations**: Generate standard operations for data manipulation (Create, Read, Update, Delete).
-- **🛠️ Template Flexibility**: Easily adapt web server templates to different requirements.
-- **🌍 Ease of Use**: Simple interface to interact with the project.
+## Tools
 
-## **Tools**
-<p align="center" style="margin:0; padding:0;">
-  <code>rust 1.83.0</code>
-  <code>actix_web 4.9.0</code>
-  <code>tokio 1.28.0</code>
-  <code>reqwest 0.12.10</code>
-  <code>serde 1.0.160</code>
-  <code>actix_cors 0.7.0</code>
-  <code>dotenv 0.15.0</code>
-  <code>crossterm 0.28.1</code>
-  <code>async-trait 0.1.83</code>
-  <code>webbrowser 1.0.3</code>
-  <code>ai_functions 0.1.1</code>
-</p>
+- `rust 1.83.0`
+- `actix_web 4.9.0`
+- `tokio 1.28.0`
+- `reqwest 0.12.10`
+- `serde 1.0.160`
+- `actix_cors 0.7.0`
+- `dotenv 0.15.0`
+- `crossterm 0.28.1`
+- `async-trait 0.1.83`
+- `webbrowser 1.0.3`
+- `ai_functions 0.1.1`
 
-- **Rust**: The primary programming language for building fast, secure, and concurrent services.
-- **Actix-web**: A powerful and fast web framework for building web applications on Rust.
-- **Tokio**: An asynchronous framework for Rust used for parallel task handling and async calls.
-- **Reqwest**: An HTTP client for interacting with external APIs.
-- **GPT API**: Used for generating code and executing tasks based on text-based queries.
-  
-## **Installation**
+The crates carry the work:
 
-### 1. Clone the repository
+- Rust, the primary programming language for building fast, secure and concurrent services
+- Actix-web, a web framework for building web applications in Rust
+- Tokio, an asynchronous runtime for Rust, used for parallel task handling and async calls
+- Reqwest, an HTTP client for interacting with external APIs
+- GPT API, used for generating code and executing tasks based on text-based queries
 
-```bash
-git clone https://github.com/chemyl/auto_gpt_agent.git
-cd auto_gpt_agent
-```
+## Installation
 
-### 2. Install Rust (if not already installed)
+1. Clone the repository:
 
-To install Rust, use the following command:
+   ```bash
+   git clone https://github.com/chemyl/auto_gpt_agent.git
+   cd auto_gpt_agent
+   ```
 
-```bash
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-```
+2. Install Rust (if not already installed):
 
-### 3. Install dependencies
+   ```bash
+   curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+   ```
 
-Run the following command to install project dependencies:
+3. Install dependencies:
 
-```bash
-cargo build
-```
+   ```bash
+   cargo build
+   ```
 
-### 4.Add OPEN_AI keys
+4. Add the OpenAI keys:
 
-```text
-    OPEN_AI_ORG
-    OPEN_AI_KEY
-.env
-```
+   ```text
+       OPEN_AI_ORG
+       OPEN_AI_KEY
+   .env
+   ```
 
-### 5. Run the project
+5. Run the project:
 
-Start the project with:
+   ```bash
+   cargo run
+   ```
 
-```bash
-cargo run
-```
+## Usage
 
-## **Usage**
-
-### 1. **Generate backend code**
-
-Simply send a text query to the system, and it will generate backend code for you.
+Send a text query to the system and it generates the backend code for you.
 
 Example query:
 
@@ -96,17 +85,13 @@ Example query:
 Create a webserver that shows today viral news in the US
 ```
 
-### 3. **Confirmation**
+After the backend code is generated, the agent asks for confirmation, then builds and tests the web server.
 
-After generating the backend code, you can
-
-## **Example usage**
-
-### 1. **Console output**
+## Example usage
 
 ![Terminal screenshot of the AI agent taking a request for a US viral-news website, planning the solution and external API endpoints, prompting for review of the generated AI-written code, then building and testing the web server](/images/console_output.png)
 
-### 2. **Generated [main] example**
+The generated `main` looks like this:
 
 ```rust
 #[actix_web::main]
@@ -142,39 +127,37 @@ async fn main() -> std::io::Result<()> {
 }
 ```
 
-## **How it works**
+## How it works
 
-1. The project uses GPT API to process text queries and generate code.
-2. Queries are sent to the system, which then generates backend code based on the input.
+1. The project uses the GPT API to process text queries and generate code.
+2. Queries are sent to the system, which generates backend code based on the input.
 3. The code generation includes:
-    - Creating new HTTP server.
-    - Route creation for handling requests.
-    - Json Database setup.
-4. The generated code can be directly run on your server or further customized to fit your needs.
+   - Creating a new HTTP server
+   - Route creation for handling requests
+   - Json Database setup
+4. The generated code can be run directly on your server or further customized to fit your needs.
 
-## **Future plans**
+## Planned work
 
-- **Support for More Complex Templates**: Allow generation of more specialized services based on detailed templates.
-- **Command-Line Interface (CLI)**: A more advanced CLI for managing the project.
-- **Support for Additional Databases**: Integration with more databases like MongoDB, MySQL, SQLite, and others.
-- **CI/CD Integration**: Automate deployment pipelines.
-- **Project requirements**: Perform in-depth client onboarding.
-- **Extend testing**: Test all dynamic routes.
-- **Frontend development**: Develop frontend Automation Agent based on Yew.
-- **Local LLM**: Introduced local open source LLMs.
+- Support for more complex templates. Generate more specialized services based on detailed templates.
+- Command-line interface. A more advanced CLI for managing the project.
+- Support for additional databases. Integration with MongoDB, MySQL, SQLite and others.
+- CI/CD integration. Automate deployment pipelines.
+- Project requirements. Perform in-depth client onboarding.
+- Extend testing. Test all dynamic routes.
+- Frontend development. A frontend automation agent based on Yew.
+- Local LLM. Introduce local open source LLMs.
 
-## **Contributing**
+## Contributing
 
-Welcome contributions! If you have ideas to improve the project, please create an [issue](https://github.com/chemyl/auto_gpt_agent/issues) or submit a pull request.
-
-### How to contribute
+Contributions are welcome. If you have ideas to improve the project, create an [issue](https://github.com/chemyl/auto_gpt_agent/issues) or submit a pull request.
 
 1. Fork the repository.
 2. Create your feature branch (`git checkout -b feature-branch`).
 3. Commit your changes (`git commit -am 'Add new feature'`).
 4. Push to your branch (`git push origin feature-branch`).
-5. Open a Pull Request.
+5. Open a pull request.
 
-## **License**
+## License
 
-This project is licensed under the MIT License - see the [LICENSE](https://github.com/chemyl/auto_gpt_agent/blob/master/LICENSE) file for details.
+This project is licensed under the MIT License. See the [LICENSE](https://github.com/chemyl/auto_gpt_agent/blob/master/LICENSE) file for details.

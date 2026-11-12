@@ -66,7 +66,7 @@ CREATE TABLE approvals (
 boolean plus a separate `consumed` flag, produces combinations you should
 never have to query for, including "decided but not decided".
 
-One structural detail decides this rather than merely tending to it. A
+One structural detail makes this certain rather than likely. A
 partial unique index on `execution_id` where `status = 'PENDING'` makes it
 impossible for one execution to have two open cards. The database enforces
 that, so no second code path can forget the check.
@@ -92,15 +92,15 @@ is the same shape as the consumption check in
 and it exists for the same reason: a load-then-write lets two workers both
 see `approved` and both execute.
 
-The rule generalizes to every transition on this record. Approving is a
-conditional update from `PENDING`. Denying is a conditional update from
-`PENDING`. Nothing reads status and then writes it back.
+The rule generalizes to every transition on this record. Approving and
+denying are both conditional updates from `PENDING`. Nothing reads status
+and then writes it back.
 
 Expiry and consumption cannot collide, because their predicates address
-disjoint status sets. The consume predicate requires `status = 'APPROVED'`.
-The expiry path targets `status = 'PENDING'`, so there is no window in
-which both can win. A row that is still
-pending past its expiry is not consumable, because the consume predicate
+disjoint status sets. The consume predicate requires `status = 'APPROVED'`
+and the expiry path targets `status = 'PENDING'`, so there is no window
+in which both can win. A row that is still pending past its expiry is
+not consumable, because the consume predicate
 carries `expires_at > now()` in the same statement. Nothing can rewrite a
 consumed row as expired, because the expiry update's own predicate excludes
 it.
@@ -129,8 +129,8 @@ distinguish "never asked" from "asked and denied", so it asks again. The
 operator gets a second card for a decision they already made, and the loop
 continues until somebody reads the logs.
 
-Recovery is keyed by the approvals themselves. You ask about the grants
-you hold, and the server tells you what became of each one.
+Recovery keys on the approval ids the agent holds. The server tells it
+what became of each grant.
 
 ```sql
 SELECT id, status, expires_at, action_digest, decided_by, decided_at
@@ -140,9 +140,9 @@ SELECT id, status, expires_at, action_digest, decided_by, decided_at
 ```
 
 Nothing in that query filters by status, so denied, expired and consumed
-all come back. That is the entire point. A recovery surface that hides
-negative answers forces the agent to infer state from absence, and
-inference is precisely what durable state was supposed to eliminate.
+all come back. A recovery surface that hides negative answers forces the
+agent to infer state from absence, and inference is precisely what durable
+state was supposed to eliminate.
 
 A retried workflow that finds `denied` can end the run and report the
 refusal to the user, which is the correct behavior. The same workflow
@@ -153,7 +153,7 @@ because nothing in the protocol tells it the difference.
 
 Two properties make expiry safe to run out of band.
 
-It is idempotent and restartable. The sweeper is a query plus a
+The sweeper is idempotent and restartable. It is a query plus a
 conditional update, both of which can be re-run after a crash without
 consequence. The database is the source of truth; the sweeper is a
 convenience.
@@ -202,8 +202,7 @@ the same human repeatedly, and the result is approval fatigue that
 teaches people to click without reading. If you route approvals to
 people, make negative decisions durable before you add volume.
 
-Durable state makes the decision recoverable and attributable. Whether
-the record deserves trust is a separate question, and a separate
+Whether the record deserves trust is a separate question, and a separate
 guarantee: the record has to be written atomically with the decision it
 describes. [The audit trail article](/blog/2026-09-25-audit-trail-for-ai-agent-tool-calls/)
 covers that one.
@@ -251,8 +250,7 @@ execution into the same grant.
 
 Recovery asks the server, not the agent's memory. You hand it the approval
 ids you hold and it answers with the true current state of each one, every
-status included. That is what stops a resumed instance from
-reconstructing a decision from the absence of one.
+status included.
 
 The [API reference](https://nullrun.io/docs/api) has the recovery endpoints and the
 [security documentation](https://nullrun.io/security) the retention story.

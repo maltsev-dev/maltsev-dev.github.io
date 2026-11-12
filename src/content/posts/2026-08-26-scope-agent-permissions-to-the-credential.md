@@ -16,8 +16,8 @@ list, done.
 
 ## The three approaches that all end in the same place
 
-Three ways to decide what an agent may call. All three are in use today
-and all three reach the same failure by different routes.
+All three are in use today, and all three reach the same failure by
+different routes.
 
 | Approach | How it fails | Why it survives anyway |
 |---|---|---|
@@ -190,11 +190,11 @@ These gaps decide whether the design is load-bearing.
 
 ## Limitations worth stating
 
-The hard part of this design is key distribution, not the policy lookup.
-Every agent in every environment needs a distinct minted credential,
-which is real operational work that teams underestimate and then route
-around by handing agents a shared key. A shared key is the branching
-design again, with worse ergonomics.
+The hard part of this design is key distribution. Every agent in every
+environment needs a distinct minted credential, which is real operational
+work that teams underestimate and then route around by handing agents a
+shared key. A shared key is the branching design again, with worse
+ergonomics.
 
 It also assumes the runtime can keep credentials separated, which is
 true for a container per agent and false for a single process hosting
@@ -202,8 +202,8 @@ many agents. If you need many agents in one process, you are back to
 needing a per-agent principal the process can hold separately. That means
 a brokered token in place of an API key, and a different amount of work.
 
-And the guarantee is about the agent→tool edge only. It is a real
-guarantee, and it is narrower than "the agent is safe." What happens
+And the guarantee covers the agent-to-tool edge only. It is a real
+guarantee, but it is narrower than "the agent is safe." What happens
 inside a tool after it is called is not something this design sees.
 
 ## FAQ

@@ -1,82 +1,82 @@
 ---
-title: "Embedded 📦 crates ecosystem"
+title: "Embedded crates ecosystem"
 date: "2025-06-25"
 tags: ["rust", "embedded"]
 ---
-**Review of the ecosystem of crates used for programming microcontrollers in Rust**
+A review of the ecosystem of crates used for programming microcontrollers in Rust.
 
-In general, developing programs for **MCU** is aimed at obtaining some information from the surrounding world, performing necessary calculations with this data and interacting back.  Using Rust gives a huge freedom in choosing the level of abstraction at which the developer can interact with the **MCU**.    
-
-🟠 In this article I'll take a closer look at these abstraction levels and some other useful crates.
-
----
+In general, developing programs for an `MCU` is aimed at obtaining some information from the surrounding world, performing necessary calculations with this data and interacting back. Using Rust gives a huge freedom in choosing the level of abstraction at which the developer can interact with the `MCU`.
 
 ## Levels of abstraction
 
-## 1. Low level
-To program an **MCU**, at the **lowest level**, you need to control a special set of `registers` available inside the **MCU**.  
-[Registers](/blog/2025-07-11-mcu-registers/) are special memory locations that you can interact with: write data to, read, modify, and store values.  
-To write or read a value from a register, you need to manipulate individual **bits** at specific memory addresses reserved for those registers.  
-Once the control bits are set in the right registers, at some point the write will be interpreted and passed to a **peripheral device** connected to one of the **MCU** pins to interact with the outside world.  
+### 1. Low level
 
-* This approach can be unsafe, as it requires the use of **unsafe blocks** and **pointer dereferencing** to access register addresses - this can lead to undefined behavior (UB) and memory errors.  
-* Directly manipulating registers to control the **MCU** is powerful, but not the most intuitive or safe way to interact with the hardware.  
+To program an `MCU`, at the lowest level, you need to control a special set of `registers` available inside the `MCU`. [Registers](/blog/2025-07-11-mcu-registers/) are special memory locations that you can interact with: write data to, read, modify, and store values. To write or read a value from a register, you need to manipulate individual bits at specific memory addresses reserved for those registers. Once the control bits are set in the right registers, at some point the write will be interpreted and passed to a peripheral device connected to one of the `MCU` pins to interact with the outside world.
 
-## 2. SVD (system view description) level
-In addition to the datasheet describing the register structure, **MCU** manufacturers sometimes provide standardized **SVD** (System View Description) files in `xml` format.  
-These files contain information about the functions and location of registers in a format `convenient for machine processing.`  
-* The [svd2rust](https://crates.io/crates/svd2rust) tool allows you to automatically generate safe Rust crates with type-safe access to **MCU** peripheral registers based on such **SVD** files.
+- This approach can be unsafe, as it requires the use of `unsafe` blocks and pointer dereferencing to access register addresses, which can lead to undefined behavior (UB) and memory errors.
+- Directly manipulating registers to control the `MCU` is powerful, but not the most intuitive or safe way to interact with the hardware.
 
-## 3. PAC (peripheral access crate) level
+### 2. SVD (system view description) level
 
-After patching the **SVD** files and generating code through `svd2rust`, we get a safe and structured **PAC** - interface for working with the **MCU** peripherals.  
+In addition to the datasheet describing the register structure, `MCU` manufacturers sometimes provide standardized `SVD` (System View Description) files in `xml` format. These files contain information about the functions and location of registers in a format convenient for machine processing.
 
-**PAC** is a `type-safe access` to each register of the peripherals.  
-A struct is created for each register. These structs are implemented using zero-cost abstractions (in release mode).  
+- The [svd2rust](https://crates.io/crates/svd2rust) tool allows you to automatically generate safe Rust crates with type-safe access to `MCU` peripheral registers based on such `SVD` files.
 
-Thanks to the ownership system in Rust, **PAC** eliminates race conditions when accessing the peripherals.  
-For example, if a struct representing a certain register has already been passed to another part of the code, it cannot be reused without explicitly sharing or returning ownership - this prevents unsafe concurrent access.  
+### 3. PAC (peripheral access crate) level
 
-**PAC** limitations:
-* No initialization check: not guaranteed that you have set up all necessary registers correctly.
-* No automatic checking of dependencies between peripherals (e.g. when working with `Timers`, `DMA`, etc.)
+After patching the `SVD` files and generating code through `svd2rust`, we get a safe and structured `PAC`, an interface for working with the `MCU` peripherals.
 
-## 4. HAL (hardware abstraction layer) level
-**HAL** is a high-level abstraction layer built on top of PAC that provides a convenient and safe interface for controlling the **MCU** peripherals.  
-These interfaces use clear structures and high-level abstractions: `GPIO`, `RCC`, `I2C`, `SPI`, `Timers`, `Pins`, etc.  
-This allows implementing safety checks at the type system level and checking the initialization of components before they are used.  
-**HAL** significantly reduces the complexity of interacting with hardware and makes the code more readable, reusable within the MCUs family, and more maintainable.  
+A `PAC` is type-safe access to each register of the peripherals. A struct is created for each register. These structs are implemented using zero-cost abstractions (in release mode).
 
-### Driver
-Basically, it's any crate written for an **MCU** that allows it to interact with the outside world via sensors or peripherals.
+Thanks to the ownership system in Rust, a `PAC` eliminates race conditions when accessing the peripherals. For example, if a struct representing a certain register has already been passed to another part of the code, it cannot be reused without explicitly sharing or returning ownership, which prevents unsafe concurrent access.
 
-🧩 Creating a driver for an external ultrasonic distance sensor **HY-SRF05**
+`PAC` limitations:
+
+- No initialization check: not guaranteed that you have set up all necessary registers correctly.
+- No automatic checking of dependencies between peripherals (e.g. when working with `Timers`, `DMA`, etc.)
+
+### 4. HAL (hardware abstraction layer) level
+
+A `HAL` is a high-level abstraction layer built on top of PAC that provides a convenient and safe interface for controlling the `MCU` peripherals. These interfaces use clear structures and high-level abstractions: `GPIO`, `RCC`, `I2C`, `SPI`, `Timers`, `Pins`, etc. This allows implementing safety checks at the type system level and checking the initialization of components before they are used. A `HAL` significantly reduces the complexity of interacting with hardware and makes the code more readable, reusable within the MCUs family, and more maintainable.
+
+#### Driver
+
+Basically, it's any crate written for an `MCU` that allows it to interact with the outside world via sensors or peripherals.
+
+##### Creating a driver for an external ultrasonic distance sensor HY-SRF05
+
 The sensor has only 5 pins, 2 of them:
-- `TRIG` — for sending a signal (**output**)
-- `ECHO` — for receiving a reflected signal (**input**)
+
+- `TRIG`: for sending a signal (output)
+- `ECHO`: for receiving a reflected signal (input)
 
 The measurement procedure is as follows:
+
 1. Send a short pulse to `TRIG` (e.g. 10 microseconds)
 2. Wait for `ECHO` to go high `is_high()` and start timing
 3. When `ECHO` goes low again `is_low()`, end the measurement
 4. Create a driver function, e.g. `fn measure_distance() -> f32`
 
-When creating the driver function, structures defined in a specific **HAL** for a specific **MCU** were used.  
-The problem is that these types and structures **may not exist** in the same form in another **HAL** - in order to use this driver on another **MCU**, it must be rewritten.  
+When creating the driver function, structures defined in a specific `HAL` for a specific `MCU` were used. The problem is that these types and structures may not exist in the same form in another `HAL`, so in order to use this driver on another `MCU` it must be rewritten.
 
-## 5. Embedded HAL
-[embedded-hal](https://crates.io/crates/embedded-hal) is a project that provides a unified set of **traits** to abstract common **MCU** peripherals: `GPIO`, `Timers`, `SPI`, `UART`, `I2C`, etc.  
+### 5. Embedded HAL
 
-* A **HAL** implemented for a specific **MCU** (e.g. [stm32f4xx-hal](https://crates.io/crates/stm32f4xx-hal) or [rp2040-hal](https://crates.io/crates/rp2040-hal)), implements the traits from `embedded-hal`, usually relying on low-level **PAC** interfaces.
+[embedded-hal](https://crates.io/crates/embedded-hal) is a project that provides a unified set of traits to abstract common `MCU` peripherals: `GPIO`, `Timers`, `SPI`, `UART`, `I2C`, etc.
 
-This ensures compatibility of drivers with any chip that supports `embedded-hal`
-* `modularity` (driver logic is separated from hardware)
-* code `reusability` and portability (the same driver can be used with any **HAL** that implements `embedded-hal`)
-* universal approach that allows `testing` the driver on multiple **MCU** in simulation.
+- A `HAL` implemented for a specific `MCU` (e.g. [stm32f4xx-hal](https://crates.io/crates/stm32f4xx-hal) or [rp2040-hal](https://crates.io/crates/rp2040-hal)), implements the traits from `embedded-hal`, usually relying on low-level `PAC` interfaces.
 
-🛠 Driver with Embedded **HAL**
-To create driver that will be compatible with any platform based on `embedded-hal`, you need to:
+This ensures compatibility of drivers with any chip that supports `embedded-hal`:
+
+- `modularity` (driver logic is separated from hardware)
+- code reusability and portability (the same driver can be used with any `HAL` that implements `embedded-hal`)
+- universal approach that allows testing the driver on multiple `MCU` in simulation.
+
+#### Driver with embedded HAL
+
+To create a driver that will be compatible with any platform based on `embedded-hal`, you need to:
+
 1. Import traits from `embedded_hal`:
+
 ```rust
 use embedded_hal::{
     digital::v2::{InputPin, OutputPin},
@@ -84,7 +84,7 @@ use embedded_hal::{
 };
 ```
 
-2. Define a driver function with **generic traits** and implement the functionality with them:
+2. Define a driver function with generic traits and implement the functionality with them:
 
 ```rust
 fn measure_distance<Trig, Echo, Timer>(
@@ -99,14 +99,15 @@ where
     ...
 ```
 
-## 6. BSP (board support package) level
-`BSP` crates provide abstractions and utilities specific to a particular board (not just an **MCU**).
+### 6. BSP (board support package) level
 
-While `PAC` and `HAL` correspond to **MCU families**, a `BSP` corresponds to a **specific board model** - with its layout, pinout, onboard components and peripherals.  
-BSPs are most often compatible with `embedded-hal` and speed up prototyping
-* [rp-pico](https://crates.io/crates/rp-pico) — BSP for Raspberry Pi Pico (based on `rp2040-hal`)
-* [nucleo-f401re](https://crates.io/crates/nucleo-f401re) - BSP for STM32 Nucleo F401RE
-* [microbit](https://crates.io/crates/microbit) - BSP for BBC micro:bit
+`BSP` crates provide abstractions and utilities specific to a particular board.
+
+While `PAC` and `HAL` correspond to `MCU` families, a `BSP` corresponds to a specific board model, with its layout, pinout, onboard components and peripherals. BSPs are most often compatible with `embedded-hal` and speed up prototyping.
+
+- [rp-pico](https://crates.io/crates/rp-pico): BSP for Raspberry Pi Pico (based on `rp2040-hal`)
+- [nucleo-f401re](https://crates.io/crates/nucleo-f401re): BSP for STM32 Nucleo F401RE
+- [microbit](https://crates.io/crates/microbit): BSP for BBC micro:bit
 
 - Pin names that match the markings on the board
 - For example, instead of `PA9` you can write `usb_dm`, `led_blue`, `button_user`, etc.
@@ -118,13 +119,15 @@ BSPs are most often compatible with `embedded-hal` and speed up prototyping
     * USB, Wi-Fi, BLE, etc.
 - Clock and power settings optimal for a given board
 
-## 7. Cortex crates
-In the Rust ecosystem for **ARM based MCU**, a set of key crates is allocated, designed to work with the **Cortex-M** design:
+### 7. Cortex crates
+
+In the Rust ecosystem for ARM based MCUs, a set of key crates is allocated, designed to work with the `Cortex-M` design:
+
 | crate | purpose |
 |:--------|:-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| [cortex-m](https://crates.io/crates/cortex-m) | Used as a foundation in most **HAL** and **BSP** crates for **MCU** based on Cortex-M (`STM32`, `nRF`, `RP2040`, etc.). |
+| [cortex-m](https://crates.io/crates/cortex-m) | Used as a foundation in most `HAL` and `BSP` crates for `MCU` based on Cortex-M (`STM32`, `nRF`, `RP2040`, etc.). |
 | [cortex-m-rt](https://crates.io/crates/cortex-m-rt) | Minimal runtime (execution environment) for Rust programs under no_std.<br/>Necessary for most bare-metal projects. |
 | [cortex-m-semihosting](https://crates.io/crates/cortex-m-semihosting) | Utilities for interacting with the debugger via semihosting.<br/>Suitable for outputting debug information without `UART` and without additional hardware. |
-| [cortex-a](https://crates.io/crates/cortex-a) | for **ARM Cortex-A** cores (eg Raspberry Pi in bare metal mode)
+| [cortex-a](https://crates.io/crates/cortex-a) | for `ARM Cortex-A` cores (eg Raspberry Pi in bare metal mode) |
 
-Often these crates are not imported directly because the target **HAL**, for example crate `rp2040-hal` itself already depends on `cortex-m`, `cortex-m-rt` and uses them under the hood.
+Often these crates are not imported directly because the target `HAL`, for example crate `rp2040-hal` itself already depends on `cortex-m`, `cortex-m-rt` and uses them under the hood.

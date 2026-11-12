@@ -1,5 +1,4 @@
 ---
-import '../../styles/track.css';
 import { getCollection } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 import { MILESTONES, type Milestone } from '../../data/milestones';
@@ -11,28 +10,18 @@ interface Panel extends Milestone {
 }
 
 /**
- * The short name of a panel.
+ * One catalog, two sources: the deep-dive cases (each with a page of its own)
+ * and the milestone history.
  *
- * The full titles are sentences — "AI Social Media Agent: 7-Platform
- * Publishing with Human-in-the-Loop" — and they belong on the cards, where
- * there is room for a sentence. The index under the track names twelve
- * things in two rows, so it needs a name that fits: the milestone's own
- * short field, or, for a case study, its title with the "AI " taken off.
+ * Calendar order, newest first. What is being built now leads — `period:
+ * 'Current'` is the top of the list — and the case studies follow it, since
+ * their source entries carry no dates to interleave with the history. The rest
+ * is the milestone list, already newest first.
+ *
+ * A panel is an <a> only when it has somewhere to go. A milestone without an
+ * href renders as an <article>, so the listing never shows a link that leads
+ * nowhere.
  */
-const shortName = (panel: Panel): string =>
-  panel.short ?? panel.title.replace(/^AI\s+/, '');
-
-// One track, two sources: the deep-dive cases (each with a page of its own) and
-// the milestone history.
-//
-// Calendar order, newest first. What is being built now leads — `period:
-// 'Current'` is the top of the list — and the case studies follow it, since
-// their source entries carry no dates to interleave with the history. The rest
-// is the milestone list, already newest first.
-//
-// A panel is an <a> only when it has somewhere to go. A milestone without an
-// href renders as an <article>, so the track never shows a link that leads
-// nowhere.
 const panels: Panel[] = [
   ...MILESTONES.filter((m) => m.period === 'Current').map((m) => ({ ...m, linked: !!m.href })),
   ...cases.map((p) => ({
@@ -59,6 +48,45 @@ const RECURRING = [...counts.entries()]
   .filter(([, n]) => n > 1)
   .map(([t]) => t)
   .sort((a, b) => a.localeCompare(b));
+
+/**
+ * The mode of an entry.
+ *
+ * A case study has a directory of its own — a page you descend into — so it
+ * is listed as a directory. A milestone is a file: shipped work, recorded,
+ * with nothing behind it but a summary. The listing says which is which
+ * before you read a word of it.
+ */
+const mode = (p: Panel): string =>
+  p.href?.startsWith('/projects/') ? 'drwxr-xr-x' : '-rw-r--r--';
+
+/**
+ * The when column.
+ *
+ * The source periods are written for a reader — "Jul 2025 — Nov 2025" — and
+ * they are longer than a listing column can be without pushing the name out
+ * of the way. In a listing a date is a date: `2025-07 → 2025-11`. The long
+ * form is still in the data, and it is still what the reader gets on the
+ * case page.
+ */
+const MONTHS: Record<string, string> = {
+  jan: '01', feb: '02', mar: '03', apr: '04', may: '05', jun: '06',
+  jul: '07', aug: '08', sep: '09', oct: '10', nov: '11', dec: '12',
+};
+
+const when = (period: string): string => {
+  if (period === 'Current') return 'current';
+  if (period === 'Case study') return 'case';
+
+  return period
+    .split('—')
+    .map((part) => {
+      const m = /^([A-Za-z]{3})\s+(\d{4})$/.exec(part.trim());
+      const month = m ? MONTHS[m[1].toLowerCase()] : undefined;
+      return m && month ? `${m[2]}-${month}` : part.trim();
+    })
+    .join(' → ');
+};
 
 // What a panel's link is, and what it is called.
 //
@@ -92,202 +120,255 @@ const LINK: Record<LinkKind, { cue: string; verb: string }> = {
 ---
 
 <Base title="Projects" description="Case studies in agentic AI and automation.">
-  <!-- One viewport, no vertical scroll: the wheel drives the row sideways, the
-       same as /experience/ but through this page's own wrapper. -->
-  <div class="prj-page">
-  <section class="hero prj-hero">
-    <span class="eyebrow" data-reveal>Catalog</span>
+  <!--
+    The catalog, as a directory listing.
 
-    {/*
-      The masthead is one row, not one column. Stacked, it left two thirds of
-      the band empty: a short title, a line under it, a row of chips under
-      that, and nothing at all on the right. Now the copy and the chips share
-      the row — the claim on the left, the stacks it was built from on the
-      right — and the band has two ends rather than one.
+    It used to be a carousel: twelve panels in a row, the wheel driving it
+    sideways, with an index underneath to say what was off-screen. Two things
+    were wrong with that. The row hid ten of the twelve, so the index had to
+    exist to compensate — and the index was the only place on the page where
+    all of them were visible at once, which made it the real catalog and the
+    row the decoration. And a page that swallows the wheel without scrolling
+    down reads as a broken page.
 
-      The line about moving along the row is here for the same reason the
-      figure on the front page says how to swipe it: on a desktop this page
-      does not scroll down, it scrolls sideways, and a page that swallows the
-      wheel without saying so reads as a broken page.
-    */}
-    <div class="prj-hero-main">
-      <div class="prj-hero-lead">
-        <h1 data-reveal data-reveal-delay="60">Projects</h1>
-        <p class="lede" data-reveal data-reveal-delay="120">
-          Production systems, not demos. Each one shipped, measured, and left running.
-        </p>
-        <p class="prj-hint" data-reveal data-reveal-delay="160" aria-hidden="true">
-          Scroll, or use ← →, to move along the row
-        </p>
-      </div>
+    A listing puts all twelve on the page, in order, with the same
+    information each of them had. The wheel goes back to scrolling.
+  -->
+  <section class="hero">
+    <span class="eyebrow" data-reveal><span class="pulse-dot"></span>Catalog</span>
+    <h1 data-reveal data-reveal-delay="60" data-anim="type">Projects</h1>
 
-      {
-        RECURRING.length > 0 && (
-          <ul class="recurring prj-chips" data-reveal data-reveal-delay="200">
-            {RECURRING.map((t) => (
-              <li>{t}</li>
-            ))}
-          </ul>
-        )
-      }
-    </div>
+    <p class="tty-prompt" data-reveal data-reveal-delay="100">
+      <span class="who">root</span><span class="sep">@</span><span
+        >amaltsev</span>
+      ><span class="sep">:</span><span class="path">~/projects</span><span class="sep"
+        >$</span
+      >
+      <span class="tty-cmd">ls -la</span>
+    </p>
+
+    <p class="lede" data-reveal data-reveal-delay="120">
+      Production systems, not demos. Each one shipped, measured, and left
+      running.
+    </p>
+
+    {
+      RECURRING.length > 0 && (
+        <ul class="recurring prj-chips" data-reveal data-reveal-delay="160">
+          {RECURRING.map((t) => (
+            <li>{t}</li>
+          ))}
+        </ul>
+      )
+    }
   </section>
 
-  <div class="track-scroll projects-track" data-track-scroll data-track-mode="wheel">
-    <div class="track" data-track>
-      <div class="track-row" data-track-row>
-        {
-          panels.map((m) => {
-            const kind = m.href ? linkKind(m.href) : null;
-            const body = (
-              <>
-                <p class="track-meta">
-                  <span class="track-when">{m.period}</span>
-                </p>
-
-                <h2>{m.title}</h2>
-                <p class="panel-body">{m.summary}</p>
-
-                <ul class="track-skills">
-                  {m.tags.map((t) => (
-                    <li>{t}</li>
-                  ))}
-                </ul>
-
-                {kind && (
-                  <span class="panel-foot">{LINK[kind].cue}</span>
-                )}
-              </>
-            );
-            return m.linked ? (
-              <a
-                class="track-panel panel-project"
-                href={m.href}
-                aria-label={kind ? `${m.title} — ${LINK[kind].verb}` : undefined}
-              >
-                {body}
-              </a>
-            ) : (
-              <article class="track-panel panel-project">{body}</article>
-            );
-          })
-        }
+  <section class="section">
+    <div class="tty tty-prj" data-reveal>
+      <div class="tty-bar">
+        <span class="tty-leds" aria-hidden="true">
+          <i class="led led-on"></i>
+          <i class="led led-on"></i>
+          <i class="led led-off"></i>
+        </span>
+        <span class="tty-title">~/projects</span>
+        <span class="tty-right" aria-hidden="true">
+          {panels.length} entries
+        </span>
       </div>
 
-      {/*
-        The index. The row is a carousel and a carousel hides things: at any
-        moment a reader can see two of the twelve panels and no way to know
-        what the other ten are. This is the whole catalog in two rows — the
-        name of every project, in order, with the one the row is holding
-        marked. It fills the band the row leaves under itself and it is the
-        only place on the page where all twelve are on screen at once.
+      <div class="tty-body">
+        <p class="tty-prompt tty-cmd-line">
+          <span class="who">root</span><span class="sep">@</span><span
+            >amaltsev</span>
+          ><span class="sep">:</span><span class="path">~/projects</span><span class="sep"
+            >$</span
+          >
+          <span class="tty-cmd">ls -la</span>
+        </p>
 
-        The items are links where the panel has somewhere to go and plain
-        text where it does not, exactly as the panels themselves are.
-      */}
-      <nav class="panel-index" aria-label="All projects">
-        {
-          panels.map((m, i) => {
-            const inner = (
-              <>
-                <span class="panel-index-num" aria-hidden="true">
-                  {String(i + 1).padStart(2, '0')}
+        <div class="ls ls-head ls-prj">
+          <div class="ls-row ls-row--cat">
+            <span class="ls-mode">mode</span>
+            <span class="ls-when">when</span>
+            <span class="ls-name">name</span>
+            <span class="ls-cue"></span>
+          </div>
+        </div>
+
+        <div class="ls ls-prj">
+          {
+            panels.map((m, i) => {
+              const kind = m.href ? linkKind(m.href) : null;
+              const name = (
+                <span class="ls-row ls-row--cat">
+                  <span class="ls-mode">{mode(m)}</span>
+                  <span class="ls-when">{when(m.period)}</span>
+                  <span class="ls-name">
+                    {m.linked && m.href ? (
+                      <a
+                        href={m.href}
+                        aria-label={kind ? `${m.title} — ${LINK[kind].verb}` : undefined}
+                      >
+                        {m.title}
+                      </a>
+                    ) : (
+                      m.title
+                    )}
+                  </span>
+                  <span class="ls-cue">{kind ? LINK[kind].cue : ''}</span>
                 </span>
-                <span class="panel-index-name">{shortName(m)}</span>
-                <span class="panel-index-when">{m.period}</span>
-              </>
-            );
-            return m.linked ? (
-              <a
-                class="panel-index-item"
-                href={m.href}
-                data-panel-index-item={i}
-              >
-                {inner}
-              </a>
-            ) : (
-              <span class="panel-index-item" data-panel-index-item={i}>
-                {inner}
-              </span>
-            );
-          })
-        }
-      </nav>
+              );
 
-      <div class="panel-hud" aria-hidden="true">
-        <span data-hud-current>01</span>
-        <span class="panel-hud-bar"><i data-hud-bar /></span>
-        <span>{String(panels.length).padStart(2, '0')}</span>
+              return (
+                <article class="prj-row" data-reveal data-reveal-delay={Math.min(i, 5) * 40}>
+                  <h3 class="prj-title">{name}</h3>
+                  <p class="prj-sum">{m.summary}</p>
+                  <ul class="prj-tags">
+                    {m.tags.map((t) => (
+                      <li>{t}</li>
+                    ))}
+                  </ul>
+                </article>
+              );
+            })
+          }
+        </div>
+
+        <p class="prj-close">
+          Every entry above is shipped work. The long form is on the pages it
+          links to; the summary is the whole of it here.
+        </p>
       </div>
     </div>
-  </div>
-  </div>
-
-  <script>
-    import '../../scripts/track.js';
-  </script>
+  </section>
 </Base>
 
 <style>
-  /* The masthead: the claim on the left, the stacks on the right. Below the
-     breakpoint the two stack, and the chips keep their own margin so they do
-     not sit against the line above them. */
-  .prj-hero-main {
+  /* ----- The listing -------------------------------------------------------
+     One terminal window holding the whole catalog. The header row says what
+     the columns are; each entry is a block, because the summary and the
+     stacks hang under the name rather than beside it.
+     ---------------------------------------------------------------------- */
+  .tty-prj .tty-body {
+    padding-block: 1.9rem 1.4rem;
+  }
+
+  /* The header row sits on its own, above the entries, with a rule under it. */
+  .ls-head {
+    margin-bottom: 0.15rem;
+  }
+
+  .ls-head .ls-row {
+    padding-bottom: 0.25rem;
+    border-bottom: var(--filet) solid var(--grid);
+  }
+
+  /* The columns of an entry come from the shared catalogue row in tty.css:
+     mode, when, name, cue. */
+  .ls-row--cat .ls-name {
+    font-size: 0.95rem;
+  }
+
+  .ls-row--cat .ls-name a {
+    color: var(--encre);
+    text-decoration: none;
+  }
+
+  .ls-row--cat .ls-name a:hover {
+    color: var(--braise);
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+
+  /* One entry. The name is on the first line and the summary and the stacks
+     hang under it, the way a long listing puts the description of a file
+     under its name. */
+  .prj-row {
+    padding-block: 0.6rem;
+    border-bottom: var(--filet) solid color-mix(in srgb, var(--grid) 55%, transparent);
+  }
+
+  .prj-row:last-of-type {
+    border-bottom: 0;
+  }
+
+  .prj-title {
+    margin: 0;
+    font-size: inherit;
+    font-weight: inherit;
+  }
+
+  .prj-sum {
+    margin: 0.25rem 0 0 2ch;
+    max-width: 78ch;
+    font-family: var(--font-body);
+    font-size: 0.87rem;
+    line-height: 1.55;
+    color: var(--fort);
+  }
+
+  .prj-tags {
     display: flex;
     flex-wrap: wrap;
-    align-items: flex-end;
-    justify-content: space-between;
-    gap: 0.7rem 2.5rem;
+    gap: 0.3rem;
+    margin: 0.4rem 0 0 2ch;
+    padding: 0;
+    list-style: none;
   }
 
-  .prj-hero-lead {
-    max-width: 36rem;
-  }
-
-  .prj-hero-lead h1 {
-    margin: 0 0 0.35rem;
-  }
-
-  .prj-hero-lead .lede {
-    margin: 0;
-  }
-
-  /* The line that says how the row moves. Decorative: every panel is in the
-     index below the row, so nothing here is reachable only by scrolling
-     sideways.
-
-     It is shown only when the row actually moves sideways. The condition is
-     the one `isHorizontal()` uses in track.js and the one the layout in
-     track.css is written against — below that width, or without a fine
-     pointer, or under reduced motion, the panels are a column and the line
-     would be telling the reader to do something the page does not do. */
-  .prj-hint {
-    display: none;
-    margin: 0.55rem 0 0;
+  .prj-tags li {
+    padding: 0.05rem 0.4rem;
+    border: var(--filet) solid var(--grid);
+    background: var(--papier);
+    color: var(--fort);
     font-family: var(--font-mono);
-    font-size: 0.7rem;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--braise);
+    font-size: 0.68rem;
+    letter-spacing: 0.05em;
   }
 
-  @media (min-width: 52.1rem) and (hover: hover) and (pointer: fine)
-    and (prefers-reduced-motion: no-preference) {
-    .prj-hint {
-      display: block;
-    }
+  /* The line that closes the catalog. */
+  .prj-close {
+    margin: 1.4rem 0 0;
+    padding-top: 1rem;
+    border-top: var(--filet) solid var(--grid);
+    max-width: 68ch;
+    color: var(--fort);
+    font-family: var(--font-body);
+    font-size: 0.88rem;
   }
 
-  /* Named through the wrapper so the rule outranks the one in track.css,
-     which gives the chips a margin of their own inside the wheel-mode
-     layout. */
-  .prj-hero-main .prj-chips {
-    margin-top: 0;
+  /* ----- The stacks --------------------------------------------------------
+     The skills that recur across the catalog, named under the headline. They
+     are links to the writing about them, so they are drawn like links.
+     ---------------------------------------------------------------------- */
+  .prj-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    margin: 1rem 0 0;
+    padding: 0;
+    list-style: none;
   }
 
+  .prj-chips li {
+    padding: 0.1rem 0.45rem;
+    border: var(--filet) solid var(--grid);
+    background: var(--papier);
+    color: var(--fort);
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.06em;
+  }
+
+  /* ----- Narrower screens --------------------------------------------------
+     Four columns do not fit on a phone. The mode is the first thing to go —
+     it is the least informative — and the rest stack: when, name, cue.
+     ---------------------------------------------------------------------- */
   @media (max-width: 52rem) {
-    .prj-hero-main .prj-chips {
-      margin-top: 0.7rem;
+    .prj-sum,
+    .prj-tags {
+      margin-left: 0;
     }
   }
 </style>

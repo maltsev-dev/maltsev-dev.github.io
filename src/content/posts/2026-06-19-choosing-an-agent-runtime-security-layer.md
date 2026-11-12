@@ -6,8 +6,8 @@ tags: ["architecture", "security"]
 Almost every comparison of agent security tools lines up vendors on a
 feature grid and lets the reader decide. The grid does not carry the
 decision, because the feature names compare and the guarantees do not.
-Every category below claims to stop prompt injection, and the six stop six
-different things.
+Every category below claims to stop prompt injection, and each one stops
+a different thing.
 
 This is a criteria framework. It runs one worked example, a single agent
 action, through each layer, so you can see what stops it and what only
@@ -109,7 +109,7 @@ relationship, to the customer's flag status, to the per-customer
 refund count over seven days, to a ceiling. A filter has no
 representation for a relationship.
 
-Filters also fall to trivially reshaping the same request. Refining a
+Filters also fall to a trivial reshaping of the same request. Refining a
 filter against the filter under test is a losing game.
 
 ### 3. Sandboxing and isolation
@@ -121,8 +121,7 @@ filesystem, cannot reach internal services, cannot exhaust the network.
 
 It says nothing about whether the *permitted* action is correct. A
 sandbox in which the agent may call `refund_order` is a sandbox in
-which the agent calls `refund_order` on the flagged account. Sandboxing
-is about the space; the decision lives elsewhere.
+which the agent calls `refund_order` on the flagged account.
 
 This is also the layer that covers the subprocess path: the shell, the code
 interpreter, the tool that runs arbitrary code. Nothing at the tool layer
@@ -161,8 +160,8 @@ vendor phrases it.
 
 The interesting failure is the one where tracing *feels* like control: a
 dashboard showing an agent's actions, an alert on an anomaly score, a team
-that believes the alert prevents the incident. It does not. It tells you
-about it.
+that believes the alert prevents the incident. It does not prevent the
+incident, it tells you about it afterwards.
 
 ### 6. Runtime authorization
 
@@ -207,10 +206,10 @@ open problem, and it is covered honestly in
 | Runtime authorization | Not automatic: the money-amount rule fires an approval card on the re-derived amount, and the period budget and tool-pattern rules are evaluated against live state at the moment of the call |
 | Tracing | Records all three, alerts after the fact. |
 
-One layer caught it. **The other five are looking at a different
-question.** Four of them ask whether this action is the *kind* of action
-that is allowed. Runtime authorization asks whether this *instance*
-should be allowed.
+One layer caught it. The other five are looking at a different question.
+Four of them ask whether this action is the *kind* of action that is
+allowed. Runtime authorization asks whether this *instance* should be
+allowed.
 
 That is why these are complements. Replacing a runtime authorization layer
 with better filters or stricter prompts leaves the flagged customer in
@@ -357,7 +356,6 @@ label implies more than the scope below:
 | Payload derivation | Provenance is not an input to the decision; the material fields are, and they are re-derived server-side, so an injected payload field is caught by recomputation instead of being trusted |
 | Approval rule families | A money-amount threshold, and a condition on a named field inside the tool's own argument bag, both configured in the policy editor without a deploy |
 
-The protocol is documented in the [API reference](https://nullrun.io/docs/api), and the
-layer is one of the six discussed above. The other five still apply,
-because the whole argument of this piece is that the honest map is more
-useful than a feature grid.
+The protocol is documented in the [API reference](https://nullrun.io/docs/api).
+The layer is one of the six discussed above, and the other five still
+apply.

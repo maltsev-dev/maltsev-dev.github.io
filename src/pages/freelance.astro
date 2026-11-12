@@ -2,17 +2,12 @@
 import Base from '../layouts/Base.astro';
 import { contactMailto } from '../lib/schema';
 
-const num = (i: number) => String(i + 1).padStart(2, '0');
-
 /**
- * The five engagements.
+ * The engagements.
  *
  * Each one is a shape of work rather than a product: the symptom that brings
  * someone here, the thing they end up holding, and the tools it is built
- * with. The briefs used to live inside a dialog, one click away and one
- * click from gone — a visitor had to open five boxes to learn what the page
- * was offering, and a search engine saw five empty tiles. They are on the
- * page now, in full, because they are the content.
+ * with. They sit on the page in full, because they are the content.
  */
 const ENGAGEMENTS = [
   {
@@ -55,7 +50,7 @@ const ENGAGEMENTS = [
       'Architecture review, threat model, a quality-evaluation plan, a cost estimate, and a rollout roadmap.',
     stack: 'LLM APIs, LangGraph, RAG, Docker, PostgreSQL, OpenTelemetry.',
   },
-].map((e, i) => ({ ...e, num: num(i) }));
+].map((e, i) => ({ ...e, num: String(i + 1).padStart(2, '0') }));
 
 /**
  * The run of an engagement.
@@ -75,38 +70,39 @@ const STEPS = [
   },
   {
     title: 'Build in the open',
-    body: 'Weekly updates and a working environment you can look at from week one — not a black box at the end.',
+    body: 'Weekly updates and a working environment you can look at from week one. No black box at the end.',
   },
   {
     title: 'Handover',
     body: 'Documented, tested, and yours. I leave when the system runs without me.',
   },
-].map((s, i) => ({ ...s, num: num(i) }));
+].map((s, i) => ({ ...s, num: String(i + 1).padStart(2, '0') }));
 
 /**
  * The terms.
  *
  * Four lines that answer the question every client asks before the scope
  * call: what shape is this, what does it cost, and what do I own at the
- * end. They sit beside the hero because they are the reason to keep reading
- * — the hero says what the work is, and this says what agreeing to it means.
+ * end. They sit in the window beside the hero because they are the reason
+ * to keep reading — the hero says what the work is, and this says what
+ * agreeing to it means.
  */
 const TERMS = [
   {
-    k: 'Fixed scope',
+    k: 'fixed scope',
     v: 'One deliverable, agreed in writing before the work starts.',
   },
   {
-    k: 'Fixed price',
+    k: 'fixed price',
     v: 'A number, not an hourly meter.',
   },
   {
-    k: 'Open build',
+    k: 'open build',
     v: 'Weekly updates and a working environment you can look at from week one.',
   },
   {
-    k: 'Yours at the end',
-    v: 'Code, tests and documentation — and no dependency on me to run it.',
+    k: 'yours at the end',
+    v: 'Code, tests and documentation. No dependency on me to run it.',
   },
 ];
 
@@ -130,7 +126,7 @@ const NOT_THIS = [
   },
   {
     title: 'Not a fit for everything.',
-    body: 'If the honest answer is that your problem is a configuration change, a prompt, or a vendor that already does this — that is what the scope call will tell you.',
+    body: 'If the honest answer is that your problem is a configuration change, a prompt, or a vendor that already does this, that is what the scope call will tell you.',
   },
 ];
 ---
@@ -139,19 +135,36 @@ const NOT_THIS = [
   title="Engagements"
   description="Fixed-scope AI engineering engagements: agent reliability audits, RAG quality and access control, workflow automation, MCP tool integration, and architecture review."
 >
+  <!--
+    The page is a machine with three directories in it: the terms, the
+    engagements, and the way an engagement runs. Each is a window with its
+    own title, so the reader can tell at a glance which file they are
+    reading — the same way the shell tells you where you are.
+  -->
   <section class="hero eng-hero">
     <!--
-      The claim, in its own column. The terms panel beside it is taller than
-      the claim is, and when the two shared a grid the extra height was
+      The claim, in its own column. The terms window beside it is taller
+      than the claim is, and when the two shared a grid the extra height was
       handed back to the rows between them — which left a band of dead space
-      between the lede and the buttons. One column each, and the panel simply
-      hangs lower than the paragraph.
+      between the lede and the buttons. One column each, and the window
+      simply hangs lower than the paragraph.
     -->
     <div class="eng-lead">
-      <span class="eyebrow" data-reveal>Engagements</span>
-      <h1 data-reveal data-reveal-delay="60">Fixed-scope AI engineering.</h1>
-      <p class="lede" data-reveal data-reveal-delay="120">
-        I take on a small number of engagements at a time — usually where AI
+      <span class="eyebrow"><span class="pulse-dot"></span>Engagements</span>
+      <h1 data-anim="type">Fixed-scope AI engineering</h1>
+
+      <p class="tty-prompt" data-reveal>
+        <span class="who">root</span><span class="sep">@</span><span
+          >amaltsev</span>
+        ><span class="sep">:</span><span class="path">~/engagements</span><span
+          class="sep"
+          >$</span
+        >
+        <span class="tty-cmd">ls -la</span>
+      </p>
+
+      <p class="lede" data-reveal data-reveal-delay="60">
+        I take on a small number of engagements at a time, usually where AI
         automation and systems reliability overlap, and where the problem is
         hard enough that a template won't do.
       </p>
@@ -165,7 +178,7 @@ const NOT_THIS = [
         in the strip at the top of the screen; the close of the page is where
         the writing happens.
       -->
-      <div class="btn-row eng-cta" data-reveal data-reveal-delay="180">
+      <div class="btn-row eng-cta" data-reveal data-reveal-delay="120">
         <a class="btn" href="/projects/">See the work</a>
       </div>
     </div>
@@ -175,16 +188,40 @@ const NOT_THIS = [
       every page but this one; here it holds the four facts a client is
       actually looking for before the scope call.
     -->
-    <dl class="terms" data-reveal data-reveal-delay="240">
-      {
-        TERMS.map((term) => (
-          <div class="term">
-            <dt>{term.k}</dt>
-            <dd>{term.v}</dd>
-          </div>
-        ))
-      }
-    </dl>
+    <div class="tty tty-terms" data-reveal data-reveal-delay="180">
+      <div class="tty-bar">
+        <span class="tty-leds" aria-hidden="true">
+          <i class="led led-on"></i>
+          <i class="led led-off"></i>
+          <i class="led led-off"></i>
+        </span>
+        <span class="tty-title">~/engagements/terms</span>
+        <span class="tty-right" aria-hidden="true">{TERMS.length} terms</span>
+      </div>
+
+      <div class="tty-body">
+        <p class="tty-prompt tty-cmd-line">
+          <span class="who">root</span><span class="sep">@</span><span
+            >amaltsev</span>
+          ><span class="sep">:</span><span class="path">~/engagements</span><span
+            class="sep"
+            >$</span
+          >
+          <span class="tty-cmd">cat terms.txt</span>
+        </p>
+
+        <div class="ls ls-terms">
+          {
+            TERMS.map((term) => (
+              <div class="ls-row">
+                <span class="ls-term-k">{term.k}</span>
+                <span class="ls-term-v">{term.v}</span>
+              </div>
+            ))
+          }
+        </div>
+      </div>
+    </div>
   </section>
 
   <!--
@@ -193,55 +230,107 @@ const NOT_THIS = [
     wall of headings that all have to be opened to be compared.
   -->
   <section class="section">
-    <div class="section-head">
-      <h2 data-reveal data-anim="underline">The engagements</h2>
-      <span class="card-meta">{ENGAGEMENTS.length} shapes of work</span>
+    <div class="tty-fit">
+      <div class="section-head">
+        <h2 data-reveal data-anim="underline">The engagements</h2>
+        <span class="card-meta">{ENGAGEMENTS.length} shapes of work</span>
+      </div>
+
+      <div class="tty tty-eng" data-reveal>
+      <div class="tty-bar">
+        <span class="tty-leds" aria-hidden="true">
+          <i class="led led-on"></i>
+          <i class="led led-off"></i>
+          <i class="led led-off"></i>
+        </span>
+        <span class="tty-title">~/engagements</span>
+        <span class="tty-right" aria-hidden="true">
+          {ENGAGEMENTS.length} entries
+        </span>
+      </div>
+
+      <div class="tty-body">
+        <p class="tty-prompt tty-cmd-line">
+          <span class="who">root</span><span class="sep">@</span><span
+            >amaltsev</span>
+          ><span class="sep">:</span><span class="path">~/engagements</span><span
+            class="sep"
+            >$</span
+          >
+          <span class="tty-cmd">cat engagements/*.md</span>
+        </p>
+
+        {
+          ENGAGEMENTS.map((e, i) => (
+            <article
+              class="eng"
+              data-reveal
+              data-reveal-delay={Math.min(i, 4) * 50}
+            >
+              <div class="eng-head">
+                <span class="eng-num" aria-hidden="true">
+                  {e.num}
+                </span>
+                <h3 class="eng-title">{e.title}</h3>
+              </div>
+
+              <dl class="eng-facts">
+                <dt>symptom</dt>
+                <dd>{e.when}</dd>
+                <dt>deliver</dt>
+                <dd>{e.deliverable}</dd>
+                <dt>stack</dt>
+                <dd class="eng-stack">{e.stack}</dd>
+              </dl>
+            </article>
+          ))
+        }
+      </div>
     </div>
-
-    <ol class="ledger">
-      {
-        ENGAGEMENTS.map((e, i) => (
-          <li class="eng" data-reveal data-reveal-delay={Math.min(i, 4) * 50}>
-            <div class="eng-head">
-              <span class="eng-num" aria-hidden="true">
-                {e.num}
-              </span>
-              <h3 class="eng-title">{e.title}</h3>
-            </div>
-
-            <dl class="eng-facts">
-              <dt>Symptom</dt>
-              <dd>{e.when}</dd>
-              <dt>You get</dt>
-              <dd>{e.deliverable}</dd>
-              <dt>Stack</dt>
-              <dd class="eng-stack">{e.stack}</dd>
-            </dl>
-          </li>
-        ))
-      }
-    </ol>
+    </div>
   </section>
 
   <section class="section">
     <div class="section-head">
       <h2 data-reveal data-anim="underline">How an engagement runs</h2>
-      <span class="card-meta">Four steps, in order</span>
+      <span class="card-meta">{STEPS.length} steps, in order</span>
     </div>
 
-    <ol class="steps" data-reveal data-reveal-delay="60">
-      {
-        STEPS.map((s) => (
-          <li class="step">
-            <span class="step-num" aria-hidden="true">
-              {s.num}
-            </span>
-            <h3 class="step-title">{s.title}</h3>
-            <p class="step-body">{s.body}</p>
-          </li>
-        ))
-      }
-    </ol>
+    <div class="tty tty-run" data-reveal>
+      <div class="tty-bar">
+        <span class="tty-leds" aria-hidden="true">
+          <i class="led led-on"></i>
+          <i class="led led-on"></i>
+          <i class="led led-off"></i>
+        </span>
+        <span class="tty-title">~/engagements/run</span>
+        <span class="tty-right" aria-hidden="true">run --engagement</span>
+      </div>
+
+      <div class="tty-body">
+        <p class="tty-prompt tty-cmd-line">
+          <span class="who">root</span><span class="sep">@</span><span
+            >amaltsev</span>
+          ><span class="sep">:</span><span class="path">~/engagements</span><span
+            class="sep"
+            >$</span
+          >
+          <span class="tty-cmd">make run</span>
+        </p>
+
+        <ol class="pipe">
+          {
+            STEPS.map((s, i) => (
+              <li class="pipe-step">
+                <span class="pipe-num">{s.num}</span>
+                <h3 class="pipe-title">{s.title}</h3>
+                <p class="pipe-body">{s.body}</p>
+              </li>
+            ))
+          }
+        </ol>
+      </div>
+    </div>
   </section>
 
   <!--
@@ -249,19 +338,51 @@ const NOT_THIS = [
     is the part of the pitch that actually separates one from another.
   -->
   <section class="section">
-    <div class="section-head">
-      <h2 data-reveal data-anim="underline">What this is not</h2>
-    </div>
+    <div class="tty-fit">
+      <div class="section-head">
+        <h2 data-reveal data-anim="underline">What this is not</h2>
+        <span class="card-meta">Read this one</span>
+      </div>
 
-    <div class="not-grid">
-      {
-        NOT_THIS.map((n, i) => (
-          <div class="not" data-reveal data-reveal-delay={i * 60}>
-            <h3 class="not-title">{n.title}</h3>
-            <p class="not-body">{n.body}</p>
-          </div>
-        ))
-      }
+      <div class="tty tty-limits" data-reveal>
+      <div class="tty-bar">
+        <span class="tty-leds" aria-hidden="true">
+          <i class="led led-warn"></i>
+          <i class="led led-off"></i>
+          <i class="led led-off"></i>
+        </span>
+        <span class="tty-title">~/engagements/limits</span>
+        <span class="tty-right" aria-hidden="true">{NOT_THIS.length} exclusions</span>
+      </div>
+
+      <div class="tty-body">
+        <p class="tty-prompt tty-cmd-line">
+          <span class="who">root</span><span class="sep">@</span><span
+            >amaltsev</span>
+          ><span class="sep">:</span><span class="path">~/engagements</span><span
+            class="sep"
+            >$</span
+          >
+          <span class="tty-cmd">cat limits.txt</span>
+        </p>
+
+        <ul class="not-list">
+          {
+            NOT_THIS.map((n, i) => (
+              <li class="not" data-reveal data-reveal-delay={i * 60}>
+                <span class="not-mark" aria-hidden="true">
+                  ■
+                </span>
+                <div class="not-text">
+                  <h3 class="not-title">{n.title}</h3>
+                  <p class="not-body">{n.body}</p>
+                </div>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </div>
     </div>
   </section>
 
@@ -269,39 +390,74 @@ const NOT_THIS = [
     The close. The page says what the work is, what it costs and what the
     reader ends up holding — and then it stops. A page about taking on work
     has to end with a way to start it, so this block is the one place on the
-    site where the invitation is the whole point: centred, measured to a
-    paragraph, and carrying one way to write. The form button that used to
-    sit beside it opened the same form as the strip at the top of the screen,
-    so the address in the sentence is the way to write without the script.
+    site where the invitation is the whole point. The address is on the
+    command line, the way a mail command is written: the way to start the
+    conversation is the thing you type.
   -->
   <section class="section close-cta">
-    <div class="close-inner">
-      <h2 data-reveal data-anim="underline">Start a conversation</h2>
-      <p data-reveal data-reveal-delay="60">
-        Tell me what you are trying to build and where it is stuck. Half an hour
-        on a call is enough for both of us to know whether this is work I should
-        be doing — and I will say so if it is not. If you would rather write
-        first, <a class="post-cta-mail" href={contactMailto('An engagement')}>send me a note</a>.
-      </p>
+    <div class="tty tty-close" data-reveal>
+      <div class="tty-bar">
+        <span class="tty-leds" aria-hidden="true">
+          <i class="led led-on led-blink"></i>
+          <i class="led led-off"></i>
+          <i class="led led-off"></i>
+        </span>
+        <span class="tty-title">~/engagements/contact</span>
+        <span class="tty-right" aria-hidden="true">ready</span>
+      </div>
+
+      <div class="tty-body">
+        <!--
+          The command is written the way a shell writes a long one: the
+          argument on the next line, under the continuation prompt. It is
+          also the only way to write on this page, so it belongs on the
+          command line rather than in the sentence under it.
+        -->
+        <p class="tty-prompt tty-cmd-line">
+          <span class="who">root</span><span class="sep">@</span><span
+            >amaltsev</span>
+          ><span class="sep">:</span><span class="path">~/engagements</span><span
+            class="sep"
+            >$</span
+          >
+          <span class="tty-cmd">mail -s "engagement" \</span>
+        </p>
+        <p class="tty-prompt tty-cmd-line tty-cont-line">
+          <span class="tty-cont" aria-hidden="true">&gt;</span>
+          <a class="post-cta-mail" href={contactMailto('An engagement')}
+            >mr.a.maltsev@gmail.com</a
+          >
+        </p>
+
+        <p class="close-note">
+          Tell me what you are trying to build and where it is stuck. Half an
+          hour on a call is enough for both of us to know whether this is
+          work I should be doing. I will say so if it is not.
+        </p>
+      </div>
     </div>
   </section>
 </Base>
 
 <style>
   /* ----- The hero ----------------------------------------------------------
-     Two columns on a wide screen: the claim on the left, the terms on the
-     right. Below the breakpoint they stack, because a four-row panel beside
-     a headline only works where there is width for both.
+     Two columns on a wide screen: the claim on the left, the terms window on
+     the right. Below the breakpoint they stack, because a four-row window
+     beside a headline only works where there is width for both.
      ---------------------------------------------------------------------- */
   .eng-hero {
+    display: grid;
+    /* Stacked, the two halves of the hero need a gap between them: without
+       one the window butts straight against the button above it. */
+    gap: 2.2rem;
     padding-block: clamp(2.2rem, 8vh, 5rem) clamp(1.5rem, 4vh, 3rem);
   }
 
   @media (min-width: 62rem) {
     .eng-hero {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) minmax(0, 23rem);
+      grid-template-columns: minmax(0, 1fr) minmax(0, 26rem);
       column-gap: clamp(2rem, 5vw, 4.5rem);
+      row-gap: 0;
       align-items: start;
     }
   }
@@ -310,87 +466,89 @@ const NOT_THIS = [
     margin-block: var(--sp-5) 0;
   }
 
-  /* The terms panel: four rows on one ground, separated by hairlines. */
-  .terms {
-    display: grid;
-    gap: 1px;
-    margin: var(--sp-5) 0 0;
-    padding: 0;
-    background: var(--grid);
-    border: var(--filet) solid var(--grid);
+  /* The command line that sits under the headline. */
+  .eng-hero .tty-prompt {
+    margin-block: 0.9rem 0;
   }
 
-  .term {
-    display: grid;
-    gap: 0.15rem;
-    padding: 0.75rem 0.9rem 0.85rem;
-    background: var(--papier);
+  /* ----- The terms window -------------------------------------------------
+     Four rows, each one a key and its value. The key column is fixed-width
+     so the values line up under each other, the way a listing does.
+     ---------------------------------------------------------------------- */
+  .tty-terms .tty-body {
+    padding-block: 1.9rem 1.2rem;
   }
 
-  .term dt {
-    font-family: var(--font-mono);
-    font-size: var(--fs-label);
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
+  .ls-terms .ls-row {
+    /* Wide enough for the longest key — "yours at the end" — so the value
+       never starts on top of it. */
+    grid-template-columns: 17ch minmax(0, 1fr);
+    gap: 0 1.5ch;
+    align-items: baseline;
+  }
+
+  .ls-term-k {
     color: var(--braise);
+    letter-spacing: 0.06em;
   }
 
-  .term dd {
-    margin: 0;
+  .ls-term-v {
     color: var(--fort);
-    font-size: var(--fs-small);
+    font-family: var(--font-body);
+    font-size: 0.86rem;
     line-height: 1.5;
   }
 
-  /* ----- The engagements ---------------------------------------------------
-     Five rows, each one a full-width line: the title on the left, the brief
-     on the right. The grid of tiles this replaced showed five headings and
-     hid five briefs behind a button; a visitor could not tell which offer
-     was theirs without clicking through all five.
+  /* On a phone the key column leaves too little for the value, so the two
+     stack: the key on its own row, the sentence under it. */
+  @media (max-width: 40rem) {
+    .ls-terms .ls-row {
+      grid-template-columns: 1fr;
+      gap: 0.1rem;
+    }
+
+    .ls-terms .ls-term-v {
+      margin-bottom: 0.5rem;
+    }
+  }
+
+  /* ----- The engagements window -------------------------------------------
+     Five entries, each one a title and three facts. The facts are labelled
+     the way a file is labelled: symptom, deliver, stack.
      ---------------------------------------------------------------------- */
-  .ledger {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    border-top: var(--trait) solid var(--braise);
+  .tty-eng .tty-body {
+    padding-block: 1.9rem 1.4rem;
   }
 
   .eng {
-    display: grid;
-    gap: var(--sp-4);
-    padding-block: var(--sp-5);
-    border-bottom: var(--filet) solid var(--grid);
+    padding-block: 0.9rem;
+    border-top: var(--filet) solid color-mix(in srgb, var(--grid) 60%, transparent);
   }
 
-  @media (min-width: 52rem) {
-    .eng {
-      /* The title column was 19rem and every title that needed more than
-         that broke in the wrong place — "RAG Quality & Access-Control
-         Audit" left "Control Audit" alone on the second line. */
-      grid-template-columns: minmax(15rem, 22rem) 1fr;
-      gap: var(--sp-6);
-      align-items: start;
-    }
+  .eng:first-of-type {
+    border-top: 0;
+    padding-top: 0.2rem;
   }
 
   .eng-head {
     display: flex;
     align-items: baseline;
-    gap: var(--sp-3);
+    gap: 0.8ch;
   }
 
   .eng-num {
+    color: var(--braise);
     font-family: var(--font-mono);
     font-size: var(--fs-label);
     letter-spacing: 0.12em;
-    color: var(--braise);
+    font-variant-numeric: tabular-nums;
     flex-shrink: 0;
   }
 
   .eng-title {
     margin: 0;
-    font-size: clamp(1.05rem, 2.2vw, 1.25rem);
-    line-height: 1.2;
+    font-size: clamp(1rem, 2.1vw, 1.16rem);
+    line-height: 1.25;
     text-wrap: balance;
   }
 
@@ -398,28 +556,31 @@ const NOT_THIS = [
     display: grid;
     grid-template-columns: 1fr;
     gap: 0.15rem;
-    margin: 0;
+    margin: 0.55rem 0 0;
   }
 
   @media (min-width: 34rem) {
     .eng-facts {
-      grid-template-columns: 5.5rem 1fr;
-      gap: 0.55rem 0.9rem;
+      grid-template-columns: 7ch 1fr;
+      gap: 0.5rem 1.2ch;
     }
   }
 
   .eng-facts dt {
+    color: var(--faible);
     font-family: var(--font-mono);
-    font-size: 0.7rem;
+    font-size: 0.68rem;
     letter-spacing: 0.14em;
     text-transform: uppercase;
-    color: var(--braise);
-    padding-top: 0.18rem;
+    padding-top: 0.24rem;
   }
 
   .eng-facts dd {
-    margin: 0 0 0.45rem;
+    margin: 0;
     color: var(--fort);
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    line-height: 1.55;
   }
 
   .eng-facts dd.eng-stack {
@@ -428,116 +589,161 @@ const NOT_THIS = [
     color: var(--encre);
   }
 
-  /* ----- How an engagement runs --------------------------------------------
-     Four across on a wide screen, two on a tablet, one on a phone. The old
-     three-column grid held four steps and left the last one stranded on a
-     row of its own.
+  /* ----- The pipeline -----------------------------------------------------
+     Four steps, left to right, with the arrow drawn in the art face between
+     them — the box-drawing characters have to come from one face, or the
+     line breaks up and the arrow does not meet the rule it points along.
+     Below the breakpoint the steps stack and the arrows go away.
      ---------------------------------------------------------------------- */
-  .steps {
+  .pipe {
     list-style: none;
     margin: 0;
     padding: 0;
     display: grid;
-    gap: 1.5rem 2rem;
+    gap: 1.4rem 3.4rem;
     grid-template-columns: 1fr;
   }
 
-  @media (min-width: 40rem) {
-    .steps {
-      grid-template-columns: repeat(2, 1fr);
-    }
-  }
-
-  @media (min-width: 62rem) {
-    .steps {
+  @media (min-width: 58rem) {
+    .pipe {
       grid-template-columns: repeat(4, 1fr);
     }
   }
 
-  .step {
-    border-top: var(--trait) solid var(--braise);
-    padding-top: 0.7rem;
+  .pipe-step {
+    position: relative;
   }
 
-  .step-num {
-    font-family: var(--font-mono);
-    font-size: var(--fs-label);
-    letter-spacing: 0.12em;
-    color: var(--braise);
-  }
-
-  .step-title {
-    margin: 0.35rem 0 0;
-    font-size: 1.05rem;
-  }
-
-  .step-body {
-    margin: 0.4rem 0 0;
-    color: var(--fort);
-  }
-
-  /* ----- What this is not --------------------------------------------------
-     Three columns with a rule on top, matching the steps above: the two
-     blocks say the same kind of thing about the engagement, so they are
-     drawn the same way.
-     ---------------------------------------------------------------------- */
-  .not-grid {
-    display: grid;
-    gap: 1.5rem 2rem;
-    grid-template-columns: 1fr;
-  }
-
-  @media (min-width: 48rem) {
-    .not-grid {
-      grid-template-columns: repeat(3, 1fr);
+  @media (min-width: 58rem) {
+    .pipe-step:not(:last-child)::after {
+      content: '──▶';
+      position: absolute;
+      right: -2.9rem;
+      top: 0.05em;
+      color: var(--faible);
+      font-family: var(--font-art);
+      font-size: 0.85rem;
+      letter-spacing: 0;
     }
   }
 
+  @media (max-width: 57.99rem) {
+    /* Stacked, the steps are a list again: a dotted rule between them does
+       the work the arrow did on one line. */
+    .pipe-step + .pipe-step {
+      border-top: var(--filet) dotted var(--grid);
+      padding-top: 1.2rem;
+    }
+  }
+
+  .pipe-num {
+    color: var(--braise);
+    font-family: var(--font-mono);
+    font-size: var(--fs-label);
+    letter-spacing: 0.12em;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .pipe-title {
+    margin: 0.3rem 0 0;
+    font-size: 1rem;
+    line-height: 1.25;
+  }
+
+  .pipe-body {
+    margin: 0.45rem 0 0;
+    color: var(--fort);
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    line-height: 1.55;
+  }
+
+  /* ----- What this is not --------------------------------------------------
+     Three exclusions. The marker is a filled block in the art face: it is
+     the one glyph in the shipped face that says "not this" without needing
+     a word next to it, and the word is still there for anyone who does not
+     read the shape.
+     ---------------------------------------------------------------------- */
+  .tty-limits .tty-body {
+    padding-block: 1.9rem 1.4rem;
+  }
+
+  .not-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 1rem;
+  }
+
   .not {
-    border-top: var(--trait) solid var(--braise);
-    padding-top: 0.7rem;
+    display: grid;
+    grid-template-columns: 1.2ch minmax(0, 1fr);
+    gap: 0 1ch;
+    align-items: baseline;
+  }
+
+  .not-mark {
+    color: var(--erreur);
+    font-family: var(--font-art);
+    font-size: 0.85rem;
+    line-height: 1.5;
   }
 
   .not-title {
     margin: 0;
-    font-size: 1.05rem;
+    font-size: 1rem;
     color: var(--braise);
   }
 
   .not-body {
-    margin: 0.4rem 0 0;
+    margin: 0.3rem 0 0;
     color: var(--fort);
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    line-height: 1.55;
+    max-width: 74ch;
   }
 
   /* ----- Close ------------------------------------------------------------
      The block that says what to do next. It is the only thing on the page
-     that asks for anything, so it is set apart: a rule above it, and a
-     measure that reads as a paragraph rather than as a banner. Centred, like
-     the closing blocks on the posts and the cases — a sign-off that sat in
-     the left third of an empty screen read as content that had run out
-     rather than as the end of the page.
+     that asks for anything, so it is set apart: its own window, and a
+     measure that reads as a paragraph rather than as a banner.
      ---------------------------------------------------------------------- */
   .close-cta {
     border-top: var(--trait) solid var(--braise);
+    padding-top: clamp(2rem, 5vw, 3.5rem);
   }
 
-  .close-inner {
-    max-width: 44rem;
+  .tty-close .tty-body {
+    padding-block: 1.9rem 1.4rem;
+  }
+
+  /* The close is a window around a paragraph and an address. It shares the
+     width of the window above it — the two sit one under the other at the
+     foot of the page, and they have to line up — and stands in the middle
+     of the column. */
+  .tty-limits,
+  .tty-close {
+    width: 45.25rem;
+    max-width: 100%;
     margin-inline: auto;
-    text-align: center;
   }
 
-  .close-inner p {
+  .close-note {
+    margin: 0.4rem 0 0;
+    max-width: 62ch;
     color: var(--fort);
-    margin-bottom: 0;
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    line-height: 1.6;
   }
 
-  /* On this page the address sits on the page ground rather than on the
-     rouge box, and the accent measures 4.8:1 there — so here it can be the
-     accent itself, which is what the rest of the site does with a link. */
-  .close-inner .post-cta-mail,
-  .close-inner .post-cta-mail:hover {
-    color: var(--braise);
-    text-decoration-color: var(--braise);
+  /* The address is on the command line, so it inherits the command's colour
+     and the underline is the only thing marking it as a link. */
+  .tty-close .post-cta-mail,
+  .tty-close .post-cta-mail:hover {
+    color: var(--creme);
+    text-decoration-color: var(--creme);
   }
 </style>

@@ -1,4 +1,5 @@
 import { getCollection, type CollectionEntry } from 'astro:content';
+import { displayTitle } from './text';
 import type { APIContext } from 'astro';
 import { MILESTONES } from '../data/milestones';
 import { TOPICS } from '../data/topics';
@@ -29,7 +30,7 @@ type PostEntry = CollectionEntry<'posts'>;
 // day the pyramid grew.
 const PAGES = [
   { path: '/', label: 'Home', desc: 'The pitch in one screen: what the work is and where to go next.' },
-  { path: '/about/', label: 'Profile', desc: 'Method rather than CV — how engagements run, and what is on the desk right now.' },
+  { path: '/about/', label: 'Profile', desc: 'Method rather than CV: how engagements run, and what is on the desk right now.' },
   { path: '/blog/', label: 'Writing', desc: 'Every post, newest first, filed by topic.' },
   { path: '/projects/', label: 'Projects', desc: 'Case studies and shipped milestones side by side.' },
   { path: '/experience/', label: 'Experience', desc: `Six stops over ${spellNumber(yearsOfExperience())} years, then the ${SKILL_COUNT}-skill toolkit pyramid with provenance per skill.` },
@@ -40,10 +41,10 @@ const PAGES = [
 function postLine(post: PostEntry, url: (path: string) => string): string {
   const summary = summarize(post.body);
   const meta = [post.data.date, post.data.tags.join(', ')].filter(Boolean).join(' · ');
-  // Older posts carry a leading emoji as a section marker. Fine on the page,
-  // noise in an index that is read as a list.
-  const title = post.data.title.replace(/^[\p{Extended_Pictographic}\s️]+/u, '').trim();
-  return `- [${title || post.data.title}](${url(`/blog/${post.id}/`)}): ${summary ? summary + ' ' : ''}— ${meta}`;
+  // The title as the site draws it — the ornament left off, so a line in an
+  // index is a title and not a pictogram.
+  const title = displayTitle(post.data.title);
+  return `- [${title}](${url(`/blog/${post.id}/`)}): ${summary ? summary + ' ' : ''}· ${meta}`;
 }
 
 /**
@@ -79,7 +80,7 @@ export async function renderLlms({ site }: APIContext, selfPath: string): Promis
     '',
     `> Anatolii Maltsev, forward deployed engineer. I build AI systems that survive production: agent runtime security, retrieval quality, and the reliability layer underneath both. Four years of it in QA automation and platform test engineering, the rest in applied AI engineering, embedded Rust underneath it, and ${spellNumber(yearsOfExperience())} years of practice in total. This site is the work and the writing: what an agent is allowed to do, what happens when it does it anyway, and the hardware and toolchain work underneath.`,
     '',
-    'Everything here is English, server-rendered HTML with no login and no client-side requirement for reading. If you only need the map, stop after "Topics" — the index below it is complete, so there is no need to crawl every post.',
+    'Everything here is English, server-rendered HTML with no login and no client-side requirement for reading. If you only need the map, stop after "Topics": the index below it is complete, so there is no need to crawl every post.',
     '',
     '## Pages',
     '',

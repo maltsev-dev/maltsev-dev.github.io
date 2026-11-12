@@ -1,71 +1,56 @@
 ---
-title: "🧮 Simple Solana Counter Program"
+title: "Simple Solana Counter Program"
 date: "2025-03-04"
 description: "A minimal native Rust Solana program that increments and decrements an on-chain counter owned by the user's keypair."
 tags: ["rust", "solana", "project"]
 ---
-**A lightweight, native Solana smart contract for incrementing and decrementing a counter.**
-Developed with native **Rust** for performance and simplicity.
+A lightweight, native Solana smart contract for incrementing and decrementing a counter, written in Rust.
 
----
+[GitHub Repository](https://github.com/maltsev-dev/counter_on_native_solana)
 
-[📚 GitHub Repository](https://github.com/maltsev-dev/counter_on_native_solana)
-This project demonstrates a minimalistic **Solana on-chain program (smart contract)** written in native Rust. The core functionality revolves around managing a simple counter:
+The program is a minimal Solana on-chain program written in native Rust. The core functionality is a counter:
 
-* 📈 **Increment** the counter by sending a transaction
-* 📉 **Decrement** the counter similarly
-* 🔐 State is stored on-chain and owned by the user's keypair
-* ⚙️ Built using low-level Solana primitives (no Anchor framework on-chain) — excellent for learning core Solana mechanics
+- Increment the counter by sending a transaction
+- Decrement the counter in the same way
+- State is stored on-chain and owned by the user's keypair
+- Built using low-level Solana primitives, with no Anchor framework on-chain, which makes it a good way to learn the core mechanics
 
-The program is ideal for developers who want to:
+It suits developers who want to:
 
-* Understand how to work with Solana’s native runtime
-* Learn the basics of account handling, transaction flow, and state management
-* Use it as a boilerplate to build more complex programs
+- Understand how to work with Solana's native runtime
+- Learn the basics of account handling, transaction flow and state management
+- Use it as a boilerplate to build more complex programs
 
----
+## How to get started
 
-## 🛠️ How to get started
+1. Start a local Solana validator:
 
-### 1. 🧪 Start a local Solana validator
+   ```bash
+   solana-test-validator
+   ```
 
-Run the following command to simulate the Solana blockchain locally:
+2. Build and deploy the program:
 
-```bash
-solana-test-validator
-```
+   ```bash
+   anchor build && anchor deploy
+   ```
 
-### 2. 🧱 Build and deploy the program
+Anchor is used for deployment and local testing convenience, although the on-chain code is native Rust.
 
-Use Anchor CLI to build and deploy the smart contract to the local validator:
+3. Set up your wallet:
 
-```bash
-anchor build && anchor deploy
-```
+   ```bash
+   export ANCHOR_WALLET=~/.config/solana/id.json
+   ```
 
-> **Note**: Although the on-chain code is native Rust, Anchor is used for deployment and local testing convenience.
+4. Interact with the program. Once deployed, you can send transactions to:
 
-### 3. 👛 Set up your wallet
+   - Increment the stored counter
+   - Decrement the counter
+   - Fetch and log the current value
 
-Export your Solana CLI wallet path so it can be used for deployments and interactions:
+   These actions can be scripted in TypeScript/JavaScript using the Anchor client or done manually with the `solana` CLI.
 
-```bash
-export ANCHOR_WALLET=~/.config/solana/id.json
-```
+## License
 
-### 4. 🔁 Interact with the program
-
-Once deployed, you can send transactions to:
-
-* **Increment** the stored counter
-* **Decrement** the counter
-* **Fetch and log** the current value
-
-These actions can be scripted in TypeScript/JavaScript using Anchor client or done manually with `solana` CLI.
-
----
-
-## 📄 License
-
-This project is open-source and available under the terms of the **MIT License**.
-Feel free to fork, modify, and use it for both personal and commercial purposes.
+This project is open-source and available under the terms of the MIT License. Feel free to fork, modify, and use it for both personal and commercial purposes.

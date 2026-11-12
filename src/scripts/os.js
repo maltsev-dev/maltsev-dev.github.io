@@ -1,7 +1,7 @@
 // Site chrome: theme switching, scroll reveal, command palette, contact form.
 // No framework — everything here is a DOM effect on pre-rendered HTML.
 
-import { RAMPS, resolveRamp, themeColor } from '../data/themes';
+import { RAMPS, THEMES, resolveRamp, themeColor } from '../data/themes';
 
 (function () {
   'use strict';
@@ -46,12 +46,20 @@ import { RAMPS, resolveRamp, themeColor } from '../data/themes';
 
     var year = new Date().getFullYear();
     var script = [
-      ['POST', 'agentic engineering'],
+      ['BIOS', 'MaltsevOS 4.2'],
+      ['CPU', 'forward deployed engineer'],
       ['MODE', 'static / no runtime'],
-      ['THEME', html.dataset.theme || 'phosphore'],
-      ['FONT', 'anton + inter'],
+      ['PHOSPHOR', html.dataset.theme || 'phosphore'],
+      ['TTY', 'vt220 — 80x24'],
       ['BUILD', year],
     ];
+
+    // The phosphor line names the tube, not the ramp id: the reader picked
+    // "P1 amber" in the picker and the boot screen should say the same thing.
+    var bootTheme = THEMES.find(function (t) {
+      return t.id === html.dataset.theme;
+    });
+    if (bootTheme) script[3][1] = bootTheme.phosphor;
 
     overlay.hidden = false;
     lockScroll();
@@ -354,13 +362,13 @@ import { RAMPS, resolveRamp, themeColor } from '../data/themes';
     });
   })();
 
-  // ---- Mobile nav strip ---------------------------------------------------
-  // The flat fallback nav is wider than a phone, so it scrolls sideways. It
-  // needs the same cues the card rows have, and the same JS-set classes to
-  // put them on: the strip only overflows on the narrowest screens, so a
-  // fixed fade would dim the last link on a screen where nothing is hidden.
+  // ---- Command bar strip --------------------------------------------------
+  // The command bar is wider than a phone, so it scrolls sideways. It needs the
+  // same cues the card rows have, and the same JS-set classes to put them on:
+  // the strip only overflows on the narrowest screens, so a fixed fade would
+  // dim the last link on a screen where nothing is hidden.
   (function quickNav() {
-    var strip = document.querySelector('.menu-quick');
+    var strip = document.querySelector('.menu-nav');
     if (!strip) return;
 
     function update() {
@@ -563,7 +571,38 @@ import { RAMPS, resolveRamp, themeColor } from '../data/themes';
       });
       syncRadios();
       applyThemeColor(ramp);
+      applyPhosphor(ramp);
     }
+
+    /**
+     * The status line names the phosphor that is on.
+     *
+     * The name comes from the same table as the picker, so the strip cannot
+     * say "green" while the page is amber. It is written as text, not as a
+     * colour: the strip is a readout, and a colour alone would say nothing
+     * to a reader who cannot see it.
+     */
+    function applyPhosphor(ramp) {
+      var el = document.querySelector('[data-status-phosphor]');
+      if (!el) return;
+      var theme = THEMES.find(function (t) {
+        return t.id === ramp;
+      });
+      el.textContent = theme ? theme.phosphor : ramp;
+    }
+
+    /**
+     * The shell on the front page can change the phosphor.
+     *
+     * It asks through an event rather than reaching into this module, so
+     * the one place that knows how a theme is applied stays the one place
+     * that does it — the same reason the theme picker in the header calls
+     * `setTheme` rather than setting the attribute itself.
+     */
+    document.addEventListener('tty:theme', function (e) {
+      var id = e.detail && e.detail.id;
+      if (id) setTheme(id);
+    });
 
     // The OS changes its mind while the page is open: follow it.
     var onSystemChange = function () {
@@ -629,6 +668,7 @@ import { RAMPS, resolveRamp, themeColor } from '../data/themes';
       });
       syncRadios();
       applyThemeColor(boot);
+      applyPhosphor(boot);
     }
 
     var themeGroup = document.querySelector('[data-theme-group]');
@@ -742,14 +782,10 @@ import { RAMPS, resolveRamp, themeColor } from '../data/themes';
 
   // ---- Scroll-linked effects ---------------------------------------------
   // One rAF loop writes a handful of custom properties that the CSS reads:
-  // hero drift, roadmap fill, structure fill. Kept to transforms and opacity
-  // so scrolling never forces layout.
+  // hero drift and rule progress. Kept to transforms and opacity so
+  // scrolling never forces layout.
   (function scrollFx() {
     var hero = document.querySelector('.hero-scroll');
-    var road = document.querySelector('.roadmap');
-    var roadFill = document.querySelector('.roadmap-rail i');
-    var asm = document.querySelector('[data-assemble]');
-    var asmFill = document.querySelector('[data-rail-fill]');
     var rules = Array.prototype.slice.call(document.querySelectorAll('.rule-progress'));
 
     if (reduceMotion) {
@@ -759,12 +795,6 @@ import { RAMPS, resolveRamp, themeColor } from '../data/themes';
 
     var queued = false;
 
-    // How far `el` has traveled through the viewport, 0..1.
-    function travel(el, vh) {
-      var r = el.getBoundingClientRect();
-      return Math.min(1, Math.max(0, (vh * 0.75 - r.top) / r.height));
-    }
-
     function update() {
       var vh = window.innerHeight || 1;
 
@@ -773,14 +803,6 @@ import { RAMPS, resolveRamp, themeColor } from '../data/themes';
         // 0 when the hero top is at the viewport top, 1 when it has left.
         var p = Math.min(1, Math.max(0, -rect.top / vh));
         hero.style.setProperty('--scroll', p.toFixed(3));
-      }
-
-      if (road && roadFill) {
-        roadFill.style.setProperty('--road', travel(road, vh).toFixed(3));
-      }
-
-      if (asm && asmFill) {
-        asmFill.style.setProperty('--asm', travel(asm, vh).toFixed(3));
       }
 
       rules.forEach(function (rule) {
@@ -805,61 +827,6 @@ import { RAMPS, resolveRamp, themeColor } from '../data/themes';
     update();
   })();
 
-  // Mark roadmap stops and structure panels as they come into view, so their
-  // nodes fill in and the project marks light up.
-  (function onEnter() {
-    var watch = document.querySelectorAll('[data-stop], [data-stage]');
-    if (!watch.length) return;
-
-    if (!('IntersectionObserver' in window)) {
-      watch.forEach(function (el) {
-        el.classList.add('is-seen');
-      });
-      return;
-    }
-
-    var io = new IntersectionObserver(
-      function (entries) {
-        entries.forEach(function (e) {
-          if (!e.isIntersecting) return;
-          e.target.classList.add('is-seen');
-          io.unobserve(e.target);
-        });
-      },
-      { threshold: 0.35 }
-    );
-    watch.forEach(function (el) {
-      io.observe(el);
-    });
-  })();
-
-  // Stagger index for the assemble animation, written once.
-  (function assembleIndex() {
-    var root = document.querySelector('[data-assemble]');
-    if (!root) return;
-
-    var stages = Array.prototype.slice.call(root.querySelectorAll('[data-stage]'));
-    stages.forEach(function (el, i) {
-      el.style.setProperty('--i', i);
-    });
-
-    if ('IntersectionObserver' in window) {
-      var io = new IntersectionObserver(
-        function (entries) {
-          entries.forEach(function (e) {
-            if (!e.isIntersecting) return;
-            root.classList.add('is-live');
-            io.disconnect();
-          });
-        },
-        { threshold: 0.12 }
-      );
-      io.observe(root);
-    } else {
-      root.classList.add('is-live');
-    }
-  })();
-
   // Opens the browser print dialog, which is how a visitor gets a PDF from a
   // page: print, then "save as PDF".
   (function printResource() {
@@ -869,71 +836,6 @@ import { RAMPS, resolveRamp, themeColor } from '../data/themes';
       e.preventDefault();
       window.print();
     });
-  })();
-
-    // ---- Section rail -----------------------------------------------------
-  // Pages with the `rail` prop get a fixed track down the right edge: a fill
-  // showing overall progress and one node per section, lit as that section
-  // reaches the middle of the screen. The nodes are built here rather than in
-  // the markup so they always match the sections that actually rendered.
-  (function rail() {
-    var rail = document.querySelector('.section-rail');
-    var main = document.querySelector('[data-rail="on"]');
-    if (!rail || !main) return;
-
-    var fill = document.getElementById('railFill');
-    var sections = Array.prototype.slice.call(
-      main.querySelectorAll(':scope > .section, :scope > .hero')
-    );
-
-    if (!sections.length) return;
-
-    var nodes = sections.map(function (section, i) {
-      var b = document.createElement('b');
-      // Space the nodes evenly down the track.
-      b.style.top = ((i / (sections.length - 1 || 1)) * 100).toFixed(2) + '%';
-      rail.appendChild(b);
-      return b;
-    });
-
-    var active = -1;
-
-    function update() {
-      var doc = document.documentElement;
-      var max = doc.scrollHeight - window.innerHeight;
-      if (fill) {
-        fill.style.setProperty('--rail-progress', (max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0).toFixed(4));
-      }
-
-      // Which section owns the middle of the viewport right now?
-      var mid = window.innerHeight * 0.5;
-      var current = 0;
-      sections.forEach(function (s, i) {
-        if (s.getBoundingClientRect().top <= mid) current = i;
-      });
-
-      if (current === active) return;
-      active = current;
-      nodes.forEach(function (n, i) {
-        n.classList.toggle('is-on', i === current);
-      });
-    }
-
-    var queued = false;
-    window.addEventListener(
-      'scroll',
-      function () {
-        if (queued) return;
-        queued = true;
-        requestAnimationFrame(function () {
-          update();
-          queued = false;
-        });
-      },
-      { passive: true }
-    );
-    window.addEventListener('resize', update, { passive: true });
-    update();
   })();
 
   // ---- Scroll reveal -----------------------------------------------------
@@ -1329,8 +1231,6 @@ import { RAMPS, resolveRamp, themeColor } from '../data/themes';
 
     var openers = Array.prototype.slice.call(document.querySelectorAll('[data-open-letter]'));
     var closers = Array.prototype.slice.call(document.querySelectorAll('[data-close-letter]'));
-    var form = document.getElementById('contactForm');
-    var status = document.getElementById('formStatus');
     var lastFocus = null;
     var locked = false;
 
@@ -1348,7 +1248,10 @@ import { RAMPS, resolveRamp, themeColor } from '../data/themes';
         locked = true;
         lockScroll();
       }
-      var first = modal.querySelector('input, textarea');
+      // The first channel, not the first field: there is no form in here any
+      // more, and a dialog that opens with the caret nowhere is a dialog the
+      // keyboard reader has to hunt through.
+      var first = modal.querySelector('.letter-channel, a[href]');
       if (first) first.focus();
     }
 
@@ -1392,178 +1295,6 @@ import { RAMPS, resolveRamp, themeColor } from '../data/themes';
         e.preventDefault();
         first.focus();
       }
-    });
-
-    if (!form) return;
-
-    // The form carries `novalidate`, so the browser will not stop a bad submit
-    // and the mailto would go out with an empty body. The same constraints are
-    // therefore enforced here, before anything is handed to the mail client.
-    function problemsFor(values) {
-      var out = [];
-      if (!values.email) {
-        out.push({ field: 'l-email', text: 'Your email is required.' });
-      } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email)) {
-        out.push({ field: 'l-email', text: 'That does not look like an email address.' });
-      }
-      if (!values.message) {
-        out.push({ field: 'l-message', text: 'A message is required.' });
-      } else if (values.message.length < 10) {
-        out.push({ field: 'l-message', text: 'Please write at least 10 characters.' });
-      }
-      return out;
-    }
-
-    // The error text is announced by the same live region as the success text,
-    // so a screen reader hears it without focus having to move.
-    function setFieldError(input, text) {
-      input.setAttribute('aria-invalid', 'true');
-      var holder = input.closest('.field');
-      if (!holder) return;
-      var note = holder.querySelector('.field-error');
-      if (!note) {
-        note = document.createElement('p');
-        note.className = 'field-error';
-        holder.appendChild(note);
-      }
-      note.id = input.id + '-error';
-      note.textContent = text;
-      input.setAttribute('aria-describedby', note.id);
-    }
-
-    function clearFieldError(input) {
-      input.removeAttribute('aria-invalid');
-      var holder = input.closest('.field');
-      var note = holder && holder.querySelector('.field-error');
-      if (note) note.remove();
-      input.removeAttribute('aria-describedby');
-    }
-
-    /**
-     * Re-check every field and put the errors where they belong.
-     *
-     * The count in the live region is the real one, not a placeholder: the
-     * old copy read "N fields need fixing" with a literal N.
-     */
-    function refreshProblems(values) {
-      var problems = problemsFor(values);
-      ['l-email', 'l-message'].forEach(function (id) {
-        var input = document.getElementById(id);
-        if (!input) return;
-        var p = null;
-        problems.forEach(function (x) {
-          if (x.field === id) p = x;
-        });
-        if (p) setFieldError(input, p.text);
-        else clearFieldError(input);
-      });
-      if (status) {
-        status.textContent =
-          problems.length === 0
-            ? ''
-            : problems.length === 1
-              ? 'One field needs fixing before this can be sent.'
-              : problems.length + ' fields need fixing before this can be sent.';
-      }
-      return problems;
-    }
-
-    function reportProblems(list) {
-      list.forEach(function (p) {
-        var input = document.getElementById(p.field);
-        if (!input) return;
-        setFieldError(input, p.text);
-      });
-      if (status) {
-        status.textContent =
-          list.length === 1
-            ? 'One field needs fixing before this can be sent.'
-            : list.length + ' fields need fixing before this can be sent.';
-      }
-      var first = document.getElementById(list[0].field);
-      if (first) first.focus();
-    }
-
-    function clearProblems() {
-      form.querySelectorAll('.field-error').forEach(function (n) { n.remove(); });
-      form.querySelectorAll('[aria-invalid]').forEach(function (i) {
-        i.removeAttribute('aria-invalid');
-        i.removeAttribute('aria-describedby');
-      });
-      if (status) status.textContent = '';
-    }
-
-    // A field's error is cleared as soon as it is edited, and the other
-    // fields are re-checked — but only the edited field's error goes away.
-    // Clearing every error on every keystroke hid the problems that were
-    // still there: a reader who fixed the email field lost the warning on the
-    // message field and found out about it only on the next submit.
-    form.addEventListener('input', function () {
-      if (!form.querySelector('[aria-invalid="true"]')) return;
-      var current = new FormData(form);
-      refreshProblems({
-        email: String(current.get('email') || '').trim(),
-        message: String(current.get('message') || '').trim(),
-      });
-    });
-
-    form.addEventListener('submit', function (e) {
-      e.preventDefault();
-
-      var data = new FormData(form);
-
-      // Honeypot: a field no person can see but most bots fill in. The
-      // submission is discarded, so the acknowledgement must not claim that
-      // anything was delivered — it says what happened and what to do if
-      // nothing did.
-      var honeypot = document.querySelector('[data-honeypot]');
-      if (honeypot && honeypot.value) {
-        if (status) {
-          status.textContent =
-            'Thanks — the form was submitted. If nothing happens, use the email address in the footer.';
-        }
-        form.reset();
-        return;
-      }
-
-      var email = String(data.get('email') || '').trim();
-      var subject = String(data.get('subject') || '').trim();
-      var kind = String(data.get('kind') || '').trim();
-      var timeline = String(data.get('timeline') || '').trim();
-      var message = String(data.get('message') || '').trim();
-
-      clearProblems();
-
-      var problems = problemsFor({ email: email, message: message });
-      if (problems.length) {
-        reportProblems(problems);
-        return;
-      }
-
-      // The subject says which field it came from. The type is the select's
-      // own value ("Agentic AI", "Audit", …) and the fallback names the field
-      // the same way the form labels it, so the two never disagree. The
-      // fallback for the line itself is "Website enquiry" rather than
-      // "New enquiry": it says what the mail is, not how new it is.
-      var title = '[' + (kind || 'Project type') + '] ' + (subject || 'Website enquiry');
-      var body =
-        'Email: ' + email + '\n' +
-        'Type: ' + (kind || '—') + '\n' +
-        'Timeline: ' + (timeline || '—') + '\n\n' +
-        message;
-
-      if (status) {
-        // The mail client is the browser's, not the site's: it may not open at
-        // all. The address is in the footer on every page, so the fallback
-        // points at it instead of repeating the address here.
-        status.textContent =
-          'Opening your mail client — if it does not open, use the email address in the footer.';
-      }
-
-      window.location.href =
-        'mailto:mr.a.maltsev@gmail.com' +
-        '?subject=' + encodeURIComponent(title) +
-        '&body=' + encodeURIComponent(body);
     });
   })();
 

@@ -1,8 +1,0 @@
-# The retired build.py publish tree, moved here out of the repo root.
-#
-# It is 68 MB of stale HTML and duplicated assets and it has never been in the
-# repository — `public/` was gitignored. It stays on disk because it is the
-# only record of the URL set the old site served, but it is not tracked here
-# either: the URL list itself is preserved in `static/*.html` (the redirect
-# stubs) and in `_gen_redirects.py`.
-public/

@@ -1,17 +1,52 @@
 ---
-// Slim strip above the menu bar. Time and availability sit together on the
-// right edge. Availability opens the letter modal rather than navigating, so a
-// visitor who is ready to write does not have to find the Contact page first.
-//
-// The strip carries two words and a clock. It used to carry a third — "— say
-// hello" — and to be 44px tall because of it. Every screen of the site opened
-// with that much chrome above the fold, spent on a greeting, so it is gone:
-// the indicator says "available", the tooltip says what clicking it does, and
-// the strip is one line tall again.
+import { yearsOfExperience } from '../lib/profile';
+
+/*
+  The top strip: the status line of the machine.
+
+  A terminal status line is a row of fields, each field a name and a value,
+  separated by pipes. That is what this is — `host`, `phosphor`, `mode`,
+  `uptime` — with the clock and the availability lamp at the right end,
+  because that is the one thing on the strip that means an action is
+  available.
+
+  `uptime` is the machine's uptime, which is to say how long the work has
+  been running. It is counted from the same start date everything else uses,
+  so it cannot drift from the career the site describes.
+*/
+const uptime = yearsOfExperience();
 ---
 
 <div class="status-bar">
   <div class="wrap">
+    <div class="status-left">
+      <span class="status-item">
+        <span class="k" aria-hidden="true">host</span>
+        <span class="v">maltsev-01</span>
+      </span>
+
+      <span class="status-sep" aria-hidden="true">│</span>
+
+      <span class="status-item status-hide-sm">
+        <span class="k" aria-hidden="true">phosphor</span>
+        <span class="v" data-status-phosphor>p3-amber</span>
+      </span>
+
+      <span class="status-sep status-hide-sm" aria-hidden="true">│</span>
+
+      <span class="status-item status-hide-sm">
+        <span class="k" aria-hidden="true">mode</span>
+        <span class="v">forward-deployed</span>
+      </span>
+
+      <span class="status-sep" aria-hidden="true">│</span>
+
+      <span class="status-item">
+        <span class="k" aria-hidden="true">uptime</span>
+        <span class="v">{uptime}y</span>
+      </span>
+    </div>
+
     <div class="status-right">
       <!--
         No `datetime` in the markup: an empty value is not a valid date/time
@@ -23,6 +58,8 @@
         <time id="clock">—</time>
       </span>
 
+      <span class="status-sep" aria-hidden="true">│</span>
+
       <!--
         The one contact entry point on the page, so it has to say what it does
         and be big enough to hit. The visible word is kept inside the
@@ -32,10 +69,10 @@
         class="status-item status-cta"
         type="button"
         data-open-letter
-        aria-label="available — open the message form"
-        title="Available — open the message form"
+        aria-label="available, open the contact options"
+        title="Available, open the contact options"
       >
-        <span class="pulse-dot" aria-hidden="true"></span>
+        <span class="led led-blink" aria-hidden="true"></span>
         <span>available</span>
       </button>
     </div>

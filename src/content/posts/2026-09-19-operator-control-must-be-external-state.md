@@ -1,5 +1,5 @@
 ---
-title: "Operator Control Lives in State the Agent Cannot Reach"
+title: "Operator control lives in state the agent cannot reach"
 date: "2026-09-19"
 tags: ["reliability", "authorization"]
 ---
@@ -84,10 +84,10 @@ history destroys the evidence before anyone reads it.
 
 The default is worth picking deliberately. If the row is missing, the
 choices are "normal" or "not normal", and the second one is the one that
-survives contact with an operator: an unreadable or absent control record
-should not resolve to "carry on". A missing row collapses to the stopped
-state, because the cost of a workflow that has to be restarted is much
-lower than the cost of one nobody stopped.
+survives contact with an operator: an unreadable or absent control
+record should not resolve to "carry on". A missing row collapses to the
+stopped state, because the cost of a workflow that has to be restarted is
+much lower than the cost of one nobody stopped.
 
 Three properties come from putting the state in the store:
 

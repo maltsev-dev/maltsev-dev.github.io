@@ -1,0 +1,157 @@
+---
+/**
+ * The portrait.
+ *
+ * A terminal window with a face in it. The window is the same window as
+ * every other one on the site — the same bar, the same lamps, the same
+ * title in the same chip — so the picture does not arrive as an ornament
+ * from another design: it arrives as something the machine is running.
+ *
+ * The picture is a canvas, because it is a picture and not a page of text.
+ * The characters that make it up are three or four pixels across, and at
+ * that size the eye reads them as tone rather than as letters. That only
+ * works when they are drawn as marks — as a sheet of glyphs stamped onto a
+ * canvas, the way the tool that made them stamped them — and it does not
+ * work at all if they are handed to the browser as text.
+ *
+ * The picture moves: it turns under the pointer when it is dragged, keeps
+ * turning for a moment afterwards, and then drifts back to the middle and
+ * sways. That is the tool's own behaviour, and the drawing is the tool's
+ * own drawing — see `src/lib/portrait.ts`.
+ */
+import { PORTRAIT_COLS, PORTRAIT_ROWS, PORTRAIT_CELL_RATIO } from '../data/portrait';
+---
+
+<div class="tty tty-ascii" data-reveal>
+  <div class="tty-bar">
+    <span class="tty-leds" aria-hidden="true">
+      <i class="led led-on led-blink"></i>
+      <i class="led led-off"></i>
+      <i class="led led-off"></i>
+    </span>
+    <span class="tty-title">~/portrait.asc</span>
+    <span class="tty-right" aria-hidden="true">ascii</span>
+  </div>
+
+  <div class="tty-body">
+    <!--
+      The picture. It is a picture, so it is hidden from the accessibility
+      tree and described instead: a screen reader that read forty rows of
+      block characters aloud would be useless.
+    -->
+    <div class="portrait-frame">
+      <canvas
+        class="portrait"
+        data-portrait
+        style={`--ratio: ${PORTRAIT_COLS} / ${(PORTRAIT_ROWS * PORTRAIT_CELL_RATIO).toFixed(1)};`}
+        role="img"
+        aria-label="The author's photograph, drawn in characters on a
+          terminal: a face and shoulders, the background taken off. Drag it
+          to turn it."
+      ></canvas>
+
+      <!--
+        The refresh. A single band of light travelling down the drawing, the
+        way a tube draws the same line over and over. It is the only thing
+        that moves in this window, and it moves on the compositor, so it
+        costs the page nothing.
+      -->
+      <span class="portrait-sweep" aria-hidden="true"></span>
+    </div>
+
+    <p class="portrait-status">
+      <span data-portrait-status>cat portrait.asc · {PORTRAIT_COLS}×{PORTRAIT_ROWS}</span>
+    </p>
+  </div>
+</div>
+
+<script>
+  import '../scripts/portrait.js';
+</script>
+
+<style>
+  .tty-ascii .tty-body {
+    padding-block: 1.6rem 1.1rem;
+  }
+
+  /*
+    The drawing.
+
+    The canvas holds the picture and nothing else. Its box is the shape of
+    the picture — a hundred and eighty-nine cells across and a hundred and
+    nineteen down, each cell taller than it is wide in the tool's own
+    proportion — so the window keeps its size before the picture is drawn,
+    and does not jump when it is.
+  */
+  .portrait {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: var(--ratio);
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: none;
+    box-shadow: none;
+    cursor: grab;
+    /* The picture turns sideways under the pointer, but the page still
+       scrolls up and down under the finger. */
+    touch-action: pan-y;
+  }
+
+  .portrait.is-dragging {
+    cursor: grabbing;
+  }
+
+  /* The band the light travels in. */
+  .portrait-frame {
+    position: relative;
+  }
+
+  .portrait-sweep {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(
+      to bottom,
+      transparent 0%,
+      transparent 42%,
+      color-mix(in oklab, var(--encre) 16%, transparent) 50%,
+      transparent 58%,
+      transparent 100%
+    );
+    background-size: 100% 260%;
+    background-repeat: no-repeat;
+    animation: portrait-sweep 7s linear infinite;
+  }
+
+  @keyframes portrait-sweep {
+    from {
+      background-position: 0 -120%;
+    }
+    to {
+      background-position: 0 220%;
+    }
+  }
+
+  /*
+    A reader who has asked for the world to hold still gets a still
+    picture. The lamp above it keeps blinking, because that is the lamp of
+    the window and not the picture.
+  */
+  @media (prefers-reduced-motion: reduce) {
+    .portrait-sweep {
+      animation: none;
+      display: none;
+    }
+  }
+
+  .portrait-status {
+    margin: 0.9rem 0 0;
+    font-family: var(--font-mono);
+    font-size: var(--fs-label);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--faible);
+  }
+</style>

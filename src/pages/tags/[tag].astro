@@ -2,9 +2,10 @@
 import { getCollection } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 import { tagSlug, tagLabel } from '../../lib/tags';
-import { describe, MAX_DESCRIPTION } from '../../lib/summarize';
-import { formatDate } from '../../data/dates';
+import { describe, isShort, readingTime, MAX_DESCRIPTION } from '../../lib/summarize';
+import { formatDateShort } from '../../data/dates';
 import { topicFor } from '../../data/topics';
+import { displayTitle } from '../../lib/text';
 
 /**
  * One page per tag.
@@ -54,103 +55,186 @@ const title = `Posts tagged “${label}”`;
 const description = `${posts.length} ${
   posts.length === 1 ? 'post' : 'posts'
 } on ${label} — writing on embedded Rust, agentic systems and the parts that break in production.`;
+
+/**
+ * The posts, prepared for the listing.
+ *
+ * The same shape as the index: a title, a line about what is in it, and the
+ * tags it carries. A tag page is the index with a query on it, so the rows
+ * must be the same rows — a reader who moves between the two should not have
+ * to learn a second list.
+ */
+const rows = posts.map((post) => {
+  const topic = topicFor(post.id);
+  const summary = describe(post.data.title, post.body, post.data.description, MAX_DESCRIPTION);
+
+  return {
+    href: `/blog/${post.id}/`,
+    title: displayTitle(post.data.title),
+    date: formatDateShort(post.data.date),
+    iso: post.data.date ?? '',
+    minutes: readingTime(post.body),
+    short: isShort(post.body),
+    summary,
+    topicShort: topic?.short ?? '',
+    tags: post.data.tags.map((t) => ({
+      slug: tagSlug(t),
+      label: tagLabel(t),
+    })),
+  };
+});
 ---
 
 <Base title={title} description={description}>
+  <!--
+    A tag is a query, so the page is a query.
+
+    The index is `ls -la` over the whole directory; a tag is one file
+    argument narrowed down. So this is the same machine with a `grep` on
+    it: the same window, the same listing, the same rows. The reader who
+    arrives here from a chip in a listing learns one shape and sees it
+    again.
+  -->
   <section class="hero">
-    <span class="eyebrow" data-reveal>Tag</span>
+    <span class="eyebrow" data-reveal><span class="pulse-dot"></span>Tag</span>
     <h1 data-reveal data-reveal-delay="60">{label}</h1>
+
+    <p class="tty-prompt" data-reveal data-reveal-delay="100">
+      <span class="who">root</span><span class="sep">@</span><span
+        >amaltsev</span>
+      ><span class="sep">:</span><span class="path">~/blog</span><span class="sep"
+        >$</span
+      >
+      <span class="tty-cmd">grep -l "{slug}" -r ~/blog</span>
+    </p>
+
     <p class="lede" data-reveal data-reveal-delay="120">
       {posts.length} {posts.length === 1 ? 'post' : 'posts'} on {label}.
     </p>
   </section>
 
   <section class="section">
-    <div class="section-head">
-      <h2 data-reveal data-anim="underline">Writing</h2>
-      <span class="card-meta">newest first</span>
+    <div class="tty tty-tag" data-reveal>
+      <div class="tty-bar">
+        <span class="tty-leds" aria-hidden="true">
+          <i class="led led-on"></i>
+          <i class="led led-off"></i>
+          <i class="led led-off"></i>
+        </span>
+        <span class="tty-title">~/blog</span>
+        <span class="tty-right" aria-hidden="true">
+          {posts.length} {posts.length === 1 ? 'match' : 'matches'}
+        </span>
+      </div>
+
+      <div class="tty-body">
+        <p class="tty-prompt tty-cmd-line">
+          <span class="who">root</span><span class="sep">@</span><span
+            >amaltsev</span>
+          ><span class="sep">:</span><span class="path">~/blog</span><span class="sep"
+            >$</span
+          >
+          <span class="tty-cmd">grep -l "{slug}" -r ~/blog</span>
+        </p>
+
+        <div class="ls ls-posts">
+          <div class="ls-row ls-head">
+            <span class="ls-mode">mode</span>
+            <span class="ls-date">date</span>
+            <span class="ls-size">min</span>
+            <span class="ls-topic">topic</span>
+            <span class="ls-name">name</span>
+          </div>
+
+          {
+            rows.map((post, i) => (
+              <article
+                class="post-row"
+                data-reveal
+                data-reveal-delay={Math.min(i, 8) * 30}
+              >
+                <h3 class="post-title">
+                  <span class="ls-row ls-row--post">
+                    <span class="ls-mode">-rw-r--r--</span>
+                    <span class="ls-date">
+                      <time datetime={post.iso}>{post.date}</time>
+                    </span>
+                    <span class="ls-size">{post.minutes}m</span>
+                    <span class="ls-topic">{post.topicShort}</span>
+                    <span class="ls-name">
+                      <a href={post.href}>{post.title}</a>
+                      {post.short && <span class="card-flag">note</span>}
+                    </span>
+                  </span>
+                </h3>
+
+                {post.summary && <p class="post-sum">{post.summary}</p>}
+
+                <div class="post-tags">
+                  {post.tags.map((t) => (
+                    <a class="tag" href={`/tags/${t.slug}/`}>
+                      {t.label}
+                    </a>
+                  ))}
+                </div>
+              </article>
+            ))
+          }
+        </div>
+
+        <!--
+          The count, the way grep reports it. It is the one line in the
+          window that is not a file, and it says what the listing is worth.
+        -->
+        <p class="grep-count">~/blog: {posts.length} {posts.length === 1 ? 'match' : 'matches'}</p>
+
+        <hr class="tty-rule" />
+
+        <p class="tty-prompt tty-cmd-line">
+          <span class="who">root</span><span class="sep">@</span><span
+            >amaltsev</span>
+          ><span class="sep">:</span><span class="path">~/blog</span><span class="sep"
+            >$</span
+          >
+          <span class="tty-cmd">cd ~/blog &amp;&amp; ls -la</span>
+        </p>
+
+        <p class="tag-close">
+          The whole directory is one click away. Every post, filed by
+          subject.
+        </p>
+      </div>
     </div>
 
-    <ul class="tag-posts">
-      {
-        posts.map((post, i) => (
-          <li class="tag-post" data-reveal data-reveal-delay={Math.min(i, 4) * 40}>
-            <a href={`/blog/${post.id}/`}>
-              <span class="card-meta">{formatDate(post.data.date)}</span>
-              {/*
-                The thread the post belongs to, next to the date. A tag page
-                is a cross-section of several threads at once, and saying which
-                one each post came from is what makes the list navigable
-                rather than just long.
-              */}
-              {topicFor(post.id) && (
-                <span class="tag-post-topic">{topicFor(post.id)?.label}</span>
-              )}
-              <h3>{post.data.title}</h3>
-              <p>{describe(post.data.title, post.body, post.data.description, MAX_DESCRIPTION)}</p>
-            </a>
-          </li>
-        ))
-      }
-    </ul>
-  </section>
-
-  <section class="section">
-    <div class="tag-back">
+    <p class="tag-back">
       <a class="btn" href="/blog/">← All writing</a>
-    </div>
+    </p>
   </section>
 </Base>
 
 <style>
-  /*
-    The index's cards are a horizontal strip, and a tag page is a plain list
-    of everything carrying the tag. The list is styled here rather than in
-    the shared stylesheet: it belongs to this page alone.
-  */
-  .tag-posts {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: grid;
-    gap: 1rem;
+  .tty-tag .tty-body {
+    padding-block: 1.9rem 1.4rem;
   }
 
-  .tag-post a {
-    display: block;
-    padding: 1.1rem;
-    border: var(--filet) solid var(--braise);
-    background: var(--papier);
-    box-shadow: var(--ombre-sm);
-    text-decoration: none;
-    color: inherit;
+  /* The count grep prints when it is done. */
+  .grep-count {
+    margin: 0.8rem 0 0;
+    font-family: var(--font-mono);
+    font-size: var(--fs-small);
+    color: var(--faible);
   }
 
-  .tag-post a:hover h3 {
-    color: var(--braise);
-  }
-
-  /* The thread, beside the date. It is a label, not a link: the whole row is
-     already one link to the post, and a link inside a link is not a link. */
-  .tag-post-topic {
-    margin-left: 0.6rem;
-    color: var(--braise);
-  }
-
-  .tag-post h3 {
-    margin: 0.25rem 0 0.4rem;
-    font-size: 1.05rem;
-    line-height: 1.3;
-  }
-
-  .tag-post p {
-    margin: 0;
-    color: var(--fort);
+  .tag-close {
+    margin: 0.6rem 0 0;
+    max-width: 62ch;
+    font-family: var(--font-body);
     font-size: 0.9rem;
-    line-height: 1.5;
+    line-height: 1.55;
+    color: var(--fort);
   }
 
   .tag-back {
-    margin-top: 1.5rem;
+    margin-top: 1.4rem;
   }
 </style>

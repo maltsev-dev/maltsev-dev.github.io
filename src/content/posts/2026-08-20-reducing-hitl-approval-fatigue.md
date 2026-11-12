@@ -4,13 +4,14 @@ date: "2026-08-20"
 tags: ["operations", "authorization"]
 ---
 A team wants an agent that issues refunds. Security is nervous. There
-are exactly two options on the table, and both are bad:
+are exactly two options on the table, and both are bad.
 
-- **No tool.** The agent cannot issue refunds. Adoption stalls, and three
-  months later somebody proposes giving it the tool "just for the demo".
-- **Tool, no oversight.** It runs. Trust erodes over about six weeks, and
-  the trust does not come back after you add oversight, because the
-  failure was cumulative and the recovery has to be too.
+With no tool, the agent cannot issue refunds. Adoption stalls, and three
+months later somebody proposes giving it the tool "just for the demo".
+
+With a tool and no oversight, it runs. Trust erodes over about six
+weeks, and the trust does not come back after you add oversight, because
+the failure was cumulative and the recovery has to be too.
 
 Everything useful sits between those, and teams rarely reach for it
 because the middle is genuinely hard to operate.
@@ -93,19 +94,23 @@ decides whether the ladder works or just describes one.
 The bands need to be argued for. Two choices separate a working ladder
 from a decorative one.
 
-**Classify by the instance, not the category.** Classifying by tool name
-puts a $4 refund and a $4,000 refund in the same band. Classifying by the
-action's own attributes puts them where they belong. The attributes that
-carry the difference: amount, destination, reversibility, and whether
-the target is external. The categories are what you assign. The instance
-attributes are what you decide on, and they are also where
+### Classify by the instance, not the category
+
+Classifying by tool name puts a $4 refund and a $4,000 refund in the
+same band. Classifying by the action's own attributes puts them where
+they belong. The attributes that carry the difference: amount,
+destination, reversibility, and whether the target is external. The
+categories are what you assign. The instance attributes are what you
+decide on, and they are also where
 [instance-level authorization](/blog/2026-06-13-permissions-are-categories-authorizations-are-instances/)
 comes from.
 
-**Route to an owner.** An approval that lands in a shared inbox is an
-approval that gets cleared by whoever is least busy. Routing to the
-owner of the affected system means the person who can actually tell
-whether the refund is wrong is the person who sees it.
+### Route to an owner
+
+An approval that lands in a shared inbox is an approval that gets
+cleared by whoever is least busy. Routing to the owner of the affected
+system means the person who can actually tell whether the refund is
+wrong is the person who sees it.
 
 ## Each rung has to be earned
 
@@ -122,10 +127,10 @@ A relaxation should be backed by evidence of this shape:
 
 | Evidence | What you are reading | What thin evidence looks like |
 |---|---|---|
-| **Volume and shape.** How many actions ran, at what distribution of risk. | Whether the band has enough traffic to mean anything. | Ten approvals does not support a tier. |
-| **Incident and near-miss counts.** Including near-misses, which is the only honest signal available. | Whether the band has ever been wrong. | An incident count with no near-miss capture is an empty signal. |
-| **Reviewer engagement.** The proportion of approvals that came back modified or rejected. | Whether anyone is still reading. | A 2% rejection rate means the rule is nearly dead and the near-misses are going unread too. |
-| **A version bump.** Every relaxation is a new policy version with a new digest. | Whether the change is attributable later. | Without it, a refund executed under last month's rules is indistinguishable from one under today's. |
+| Volume and shape. How many actions ran, at what distribution of risk. | Whether the band has enough traffic to mean anything. | Ten approvals does not support a tier. |
+| Incident and near-miss counts. Including near-misses, which is the only honest signal available. | Whether the band has ever been wrong. | An incident count with no near-miss capture is an empty signal. |
+| Reviewer engagement. The proportion of approvals that came back modified or rejected. | Whether anyone is still reading. | A 2% rejection rate means the rule is nearly dead and the near-misses are going unread too. |
+| A version bump. Every relaxation is a new policy version with a new digest. | Whether the change is attributable later. | Without it, a refund executed under last month's rules is indistinguishable from one under today's. |
 
 The version bump is the one teams skip and the one auditors do not. A
 control you tuned away on day forty is only defensible if you can say
@@ -145,9 +150,9 @@ Three numbers carry that signal:
 
 | Number | Healthy shape | What you are actually looking for |
 |---|---|---|
-| **Time to decision, distributed.** Not the mean. | A distribution with a tail. | A spike at the floor. If 95% of approvals complete in under three seconds, there is no review happening, whatever the average says. |
-| **Modification rate.** What share of approvals came back changed or rejected. | A share that moves with reviewer attention. | Near zero over a long period is a finding, not a success. |
-| **Cards per reviewer per day.** | Below roughly a hundred. | Above roughly a hundred, approval degrades to a click. This is the number that should drive how much you automate, and it is usually the one nobody measures. |
+| Time to decision, distributed. Not the mean. | A distribution with a tail. | A spike at the floor. If 95% of approvals complete in under three seconds, there is no review happening, whatever the average says. |
+| Modification rate. What share of approvals came back changed or rejected. | A share that moves with reviewer attention. | Near zero over a long period is a finding, not a success. |
+| Cards per reviewer per day. | Below roughly a hundred. | Above roughly a hundred, approval degrades to a click. This is the number that should drive how much you automate, and it is usually the one nobody measures. |
 
 ## The failure nobody expects: routing under the ceiling
 
@@ -168,13 +173,13 @@ problem that the tier boundary made worse.
 
 Three mitigations, in order of how much they help:
 
-- **Make the band narrow relative to the request distribution.** A wide
+- Make the band narrow relative to the request distribution. A wide
   approval band around a tight auto-allow ceiling maximizes the number of
   requests that can be reframed into it.
-- **Aggregate the split explicitly.** A per-execution cumulative counter
+- Aggregate the split explicitly. A per-execution cumulative counter
   on the same risk dimension means two sub-ceiling actions in one
   workflow are evaluated against each other.
-- **Watch the boundary in the metrics.** A spike in actions at 95% of
+- Watch the boundary in the metrics. A spike in actions at 95% of
   the ceiling is the signal, and it is visible weeks before anyone
   complains.
 
@@ -199,11 +204,11 @@ evidence that supports it.
 
 | Check | How to pull it | What a finding looks like |
 |---|---|---|
-| **Latency distribution.** | Pull time-to-decision for the last month. | A spike at the floor. Check the percentile shape, not the average. |
-| **Modification rate.** | What share of approvals came back changed. | Near zero is a problem. |
-| **Boundary clustering.** | Histogram action amounts against the auto-allow ceiling. | A cluster just below it, which is the routing signal. |
-| **Split detection.** | Take a week of actions, group by execution, and check for runs of sub-ceiling actions with a shared counterparty. | Those runs are the splits. |
-| **Relaxation provenance.** | Confirm every band change produced a version bump. | A refund from six weeks ago that is not attributable to the version in force then. |
+| Latency distribution. | Pull time-to-decision for the last month. | A spike at the floor. Check the percentile shape, not the average. |
+| Modification rate. | What share of approvals came back changed. | Near zero is a problem. |
+| Boundary clustering. | Histogram action amounts against the auto-allow ceiling. | A cluster just below it, which is the routing signal. |
+| Split detection. | Take a week of actions, group by execution, and check for runs of sub-ceiling actions with a shared counterparty. | Those runs are the splits. |
+| Relaxation provenance. | Confirm every band change produced a version bump. | A refund from six weeks ago that is not attributable to the version in force then. |
 
 ## Limitations worth stating
 
@@ -277,20 +282,20 @@ NullRun holds the bands as policy, with no branch of the same logic in
 application code. The pieces that matter for this article are the ones
 that make a card worth reading.
 
-**Rules attach to the workflow.** A money-amount rule and a
+Rules attach to the workflow. A money-amount rule and a
 tool-parameter rule are configuration, so a boundary moves without a
 deploy and the change is a reviewable edit, with no release involved. Policy
 resolution is most-specific-first: per calling key, then per workflow,
 then org-wide. A policy can be scoped to one team without disturbing the
 rest of the organization.
 
-**The card carries the reason.** An approval row records the rule that
+The card carries the reason. An approval row records the rule that
 fired, the risk level, the tool name and the action's own parameters.
 That is the difference between a card an approver can act on and a card
 they clear, and it is the single change with the largest effect on the
 latency distribution above.
 
-**Every decision is bound.** The approval binds to the action's digest,
+Every decision is bound. The approval binds to the action's digest,
 which the server recomputes from the live payload at consumption time.
 Change the amount between approval and execution and the approval is
 refused with `APPROVAL_DIGEST_MISMATCH`; consume it twice and the second
@@ -298,15 +303,15 @@ attempt is refused with `APPROVAL_REPLAY_REJECTED`. The card is
 therefore evidence of a decision about a specific action, not a gesture
 that something happened.
 
-**The approval expires on its own.** A per-rule TTL, five minutes by
+The approval expires on its own. A per-rule TTL, five minutes by
 default, is part of the consume predicate. No sweeper races it. A
 decision nobody acted on stops being actionable without anyone having to
 clean it up.
 
-**Relaxations are attributable.** Every policy edit writes a new version
+Relaxations are attributable. Every policy edit writes a new version
 and a new hash, and refusals are recorded in the audit trail with the
 policy hash in force when they ran. That is what answers "what did this
 policy allow in March" without depending on anyone's memory of the March
-configuration. It is the point about version bumps that teams skip.
+configuration.
 
 The [integration docs](https://nullrun.io/docs) cover wiring the rules to your tools.

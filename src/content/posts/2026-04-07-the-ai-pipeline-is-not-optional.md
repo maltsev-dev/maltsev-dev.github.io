@@ -3,312 +3,221 @@ title: "The AI pipeline is not optional"
 date: "2026-04-07"
 tags: ["ai", "engineering", "architecture"]
 ---
-<p class="lead-label">Deep breakdown · AI Systems Engineering</p>
+Most production AI systems have an excellent model and a mess around it. I have seen GPT-4, Claude and Gemini sitting behind hardcoded prompts, zero validation and no separation of concerns. The model could not save those systems, because the broken part was never the model. The failure was the lack of structure around the model.
 
-<p class="lede">Most AI systems don't fail because of a bad model. They fail because there's no structure around it. Here's how to build one that holds in production.</p>
+The pipeline around it is the part that has to be built. It is framework agnostic and LLM agnostic, and it is what holds in production.
 
-<p>Framework agnostic · LLM agnostic</p>
+> Block early. Spend late. The LLM is the most expensive call in the chain, so it should be the last thing that runs.
 
-<p>I've seen production systems where the model was excellent — GPT-4, Claude, Gemini — and the surrounding code was a mess of hardcoded prompts, zero validation, and no separation of concerns. The model couldn't save them.</p>
+## What a pipeline is
 
-<p>The fix is never a better model. It's a better pipeline.</p>
+A pipeline is the ordered sequence of processing stages your system runs through before and after the LLM call. Every input passes through it. Every output exits through it.
 
-<div class="pull">
-Block early. Spend late. The LLM is the most expensive call in the chain — it should be the last thing that runs.
-</div>
+It is the connective tissue between user intent and model response. The model does one thing well. The pipeline handles everything the model should not have to handle: input sanity, security, context assembly, cost routing, output safety.
 
-<h2>What is a pipeline, exactly?</h2>
+There are two flavors:
 
-<p>A pipeline is the ordered sequence of processing stages your system runs through <strong>before and after</strong> the LLM call. Every input passes through it. Every output exits through it.</p>
+A **workflow pipeline** runs linearly (stage 1, then 2, then 3, then the LLM, then done). It is predictable, debuggable and easy to test, and it is the right shape for 80% of production use cases.
 
-<p>Think of it as the connective tissue between user intent and model response. The model does one thing well. The pipeline handles everything the model shouldn't have to handle: input sanity, security, context assembly, cost routing, output safety.</p>
+An **agent pipeline** lets the LLM decide the enrichment order. It is more flexible, costs more, and is harder to reason about. Use it only when the task genuinely requires dynamic orchestration.
 
-<p>Two flavors exist:</p>
+## The nine stages
 
-<p><strong>Workflow pipelines</strong> run linearly — stage 1 → 2 → 3 → LLM → done. Predictable, debuggable, easy to test. Right for 80% of production use cases.</p>
+| Stage | What it does | Cost | Exit code |
+|---|---|---|---|
+| User input | Raw text enters the pipeline | none | |
+| Stage 1, rate limiting | Token bucket, per-user quotas, burst protection | ~0 | 429 |
+| Stage 2, validation | Regex, length, type checks, null bytes, format | ~0 | reject |
+| Stage 3, security | Injection patterns, jailbreak detection, policy check | low | block |
+| Stage 4, query shaping | Intent detection, expansion, language normalization | low | |
+| Stage 5, intelligence layer | RAG retrieval, tool selection, user personalization | medium | |
+| Stage 6, context hydration | Chat history, memory compaction, token budget | medium | |
+| Stage 7, preparation layer | Prompt assembly, model routing, reasoning strategy | medium | |
+| Stage 8, execution layer | LLM call, streaming, output security scan | high | |
+| Stage 9, output formatting | Parse, PII redaction, response contract shaping | low | |
+| Response | Delivered to client | none | |
 
-<p><strong>Agent pipelines</strong> let the LLM decide the enrichment order. More flexible, higher cost, harder to reason about. Use only when the task genuinely requires dynamic orchestration.</p>
+Stages 1 through 3 can end the request before the LLM is ever called. The exit code is the reason it ended, and it is the only thing a caller needs to decide whether to retry.
 
-<div class="figure">
-<div class="figure-label">Pipeline architecture · 9 stages</div>
-<div class="figure-body">
-<div class="pipe-row">
-<div class="pipe-connector"><div class="pipe-dot s"></div><div class="pipe-line"></div></div>
-<div class="pipe-stage s-mute"><div class="pipe-name">User input</div><div class="pipe-desc">Raw text enters the pipeline</div></div>
-<div class="pipe-cost c-free">—</div>
-</div>
-<div class="pipe-row">
-<div class="pipe-connector"><div class="pipe-dot s s-mute"></div><div class="pipe-line"></div></div>
-<div class="pipe-stage s-mute" style="position:relative">
-<div class="pipe-name">Stage 1 — Rate limiting</div>
-<div class="pipe-desc">Token bucket · per-user quotas · burst protection</div>
-<div class="pipe-exit">429</div>
-</div>
-<div class="pipe-cost c-free">~0</div>
-</div>
-<div class="pipe-row">
-<div class="pipe-connector"><div class="pipe-dot s s-hot"></div><div class="pipe-line"></div></div>
-<div class="pipe-stage s-hot" style="position:relative">
-<div class="pipe-name">Stage 2 — Validation</div>
-<div class="pipe-desc">Regex · length · type checks · null bytes · format</div>
-<div class="pipe-exit">reject</div>
-</div>
-<div class="pipe-cost c-free">~0</div>
-</div>
-<div class="pipe-row">
-<div class="pipe-connector"><div class="pipe-dot s s-warm"></div><div class="pipe-line"></div></div>
-<div class="pipe-stage s-warm" style="position:relative">
-<div class="pipe-name">Stage 3 — Security</div>
-<div class="pipe-desc">Injection patterns · jailbreak detection · policy check</div>
-<div class="pipe-exit">block</div>
-</div>
-<div class="pipe-cost c-free">low</div>
-</div>
-<div class="pipe-row">
-<div class="pipe-connector"><div class="pipe-dot s s-warm"></div><div class="pipe-line"></div></div>
-<div class="pipe-stage s-warm">
-<div class="pipe-name">Stage 4 — Query shaping</div>
-<div class="pipe-desc">Intent detection · expansion · language normalization</div>
-</div>
-<div class="pipe-cost c-ok">low</div>
-</div>
-<div class="pipe-row">
-<div class="pipe-connector"><div class="pipe-dot s s-cool"></div><div class="pipe-line"></div></div>
-<div class="pipe-stage s-cool">
-<div class="pipe-name">Stage 5 — Intelligence layer</div>
-<div class="pipe-desc">RAG retrieval · tool selection · user personalization</div>
-</div>
-<div class="pipe-cost c-warm">medium</div>
-</div>
-<div class="pipe-row">
-<div class="pipe-connector"><div class="pipe-dot s s-hot"></div><div class="pipe-line"></div></div>
-<div class="pipe-stage s-hot">
-<div class="pipe-name">Stage 6 — Context hydration</div>
-<div class="pipe-desc">Chat history · memory compaction · token budget</div>
-</div>
-<div class="pipe-cost c-warm">medium</div>
-</div>
-<div class="pipe-row">
-<div class="pipe-connector"><div class="pipe-dot s s-cool"></div><div class="pipe-line"></div></div>
-<div class="pipe-stage s-cool">
-<div class="pipe-name">Stage 7 — Preparation layer</div>
-<div class="pipe-desc">Prompt assembly · model routing · reasoning strategy</div>
-</div>
-<div class="pipe-cost c-warm">medium</div>
-</div>
-<div class="pipe-row">
-<div class="pipe-connector"><div class="pipe-dot s s-cool"></div><div class="pipe-line"></div></div>
-<div class="pipe-stage s-cool">
-<div class="pipe-name">Stage 8 — Execution layer</div>
-<div class="pipe-desc">LLM call · streaming · output security scan</div>
-</div>
-<div class="pipe-cost c-hot">high</div>
-</div>
-<div class="pipe-row">
-<div class="pipe-connector"><div class="pipe-dot s s-ok"></div><div class="pipe-line"></div></div>
-<div class="pipe-stage s-ok">
-<div class="pipe-name">Stage 9 — Output formatting</div>
-<div class="pipe-desc">Parse · PII redaction · response contract shaping</div>
-</div>
-<div class="pipe-cost c-ok">low</div>
-</div>
-<div class="pipe-row">
-<div class="pipe-connector"><div class="pipe-dot s"></div><div class="pipe-line"></div></div>
-<div class="pipe-stage s-mute"><div class="pipe-name">Response</div><div class="pipe-desc">Delivered to client</div></div>
-<div class="pipe-cost c-free">—</div>
-</div>
-</div>
-</div>
+## The design principles
 
-<h2>The design principles</h2>
+| Rule | What it means |
+|---|---|
+| Block early, spend late | Cheap checks go first. The LLM call is the most expensive operation, and it only runs after everything else has cleared |
+| Fail fast | A blocked context stops the pipeline immediately. No downstream stage runs on a blocked request |
+| Single responsibility | Each stage does one thing. Validation does not touch security. Security does not touch RAG |
+| Configurable | Any stage can be disabled for testing or bypassed by environment flag. New stages can be inserted without touching existing ones |
+| Observable | The context is serializable. Every stage snapshots it. Every failure has a named reason |
 
-<div class="os-panel">
-<div class="figure-label">Core rules</div>
-<ul>
-<li><strong>Block early, spend late.</strong> Cheap checks go first. The LLM call is the most expensive operation — it only runs after everything else has cleared.</li>
-<li><strong>Fail fast.</strong> A blocked context stops the pipeline immediately. No downstream stage runs on a blocked request.</li>
-<li><strong>Single responsibility.</strong> Each stage does one thing. Validation doesn't touch security. Security doesn't touch RAG.</li>
-<li><strong>Configurable.</strong> Any stage can be disabled for testing or bypassed by environment flag. New stages can be inserted without touching existing ones.</li>
-<li><strong>Observable.</strong> The context is serializable. Every stage snapshots it. Every failure has a named reason.</li>
-</ul>
-</div>
+## The context object
 
-<h2>The context object</h2>
+Every stage communicates through a shared context object. The rules are simple: each stage reads what previous stages added and appends its own data. Nothing is deleted. The context only grows.
 
-<p>Every stage communicates through a shared context object. The rules are simple: each stage reads what previous stages added and appends its own data. Nothing is deleted. The context only grows.</p>
+That makes the pipeline fully auditable. You can inspect exactly what each stage contributed. Because it is serializable, you can snapshot it after every stage for debugging, crash recovery and observability.
 
-<p>This makes the pipeline fully auditable — you can inspect exactly what each stage contributed. And because it's serializable, you can snapshot it after every stage for debugging, crash recovery, and observability.</p>
+```python
+from dataclasses import dataclass, field
+from typing import Any
+import json
 
-<pre><code><span class="tok t-kw">from</span> dataclasses <span class="tok t-kw">import</span> dataclass, field
-<span class="tok t-kw">from</span> typing <span class="tok t-kw">import</span> Any
-<span class="tok t-kw">import</span> json
-
-<span class="tok t-kw">@dataclass</span>
-<span class="tok t-cl">class</span> <span class="tok t-fn">PipelineContext</span>:
-    <span class="tok t-str">"""
+@dataclass
+class PipelineContext:
+    """
     Shared state passed through every stage.
     Each stage reads previous enrichments and adds its own.
     Never deletes. Always serializable.
-    """</span>
+    """
     raw_input: str
     user_id: str
     stages_passed: list[str] = field(default_factory=list)
     enrichments: dict[str, Any] = field(default_factory=dict)
-    final_prompt: str | <span class="tok t-kw">None</span> = <span class="tok t-kw">None</span>
-    response: str | <span class="tok t-kw">None</span> = <span class="tok t-kw">None</span>
-    blocked: bool = <span class="tok t-kw">False</span>
-    block_reason: str | <span class="tok t-kw">None</span> = <span class="tok t-kw">None</span>
+    final_prompt: str | None = None
+    response: str | None = None
+    blocked: bool = False
+    block_reason: str | None = None
 
-    <span class="tok t-kw">def</span> <span class="tok t-fn">add</span>(self, key: str, value: Any):
+    def add(self, key: str, value: Any):
         self.enrichments[key] = value
         self.stages_passed.append(key)
 
-    <span class="tok t-kw">def</span> <span class="tok t-fn">block</span>(self, reason: str):
-        self.blocked = <span class="tok t-kw">True</span>
+    def block(self, reason: str):
+        self.blocked = True
         self.block_reason = reason
 
-    <span class="tok t-kw">def</span> <span class="tok t-fn">serialize</span>(self) -> str:
-        <span class="tok t-cm"># Snapshot at any stage — for logging, retries, crash recovery</span>
-        <span class="tok t-kw">return</span> json.dumps(self.__dict__, default=str)
-</code></pre>
+    def serialize(self) -> str:
+        # Snapshot at any stage — for logging, retries, crash recovery
+        return json.dumps(self.__dict__, default=str)
+```
 
-<h2>Stage by stage</h2>
+## Stage by stage
 
-<div class="card-grid">
-<div class="card">
-<div class="card-meta">Stage 1</div>
-<div class="card-title">Rate limiting</div>
-<p class="card-body">Token bucket or sliding window per user. Catches burst abuse before any parsing happens. This is the absolute cheapest gate — a single counter lookup.</p>
-<span class="tag c-free">~free</span>
-</div>
-<div class="card">
-<div class="card-meta">Stage 2</div>
-<div class="card-title">Validation</div>
-<p class="card-body">Regex, length checks, null bytes, encoding checks. No ML. Rejects garbage before it wastes a single downstream cycle. Saves more cost than any other stage.</p>
-<span class="tag c-free">~free</span>
-</div>
-<div class="card">
-<div class="card-meta">Stage 3</div>
-<div class="card-title">Security</div>
-<p class="card-body">Compiled regex for known injection patterns. Optional embedding-based classifier for borderline cases. Goal: raise the cost of attack, not achieve perfection.</p>
-<span class="tag c-ok">low cost</span>
-</div>
-<div class="card">
-<div class="card-meta">Stage 4</div>
-<div class="card-title">Query shaping</div>
-<p class="card-body">Classify intent, expand sparse queries, normalize language. Users write "fix my code" — your system needs to know it's a debugging task in Python before retrieval.</p>
-<span class="tag c-ok">low cost</span>
-</div>
-<div class="card">
-<div class="card-meta">Stage 5</div>
-<div class="card-title">Intelligence layer</div>
-<p class="card-body">RAG retrieval, tool manifest selection, user profile loading. Filter retrieved chunks by relevance score — don't dump noise into the context window.</p>
-<span class="tag c-warm">medium cost</span>
-</div>
-<div class="card">
-<div class="card-meta">Stage 6</div>
-<div class="card-title">Context hydration</div>
-<p class="card-body">Load chat history. Apply sliding window, summarization, or compaction to stay within the token budget. This is separate from preparation — data loading vs. decision making.</p>
-<span class="tag c-warm">medium cost</span>
-</div>
-<div class="card">
-<div class="card-meta">Stage 7</div>
-<div class="card-title">Preparation layer</div>
-<p class="card-body">Assemble the final prompt from all enrichments. Route to the right model — simple tasks go to fast models. Decide whether the task needs extended thinking.</p>
-<span class="tag c-warm">medium cost</span>
-</div>
-<div class="card">
-<div class="card-meta">Stage 8</div>
-<div class="card-title">Execution layer</div>
-<p class="card-body">The LLM call. Finally. Streaming, tool use, reasoning — all here. Also includes output security: scan for policy violations before the response leaves this stage.</p>
-<span class="tag c-hot">high cost</span>
-</div>
-</div>
+### Stage 1, rate limiting
 
-<p>Stage 9 — <strong>output formatting</strong> — deserves its own note. PII redaction, response contract enforcement (JSON schema, markdown stripping for voice channels, truncation for UI constraints) are genuinely distinct from generation. Keeping them as a separate, swappable stage means you can change output format per channel without touching the execution layer.</p>
+Token bucket or sliding window per user. It catches burst abuse before any parsing happens. This is the absolute cheapest gate, a single counter lookup.
 
-<h2>Wiring it together</h2>
+### Stage 2, validation
 
-<p>The pipeline runner is intentionally minimal. It loops through stages, skips disabled ones, stops on a blocked context, and snapshots after each stage.</p>
+Regex, length checks, null bytes, encoding checks. No ML. It rejects garbage before the garbage wastes a single downstream cycle, and it saves more cost than any other stage.
 
-<pre><code><span class="tok t-cl">class</span> <span class="tok t-fn">AIPipeline</span>:
-    <span class="tok t-kw">def</span> <span class="tok t-fn">__init__</span>(self, stages: list, enabled: set[str] | <span class="tok t-kw">None</span> = <span class="tok t-kw">None</span>):
+### Stage 3, security
+
+A compiled regex for known injection patterns, plus an optional embedding-based classifier for borderline cases. The goal is to raise the cost of an attack, not to achieve perfection.
+
+### Stage 4, query shaping
+
+Classify intent, expand sparse queries, normalize language. A user writes "fix my code", and the system needs to know it is a debugging task in Python before retrieval runs.
+
+### Stage 5, intelligence layer
+
+RAG retrieval, tool manifest selection, user profile loading. Retrieved chunks get filtered by relevance score, so that noise does not end up in the context window.
+
+### Stage 6, context hydration
+
+Load chat history. Apply a sliding window, summarization or compaction to stay within the token budget. This is separate from preparation: data loading versus decision making.
+
+### Stage 7, preparation layer
+
+Assemble the final prompt from all enrichments. Route to the right model, since simple tasks go to fast models. Decide whether the task needs extended thinking.
+
+### Stage 8, execution layer
+
+The LLM call. Streaming, tool use and reasoning all happen here, and so does output security: the stage scans for policy violations before the response leaves it.
+
+### Stage 9, output formatting
+
+Output formatting deserves its own note. PII redaction, response contract enforcement (JSON schema, markdown stripping for voice channels, truncation for UI constraints) are distinct from generation. Keeping them as a separate, swappable stage means the output format can change per channel without touching the execution layer.
+
+## Wiring it together
+
+The pipeline runner is intentionally minimal. It loops through stages, skips disabled ones, stops on a blocked context, and snapshots after each stage.
+
+```python
+class AIPipeline:
+    def __init__(self, stages: list, enabled: set[str] | None = None):
         self.stages = stages
-        self.enabled = enabled  <span class="tok t-cm"># None = all stages active</span>
+        self.enabled = enabled  # None = all stages active
 
-    <span class="tok t-kw">def</span> <span class="tok t-fn">run</span>(self, raw_input: str, user_id: str) -> <span class="tok t-fn">PipelineContext</span>:
-        ctx = <span class="tok t-fn">PipelineContext</span>(raw_input=raw_input, user_id=user_id)
+    def run(self, raw_input: str, user_id: str) -> PipelineContext:
+        ctx = PipelineContext(raw_input=raw_input, user_id=user_id)
 
-        <span class="tok t-kw">for</span> stage <span class="tok t-kw">in</span> self.stages:
-            name = stage.<span class="tok t-fn">__class__</span>.__name__
+        for stage in self.stages:
+            name = stage.__class__.__name__
 
-            <span class="tok t-kw">if</span> self.enabled <span class="tok t-kw">and</span> name <span class="tok t-kw">not in</span> self.enabled:
-                <span class="tok t-kw">continue</span>  <span class="tok t-cm"># configurable: skip disabled stages</span>
+            if self.enabled and name not in self.enabled:
+                continue  # configurable: skip disabled stages
 
-            <span class="tok t-kw">if</span> ctx.blocked:
-                <span class="tok t-kw">break</span>     <span class="tok t-cm"># fail fast: don't process blocked context</span>
+            if ctx.blocked:
+                break     # fail fast: don't process blocked context
 
-            ctx = stage.<span class="tok t-fn">run</span>(ctx)
-            self.<span class="tok t-fn">_snapshot</span>(ctx, stage_name=name)  <span class="tok t-cm"># observe every step</span>
+            ctx = stage.run(ctx)
+            self._snapshot(ctx, stage_name=name)  # observe every step
 
-        <span class="tok t-kw">return</span> ctx
+        return ctx
 
-<span class="tok t-cm"># Usage — framework and LLM agnostic</span>
-pipeline = <span class="tok t-fn">AIPipeline</span>(stages=[
-    <span class="tok t-fn">RateLimitStage</span>(limit=<span class="tok t-num">100</span>, window_seconds=<span class="tok t-num">60</span>),
-    <span class="tok t-fn">ValidationStage</span>(<span class="tok t-fn">ValidationConfig</span>(max_length=<span class="tok t-num">2000</span>)),
-    <span class="tok t-fn">SecurityStage</span>(),
-    <span class="tok t-fn">QueryShapingStage</span>(),
-    <span class="tok t-fn">IntelligenceStage</span>(vector_store=vs, user_store=us),
-    <span class="tok t-fn">ContextHydrationStage</span>(history_store=hs, max_tokens=<span class="tok t-num">2000</span>),
-    <span class="tok t-fn">PreparationStage</span>(system_prompt=SYSTEM_PROMPT),
-    <span class="tok t-fn">ExecutionStage</span>(llm_client=llm),
-    <span class="tok t-fn">OutputFormattingStage</span>(),
+# Usage — framework and LLM agnostic
+pipeline = AIPipeline(stages=[
+    RateLimitStage(limit=100, window_seconds=60),
+    ValidationStage(ValidationConfig(max_length=2000)),
+    SecurityStage(),
+    QueryShapingStage(),
+    IntelligenceStage(vector_store=vs, user_store=us),
+    ContextHydrationStage(history_store=hs, max_tokens=2000),
+    PreparationStage(system_prompt=SYSTEM_PROMPT),
+    ExecutionStage(llm_client=llm),
+    OutputFormattingStage(),
 ])
 
-result = pipeline.<span class="tok t-fn">run</span>(raw_input=<span class="tok t-str">"How do I fix this?"</span>, user_id=<span class="tok t-str">"user_42"</span>)
+result = pipeline.run(raw_input="How do I fix this?", user_id="user_42")
 
-<span class="tok t-kw">if</span> result.blocked:
-    <span class="tok t-fn">print</span>(<span class="tok t-str">f"Blocked: {result.block_reason}"</span>)
-<span class="tok t-kw">else</span>:
-    <span class="tok t-fn">print</span>(result.response)
-</code></pre>
+if result.blocked:
+    print(f"Blocked: {result.block_reason}")
+else:
+    print(result.response)
+```
 
-<h2>Context rules</h2>
+## Context rules
 
-<div class="os-panel">
-<div class="figure-label">How stages communicate</div>
-<div class="ctx-rule">
-<div class="ctx-num">01</div>
-<div>Each stage sees everything the previous stages added — but <strong>never removes it</strong>. The context is append-only. This makes the pipeline fully auditable without any tracing overhead.</div>
-</div>
-<div class="ctx-rule">
-<div class="ctx-num">02</div>
-<div>The context must be <strong>fully serializable</strong> at all times. Crashes, timeouts, and retries are production facts. Serializable state means you can resume, replay, and debug without loss.</div>
-</div>
-<div class="ctx-rule">
-<div class="ctx-num">03</div>
-<div><strong>Snapshot after every stage.</strong> The single best observability investment you can make. When something goes wrong, you want to know what the context looked like when it entered each stage — not just the final output.</div>
-</div>
-<div class="ctx-rule">
-<div class="ctx-num">04</div>
-<div>Every blocked request carries a <strong>named reason</strong>. Not a boolean flag. Not an HTTP status code. A human-readable string that tells you exactly which stage rejected the request and why.</div>
-</div>
-</div>
+1. Each stage sees everything the previous stages added, and never removes it. The context is append-only, which makes the pipeline auditable without any tracing overhead.
+2. The context must be fully serializable at all times. Crashes, timeouts and retries are production facts, and serializable state means you can resume, replay and debug without loss.
+3. Snapshot after every stage. It is the single best observability investment you can make: when something goes wrong, you want to know what the context looked like when it entered each stage, not just the final output.
+4. Every blocked request carries a named reason, not a boolean flag and not an HTTP status code. A human-readable string that says which stage rejected the request and why.
 
-<h2>What model routing actually saves you</h2>
+## What model routing actually saves
 
-<p>Most teams default their strongest model for every request. That's expensive and unnecessary. A simple clarification question doesn't need the same model as a multi-step debugging task.</p>
+Most teams default their strongest model for every request. That is expensive and unnecessary. A simple clarification question does not need the same model as a multi-step debugging task.
 
-<p>A primitive routing rule in the preparation layer — based on intent classification and query complexity from earlier stages — can reduce LLM costs by 40–60% with no quality regression on the requests that matter. The data to make that decision is already in the context by stage 7. You just have to use it.</p>
+A primitive routing rule in the preparation layer, based on the intent classification and query complexity from earlier stages, can reduce LLM costs by 40% to 60% with no quality regression on the requests that matter. The data to make that decision is already in the context by stage 7. You just have to use it.
 
-<hr class="section">
+## What to actually check
 
-<p>Most AI reliability problems are pipeline problems. The model is the last mile. Everything before it determines whether that last mile goes well.</p>
+1. Send a request that trips the rate limiter. Confirm it never reaches the LLM and comes back as a 429.
+2. Send garbage that fails validation. Confirm no downstream stage ran and nothing was paid for.
+3. Send a prompt that trips the security stage. Confirm the context carries a named block reason and not just a boolean.
+4. Disable one stage through the environment flag. Confirm it is skipped and the rest of the pipeline still runs.
+5. Inspect the serialized context after the preparation stage. Confirm the routing decision is there, along with everything the earlier stages added.
 
-<p>Build the pipeline first. Then worry about the model.</p>
+## Limitations worth stating
 
-<div class="os-panel cta">
-<p>Building something like this?<br>Hit a pattern that worked better?</p>
-<p>♻ Repost if this saves someone a refactor</p>
-</div>
+The security stage raises the cost of an attack rather than removing it. Its coverage is exactly the coverage of the regex set and the optional classifier you configure, and neither is a proof of anything.
+
+Routing saves money only when the intent classification and the complexity signal are good, and the 40% to 60% figure assumes the classification is right.
+
+A workflow pipeline assumes a fixed enrichment order, which is what makes it predictable and testable. When the task needs dynamic orchestration, the agent flavor buys flexibility and pays for it in cost and in the difficulty of reasoning about what happened.
+
+## FAQ
+
+### Is the structure worth it if the model is good?
+
+The model quality and the pipeline quality are independent. A better model raises the ceiling on the answer and changes nothing about the request that reaches it, the tool call that gets made with the wrong argument, or the response that leaves without a scan.
+
+### Do I need all nine stages?
+
+The stages are ordered by cost, so the useful question is where the money is. If the LLM call dominates the spend, the early stages are what protect it. If a stage does nothing for your workload, the runner disables it by name without touching the others.
+
+### Why does the context only grow?
+
+Because deleting from it loses what each stage contributed, and that is what makes the pipeline auditable. The append-only context is also what survives a snapshot, a resume and a replay.
+
+### Does the order of the stages matter?
+
+Yes, and it is the order of cost. Moving the execution layer earlier means paying for the expensive call before the cheap checks that would have rejected the request, which is the opposite of what the pipeline is for.

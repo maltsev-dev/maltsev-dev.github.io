@@ -17,92 +17,225 @@
 // The cards are committed rather than built: they are images, and a build
 // step that needs a browser would make the site unbuildable on a machine
 // without one. Run this after a post is added or renamed.
+//
+// ── the look ───────────────────────────────────────────────────────────────
+//
+// The card is the site, shrunk. It is a terminal window: the bar with its
+// lamps, the prompt with the command that read the page, the title in the
+// terminal face, the rule along the bottom with the date and the topic.
+//
+// The palette is the amber phosphor the site runs on, taken from the same
+// tokens — P3 amber, the dark ground, the ember accent. A card that used a
+// different palette would look like a card from another site.
 
 import { chromium } from 'playwright';
 import { readFileSync, readdirSync, writeFileSync, mkdirSync } from 'node:fs';
-import { join, dirname } from 'node:path';
+import { join, dirname, resolve } from 'node:path';
+import { tmpdir } from 'node:os';
+import { stripPictograms } from './src/plugins/rehype-strip-pictograms.mjs';
 
 const W = 1200,
   H = 630;
 const POSTS_DIR = 'src/content/posts';
 const OUT_DIR = 'static/og';
+const FONT_DIR = resolve('static/fonts');
+
+/** The wordmark, in block characters. The same drawing the site uses. */
+const BANNER = [
+  '█   █   ███   █      █████   ████  █████  █   █',
+  '██ ██  █   █  █        █    █      █      █   █',
+  '█ █ █  █   █  █        █    █      █      █   █',
+  '█   █  █████  █        █     ███   ████   █   █',
+  '█   █  █   █  █        █        █  █      █   █',
+  '█   █  █   █  █        █        █  █       █ █',
+  '█   █  █   █  █████    █    ████   █████    █',
+];
+
+/** The faces, as absolute file URLs the browser can load. */
+const fontUrl = (name) =>
+  `url("file:///${join(FONT_DIR, name).replace(/\\/g, '/')}")`;
 
 // ── the shared card look ────────────────────────────────────────────────────
 //
 // Everything below is inlined rather than linked, because the card is
-// rendered by a browser that has never fetched the site.
+// rendered by a browser that has never fetched the site. The fonts are the
+// exception: they are the site's own files, read off disk.
 
 const CARD_CSS = `
-  @font-face { font-family: 'Anton'; src: local('Arial Narrow'); }
+  @font-face {
+    font-family: 'JetBrains Mono';
+    src: ${fontUrl('jetbrains-mono-latin.woff2')} format('woff2');
+    font-weight: 100 800;
+    font-display: block;
+  }
+  @font-face {
+    font-family: 'Cascadia Mono Art';
+    src: ${fontUrl('cascadia-mono-art.woff2')} format('woff2');
+    font-display: block;
+  }
+
   * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --papier: #0d0a05;
+    --rouille: #1a1207;
+    --grid: #402c0e;
+    --braise: #ff7a18;
+    --encre: #ffb000;
+    --creme: #ffe0a8;
+    --fort: #e09a20;
+  }
+
   body {
     width: ${W}px; height: ${H}px; overflow: hidden;
-    background: #14100a;
-    color: #ffe2b0;
-    font-family: 'Consolas', 'Cascadia Mono', ui-monospace, monospace;
-    display: flex; flex-direction: column; justify-content: space-between;
-    padding: 64px 72px;
+    background: var(--papier);
+    color: var(--creme);
+    font-family: 'JetBrains Mono', ui-monospace, 'Cascadia Mono', monospace;
     position: relative;
   }
-  /* the same faint rule-work the site draws behind its panels */
-  body::before {
-    content: ''; position: absolute; inset: 0; pointer-events: none;
+
+  /* The grid the site draws behind its panels. */
+  .grid {
+    position: absolute; inset: 0; pointer-events: none;
     background:
-      repeating-linear-gradient(0deg, transparent 0 39px, rgba(58,42,20,.55) 39px 40px),
-      repeating-linear-gradient(90deg, transparent 0 39px, rgba(58,42,20,.35) 39px 40px);
+      repeating-linear-gradient(0deg, transparent 0 39px, rgba(64,44,14,.55) 39px 40px),
+      repeating-linear-gradient(90deg, transparent 0 39px, rgba(64,44,14,.34) 39px 40px);
   }
-  .top { display: flex; align-items: center; gap: 18px; position: relative; }
-  .mark {
-    width: 46px; height: 46px; display: grid; place-items: center;
-    background: #e0501e; color: #14100a;
-    font-weight: 700; font-size: 22px; letter-spacing: -1px;
-    box-shadow: 5px 5px 0 #8c2a18;
+
+  /* The scanlines. The site draws them on a screen; a card is a picture of
+     a screen, so it carries them too. */
+  .scan {
+    position: absolute; inset: 0; pointer-events: none;
+    background: repeating-linear-gradient(
+      0deg, rgba(0,0,0,.22) 0 1px, transparent 1px 3px
+    );
+    mix-blend-mode: multiply;
   }
-  .host { font-size: 22px; letter-spacing: 2px; color: #ffa02e; }
+
+  /* The bloom: a lit panel throws light onto the bezel around it. */
+  .bloom {
+    position: absolute; inset: 0; pointer-events: none;
+    box-shadow: inset 0 0 120px rgba(255,176,0,.10);
+  }
+
+  /* The window. */
+  .frame {
+    position: absolute; inset: 46px;
+    border: 1px solid var(--grid);
+    background: rgba(13,10,5,.72);
+    box-shadow: 0 0 34px -10px rgba(255,122,24,.55);
+    display: flex; flex-direction: column;
+  }
+
+  /* The bar. */
+  .bar {
+    display: flex; align-items: center; gap: 14px;
+    height: 46px; padding: 0 18px;
+    border-bottom: 1px solid var(--grid);
+    font-size: 18px; letter-spacing: 2px;
+    color: var(--fort);
+  }
+  .leds { display: inline-flex; gap: 7px; }
+  .leds i { width: 10px; height: 10px; background: var(--grid); display: block; }
+  .leds i.on { background: var(--encre); box-shadow: 0 0 9px rgba(255,176,0,.75); }
+  .chip { color: var(--braise); text-shadow: 0 0 10px rgba(255,122,24,.55); }
+  .chip::before { content: '\\2500\\00a0'; color: var(--grid); }
+  .chip::after { content: '\\00a0\\2500'; color: var(--grid); }
+  .right { margin-left: auto; color: var(--fort); opacity: .75; }
+
+  /* The body of the window. */
+  .body {
+    flex: 1; padding: 30px 46px 0;
+    display: flex; flex-direction: column;
+    overflow: hidden;
+  }
+
+  /* The prompt. */
+  .prompt {
+    font-size: 21px; letter-spacing: .3px; line-height: 1.5;
+    color: var(--braise);
+  }
+  .prompt .who { color: var(--creme); }
+  .prompt .sep { color: var(--fort); opacity: .7; }
+  .prompt .path { color: var(--fort); }
+  .prompt .cmd { color: var(--creme); text-shadow: 0 0 10px rgba(255,176,0,.35); }
+
+  /* The title. It is set in the terminal face, in the site's amber, with
+     the same bloom the headings carry on the page. */
   h1 {
-    position: relative;
-    font-size: 74px; line-height: 1.06; letter-spacing: -2px;
-    text-transform: uppercase; font-weight: 700; color: #ffe2b0;
-    max-width: 20ch;
+    margin-top: 26px;
+    font-size: 46px; line-height: 1.14; letter-spacing: -1px;
+    font-weight: 700; color: var(--encre);
+    text-shadow: 0 0 18px rgba(255,176,0,.38);
+    max-width: 26ch;
   }
-  h1 em { font-style: normal; color: #e0501e; }
+
+  /* The wordmark, for the site card. */
+  .banner {
+    font-family: 'Cascadia Mono Art', 'JetBrains Mono', monospace;
+    font-size: 15px; line-height: 1.06; letter-spacing: 0;
+    color: var(--encre);
+    text-shadow: 0 0 16px rgba(255,176,0,.45);
+    white-space: pre;
+  }
+
   .lede {
-    position: relative;
-    margin-top: 30px; font-size: 25px; line-height: 1.4; color: #ffa02e;
-    max-width: 46ch;
+    margin-top: 20px;
+    font-size: 20px; line-height: 1.5; color: var(--fort);
+    max-width: 52ch;
   }
+  .lede .tag { color: var(--braise); }
+
+  /* The foot. A rule with the date and the topic on the left of it. */
   .foot {
-    position: relative; display: flex; align-items: center; gap: 16px;
-    margin-top: 34px;
-    font-size: 20px; letter-spacing: 3px; text-transform: uppercase;
-    color: #ffe2b0;
+    display: flex; align-items: center; gap: 18px;
+    height: 66px; padding: 0 48px;
+    border-top: 1px solid var(--grid);
+    font-size: 19px; letter-spacing: 2.5px; text-transform: uppercase;
+    color: var(--fort);
   }
-  .dot { width: 10px; height: 10px; background: #e0501e; border-radius: 50%; }
-  .rule { flex: 1; height: 3px; background: #3a2a14; }
-  .meta { display: flex; align-items: center; gap: 14px; }
-  .meta .sep { opacity: .45; }
-  .meta .tag { color: #e0501e; }
+  .rule {
+    flex: 1; height: 1px;
+    background-image: linear-gradient(to right, var(--grid) 0 4px, transparent 4px 9px);
+    background-size: 9px 1px; background-repeat: repeat-x;
+  }
+  .avail { display: inline-flex; align-items: center; gap: 10px; color: var(--encre); }
+  .avail i { width: 10px; height: 10px; background: var(--encre); display: block;
+             box-shadow: 0 0 9px rgba(255,176,0,.7); }
 `;
 
 /** Wrap card content in the shared shell. */
 function card(inner) {
   return `<!doctype html>
 <html><head><meta charset="utf-8"><style>${CARD_CSS}</style></head>
-<body>${inner}</body></html>`;
+<body>
+  <div class="grid"></div>
+  <div class="bloom"></div>
+  ${inner}
+  <div class="scan"></div>
+</body></html>`;
 }
 
-/** The header line every card carries. */
-function top() {
-  return `<div class="top">
-    <span class="mark">A|M</span>
-    <span class="host">maltsev-dev.github.io</span>
+/** The bar every card carries. */
+function bar(path, right) {
+  return `<div class="bar">
+    <span class="leds"><i class="on"></i><i></i><i></i></span>
+    <span class="chip">${path}</span>
+    <span class="right">${right}</span>
   </div>`;
 }
 
-/** The footer line every card carries. */
-function foot(text) {
+/** The prompt every card carries. */
+function prompt(dir, cmd) {
+  return `<div class="prompt"><span class="who">root</span><span class="sep">@</span><span>amaltsev</span>><span class="sep">:</span><span class="path">${dir}</span><span class="sep">$</span> <span class="cmd">${cmd}</span></div>`;
+}
+
+/** The foot every card carries. */
+function foot(left) {
   return `<div class="foot">
-    <span class="dot"></span><span>${text}</span><span class="rule"></span>
+    <span>${left}</span>
+    <span class="rule"></span>
+    <span class="avail"><i></i>available</span>
   </div>`;
 }
 
@@ -188,9 +321,11 @@ function loadPosts() {
  *
  * Older posts carry a leading emoji as a section marker. It reads fine on the
  * page and badly on a card — a line of decoration in front of the words.
+ * The rule is the site's own, so a title cannot be decorated on the card and
+ * plain on the page.
  */
 function cardTitle(title) {
-  const stripped = title.replace(/^[\p{Extended_Pictographic}\s️]+/u, '').trim();
+  const stripped = stripPictograms(title).replace(/[ \t]{2,}/g, ' ').trim();
   return stripped || title;
 }
 
@@ -212,27 +347,36 @@ function cardDate(iso) {
 /** The site card: what the site is, for every page that has nothing better. */
 function siteCard() {
   return card(
-    `${top()}
-  <div>
-    <h1>Agentic <em>engineering</em> that carries real work</h1>
-    <p class="lede">AI operational systems · embedded and distributed systems · automation</p>
+    `<div class="frame">
+  ${bar('~', 'maltsev-dev.github.io')}
+  <div class="body">
+    <pre class="banner">${BANNER.join('\n')}</pre>
+    ${prompt('~', 'cat about.md')}
+    <h1>I build AI systems that survive production.</h1>
+    <p class="lede">Agent runtime security · retrieval quality · the reliability layer underneath both</p>
   </div>
-  ${foot('available for work')}`
+  ${foot('Anatolii Maltsev')}
+</div>`
   );
 }
 
 /** One post's card: its title, its date and its first tag. */
 function postCard(post) {
   const tag = post.tags[0] ? post.tags[0].replace(/_/g, ' ') : '';
-  const meta = [cardDate(post.date), tag].filter(Boolean).join(' · ');
+  const date = cardDate(post.date);
+
+  const meta = [date, tag].filter(Boolean).join(' · ');
 
   return card(
-    `${top()}
-  <div>
+    `<div class="frame">
+  ${bar('~/blog', 'post')}
+  <div class="body">
+    ${prompt('~/blog', `cat ${post.slug}.md`)}
     <h1>${cardTitle(post.title)}</h1>
-    ${meta && `<p class="lede"><span class="meta">${meta}</span></p>`}
+    ${meta && `<p class="lede">${meta}</p>`}
   </div>
-  ${foot('Anatolii Maltsev')}`
+  ${foot('Anatolii Maltsev')}
+</div>`
   );
 }
 
@@ -242,12 +386,25 @@ const args = process.argv.slice(2);
 const onlySite = args.includes('--site');
 const onlyPosts = args.includes('--posts');
 
+// The cards are written to a file and opened from it, because the browser
+// will not load a file:// font into a page that was set from a string.
+const TMP_DIR = join(tmpdir(), 'og-cards');
+mkdirSync(TMP_DIR, { recursive: true });
+const TMP_HTML = join(TMP_DIR, 'card.html');
+
 const browser = await chromium.launch();
-const page = await browser.newPage({ viewport: { width: W, height: H }, deviceScaleFactor: 1 });
+const page = await browser.newPage({
+  viewport: { width: W, height: H },
+  deviceScaleFactor: 1,
+});
 
 /** Render one card and write it. */
 async function shoot(html, path) {
-  await page.setContent(html, { waitUntil: 'load' });
+  writeFileSync(TMP_HTML, html, 'utf-8');
+  await page.goto('file:///' + TMP_HTML.replace(/\\/g, '/'), {
+    waitUntil: 'load',
+  });
+  await page.evaluate(() => document.fonts.ready);
   const buf = await page.screenshot({ type: 'png' });
   mkdirSync(dirname(path), { recursive: true });
   writeFileSync(path, buf);
@@ -271,7 +428,7 @@ if (!onlyPosts) {
   const html = `<!doctype html>
 <html><head><meta charset="utf-8"><style>
   * { margin: 0; padding: 0; }
-  body { width: 180px; height: 180px; background: #e0501e; }
+  body { width: 180px; height: 180px; background: #ff7a18; }
   svg { display: block; width: 180px; height: 180px; }
 </style></head>
 <body>${mark.replace(/width="64" height="64"/, 'width="180" height="180"')}</body></html>`;

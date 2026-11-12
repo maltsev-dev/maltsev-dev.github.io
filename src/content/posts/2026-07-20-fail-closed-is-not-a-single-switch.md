@@ -23,8 +23,7 @@ defaults to allow.
 | 6 | Approval consumption | The check and the consume are separate writes | One atomic update |
 
 The six are independent. Passing any one of them says nothing about
-the other five, which is why a per-path guarantee is the only kind
-worth making.
+the other five, so a per-path guarantee is the only kind worth making.
 
 ```
   SDK                  Gate                                 Store
@@ -44,7 +43,7 @@ worth making.
   │                    │         outbox INSERT        ─────►│
 ```
 
-Each arrow is a dependency with its own outage. A refusal on one of
+Each arrow is a dependency with its own outage. The outcome on one of
 them is a decision nobody made, because nothing in the code ever said
 what to do when the dependency was gone.
 
@@ -163,13 +162,13 @@ except Exception:
 ```
 
 The fallback starts as a migration aid and ends as the production path,
-because the new path fails at exactly the moment it is needed. That is
-the moment you are least able to be reading code.
+because the new path fails at exactly the moment you are least able to
+be reading code.
 
 The older implementation is weaker in a way that is easy to miss: it
 probably has a broader wildcard, a simpler matching routine, no
-material-field binding. It is a separate policy with its own default, and
-it is reachable exactly when you are least likely to notice.
+material-field binding. It is a separate policy with its own default,
+and it is reachable exactly when you are least likely to notice.
 
 Enforcement needs one production path. If a migration requires two, the
 old one should be a hard error with an alert, so the exception is visible
@@ -208,15 +207,15 @@ point at and no commit to blame. The code looks defensive.
 A default has to be written down where it applies. For each failure
 class, four things:
 
-1. **A deliberate default**, written where it applies.
-2. **A distinct error code.** If a policy store failure and a policy
+1. A deliberate default, written where it applies.
+2. A distinct error code. If a policy store failure and a policy
    denial return the same code, nobody downstream can tell an outage from
    a rule, and your dashboard shows a spike in denials that is really a
    spike in outages.
-3. **A regression test** that exercises the failure, with the dependency
+3. A regression test that exercises the failure, with the dependency
    actually unavailable. A fail-closed test that runs against a healthy
    mock has tested nothing.
-4. **A written reason** for why that path is allowed to degrade. The
+4. A written reason for why that path is allowed to degrade. The
    table above is where that reason goes. Without it, the next reviewer
    cannot tell a decision from an oversight.
 

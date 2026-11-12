@@ -1,5 +1,4 @@
 ---
-import '../styles/track.css';
 import '../styles/skills.css';
 import Base from '../layouts/Base.astro';
 import { SKILL_TIERS } from '../data/skills';
@@ -14,14 +13,24 @@ const YEARS = yearsOfExperience();
 const YEARS_WORD = spellNumber(YEARS);
 const YEARS_SENTENCE = spellNumber(YEARS, true);
 
-// Presented as a commit log: each stop is one entry with a hash, a branch and a
-// date. The hash-shaped values are decoration — they identify a panel, nothing
-// more. Replace or extend as the history changes; the page reads from here.
+/**
+ * The career, as a log.
+ *
+ * A career is a history: it has commits, in an order, each one with a date
+ * and a message. So the page is a log — the same shape `git log` prints, one
+ * entry per stop, newest first. The hash-shaped values are decoration — they
+ * identify an entry, nothing more. Replace or extend as the history changes;
+ * the page reads from here.
+ */
 interface Stop {
   hash: string;
-  /** Employment type — the branch name in the log framing. */
-  kind: string;
-  when: string;
+  /** What the entry is: the ref a branch would point at. */
+  ref: string;
+  /** The date the commit carries, in the format `git log` prints it in. */
+  date: string;
+  /** The same date, short, for the one-line summary above the log. */
+  short: string;
+  /** The span of the engagement, for the reader rather than the machine. */
   span: string;
   role: string;
   org: string;
@@ -40,95 +49,69 @@ interface Stop {
   skills: string[];
   /** Count of skills the source profile collapsed; rendered as a muted chip. */
   more?: number;
-  /** Which rung of the career rail below the track this stop belongs to. */
-  stage: StageId;
 }
-
-/**
- * The career rail at the foot of the track: the five rungs the history climbs,
- * oldest first. The track itself runs the other way — it starts at the present
- * and travels back — so this list is the only place the order is chronological.
- */
-interface Stage {
-  id: StageId;
-  name: string;
-  since: string;
-}
-
-type StageId = 'founder' | 'independent' | 'sr-sdet' | 'sdet' | 'qa';
-
-const STAGES: Stage[] = [
-  { id: 'founder', name: 'Founder', since: '2026' },
-  { id: 'independent', name: 'Indie Expert', since: '2025' },
-  { id: 'sr-sdet', name: 'Sr SDET', since: '2023' },
-  // One rung, two stops: Alfa-Bank (Dec 2021 — Aug 2023) and Sportmaster
-  // (Jun 2020 — Dec 2021). The rail reads as a one-to-one list of the cards
-  // above it, so "2020" claimed a period that runs to 2023. The range is
-  // what the rung actually covers.
-  { id: 'sdet', name: 'SDET', since: '2020–23' },
-  { id: 'qa', name: 'QA', since: '2019' },
-];
 
 const STOPS: Stop[] = [
   {
     hash: 'f7c21a9',
-    kind: 'self-employed',
-    when: 'Mar 2026 — now',
+    ref: 'HEAD -> main',
+    date: 'Mon Mar  9 10:02:11 2026 +0200',
+    short: '2026-03-09',
     span: '8 mos',
     role: 'Founder & Lead Engineer',
     org: 'NullRun',
     href: 'https://nullrun.io',
     tagline: 'Runtime authorization for AI agents',
-    body: 'Cloud SaaS for AI agent security, policy enforcement and execution governance — the problem that kept turning up on client work, built once as a product instead of again for each engagement.',
+    body: 'Cloud SaaS for AI agent security, policy enforcement and execution governance. The problem kept turning up on client work, so I built it once as a product instead of again for each engagement.',
     points: [
-      'Founder and lead engineer behind NullRun — the architecture, the policy model and the public API.',
+      'Founder and lead engineer behind NullRun: the architecture, the policy model and the public API.',
       'Backend systems, SDK development and cloud infrastructure, end to end.',
       'Developer experience and product direction.',
     ],
     skills: ['AI Agent Security', 'Platform Engineering'],
     more: 2,
-    stage: 'founder',
   },
   {
     hash: '4c8be17',
-    kind: 'independent',
-    when: 'Dec 2025 — now',
+    ref: 'branch: independent',
+    date: 'Wed Dec 10 09:31:44 2025 +0200',
+    short: '2025-12-10',
     span: '11 mos',
     role: 'Applied AI Engineer',
     org: 'Independent',
     tagline: 'LLM systems, RAG & agentic workflows · Automation at scale',
-    body: 'The step out of a reporting line: briefs instead of a backlog, and clients asking for agents rather than for scripts. Where the toolkit stopped being a list of tools and became a way of working — and where the specialization above it on the pyramid started to be worth something.',
+    body: 'The step out of a reporting line: briefs instead of a backlog, and clients asking for agents rather than for scripts. The toolkit stopped being a list of tools and became a way of working, and the specialization above it on the pyramid started to be worth something.',
     points: [
-      'Transformed SMB workflows into AI-powered systems, taking projects from vague requirements to production-ready — cutting manual work by 40–80%.',
-      'Built LLM systems on RAG pipelines and multi-agent orchestration; integrated Google APIs and OAuth and automated document-heavy processes end-to-end.',
-      'Delivered production-grade solutions across backend, frontend, infrastructure and system design — architecture through deployment.',
+      'Took SMB workflows from vague requirements to production, cutting manual work by 40–80%.',
+      'Built LLM systems on RAG pipelines and multi-agent orchestration, integrated Google APIs and OAuth, and automated document-heavy processes end to end.',
+      'Delivered production systems across backend, frontend, infrastructure and system design, from architecture through deployment.',
     ],
     skills: ['AI Agent Development', 'LangGraph'],
     more: 5,
-    stage: 'independent',
   },
   {
     hash: 'a31d0be',
-    kind: 'contract',
-    when: 'Dec 2023 — Jul 2025',
+    ref: 'branch: contract',
+    date: 'Mon Dec  4 11:05:02 2023 +0200',
+    short: '2023-12-04',
     span: '1 yr 8 mos',
     role: 'Senior SDET',
     org: 'PashaPay',
     tagline: 'Mobile & backend test automation',
-    body: 'Senior, and no longer only writing tests. The app and the services behind it ended up under one framework, one set of standards and one owner — the point where a test engineer starts designing the system that does the testing, and where the framing changes from running the work to owning it.',
+    body: 'Senior, and no longer only writing tests. The app and the services behind it ended up under one framework, one set of standards and one owner. That is the point where a test engineer starts designing the system that does the testing, and where the framing changes from running the work to owning it.',
     points: [
       'Designed and built integration, e2e and load test automation frameworks from scratch, covering mobile and backend services.',
-      'Owned test architecture across the full SDLC — technical design through deployment and release validation.',
+      'Owned test architecture across the full SDLC, from technical design through deployment and release validation.',
       'Authored engineering documentation and testing standards adopted across multiple teams, improving consistency and onboarding speed.',
     ],
     skills: ['Test Automation', 'Quality Assurance'],
     more: 2,
-    stage: 'sr-sdet',
   },
   {
     hash: '5e2f904',
-    kind: 'full-time',
-    when: 'Dec 2021 — Aug 2023',
+    ref: 'branch: full-time',
+    date: 'Fri Dec  3 10:00:37 2021 +0300',
+    short: '2021-12-03',
     span: '1 yr 9 mos',
     role: 'Senior SDET',
     org: 'Alfa-Bank',
@@ -141,17 +124,17 @@ const STOPS: Stop[] = [
     ],
     skills: ['Test Automation', 'Quality Assurance'],
     more: 2,
-    stage: 'sdet',
   },
   {
     hash: '90b5e77',
-    kind: 'full-time',
-    when: 'Jun 2020 — Dec 2021',
+    ref: 'branch: full-time',
+    date: 'Tue Jun 16 09:20:11 2020 +0300',
+    short: '2020-06-16',
     span: '1 yr 7 mos',
     role: 'SDET',
     org: 'Sportmaster',
     tagline: 'Performance & quality engineering',
-    body: 'Still writing tests, but no longer only writing them. Performance became the first thing to own outright, and peer review the first say in how the team worked — the difference between a tester who found defects and an engineer who removed the reason for them.',
+    body: 'Still writing tests, but no longer only writing them. Performance became the first thing to own outright, and peer review the first say in how the team worked. That is the difference between a tester who found defects and an engineer who removed the reason for them.',
     points: [
       'Identified and mitigated performance bottlenecks in service integrations, hardening systems against high-load conditions.',
       'Built test automation and quality documentation frameworks, establishing repeatable engineering standards.',
@@ -159,245 +142,467 @@ const STOPS: Stop[] = [
     ],
     skills: ['Performance Testing', 'Test Automation'],
     more: 2,
-    stage: 'sdet',
   },
   {
     hash: 'c07d3aa',
-    kind: 'full-time',
-    when: 'May 2019 — Jun 2020',
+    ref: 'branch: full-time',
+    date: 'Mon May 13 12:00:00 2019 +0300',
+    short: '2019-05-13',
     span: '1 yr 2 mos',
     role: 'QA Automation Engineer',
     org: 'Sberbank',
-    body: 'Where it starts. Reading a banking system closely enough to find what could break in it, and writing the checks that would go on finding it — the habit every later step is built on, and the reason the frameworks that came after had something to generalize from.',
+    body: 'Where it starts. Reading a banking system closely enough to find what could break in it, and writing the checks that would go on finding it. That habit is what every later step is built on, and the reason the frameworks that came after had something to generalize from.',
     points: [
       'Analyzed complex banking systems to surface functional risks and edge cases, translating findings into automated coverage.',
       'Designed and implemented automated test scripts validating core product functionality, improving release reliability.',
-      'Collaborated with development teams to integrate testing earlier in the workflow — the start of a shift toward test automation engineering.',
+      'Collaborated with development teams to integrate testing earlier in the workflow, the start of a shift toward test automation engineering.',
     ],
     skills: ['Test Automation', 'Quality Assurance'],
     more: 1,
-    stage: 'qa',
   },
 ];
 
 /**
- * The whole skill set, stacked as a pyramid: the widest tier at the bottom is
- * what everything else is built on, and each tier above it is narrower and more
- * specific. Ordering is the point — a flat list of equal chips says nothing
- * about where a skill sits.
+ * The whole skill set, as a tree.
+ *
+ * Five tiers, and the widest at the bottom is what everything else is built
+ * on: each tier above is narrower and more specific. Ordering is the point —
+ * a flat list of equal chips says nothing about where a skill sits.
  *
  * It lives in data/skills.ts rather than here because every skill now carries
  * three facts behind it — the jobs it was used on, its certifications, the
- * projects it shipped in — and the page shows those twice: on hover, and in the
- * table below the pyramid. One dataset, two presentations, so they cannot
- * disagree about a number. The chips themselves stay bare: the counts belong in
- * the card, not smeared across the shape the pyramid is drawing.
+ * projects it shipped in — and the page shows those three counts next to the
+ * name. One dataset, one presentation, so they cannot disagree about a
+ * number.
  */
-const CARD_DATA = Object.fromEntries(
-  SKILL_TIERS.flatMap((tier) => tier.skills.map((skill) => [skill.id, skill]))
-);
+const TIERS = SKILL_TIERS.map((tier) => ({
+  id: tier.id,
+  label: tier.label,
+  skills: tier.skills.map((skill) => ({
+    id: skill.id,
+    name: skill.name,
+    jobs: skill.jobs.length,
+    certs: skill.certs.length,
+    projects: skill.projects.length,
+  })),
+}));
 
-// The chips that have something to open, and the rows their card shows.
-//
-// One card per chip: there used to be a single card for the whole section,
-// whose text was whichever chip was hovered last — so a screen reader read the
-// description of one skill while the reader was on another. The cards are
-// rendered here rather than built by the script, so a chip's
-// `aria-describedby` points at a card that is in the HTML before any script
-// runs, and the description is there even if the script never runs at all.
-const CARD_SKILLS = SKILL_TIERS.flatMap((tier) => tier.skills)
-  .filter(
-    (skill) =>
-      skill.jobs.length > 0 || skill.certs.length > 0 || skill.projects.length > 0
-  )
-  .map((skill) => ({
-    skill,
-    rows: [
-      skill.jobs.length > 0 ? ['Jobs', skill.jobs.length] : null,
-      skill.certs.length > 0 ? ['Certs', skill.certs.length] : null,
-      skill.projects.length > 0 ? ['Projects', skill.projects.length] : null,
-    ].filter((row) => row !== null),
-  }));
-
-// How many tiers the pyramid has. Counted from the same data the pyramid is
+// How many tiers the tree has. Counted from the same data the tree is
 // built from, so the prose above it and the shape below it cannot disagree.
 const TIER_COUNT = SKILL_TIERS.length;
+
+/** The counts beside a skill, in words a reader can weigh at a glance. */
+const factsOf = (skill: { jobs: number; certs: number; projects: number }): string =>
+  [
+    skill.jobs ? `${skill.jobs} job${skill.jobs === 1 ? '' : 's'}` : '',
+    skill.certs ? `${skill.certs} cert${skill.certs === 1 ? '' : 's'}` : '',
+    skill.projects
+      ? `${skill.projects} project${skill.projects === 1 ? '' : 's'}`
+      : '',
+  ]
+    .filter(Boolean)
+    .join(' · ');
 ---
 
 <Base title="Experience" description="Where I have worked and what I built.">
   <!--
-    The page reads in two directions. The top half moves sideways: scrolling down
-    travels the row of stops left to right, through the whole career, and the
-    runway ends where the last one does. The page then carries on down into the
-    skills, which is the half that wants reading rather than skimming.
+    The page is a log. The career has an order and a direction — it starts at
+    the present and travels back — and a log says both without needing to be
+    told about them. Underneath the log is the toolkit, drawn as a tree,
+    because that is what a toolkit is: a directory of things, each one with
+    what stands behind it.
   -->
-  <div class="exp-page">
   <section class="hero">
     <span class="eyebrow"><span class="pulse-dot"></span>Experience</span>
     <h1 data-anim="type">The road so far</h1>
-    <p class="lede">
-      {YEARS_SENTENCE} years, {spellNumber(STOPS.length)} stops — from QA automation on banking systems to building authorization infrastructure for agents. Scroll, and the work travels sideways, each stop coming into focus in turn; at the end of the road the toolkit it all went into is below.
+
+    <p class="tty-prompt" data-reveal>
+      <span class="who">root</span><span class="sep">@</span><span
+        >amaltsev</span>
+      ><span class="sep">:</span><span class="path">~/career</span><span
+        class="sep"
+        >$</span
+      >
+      <span class="tty-cmd">git log --author="maltsev"</span>
+    </p>
+
+    <p class="lede" data-reveal data-reveal-delay="60">
+      {YEARS_SENTENCE} years, {spellNumber(STOPS.length)} stops. The thread
+      runs from QA automation on banking systems to building authorization
+      infrastructure for agents. The log reads newest first; the toolkit it
+      went into is below.
     </p>
   </section>
 
-  <div class="track-scroll" data-track-scroll>
-    <div class="track" data-track>
-      <div class="track-row" data-track-row>
-      {
-        STOPS.map((s) => (
-          <article class="track-panel track-stop" data-stage={s.stage}>
-            <p class="track-meta">
-              <span class="track-hash">{s.hash}</span>
-              <span class="track-chip">{s.kind}</span>
-              <span>{s.when}</span>
-              <span class="track-span">{s.span}</span>
-            </p>
-
-            <h2>{s.role}</h2>
-
-            <p class="track-org">
-              {s.href ? <a href={s.href} rel="noopener">{s.org}</a> : <span>{s.org}</span>}
-              {s.tagline && <em> — {s.tagline}</em>}
-            </p>
-
-            {s.body && <p class="track-body">{s.body}</p>}
-
-            <ul class="track-points">
-              {s.points.map((point) => (
-                <li>
-                  <span aria-hidden="true">◆</span>
-                  <p>{point}</p>
-                </li>
-              ))}
-            </ul>
-
-            <ul class="track-skills">
-              {s.skills.map((skill) => (
-                <li>{skill}</li>
-              ))}
-              {s.more && <li class="track-skill-more">+{s.more} more</li>}
-            </ul>
-          </article>
-        ))
-      }
+  <section class="section">
+    <div class="tty tty-log" data-reveal>
+      <div class="tty-bar">
+        <span class="tty-leds" aria-hidden="true">
+          <i class="led led-on"></i>
+          <i class="led led-off"></i>
+          <i class="led led-off"></i>
+        </span>
+        <span class="tty-title">~/career</span>
+        <span class="tty-right" aria-hidden="true">{STOPS.length} commits</span>
       </div>
 
-      <!--
-        The career rail: the five rungs of the history, oldest first. It reads the
-        opposite way to the track — the track starts at the present, this starts at
-        the first job — so the fill depletes as the reader travels back through
-        time. Hidden from assistive tech: it repeats the dates already on each card.
-      -->
-      <div class="branches" data-branches aria-hidden="true">
-        <ol class="branch-list">
+      <div class="tty-body">
+        <!--
+          The one-line view. The whole history on six lines, so a reader who
+          only wants the shape of it — how long, how many, in what order — can
+          take it in without reading a word of the entries.
+        -->
+        <p class="tty-prompt tty-cmd-line">
+          <span class="who">root</span><span class="sep">@</span><span
+            >amaltsev</span>
+          ><span class="sep">:</span><span class="path">~/career</span><span
+            class="sep"
+            >$</span
+          >
+          <span class="tty-cmd">git log --oneline</span>
+        </p>
+
+        <div class="ls ls-oneline">
           {
-            STAGES.map((stage) => (
-              <li data-stage={stage.id}>
-                <i class="branch-node" />
-                <b>{stage.name}</b>
-                <span>{stage.since}</span>
-              </li>
+            STOPS.map((s) => (
+              <div class="ls-row">
+                <span class="ls-hash">{s.hash}</span>
+                <span class="ls-size">{s.short}</span>
+                <span class="ls-name">{s.role}</span>
+                <span class="ls-org">{s.org}</span>
+              </div>
             ))
           }
-        </ol>
+        </div>
+
+        <hr class="tty-rule" />
+
+        <p class="tty-prompt tty-cmd-line">
+          <span class="who">root</span><span class="sep">@</span><span
+            >amaltsev</span>
+          ><span class="sep">:</span><span class="path">~/career</span><span
+            class="sep"
+            >$</span
+          >
+          <span class="tty-cmd">git log</span>
+        </p>
+
+        {
+          STOPS.map((s, i) => (
+            <article
+              class="commit"
+              data-reveal
+              data-reveal-delay={Math.min(i, 5) * 50}
+            >
+              <p class="commit-head">
+                <span class="commit-word">commit</span>
+                <span class="commit-hash">{s.hash}</span>
+                <span class="commit-ref">({s.ref})</span>
+              </p>
+              <p class="commit-meta">
+                <span class="commit-key">Author:</span> Anatolii Maltsev
+                &lt;mr.a.maltsev@gmail.com&gt;
+              </p>
+              <p class="commit-meta">
+                <span class="commit-key">Date:</span>
+                <span class="commit-date">{s.date}</span>
+                <span class="commit-span">{s.span}</span>
+              </p>
+
+              <div class="commit-body">
+                <h3 class="commit-title">
+                  {s.role}
+                  <span class="commit-org">
+                    — {s.href ? <a href={s.href} rel="noopener">{s.org}</a> : s.org}
+                  </span>
+                </h3>
+
+                {s.tagline && <p class="commit-tagline">{s.tagline}</p>}
+
+                {s.body && <p class="commit-text">{s.body}</p>}
+
+                <ul class="commit-points">
+                  {s.points.map((point) => (
+                    <li>{point}</li>
+                  ))}
+                </ul>
+
+                <p class="commit-tags">
+                  {s.skills.map((skill) => (
+                    <span class="commit-tag">{skill}</span>
+                  ))}
+                  {s.more && <span class="commit-tag commit-tag--more">+{s.more} more</span>}
+                </p>
+              </div>
+            </article>
+          ))
+        }
       </div>
     </div>
-  </div>
+  </section>
 
   <!--
-    The skills. One presentation, and it is the pyramid: the shape of the whole
-    toolkit, which is the question the six stops above only hint at — where a
-    skill sits. The three facts behind each one are on the chip itself, on hover,
-    on focus or on tap; a table of the same rows said the same things at three
-    screens of scroll, and the pyramid was the better read.
+    The toolkit, as a tree. A pyramid said where a skill sat; a tree says the
+    same thing and is something a reader already knows how to read. The three
+    counts beside each name used to be behind a hover card — they are printed
+    now, because a number that is only there when you point at it is a number
+    most readers never see.
   -->
-  <section class="skills" id="skills" data-skills>
+  <section class="skills" id="skills">
     <div class="skills-head">
       <span class="eyebrow"><span class="pulse-dot"></span>Toolkit</span>
       <h2>What the {YEARS_WORD} years added up to</h2>
-      <p>{SKILL_COUNT} skills in {spellNumber(TIER_COUNT)} tiers, widest at the base. Hover any one — or tap it, where there is no pointer — to see how many jobs it was used on, what certifies it, and where it shipped.</p>
+      <p>
+        {SKILL_COUNT} skills in {spellNumber(TIER_COUNT)} tiers, widest at the
+        base. Beside each one: the jobs it was used on, what certifies it, and
+        where it shipped.
+      </p>
     </div>
 
-    <div class="skill-pyramid">
+    <div class="skill-tree" data-reveal>
       {
-        SKILL_TIERS.map((tier) => (
+        TIERS.map((tier) => (
           <div class="skill-tier">
             <p class="skill-tier-name">
-              {tier.label}
-              <span class="skill-tier-count">{tier.skills.length} skills</span>
+              <span class="skill-tier-dir">{tier.label}/</span>
+              <span class="skill-tier-count">
+                {tier.skills.length} skill{tier.skills.length === 1 ? '' : 's'}
+              </span>
             </p>
-            <ul class="skill-chips">
-              {tier.skills.map((skill) => {
-                // A skill with no job, no credential and no project behind it has
-                // nothing to open. It is still on the pyramid — it is part of the
-                // toolkit — but there is no card to show, so it is not a button.
-                // A <button> that opens nothing is a control that lies: a keyboard
-                // visitor tabs onto it, presses Enter and the page does not move.
-                const hasFacts =
-                  skill.jobs.length > 0 ||
-                  skill.certs.length > 0 ||
-                  skill.projects.length > 0;
 
-                return (
-                  <li>
-                    {hasFacts ? (
-                      <button
-                        class="skill-chip"
-                        type="button"
-                        data-skill={skill.id}
-                        aria-describedby={`skill-card-${skill.id}`}
-                      >
-                        {skill.name}
-                      </button>
-                    ) : (
-                      <span class="skill-chip is-quiet">{skill.name}</span>
-                    )}
-                  </li>
-                );
-              })}
+            <ul class="tree skill-tree-list">
+              {tier.skills.map((skill) => (
+                <li>
+                  <span class="skill-name">{skill.name}</span>
+                  <span class="skill-facts">{factsOf(skill)}</span>
+                </li>
+              ))}
             </ul>
           </div>
         ))
       }
     </div>
-
-    <!-- The same data as the chips, for skills.js to read. -->
-    <script id="skills-data" type="application/json" set:html={JSON.stringify(CARD_DATA)} is:inline />
   </section>
+</Base>
 
-  <!--
-    One hover card per chip, each with its own id, and each chip pointing at
-    its own card. A closed card is out of the accessibility tree, so a screen
-    reader reading the page in order does not walk through every closed card
-    before the content — but the card a chip points at is still what
-    describes it, because a node referenced by `aria-describedby` contributes
-    its text even while it is hidden.
-  -->
-  {
-    CARD_SKILLS.map(({ skill, rows }) => (
-      <div
-        class="skill-card"
-        id={`skill-card-${skill.id}`}
-        data-skill-card={skill.id}
-        role="tooltip"
-        aria-hidden="true"
-      >
-        <p class="skill-card-name">{skill.name}</p>
-        <dl>
-          {rows.map(([label, count]) => (
-            <>
-              <dt>{label}</dt>
-              <dd>{count}</dd>
-            </>
-          ))}
-        </dl>
-      </div>
-    ))
+<style>
+  /* ----- The log -----------------------------------------------------------
+     The window that holds the career. The frame is the same one the shell
+     uses, so the two read as the same machine.
+     ---------------------------------------------------------------------- */
+  .tty-log .tty-body {
+    padding-block: 1.9rem 1.4rem;
   }
 
-  <script>
-    import '../scripts/track.js';
-    import '../scripts/skills.js';
-  </script>
-  </div>
-</Base>
+  /* The log is a window around a log, so it is the width of the log. It used
+     to run the whole width of the column — thirteen hundred pixels — while
+     every line in it stopped at six hundred and forty, so half of every
+     window was paper. The log is now the width of its longest line, and it
+     sits in the middle of the column.
+
+     The longest line is longer than it was. The commit messages are the
+     reading on this page, and sixty-eight characters of them left the window
+     at seven hundred pixels in a column thirteen hundred wide — a log about
+     a career that fit in half the screen it was printed on. The text now
+     runs to a hundred columns and the window is the width of that text. */
+  .tty-log {
+    width: fit-content;
+    max-width: 100%;
+    margin-inline: auto;
+  }
+
+  /* The lede is the page's one paragraph of prose, and it was set to the
+     site's default measure — sixty characters — under a heading thirteen
+     hundred pixels wide. It runs wider here, so the argument at the top of
+     the page holds the same ground as the log under it. */
+  .hero .lede {
+    max-width: 76ch;
+  }
+
+  .ls-oneline {
+    margin-bottom: 0;
+  }
+
+  /* The role column is twenty-four characters wide because the longest role
+     in the log — "Founder & Lead Engineer" — is twenty-three of them, and at
+     twenty-two it ran into the employer standing next to it. */
+  .ls-oneline .ls-row {
+    grid-template-columns: 8ch 12ch 24ch minmax(0, 1fr);
+  }
+
+  .ls-hash {
+    color: var(--braise);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .ls-org {
+    color: var(--faible);
+    font-size: var(--fs-label);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  /* ----- One commit --------------------------------------------------------
+     The shape `git log` prints: a header of fields, then the message, with
+     the message indented under it.
+     ---------------------------------------------------------------------- */
+  .commit {
+    padding-block: 0.9rem;
+    border-top: var(--filet) solid color-mix(in srgb, var(--grid) 60%, transparent);
+  }
+
+  .commit:first-of-type {
+    border-top: 0;
+    padding-top: 0;
+  }
+
+  .commit-head,
+  .commit-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 0.6ch;
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: var(--fs-small);
+    line-height: 1.6;
+    color: var(--fort);
+  }
+
+  .commit-word {
+    color: var(--faible);
+  }
+
+  .commit-hash {
+    color: var(--braise);
+  }
+
+  .commit-ref {
+    color: var(--faible);
+  }
+
+  .commit-key {
+    color: var(--faible);
+  }
+
+  .commit-date {
+    color: var(--fort);
+  }
+
+  /* The length of the engagement, beside the date. It is the one number in
+     the header that a machine does not print. */
+  .commit-span {
+    margin-left: 0.8ch;
+    padding: 0 0.4ch;
+    border: var(--filet) solid var(--grid);
+    color: var(--faible);
+    font-size: var(--fs-label);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  /* The message, indented the way a commit message is indented. */
+  .commit-body {
+    margin: 0.5rem 0 0 2.2ch;
+    padding-left: 1.4ch;
+    border-left: var(--filet) solid var(--grid);
+  }
+
+  .commit-title {
+    margin: 0;
+    font-size: clamp(1.02rem, 2.1vw, 1.18rem);
+    line-height: 1.25;
+  }
+
+  .commit-org {
+    color: var(--braise);
+    font-weight: 400;
+  }
+
+  .commit-org a {
+    color: inherit;
+    text-decoration: none;
+    border-bottom: var(--filet) solid color-mix(in srgb, var(--braise) 50%, transparent);
+  }
+
+  .commit-org a:hover {
+    color: var(--creme);
+    border-bottom-color: var(--creme);
+  }
+
+  .commit-tagline {
+    margin: 0.25rem 0 0;
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    letter-spacing: 0.05em;
+    color: var(--fort);
+  }
+
+  .commit-text {
+    margin: 0.55rem 0 0;
+    max-width: 100ch;
+    color: var(--fort);
+    font-size: 0.95rem;
+    line-height: 1.55;
+  }
+
+  .commit-points {
+    list-style: none;
+    margin: 0.55rem 0 0;
+    padding: 0;
+    display: grid;
+    gap: 0.35rem;
+  }
+
+  .commit-points li {
+    position: relative;
+    padding-left: 1.4ch;
+    max-width: 104ch;
+    color: var(--fort);
+    font-size: 0.92rem;
+    line-height: 1.5;
+  }
+
+  .commit-points li::before {
+    content: '-';
+    position: absolute;
+    left: 0;
+    color: var(--braise);
+    font-family: var(--font-mono);
+  }
+
+  .commit-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+    margin: 0.7rem 0 0;
+  }
+
+  .commit-tag {
+    padding: 0.05rem 0.4rem;
+    border: var(--filet) solid var(--grid);
+    background: var(--papier);
+    color: var(--fort);
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.05em;
+  }
+
+  .commit-tag--more {
+    color: var(--faible);
+  }
+
+  /* ----- The tree ----------------------------------------------------------
+     Five trays, each with a tree hanging under its label. The trays taper —
+     that is the pyramid the section is drawing, and the taper stays. The
+     trees used to be centred inside their trays, so each one started further
+     to the left than the one above it and the section read as five lists
+     that had drifted apart rather than as one tree in five tiers. Every
+     tree now hangs from the same place in its tray. */
+  .skill-tree .skill-tier {
+    align-items: flex-start;
+  }
+
+  .skill-tree .skill-tree-list {
+    margin-left: 1.6rem;
+  }
+</style>

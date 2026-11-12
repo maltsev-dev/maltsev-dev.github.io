@@ -1,4 +1,5 @@
 import rss from '@astrojs/rss';
+import { displayTitle } from '../lib/text';
 import { getCollection, render } from 'astro:content';
 import { experimental_AstroContainer as AstroContainer } from 'astro/container';
 import { describe } from '../lib/summarize';
@@ -42,7 +43,7 @@ export async function GET(context) {
       const content = await renderBody(post);
 
       return {
-        title: post.data.title,
+        title: displayTitle(post.data.title),
         pubDate: new Date(post.data.date ?? '1970-01-01'),
         link: `/blog/${post.id}/`,
         description,

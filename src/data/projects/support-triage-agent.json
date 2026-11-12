@@ -1,12 +1,12 @@
 {
-  "tagline": "Your support team is drowning in tickets. We take 60% of them off their plate.",
-  "lead": "AI that instantly classifies, responds, and resolves repetitive tickets — 24/7.",
+  "tagline": "Support tickets pile up. 60% of them resolve without an agent.",
+  "lead": "An agent that classifies every ticket, answers the repetitive ones, and closes them, 24/7.",
   "fit": "For teams handling 500+ tickets/month (ecom, SaaS, marketplaces)",
   "trust": "Works with Intercom • Freshchat • Email • Shopify • WooCommerce",
   "metrics": [
     {
       "value": "<15 min",
-      "label": "Response Time"
+      "label": "Response time"
     },
     {
       "value": "60%",
@@ -14,16 +14,16 @@
     },
     {
       "value": "-50%",
-      "label": "Support Cost"
+      "label": "Support cost"
     }
   ],
   "problem": {
-    "sub": "You’re not lacking effort — your system doesn’t scale",
+    "sub": "Ticket volume grows faster than headcount.",
     "cards": [
       {
         "icon": "◆",
         "title": "Repetitive overload",
-        "text": "Same questions answered 1000+ times every month"
+        "text": "The same questions answered 1000+ times every month"
       },
       {
         "icon": "◆",
@@ -33,17 +33,17 @@
       {
         "icon": "◆",
         "title": "Linear scaling",
-        "text": "More tickets = more hires = rising costs"
+        "text": "More tickets means more hires, which means higher costs"
       },
       {
         "icon": "◆",
         "title": "Agent burnout",
-        "text": "Top talent stuck doing low-value repetitive work"
+        "text": "Your best agents end up on repetitive work"
       }
     ]
   },
   "solution": {
-    "sub": "Resolve the majority of tickets instantly — without adding headcount",
+    "sub": "Resolve most tickets instantly, without adding headcount",
     "cards": [
       {
         "icon": "◆",
@@ -68,7 +68,7 @@
     ]
   },
   "results": {
-    "sub": "From overloaded support → scalable system",
+    "sub": "An overloaded queue becomes one that scales.",
     "cards": [
       {
         "before": "4–12h",
@@ -91,10 +91,10 @@
         "label": "Customer experience"
       }
     ],
-    "highlight": "▲ Most teams reduce workload by 40–60% without hiring"
+    "highlight": "Most teams cut workload by 40–60% without hiring"
   },
   "flow": {
-    "sub": ">Acts like a Tier-1 support agent that never sleeps",
+    "sub": "It works the queue like a Tier-1 agent, around the clock.",
     "steps": [
       {
         "n": "1",
@@ -119,23 +119,23 @@
     ]
   },
   "risk": {
-    "sub": "Support becomes your growth bottleneck",
+    "sub": "All four get worse as ticket volume grows.",
     "cards": [
       {
         "title": "▲ Cost scales with volume",
-        "text": "Support costs scale linearly with growth"
+        "text": "Every extra ticket adds a cost"
       },
       {
         "title": "▲ Churn from slow replies",
-        "text": "Customers churn from slow responses"
+        "text": "Late answers are what push customers out"
       },
       {
         "title": "▲ Your best agents burn out",
-        "text": "Top agents burn out and leave"
+        "text": "Repetitive work wears them down, and they leave"
       },
       {
         "title": "▲ Faster competitors win",
-        "text": "Faster competitors win your customers"
+        "text": "Your competitors answer first and take the customer"
       }
     ]
   },
@@ -150,6 +150,6 @@
         "label": "Monthly running"
       }
     ],
-    "note": "◆ Typically pays back in 1–2 months from cost savings alone"
+    "note": "Typically pays back in 1–2 months from cost savings alone"
   }
 }

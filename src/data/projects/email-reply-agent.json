@@ -1,39 +1,39 @@
 {
-  "tagline": "You're losing deals in your inbox. We fix that — automatically.",
-  "lead": "AI that replies in minutes, qualifies leads, and books meetings — without hiring SDRs.",
+  "tagline": "Replies go out in minutes, without an SDR writing them.",
+  "lead": "An agent that answers inbound email, checks whether a lead is serious, and books the meeting, without an SDR on staff.",
   "fit": "For B2B teams sending 1,000+ cold emails/month",
   "trust": "Built on LLM pipelines • Production-ready • Used in real outreach flows",
   "metrics": [
     {
       "value": "<5 min",
-      "label": "Response Time"
+      "label": "Response time"
     },
     {
       "value": "80%",
-      "label": "Less Manual Work"
+      "label": "Less manual work"
     },
     {
       "value": "+50%",
-      "label": "More Meetings"
+      "label": "More meetings"
     }
   ],
   "problem": {
-    "sub": "Your revenue is leaking inside the inbox",
+    "sub": "Deals go cold while the reply sits.",
     "cards": [
       {
         "icon": "●",
         "title": "Slow first reply",
-        "text": "Replies sit for hours → leads go cold"
+        "text": "Replies sit for hours, then leads go cold"
       },
       {
         "icon": "●",
         "title": "Inconsistent follow-ups",
-        "text": "Follow-ups are inconsistent or forgotten"
+        "text": "Follow-ups get skipped or forgotten"
       },
       {
         "icon": "¦",
         "title": "Inbox overload",
-        "text": "Inbox becomes your revenue bottleneck"
+        "text": "The inbox becomes the bottleneck"
       },
       {
         "icon": "●",
@@ -48,27 +48,27 @@
       {
         "icon": "◆",
         "title": "Instant Reading",
-        "text": "Every reply analyzed the moment it arrives"
+        "text": "Each reply is read the moment it arrives"
       },
       {
         "icon": "◆",
         "title": "Intent Detection",
-        "text": "Understands interest, sentiment, objections"
+        "text": "Reads interest, sentiment, and objections"
       },
       {
         "icon": "◆",
         "title": "Human-like Replies",
-        "text": "Natural responses that feel real"
+        "text": "Replies written to sound like a person"
       },
       {
         "icon": "¦",
         "title": "Auto-Booking",
-        "text": "Meetings scheduled without friction"
+        "text": "It books the meeting"
       }
     ]
   },
   "results": {
-    "sub": "From chaos → predictable pipeline",
+    "sub": "An unpredictable inbox becomes a predictable pipeline.",
     "cards": [
       {
         "before": "2–8h",
@@ -91,15 +91,15 @@
         "label": "Availability"
       }
     ],
-    "highlight": "▲ Most teams increase reply speed and book 30–50% more meetings without hiring SDRs"
+    "highlight": "Most teams reply faster and book 30–50% more meetings without hiring SDRs"
   },
   "flow": {
-    "sub": "Works like an invisible SDR inside your inbox",
+    "sub": "An SDR's job in your inbox, run on every reply.",
     "steps": [
       {
         "n": "1",
         "title": "Lead replies",
-        "text": "Inbound reply hits your inbox"
+        "text": "The reply lands in your inbox"
       },
       {
         "n": "2",
@@ -109,17 +109,17 @@
       {
         "n": "3",
         "title": "AI responds",
-        "text": "Sends reply or queues for approval"
+        "text": "It replies, or queues the reply for approval"
       },
       {
         "n": "4",
         "title": "Follow-ups run",
-        "text": "Automated based on conversation"
+        "text": "They run off the conversation"
       }
     ]
   },
   "risk": {
-    "sub": "Your potential customers are leaving for your competitors.",
+    "sub": "A delay gives a competitor time to answer first.",
     "cards": [
       {
         "title": "▲ Faster competitors win",
@@ -150,6 +150,6 @@
         "label": "Monthly running"
       }
     ],
-    "note": "◆ One closed deal usually pays for the entire system"
+    "note": "One closed deal usually pays for the system"
   }
 }

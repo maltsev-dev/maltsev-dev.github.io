@@ -1,5 +1,5 @@
 ---
-title: "Agents Cannot Widen Their Own Authority"
+title: "Agents cannot widen their own authority"
 date: "2026-09-13"
 tags: ["authorization", "security"]
 ---
@@ -50,11 +50,10 @@ which is how it gets through.
 
 ## The requirement: reachability and credentials
 
-The requirement is structural and it is not complicated. What the
-boundary requires is that the agent cannot reach it: no interface that
-mutates policy, and no credential the policy layer would accept for such
-a write. That is a property of reachability and of credentials, not of
-which process the code happens to run in.
+No interface that mutates policy, and no credential the policy layer
+would accept for such a write. The boundary has to be unreachable by
+the agent, and that is a property of reachability and of credentials,
+not of which process the code happens to run in.
 
 ```python
 CAPABILITY_CLASSES = {
@@ -96,7 +95,7 @@ So an agent learns its boundary by being refused, and every refusal is a
 typed decision with a machine-readable code, recorded in the audit
 trail. Writing the rules stays out of its reach.
 
-## The part that is genuinely hard: indirect escalation
+## The hard part: indirect escalation
 
 One fact undermines all of that. An agent with code
 execution and network access can make an HTTP request to your admin API.
@@ -117,11 +116,6 @@ That third bullet is the one that catches teams. A tool that edits
 config files, a tool that can deploy, a tool that updates a workflow
 definition. Each one is an indirect path to the boundary, and each one is
 usually added for a reason unrelated to security.
-
-The honest summary: a boundary the agent cannot reach is necessary, and
-on its own it is not sufficient. What makes it sufficient is that the
-agent holds nothing that the authorization layer would honor for a
-write, and that the tools it does hold cannot mint one.
 
 ## What to actually check
 

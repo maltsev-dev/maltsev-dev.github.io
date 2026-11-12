@@ -3,126 +3,34 @@ title: "MMIO (Memory-Mapped I/O)"
 date: "2025-07-02"
 tags: ["embedded", "basic", "mmio"]
 ---
- 
- 
-**MMIO (Memory-Mapped I/O)** is a way for the central processing unit (CPU) to interact with peripheral hardware devices (e.g. `UART`, `timers`, `GPIO`, `SPI`, etc.) by "sticking" the registers of these devices to specific addresses in the CPU memory.  
-These addresses in the CPU do not store regular data, but allow reading and writing to the device control registers.  
-This means that the peripheral device can be accessed in the same way as regular memory - via regular memory read/write instructions (`LDR`, `STR`, `MOV`, etc.). at specific addresses.  
+MMIO (Memory-Mapped I/O) is a way for the central processing unit (CPU) to interact with peripheral hardware devices (e.g. `UART`, `timers`, `GPIO`, `SPI`, etc.) by "sticking" the registers of these devices to specific addresses in the CPU memory.
 
----
+Those addresses do not store regular data. They allow reading and writing to the device control registers, which means that the peripheral device is accessed in the same way as regular memory, via regular memory read/write instructions (`LDR`, `STR`, `MOV`, etc.) at specific addresses.
 
-## How does it work inside CPU?
+## How it works inside the CPU
 1. The CPU has a single **address bus**, which is used to access both RAM and MMIO devices.
-2. When the CPU accesses an address that belongs to the MMIO area:
-    - In this case, the control logic understands that this is not ordinary memory, but a device register.
-    - Signals go to the **periphery**, not to **RAM/ROM**.
+2. When the CPU accesses an address that belongs to the MMIO area, the control logic understands that this is not ordinary memory but a device register, and the signals go to the **periphery**, not to **RAM/ROM**.
 
-## 🧷 Key features
-* It is necessary to work through `volatile`, so that the compiler does not optimize access to the device.
-* Addresses and devices are specified by the platform manufacturer (e.g. `ARM Cortex-M`, `x86`)
+## Key features
+- It is necessary to work through `volatile`, so that the compiler does not optimize access to the device.
+- Addresses and devices are specified by the platform manufacturer (e.g. `ARM Cortex-M`, `x86`).
 
-<style>
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 20px;
-  }
+| Characteristic | `volatile` | `atomic` | `mutex` |
+|---|---|---|---|
+| Scenario | Read/write MMIO registers<br>Check flag or register status | Interthread counter, ready flag<br>Safe logical condition (compare, increment) | Work with buffer, list, structure |
+| Ensures visibility of changes | Yes (to the compiler) | Yes (across threads/cores) | Yes |
+| Ensures atomicity | No | Yes (e.g., `fetch_add`) | Yes (via locking) |
+| Protects from data races | No | Yes (on primitive types) | Yes (on any resource) |
+| Blocks other threads | No | No | Yes |
+| Supports complex operations | No | Limited (e.g., arithmetic, flags) | Yes (conditions, buffers, etc.) |
+| Use in embedded | MMIO (memory-mapped I/O) | Counters, flags, semaphores | RTOS, critical sections |
+| Rust usage | `ptr::read_volatile`, PAC | `core::sync::atomic::*` | `critical-section`, `Mutex<T>` |
+| Performance | Fast | Fast | Slower (due to blocking) |
 
-  th,
-  td {
-    border: 1px solid #ddd;
-    padding: 8px;
-    vertical-align: top;
-  }
+## volatile
+Compilers like to optimize code: if a variable doesn't change in the current context, they can **not re-read it**. But the device can change the register itself, and the variable can change in another context.
 
-  th {
-    background-color: #f59140;
-    color: white;
-    text-align: center;
-  }
-
-  td:first-child {
-    width: auto;
-    font-weight: bold;
-  }
-</style>
-<table>
-  <thead>
-    <tr>
-      <th>Characteristic</th>
-      <th><code>volatile</code></th>
-      <th><code>atomic</code></th>
-      <th><code>mutex</code></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Scenario</td>
-      <td>Read/write MMIO registers </br> Check flag or register status </td>
-      <td>Interthread counter, ready flag </br> Safe logical condition (compare, increment) </td>
-      <td>Work with buffer, list, structure</td>
-    </tr>
-    <tr>
-      <td>Ensures visibility of changes</td>
-      <td>✅ Yes (to the compiler)</td>
-      <td>✅ Yes (across threads/cores)</td>
-      <td>✅ Yes</td>
-    </tr>
-    <tr>
-      <td>Ensures atomicity</td>
-      <td>❌ No</td>
-      <td>✅ Yes (e.g., <code>fetch_add</code>)</td>
-      <td>✅ Yes (via locking)</td>
-    </tr>
-    <tr>
-      <td>Protects from data races</td>
-      <td>❌ No</td>
-      <td>✅ Yes (on primitive types)</td>
-      <td>✅ Yes (on any resource)</td>
-    </tr>
-    <tr>
-      <td>Blocks other threads</td>
-      <td>❌ No</td>
-      <td>❌ No</td>
-      <td>✅ Yes</td>
-    </tr>
-    <tr>
-      <td>Supports complex operations</td>
-      <td>❌ No</td>
-      <td>⚠️ Limited (e.g., arithmetic, flags)</td>
-      <td>✅ Yes (conditions, buffers, etc.)</td>
-    </tr>
-    <tr>
-      <td>Use in Embedded</td>
-      <td>✅ MMIO (memory-mapped I/O)</td>
-      <td>✅ Counters, flags, semaphores</td>
-      <td>✅ RTOS, critical sections</td>
-    </tr>
-    <tr>
-      <td>Rust usage</td>
-      <td><code>ptr::read_volatile</code>, PAC</td>
-      <td><code>core::sync::atomic::*</code></td>
-      <td><code>critical-section</code>, <code>Mutex&lt;T&gt;</code></td>
-    </tr>
-    <tr>
-      <td>Performance</td>
-      <td>🔋 Fast</td>
-      <td>⚡ Fast</td>
-      <td>🐢 Slower (due to blocking)</td>
-    </tr>
-  </tbody>
-</table>
-
-
-
-## 🔸 volatile
-Compilers like to optimize code: if a variable doesn't change in the current context, they can **not re-read it**.  
-* The device can change the register itself  
-* The variable can change in another context  
-
-`volatile` tells the compiler: "don't optimize access to this variable - read/write it each time, because it can change at any time outside the current code."  
-* It is only used with MMIO.
-* Rust doesn't have a built-in `volatile` keyword, but provides functionality via `core::ptr` and `volatile-safe` types:
+`volatile` tells the compiler: "don't optimize access to this variable, read/write it each time, because it can change at any time outside the current code." It is only used with MMIO. Rust doesn't have a built-in `volatile` keyword, but provides the functionality via `core::ptr` and `volatile-safe` types.
 
 ```rust
 use core::ptr::{read_volatile, write_volatile};
@@ -138,11 +46,8 @@ read_volatile(ptr)
 };
 ```
 
-## 🔸 atomic
-* Provides **atomic** access to data (e.g. counters, flags).
-* Suitable for thread synchronization on multiprocessor systems.
-* Can be used without locks (lock-free).
-* AtomicBool, AtomicU8, AtomicUsize, etc.
+## atomic
+Atomics provide **atomic** access to data (e.g. counters, flags). They are suitable for thread synchronization on multiprocessor systems, and they can be used without locks (lock-free). The types include AtomicBool, AtomicU8, AtomicUsize and so on.
 
 ```rust
 use core::sync::atomic::{AtomicBool, Ordering};
@@ -157,14 +62,12 @@ fn main() {
 }
 ```
 
+## mutex
+A mutex provides mutual exclusion. It is suitable for **large objects** consisting of many variables or structures, and is more commonly used in multitasking systems (`RTOS`, `OS`).
 
-## 🔸 mutex
-* Provides mutual exclusion.
-* Suitable for **large objects** consisting of many variables or structures.
-* More commonly used in multitasking systems (`RTOS`, `OS`).
-* In embedded:
-    * critical-section (interrupt lock),
-    * Mutex<T> from embassy, ​​RTIC, or spin::Mutex without an OS.
+In embedded:
+- critical-section (interrupt lock)
+- `Mutex<T>` from embassy, RTIC, or `spin::Mutex` without an OS
 
 ```rust
 use critical_section::Mutex;
