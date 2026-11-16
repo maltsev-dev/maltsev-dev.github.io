@@ -2,7 +2,6 @@
 import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import AiStack from '../components/AiStack.astro';
-import Terminal from '../components/Terminal.astro';
 import Banner from '../components/Banner.astro';
 import Portrait from '../components/Portrait.astro';
 import { describe, readingTime, MAX_DESCRIPTION } from '../lib/summarize';
@@ -162,22 +161,6 @@ const work = cases.map((project) => ({
       carries the tones.
     -->
     <Portrait />
-  </section>
-
-  <!--
-    The working shell. It is the site's own data behind a prompt, so the
-    fastest way to see what is in here is to type at it: `ls`, `skills`,
-    `projects`, `neofetch`.
-  -->
-  <section class="section home-shell">
-    <div class="section-head">
-      <h2 data-reveal data-anim="underline">The shell</h2>
-      <span class="card-meta">type help, it is a real one</span>
-    </div>
-
-    <div data-reveal>
-      <Terminal />
-    </div>
   </section>
 
   <!--
@@ -577,12 +560,10 @@ const work = cases.map((project) => ({
   }
 
   /* ----- The windows ------------------------------------------------------
-     Every window on this page is eighty columns wide — the shell says so in
-     its own title bar, and the two listings are the same machine seen from
-     the other side — so every window is eighty columns wide, and every
-     window sits in the middle of the column instead of stretching to both
-     edges of it. A terminal stretched across a wide screen is a window with
-     a third of a terminal in it and two thirds of nothing.
+     Every window on this page is eighty columns wide, and every window sits
+     in the middle of the column instead of stretching to both edges of it. A
+     terminal stretched across a wide screen is a window with a third of a
+     terminal in it and two thirds of nothing.
 
      The heading above a window is the same width as the window, so the two
      edges of the section are the same two lines.
@@ -591,8 +572,6 @@ const work = cases.map((project) => ({
      window's frame and padding take another thirty-four: 706 pixels, or
      forty-four and an eighth of a rem.
      ---------------------------------------------------------------------- */
-  .home-shell .section-head,
-  .home-shell :global(.tty-term),
   .home-listing .section-head,
   .home-listing .tty-listing {
     max-width: 44.125rem;
@@ -600,8 +579,8 @@ const work = cases.map((project) => ({
   }
 
   /* ----- The listings ------------------------------------------------------
-     The window that holds a listing. The frame is the same one the shell
-     uses, so the two read as the same machine.
+     The window that holds a listing. The frame is the same one every other
+     window on the site uses, so the two read as the same machine.
      ---------------------------------------------------------------------- */
   .tty-listing .tty-body {
     padding-block: 1.7rem 1rem;

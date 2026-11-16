@@ -571,38 +571,7 @@ import { RAMPS, THEMES, resolveRamp, themeColor } from '../data/themes';
       });
       syncRadios();
       applyThemeColor(ramp);
-      applyPhosphor(ramp);
     }
-
-    /**
-     * The status line names the phosphor that is on.
-     *
-     * The name comes from the same table as the picker, so the strip cannot
-     * say "green" while the page is amber. It is written as text, not as a
-     * colour: the strip is a readout, and a colour alone would say nothing
-     * to a reader who cannot see it.
-     */
-    function applyPhosphor(ramp) {
-      var el = document.querySelector('[data-status-phosphor]');
-      if (!el) return;
-      var theme = THEMES.find(function (t) {
-        return t.id === ramp;
-      });
-      el.textContent = theme ? theme.phosphor : ramp;
-    }
-
-    /**
-     * The shell on the front page can change the phosphor.
-     *
-     * It asks through an event rather than reaching into this module, so
-     * the one place that knows how a theme is applied stays the one place
-     * that does it — the same reason the theme picker in the header calls
-     * `setTheme` rather than setting the attribute itself.
-     */
-    document.addEventListener('tty:theme', function (e) {
-      var id = e.detail && e.detail.id;
-      if (id) setTheme(id);
-    });
 
     // The OS changes its mind while the page is open: follow it.
     var onSystemChange = function () {
@@ -668,7 +637,6 @@ import { RAMPS, THEMES, resolveRamp, themeColor } from '../data/themes';
       });
       syncRadios();
       applyThemeColor(boot);
-      applyPhosphor(boot);
     }
 
     var themeGroup = document.querySelector('[data-theme-group]');

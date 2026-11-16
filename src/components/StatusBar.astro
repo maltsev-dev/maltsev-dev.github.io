@@ -1,20 +1,12 @@
 ---
-import { yearsOfExperience } from '../lib/profile';
-
 /*
   The top strip: the status line of the machine.
 
-  A terminal status line is a row of fields, each field a name and a value,
-  separated by pipes. That is what this is — `host`, `phosphor`, `mode`,
-  `uptime` — with the clock and the availability lamp at the right end,
-  because that is the one thing on the strip that means an action is
-  available.
-
-  `uptime` is the machine's uptime, which is to say how long the work has
-  been running. It is counted from the same start date everything else uses,
-  so it cannot drift from the career the site describes.
+  A terminal status line is a row of fields, each field a name and a value.
+  What is left is the one field that says where you are — `host` — with the
+  clock and the availability lamp at the right end, because that is the one
+  thing on the strip that means an action is available.
 */
-const uptime = yearsOfExperience();
 ---
 
 <div class="status-bar">
@@ -23,27 +15,6 @@ const uptime = yearsOfExperience();
       <span class="status-item">
         <span class="k" aria-hidden="true">host</span>
         <span class="v">maltsev-01</span>
-      </span>
-
-      <span class="status-sep" aria-hidden="true">│</span>
-
-      <span class="status-item status-hide-sm">
-        <span class="k" aria-hidden="true">phosphor</span>
-        <span class="v" data-status-phosphor>p3-amber</span>
-      </span>
-
-      <span class="status-sep status-hide-sm" aria-hidden="true">│</span>
-
-      <span class="status-item status-hide-sm">
-        <span class="k" aria-hidden="true">mode</span>
-        <span class="v">forward-deployed</span>
-      </span>
-
-      <span class="status-sep" aria-hidden="true">│</span>
-
-      <span class="status-item">
-        <span class="k" aria-hidden="true">uptime</span>
-        <span class="v">{uptime}y</span>
       </span>
     </div>
 

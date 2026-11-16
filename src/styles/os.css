@@ -81,12 +81,6 @@
   margin-right: 0.1rem;
 }
 
-@media (max-width: 52rem) {
-  .status-hide-sm {
-    display: none;
-  }
-}
-
 @media (max-width: 40rem) {
   .status-left {
     display: none;
@@ -568,8 +562,7 @@
    under. On a long article it pushed the writing down the page, and the
    button in it repeated a call to action that was already on the page.
 
-   What is left is one line: who the site belongs to, the sentence that says
-   what the work is, and the four ways out of the site. --fort is the only
+   What is left is one line: who the site belongs to. --fort is the only
    token that clears 4.5:1 on the accent panel in all three ramps: --braise
    is 2.2:1 on the phosphore panel and --encre 4.2:1, and the copyright is
    small text.
@@ -595,54 +588,6 @@
 
 .footer-copy {
   white-space: nowrap;
-}
-
-/* The site's one sentence. A line of type, not a headline: the claim belongs
-   in the hero, and the footer only repeats it for the reader who scrolled the
-   whole way down. It is set in the reading face, in sentence case, because
-   the bar around it is in the mono face and in caps. */
-.footer-line {
-  margin: 0;
-  flex: 1 1 16rem;
-  min-width: 0;
-  font-family: var(--font-ui);
-  font-size: var(--fs-small);
-  letter-spacing: 0;
-  text-transform: none;
-  color: var(--fort);
-  opacity: 0.92;
-}
-
-.footer-links {
-  display: flex;
-  gap: var(--sp-4);
-  flex-wrap: wrap;
-  margin-left: auto;
-}
-
-.footer-links a {
-  text-decoration: none;
-  color: var(--fort);
-  border-bottom: 1px solid transparent;
-}
-
-.footer-links a:hover,
-.footer-links a:focus-visible {
-  text-decoration: underline;
-  color: var(--creme);
-}
-
-/* The four ways out of the site are links in a line of type, and on a phone
-   they were twenty-one pixels tall — too small to hit without aiming. The
-   type stays; the padding around it grows, to the forty-four pixels a thumb
-   expects. The horizontal padding is there for the same reason: the RSS link
-   is three letters wide, and three letters need room to be hit. */
-@media (max-width: 40rem) {
-  .footer-links a {
-    display: inline-block;
-    padding-block: 0.75rem;
-    padding-inline: 0.7rem;
-  }
 }
 
 /* ----- Scroll-linked motion ---------------------------------------------
@@ -767,14 +712,15 @@
    The social row is the first thing to go: five icons at forty-four pixels
    each is two hundred and thirty-six pixels of a three-hundred-and-fifty
    pixel bar, and the command strip has nowhere left to scroll. The same
-   links are in the footer, one tap away at the end of the page.
+   channels are one tap away in the contact dialog, behind the availability
+   lamp in the status strip above it.
 
    Then the bar wraps. The command strip drops onto its own line under the
    prompt and the system button, where it has the full width to scroll in.
 
    Then the key hint goes. The number is a shortcut, and a shortcut nobody
    can see is a shortcut nobody uses — but the shortcut still works, and the
-   footer carries the keys.
+   command palette carries the same destinations.
    ---------------------------------------------------------------------- */
 @media (max-width: 46rem) {
   .social {

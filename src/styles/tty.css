@@ -3,7 +3,7 @@
 
    Everything in this file is a component that could be printed on a screen
    of a machine from 1983: the window frame, the prompt, the listing, the
-   signal lamp, the block cursor, the meter.
+   signal lamp, the meter.
 
    Two rules hold it together:
 
@@ -13,8 +13,7 @@
 
      2. Nothing here is decoration on top of the content. A frame that
         carries a title is a frame that says what is inside it. A lamp that
-        blinks says the machine is doing something. A cursor that blinks
-        says there is somewhere to type.
+        blinks says the machine is doing something.
    ========================================================================== */
 
 /* ----- The window --------------------------------------------------------
@@ -141,75 +140,6 @@
   text-shadow: var(--glow);
 }
 
-/* The output of a command. */
-.tty-out {
-  color: var(--fort);
-  white-space: pre-wrap;
-  word-break: break-word;
-}
-
-.tty-out .ok {
-  color: var(--ok);
-}
-
-.tty-out .warn {
-  color: var(--led-warn);
-}
-
-.tty-out .err {
-  color: var(--erreur);
-}
-
-.tty-out .key {
-  color: var(--braise);
-}
-
-.tty-out .dim {
-  color: var(--faible);
-}
-
-/* ----- The cursor --------------------------------------------------------
-   A block that blinks. The classic terminal cursor is a solid block on the
-   character that is about to be typed over, and the old hardware blinked it
-   rather than made it a steady underline.
-   ---------------------------------------------------------------------- */
-.cursor {
-  display: inline-block;
-  width: 0.62em;
-  height: 1.05em;
-  vertical-align: -0.18em;
-  margin-left: 0.08em;
-  background: var(--encre);
-  box-shadow: var(--glow);
-  animation: cursor-blink 1.05s steps(1, end) infinite;
-}
-
-@keyframes cursor-blink {
-  0%,
-  49% {
-    opacity: 1;
-  }
-  50%,
-  100% {
-    opacity: 0;
-  }
-}
-
-/* A cursor that is waiting rather than typing — it dims instead of going
-   out, so a reader can tell "idle" from "ready". */
-.cursor.is-idle {
-  background: var(--grid);
-  box-shadow: none;
-  animation: none;
-  opacity: 1;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .cursor {
-    animation: none;
-  }
-}
-
 /* ----- Signal lamps ------------------------------------------------------
    A lamp is a small square of light. It says one of three things: the
    machine is working, the machine is waiting, the machine is off.
@@ -319,65 +249,8 @@
   white-space: nowrap;
 }
 
-/* ----- The shell's own listings ------------------------------------------
-   The rows the terminal prints are grids as well, and they are their own
-   class: the shell has its own columns (a mode, a date, a name) and its own
-   places, and they do not have to agree with the listings in the page. What
-   they have to agree on is the grid — a listing printed as one string of
-   text runs its columns into each other and reads as a single word.
-   ---------------------------------------------------------------------- */
-.tl-row {
-  display: grid;
-  gap: 0 1ch;
-  align-items: baseline;
-  white-space: nowrap;
-}
-
-.tl-row > :last-child {
-  white-space: normal;
-}
-
-/* `ls` in the home directory: a mode, the path, and what is on it. */
-.tl-row--dir {
-  grid-template-columns: 11ch 16ch minmax(0, 1fr);
-}
-
-/* `ls` in the writing directory: a mode, the date, the title. */
-.tl-row--write {
-  grid-template-columns: 11ch 12ch minmax(0, 1fr);
-}
-
-/* `projects`: a mode, how many tags, the tags, the title. */
-.tl-row--proj {
-  grid-template-columns: 11ch 6ch 24ch minmax(0, 1fr);
-}
-
-.tl-mode,
-.tl-date,
-.tl-tags {
-  color: var(--faible);
-  font-variant-numeric: tabular-nums;
-}
-
-.tl-name {
-  color: var(--encre);
-}
-
-.tl-desc {
-  color: var(--fort);
-}
-
-/* A column that is cut short says so with an ellipsis rather than by
-   running into the next one. */
-.tl-row--proj .tl-desc {
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.tl-row--dir .tl-name {
-  color: var(--braise);
-}
-
+/* The last cell of a row wraps: a long name does not run into the next
+   row. */
 .ls-row > :last-child {
   white-space: normal;
 }
@@ -733,21 +606,6 @@
 
 .tty-cont {
   color: var(--braise);
-}
-
-/* ----- The keycap --------------------------------------------------------
-   A key on the keyboard. `Ctrl+K`, `↑ ↓`, `Tab`.
-   ---------------------------------------------------------------------- */
-.key {
-  display: inline-block;
-  padding: 0.05em 0.45em;
-  border: var(--filet) solid var(--grid);
-  background: var(--rouille);
-  color: var(--fort);
-  font-family: var(--font-mono);
-  font-size: 0.85em;
-  line-height: 1.4;
-  white-space: nowrap;
 }
 
 /* ----- The hash ----------------------------------------------------------

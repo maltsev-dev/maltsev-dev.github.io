@@ -11,17 +11,11 @@ const year = new Date().getFullYear();
   call to action repeated a button already on the page, in a place the reader
   reaches only after they have finished reading.
 
-  What is left is the line that says who the site belongs to, the one sentence
-  that says what the work is, and the four ways out of the site. One line,
-  one bar, on every page.
+  What is left is the line that says who the site belongs to. The site's own
+  sentence and the four ways out of it are gone: the claim belongs in the
+  hero, and the way out of the site is the header above. One line, one bar,
+  on every page.
 */
-
-const ELSEWHERE = [
-  { href: 'mailto:mr.a.maltsev@gmail.com', label: 'email', external: false },
-  { href: 'https://github.com/maltsev-dev', label: 'github', external: true },
-  { href: 'https://www.linkedin.com/in/a-maltsev', label: 'linkedin', external: true },
-  { href: '/rss.xml', label: 'rss', external: false },
-];
 ---
 
 <!--
@@ -32,27 +26,5 @@ const ELSEWHERE = [
 <footer class="site-footer">
   <div class="wrap footer-bar">
     <span class="footer-copy">© {year} Anatolii Maltsev</span>
-
-    <!--
-      The one sentence the site makes about itself. It is a line of type, not
-      a headline: the claim belongs in the hero, and the footer only has to
-      repeat it for a reader who scrolled the whole way down.
-    -->
-    <p class="footer-line">
-      Agentic systems that carry real work, built to be measured.
-    </p>
-
-    <nav class="footer-links" aria-label="Elsewhere">
-      {
-        ELSEWHERE.map((s, i) => (
-          <>
-            {i > 0 && <span class="footer-sep" aria-hidden="true">│</span>}
-            <a href={s.href} rel={s.external ? 'noopener' : undefined} target={s.external ? '_blank' : undefined}>
-              {s.label}
-            </a>
-          </>
-        ))
-      }
-    </nav>
   </div>
 </footer>
