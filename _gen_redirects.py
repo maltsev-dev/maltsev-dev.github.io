@@ -226,10 +226,12 @@ def build_map() -> dict[str, str]:
 
     # Legacy architecture diagrams that used to be standalone pages. Nothing
     # links to them any more, so they fold into the case study they describe
-    # rather than lingering as orphans.
-    routes["/ai_email_agent_architecture.html"] = "/projects/email-reply-agent/"
-    routes["/ai_sms_lead_agent_architecture.html"] = "/projects/lead-qualification-agent/"
-    routes["/ai_support_ticket_architecture.html"] = "/projects/support-triage-agent/"
+    # rather than lingering as orphans. The three cases have no pages of their
+    # own any more — they are panels in the catalog — so the diagram folds
+    # into the catalog too.
+    routes["/ai_email_agent_architecture.html"] = "/projects/"
+    routes["/ai_sms_lead_agent_architecture.html"] = "/projects/"
+    routes["/ai_support_ticket_architecture.html"] = "/projects/"
 
     # Tag pages. A tag that the site still writes about has a page now, at
     # the hyphenated address, and the spelling the legacy site published

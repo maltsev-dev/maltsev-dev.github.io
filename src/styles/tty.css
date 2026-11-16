@@ -611,27 +611,6 @@
   margin: 0;
 }
 
-/* ----- The tag row -------------------------------------------------------
-   A chip that reads like a file extension: `[rust]`.
-   ---------------------------------------------------------------------- */
-.chip {
-  display: inline-flex;
-  align-items: center;
-  padding: 0.05rem 0.4rem;
-  border: var(--filet) solid var(--grid);
-  color: var(--fort);
-  font-family: var(--font-mono);
-  font-size: var(--fs-label);
-  letter-spacing: 0.06em;
-  text-decoration: none;
-  background: var(--papier);
-}
-
-a.chip:hover {
-  border-color: var(--braise);
-  color: var(--braise);
-}
-
 /* ----- The status strip --------------------------------------------------
    The line under the header that says what the machine is doing.
    ---------------------------------------------------------------------- */

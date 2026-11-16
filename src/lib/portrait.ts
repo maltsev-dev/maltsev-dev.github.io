@@ -21,37 +21,6 @@
 /** How much taller a cell is than it is wide. */
 const DY = 1.6;
 
-/**
- * How much narrower the character is drawn than the cell it stands in.
- *
- * The sheet of glyphs is square — one character in a square cell — but the
- * picture's cell is one and a half times taller than it is wide, so the
- * square cell is mapped onto a sprite a cell and a half wide. A monospace
- * character drawn at the full width of its cell therefore fills the column:
- * its vertical strokes reach the column on either side, and the picture is a
- * field of strokes that touch.
- *
- * That is what the site sees when the picture turns. A yaw foreshortens the
- * columns — they come closer together — while the characters keep their
- * size, and at twenty-four degrees, the widest point of the idle sway, the
- * gap between two columns is exactly the width of the character in them.
- *
- * The stripes are worse than that, though, because the picture is not the
- * only thing on the screen with a period. The tube's aperture grille is a
- * hard vertical line every three CSS pixels, and the portrait's columns are
- * a hard vertical period of its own — a shade over two pixels at this
- * size. Two vertical periods beat with each other, and the beat shows as
- * bands of about seven pixels: bright column, dark column, bright column.
- * The picture turns, its period moves, and the bands sweep across it.
- *
- * So the character is drawn narrower than the cell it stands in, which
- * leaves the columns room and takes the strength out of the vertical
- * texture that was beating with the grille. The rows are left alone: they
- * beat with the tube's scanlines, whose three-pixel period is close enough
- * to the row's own that the beat is wide and soft rather than a band.
- */
-const SQUEEZE = 0.8;
-
 /** How many characters there are, and so how many of them fit on the sheet. */
 const N = 64;
 const G = 8;
@@ -99,7 +68,7 @@ void main(){
 const FS = `
 precision mediump float;
 uniform sampler2D uTex;uniform float uMono;uniform vec3 uInk;uniform vec3 uGround;
-uniform float uTone;uniform vec2 uRange;
+uniform float uTone;uniform vec2 uRange;uniform float uSoft;
 varying vec3 vCol;varying float vGlyph;
 void main(){
   float g=floor(vGlyph+0.5);
@@ -116,7 +85,11 @@ void main(){
   // and the dark parts of the photograph are the ones that take the ink.
   float f=mix(1.15*l,1.0-t,uTone);
   vec3 c=mix(vCol,mix(uGround,uInk,f),uMono);
-  gl_FragColor=vec4(c,a);
+  // The picture is drawn soft: the marks let the ground through them, so
+  // the drawing is still there and still has its shape, but it is not the
+  // loudest thing on the page. At two pixels to a character the sheet is a
+  // fine texture, and a texture at full contrast is noise.
+  gl_FragColor=vec4(c,a*uSoft);
 }`;
 
 export interface PortraitOptions {
@@ -151,6 +124,15 @@ export interface PortraitOptions {
   weight?: number;
   /** The darkest cell of the picture, and the brightest. */
   range?: [number, number];
+  /**
+   * How much of the ground the picture shows through.
+   *
+   * One is the picture as the tool draws it: every mark at full strength.
+   * Less than one pulls the marks back towards the ground — the drawing
+   * keeps its shape and its tone, but it stops being the loudest thing on
+   * the page.
+   */
+  soft?: number;
 }
 
 export interface Portrait {
@@ -283,6 +265,7 @@ export async function createPortrait(options: PortraitOptions): Promise<Portrait
     'uGround',
     'uTone',
     'uRange',
+    'uSoft',
     'uTex',
   ].forEach((name) => (U[name] = gl.getUniformLocation(program, name)));
 
@@ -330,20 +313,9 @@ export async function createPortrait(options: PortraitOptions): Promise<Portrait
       const x = (i % G + 0.5) * S;
       const y = (Math.floor(i / G) + 0.5) * S + S * 0.04;
 
-      /*
-        The character is drawn narrower than the cell it stands in: see
-        SQUEEZE above. The squeeze is around the character's own centre, so
-        the cell's grid is not moved — only the glyph inside it is narrower.
-      */
-      sctx.save();
-      sctx.translate(x, y);
-      sctx.scale(SQUEEZE, 1);
+      sctx.fillText(char, x, y);
 
-      sctx.fillText(char, 0, 0);
-
-      if (weight > 0) sctx.strokeText(char, 0, 0);
-
-      sctx.restore();
+      if (weight > 0) sctx.strokeText(char, x, y);
     });
 
     gl.activeTexture(gl.TEXTURE0);
@@ -394,6 +366,7 @@ export async function createPortrait(options: PortraitOptions): Promise<Portrait
   let vy = 0;
   let vp = 0;
   let idle = 9;
+  let sway = 0;
   let drag = false;
   let lx = 0;
   let ly = 0;
@@ -405,6 +378,7 @@ export async function createPortrait(options: PortraitOptions): Promise<Portrait
   let ground = options.ground ?? [0, 0, 0];
   let light = options.light ?? false;
   const range = options.range ?? [0, 255];
+  const soft = options.soft ?? 1;
 
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -511,11 +485,19 @@ export async function createPortrait(options: PortraitOptions): Promise<Portrait
       sways: a slow rock, side to side and up and down, out of phase with
       itself. The sway comes in over two seconds, so the picture settles
       into it rather than starting.
+
+      And it leaves the same way. It used to go out in a single frame:
+      taking hold of the picture put the idle clock back, the amount of sway
+      fell from one to zero, and the yaw the picture was aiming at jumped by
+      a quarter of a turn between two frames. The picture jerked. The sway
+      now has its own amount, and the amount fades — so the picture eases
+      out of the rock instead of falling out of it.
     */
-    const sw = reduce ? 0 : clamp((idle - 1) / 2, 0, 1);
+    const wanted = reduce ? 0 : clamp((idle - 1) / 2, 0, 1);
+    sway += (wanted - sway) * (1 - Math.exp(-dt * 2));
     const k = 1 - Math.exp(-dt * 10);
-    yaw += (uy + 0.42 * sw * Math.sin(t / 1700) - yaw) * k;
-    pit += (up + 0.07 * sw * Math.sin(t / 2500) - pit) * k;
+    yaw += (uy + 0.42 * sway * Math.sin(t / 1700) - yaw) * k;
+    pit += (up + 0.07 * sway * Math.sin(t / 2500) - pit) * k;
 
     if (visible) {
       gl.clearColor(0, 0, 0, 0);
@@ -537,6 +519,7 @@ export async function createPortrait(options: PortraitOptions): Promise<Portrait
       gl.uniform3f(U.uGround, ground[0], ground[1], ground[2]);
       gl.uniform1f(U.uTone, light ? 1 : 0);
       gl.uniform2f(U.uRange, range[0], range[1]);
+      gl.uniform1f(U.uSoft, soft);
 
       gl.drawArrays(gl.POINTS, 0, count);
     }

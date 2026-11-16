@@ -32,7 +32,7 @@ const PAGES = [
   { path: '/', label: 'Home', desc: 'The pitch in one screen: what the work is and where to go next.' },
   { path: '/about/', label: 'Profile', desc: 'Method rather than CV: how the work is done, and what is on the desk right now.' },
   { path: '/blog/', label: 'Writing', desc: 'Every post, newest first, filed by topic.' },
-  { path: '/projects/', label: 'Projects', desc: 'Case studies and shipped milestones side by side.' },
+  { path: '/projects/', label: 'Projects', desc: 'The catalog: every system that shipped, each with a paragraph and the numbers it moved.' },
   { path: '/experience/', label: 'Experience', desc: `Six stops over ${spellNumber(yearsOfExperience())} years, then the ${SKILL_COUNT}-skill toolkit pyramid with provenance per skill.` },
 ];
 
@@ -87,13 +87,15 @@ export async function renderLlms({ site }: APIContext, selfPath: string): Promis
     '',
     '## Case studies',
     '',
-    'Three, each with the problem, the architecture and what it moved:',
+    'Three of the systems, each with what it was and what it moved. The listing at /projects/ carries the panel of every project — the paragraph, the numbers and the tags.',
     '',
-    ...projects.map(
-      (p) =>
-        `- [${p.data.title}](${url(`/projects/${p.data.slug}/`)}): ${p.data.description ?? ''}` +
-        (p.data.tags.length ? ` Tags: ${p.data.tags.join(', ')}.` : '')
-    ),
+    ...[...projects]
+      .sort((a, b) => a.data.slug.localeCompare(b.data.slug))
+      .map(
+        (p) =>
+          `- ${p.data.title}: ${p.data.description ?? ''}` +
+          (p.data.tags.length ? ` Tags: ${p.data.tags.join(', ')}.` : '')
+      ),
     '',
     '## Shipped work',
     '',

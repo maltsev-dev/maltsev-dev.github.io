@@ -1,23 +1,33 @@
 ---
 title: "AI Lead Qualification Agent"
 slug: "lead-qualification-agent"
-description: "Qualifies inbound leads over SMS and WhatsApp, then books the appointment and flags it to sales. Every thread is answered in seconds, and the calendar fills without anyone touching it."
+period: "2026"
+line: "Leads text you, and you answer in minutes."
+description: "An agent that replies over SMS or WhatsApp within minutes, qualifies the lead, books the appointment, then flags it to sales. The thread is answered in seconds, so a lead that texts at night is qualified before anyone wakes up, and the calendar fills without anyone touching it. Built for teams taking 50+ inbound leads a month from ads, forms and funnels, where the speed of the first answer is the whole game."
+metrics:
+  - value: "<2 min"
+    label: "Response time"
+  - value: "70%"
+    label: "Less manual work"
+  - value: "+40–70%"
+    label: "More meetings"
 tags: ["LLM", "WhatsApp", "CRM"]
 ---
 
 <!--
 LEGACY SOURCE - this body is not rendered by the site.
 
-Only the frontmatter above reaches the pages. The case-study pages are built from
-the JSON sidecars in src/data/projects/ (one file per slug), and those sidecars
-were generated from this file by _parse_projects.py, which scraped the HTML
-below for the metrics, problem and solution cards, before/after results,
-pipeline steps, risk cards and pricing.
+Only the frontmatter above reaches the pages. The case used to have a page of
+its own at /projects/lead-qualification-agent/, built from a JSON sidecar in
+src/data/projects/ that _parse_projects.py had scraped out of the HTML
+below. The page and the sidecar are both gone: the case is one panel in the
+listing on /projects/, and what survived of it is the frontmatter above — the
+line the listing shows, the description the panel's dialog opens with, the
+metrics and the tags.
 
-That parser is not in the repository any more, so the JSON sidecars are the
-authority now: the pages render from them, and the HTML below is the frozen
-record of where they came from. Change the JSON when the page has to change,
-and keep this file in step with it by hand.
+The HTML below is the frozen record of where they came from: the original
+landing page, kept whole. It renders nowhere, and it is the only copy left of
+the problem and solution cards, the pipeline, the risks and the pricing.
 -->
 
 <!-- Hero Section -->

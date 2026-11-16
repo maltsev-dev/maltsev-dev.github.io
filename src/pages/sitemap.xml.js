@@ -36,16 +36,11 @@ function stamp(value) {
 
 export async function GET(context) {
   const posts = await getCollection('posts');
-  const projects = await getCollection('projects');
 
   const today = buildDate();
 
   const urls = [
     ...STATIC_ROUTES.map((p) => ({ loc: p, lastmod: today })),
-    ...projects.map((p) => ({
-      loc: `/projects/${p.data.slug}/`,
-      lastmod: stamp(p.data.updated) ?? today,
-    })),
     ...posts.map((p) => ({
       loc: `/blog/${p.id}/`,
       lastmod: stamp(p.data.updated) ?? stamp(p.data.date) ?? today,

@@ -814,7 +814,9 @@
   .letter-backdrop,
   .letter-box,
   .stage-modal-backdrop,
-  .stage-modal-box {
+  .stage-modal-box,
+  .panel-modal-backdrop,
+  .panel-modal-box {
     animation: none;
   }
 }
@@ -1302,14 +1304,6 @@
   padding: 1.2rem 1.4rem 1.5rem;
 }
 
-.stage-modal-lede {
-  margin: 0 0 1rem;
-  font-family: var(--font-mono);
-  font-size: var(--fs-lead);
-  line-height: 1.6;
-  color: var(--fort);
-}
-
 .stage-modal-stack {
   display: flex;
   flex-wrap: wrap;
@@ -1408,19 +1402,6 @@
   overflow-wrap: break-word;
 }
 
-.stage-modal-num {
-  /* The counter rather than a glyph: it keeps the marker in the text color of
-     the list and matches the numbering used in the section headings. */
-  list-style: decimal;
-  padding-left: 1.25rem;
-}
-
-.stage-modal-num li::marker {
-  color: var(--braise);
-  font-family: var(--font-mono);
-  font-size: 0.875em;
-}
-
 /* The checklist is a list of things to do, not a list of claims, so nothing
    here is ticked — the box is drawn in CSS rather than typed as a character. */
 .stage-modal-check {
@@ -1442,6 +1423,226 @@
   height: 0.62em;
   border: var(--filet) solid var(--braise);
   background: color-mix(in srgb, var(--papier) 70%, transparent);
+}
+
+/* ---- Project panel dialog ------------------------------------------------
+   The dialog the panels of /projects/ open. Same shape as the stage dialog:
+   a fixed overlay, a dismissable backdrop and a box that holds the panel.
+   ---------------------------------------------------------------------- */
+.panel-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(1rem, 4vw, 3rem);
+}
+
+.panel-modal[hidden] {
+  display: none;
+}
+
+.panel-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: color-mix(in srgb, var(--papier) 78%, transparent);
+  backdrop-filter: blur(3px);
+  animation: fade-in 180ms ease both;
+}
+
+.panel-modal-box {
+  position: relative;
+  /* 40rem: the panel is a paragraph and three numbers, not a diagram. */
+  width: min(40rem, 100%);
+  max-height: calc(100vh - 2rem);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background: var(--papier);
+  border: var(--trait) solid var(--braise);
+  box-shadow: var(--ombre);
+  animation: letter-in 260ms cubic-bezier(0.2, 0.9, 0.2, 1) both;
+}
+
+.panel-modal-panel[hidden] {
+  display: none;
+}
+
+.panel-modal-head {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-4);
+  padding: 0.6rem 0.9rem;
+  background: var(--rouille);
+  border-bottom: var(--filet) solid var(--braise);
+  font-family: var(--font-mono);
+  font-size: var(--fs-micro);
+  letter-spacing: 0.06em;
+  color: var(--fort);
+}
+
+.panel-modal-path {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.panel-modal-x {
+  margin-left: auto;
+  padding: 0.1rem 0.4rem;
+  background: none;
+  border: 0;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.panel-modal-x:hover,
+.panel-modal-x:focus-visible {
+  color: var(--braise);
+}
+
+.panel-modal-body {
+  padding: 1.2rem 1.4rem 1.5rem;
+}
+
+.panel-modal-title {
+  margin: 0 0 0.5rem;
+  font-family: var(--font-mono);
+  font-size: var(--fs-lead);
+  font-weight: 500;
+  line-height: 1.35;
+  color: var(--encre);
+}
+
+/* The date and the stacks, in the tone the listing draws them in. */
+.panel-modal-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0 0 1.1rem;
+  padding: 0;
+  list-style: none;
+  font-family: var(--font-mono);
+  font-size: var(--fs-label);
+  letter-spacing: 0.06em;
+  color: var(--faible);
+}
+
+.panel-modal-when {
+  text-transform: uppercase;
+}
+
+.panel-modal-tag {
+  padding: 0.05rem 0.4rem;
+  border: var(--filet) solid var(--grid);
+  background: var(--papier);
+  color: var(--fort);
+}
+
+/* The paragraph the panel opens with. It is prose, so it is set in the body
+   face and to a measure — the only prose in the listing is in here. */
+.panel-modal-lede {
+  max-width: var(--measure-prose);
+  margin: 0 0 1.3rem;
+  font-family: var(--font-body);
+  font-size: var(--fs-lead);
+  line-height: 1.65;
+  color: var(--fort);
+}
+
+/* The numbers the project moved. Three columns, and fewer when the panel
+   has fewer numbers. */
+.panel-modal-metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
+  gap: 1rem;
+  margin: 0 0 1.3rem;
+  padding: 0.9rem 0;
+  border-top: var(--filet) solid var(--grid);
+  border-bottom: var(--filet) solid var(--grid);
+}
+
+.panel-modal-stat {
+  min-width: 0;
+}
+
+.panel-modal-stat dt {
+  font-family: var(--font-mono);
+  font-size: var(--fs-label);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--faible);
+}
+
+.panel-modal-stat dd {
+  margin: 0.2rem 0 0;
+  font-family: var(--font-mono);
+  font-size: var(--fs-lead);
+  color: var(--braise);
+}
+
+.panel-modal-go {
+  margin: 0;
+}
+
+.panel-modal-link {
+  font-family: var(--font-mono);
+  font-size: var(--fs-small);
+  letter-spacing: 0.06em;
+  color: var(--encre);
+  text-decoration: none;
+  border-bottom: var(--filet) solid var(--braise);
+}
+
+.panel-modal-link:hover,
+.panel-modal-link:focus-visible {
+  color: var(--braise);
+}
+
+/* ----- The career panel ----------------------------------------------------
+   The panel of a stop in the log: the paragraph that says what the step was,
+   the points and the stacks. The record of the stop — when it ran, the role,
+   the company — is on the listing, and it is not repeated here.
+   ---------------------------------------------------------------------- */
+
+/* What was done: the bullets of the commit message. */
+.panel-modal-points {
+  list-style: none;
+  margin: 0 0 1.2rem;
+  padding: 0;
+  display: grid;
+  gap: 0.4rem;
+}
+
+.panel-modal-points li {
+  position: relative;
+  padding-left: 1.4ch;
+  max-width: 100ch;
+  color: var(--fort);
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+
+.panel-modal-points li::before {
+  content: '-';
+  position: absolute;
+  left: 0;
+  color: var(--braise);
+  font-family: var(--font-mono);
+}
+
+/* The stacks the stop used. */
+.panel-modal-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  margin: 0;
+}
+
+.panel-modal-tag--more {
+  color: var(--faible);
 }
 
 .stack.is-live .stack-scan {

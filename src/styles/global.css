@@ -260,7 +260,7 @@
   /* ----- Breakpoint ladder -------------------------------------------------
      The site used eleven rem widths with no shared scale. These are the nine
      widths the stylesheets actually query, in order. Every media query in
-     global.css, os.css, case.css and animation.css that carries a
+     global.css, os.css, tty.css and animation.css that carries a
      rem width uses one of them and nothing else.
 
      A custom property cannot be used inside a media-query condition, so the
@@ -1117,27 +1117,6 @@ blockquote {
   letter-spacing: 0.12em;
   text-transform: uppercase;
   margin-bottom: var(--sp-5);
-}
-
-/* The address in the sentence. It is the only way to write on the page, so
-   it is drawn as a link rather than left as one more piece of prose.
-
-   The box it sits in is the rouge ground, and the accent on that ground
-   measures 2.17:1 — a link written in it would be unreadable. So the text
-   keeps the colour of the paragraph and the underline does the work, in the
-   cream that measures 6.8:1 on the same ground. */
-.post-cta-mail {
-  color: inherit;
-  text-decoration: underline;
-  text-decoration-color: var(--fort);
-  text-decoration-thickness: 2px;
-  text-underline-offset: 0.18em;
-  /* A link that breaks across two lines breaks the underline too. */
-  white-space: nowrap;
-}
-
-.post-cta-mail:hover {
-  color: var(--fort);
 }
 
 @media (max-width: 34rem) {

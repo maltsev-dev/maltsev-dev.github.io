@@ -15,7 +15,6 @@ export const GET: APIRoute = async () => {
   const POSTS = (await getCollection('posts')).sort((a, b) =>
     (b.data.date ?? '').localeCompare(a.data.date ?? '')
   );
-  const PROJECTS = await getCollection('projects');
 
   const items = [
     { label: 'Home', href: '/', group: 'Page' },
@@ -23,11 +22,6 @@ export const GET: APIRoute = async () => {
     { label: 'Experience', href: '/experience/', group: 'Page' },
     { label: 'Profile', href: '/about/', group: 'Page' },
     { label: 'Writing', href: '/blog/', group: 'Page' },
-    ...PROJECTS.map((p) => ({
-      label: p.data.title,
-      href: `/projects/${p.data.slug}/`,
-      group: 'Project',
-    })),
     ...POSTS.map((p) => ({
       label: displayTitle(p.data.title),
       href: `/blog/${p.id}/`,

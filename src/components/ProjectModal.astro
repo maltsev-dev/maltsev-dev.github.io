@@ -1,0 +1,115 @@
+---
+/**
+ * The panel dialog. One dialog serves every panel in the listing.
+ *
+ * Every project used to have a page of its own under /projects/<slug>/, and
+ * the listing was a list of links into them. The deep case studies had
+ * nothing to show a reader who only wanted to know what the thing was, so
+ * they were pages of structure around a sentence. Now the listing holds the
+ * names and one line each, and the paragraph that says what a project was
+ * opens here — a hundred words instead of a page.
+ *
+ * All the panels are rendered up front and the script shows the requested
+ * one, so the copy lives in the markup instead of being duplicated in
+ * JavaScript. Same shape as the stage dialog: backdrop, focus trap, Escape,
+ * and the focus returned to the panel that opened it.
+ */
+import type { Panel } from '../data/panels';
+
+interface Props {
+  panels: Panel[];
+}
+
+const { panels } = Astro.props;
+---
+
+<!--
+  aria-labelledby points at the first panel's title and is repointed by os.js
+  whenever another panel opens: every panel shares this one dialog, so only
+  the one on screen can give it a name.
+-->
+<div
+  class="panel-modal"
+  id="prjModal"
+  hidden
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby={`prj-title-${panels[0]?.slug ?? ''}`}
+>
+  <div class="panel-modal-backdrop" data-close-prj></div>
+
+  <!--
+    `role="document"` switched the screen reader into browse mode for the
+    whole panel, which took the keyboard away from the reader inside the
+    dialog. A named group says the same thing without that: os.js repoints
+    the label at the panel that is on screen.
+  -->
+  <div class="panel-modal-box" role="group" aria-labelledby={`prj-title-${panels[0]?.slug ?? ''}`}>
+    {
+      panels.map((p) => (
+        <section
+          class="panel-modal-panel"
+          data-prj-panel={p.slug}
+          hidden
+          aria-labelledby={`prj-title-${p.slug}`}
+        >
+          <div class="panel-modal-head">
+            <span class="panel-modal-path" aria-hidden="true">~/projects/{p.slug}</span>
+            <button
+              type="button"
+              class="panel-modal-x"
+              data-close-prj
+              aria-label={`Close ${p.title}`}
+            >
+              ✕
+            </button>
+          </div>
+
+          <div class="panel-modal-body">
+            <h2 class="panel-modal-title" id={`prj-title-${p.slug}`}>
+              {p.title}
+            </h2>
+
+            <p class="panel-modal-meta">
+              <span class="panel-modal-when">{p.when}</span>
+              {p.tags.map((t) => (
+                <span class="panel-modal-tag">{t}</span>
+              ))}
+            </p>
+
+            <p class="panel-modal-lede">{p.detail}</p>
+
+            {
+              p.metrics.length > 0 && (
+                <dl class="panel-modal-metrics">
+                  {p.metrics.map((m) => (
+                    <div class="panel-modal-stat">
+                      <dt>{m.label}</dt>
+                      <dd>
+                        <span>{m.value}</span>
+                      </dd>
+                    </div>
+                  ))}
+                </dl>
+              )
+            }
+
+            {
+              p.link && (
+                <p class="panel-modal-go">
+                  <a
+                    class="panel-modal-link"
+                    href={p.link.href}
+                    rel={p.link.href.startsWith('http') ? 'noopener' : undefined}
+                  >
+                    {p.link.label}
+                  </a>
+                </p>
+              )
+            }
+          </div>
+        </section>
+      ))
+    }
+  </div>
+</div>

@@ -14,16 +14,12 @@
 export type Bullet = [string, string];
 
 export interface StageCopy {
-  /** One sentence: what this stage is and how I run it. */
-  lede: string;
   /** The stage drawn on its own, shown above the prose. */
   art: string;
   /** What I have to get right here. */
   key: Bullet[];
   /** What I do differently because of what broke. */
   tips: Bullet[];
-  /** Numbered, because these are ordered by how expensive they are. */
-  pitfalls: Bullet[];
   /** Unchecked on purpose: this is a list to work through, not a claim. */
   check: string[];
 }
@@ -31,9 +27,7 @@ export interface StageCopy {
 export interface StageSummary {
   /** The stage's id: the key its copy lives under. */
   id: string;
-  /** Two digits, in the order the stages have to exist. */
-  num: string;
-  /** The stage's name, without the number. */
+  /** The stage's name. */
   title: string;
   /** One line: what this stage is. */
   desc: string;
@@ -53,70 +47,60 @@ export interface StageSummary {
 export const STAGES: StageSummary[] = [
   {
     id: 'backend',
-    num: '01',
     title: 'Backend foundation',
     desc: 'FastAPI, Pydantic, AsyncIO, Pytest. The service skeleton every later stage plugs into.',
     stack: ['FastAPI', 'Pydantic', 'AsyncIO', 'Pytest'],
   },
   {
     id: 'llm',
-    num: '02',
     title: 'LLM API & tool calling',
     desc: 'Structured outputs and streaming. Every tool call is schema-checked before it is allowed to run.',
     stack: ['Structured Outputs', 'Streaming'],
   },
   {
     id: 'agents',
-    num: '03',
     title: 'Agent orchestration',
     desc: 'LangGraph state machine. Explicit transitions, so a run can be replayed and compared step by step.',
     stack: ['LangGraph', 'State Machine'],
   },
   {
     id: 'api',
-    num: '04',
     title: 'API & business integrations',
     desc: 'REST, webhooks, OAuth 2.0, reconciliation. The layer where the agent meets the systems of record.',
     stack: ['REST', 'Webhooks', 'OAuth 2.0', 'Reconciliation'],
   },
   {
     id: 'rag',
-    num: '05',
     title: 'RAG engineering',
     desc: 'Hybrid search, reciprocal rank fusion, reranking. Retrieval quality before prompt quality.',
     stack: ['Hybrid Search', 'RRF', 'Rerank'],
   },
   {
     id: 'reliability',
-    num: '06',
     title: 'Reliability & resilience',
     desc: 'Circuit breakers and idempotency keys. An upstream failure degrades the run instead of cascading.',
     stack: ['Circuit Breakers', 'Idempotency'],
   },
   {
     id: 'security',
-    num: '07',
     title: 'Security & authorization',
     desc: 'Deterministic RBAC and a sandboxed tool runtime. Permissions decided in code, never by the model.',
     stack: ['Deterministic RBAC', 'Sandbox'],
   },
   {
     id: 'eval',
-    num: '08',
     title: 'Evaluation & regression',
     desc: 'Trajectory tests over golden datasets. Every prompt or model change is measured before it ships.',
     stack: ['Trajectory Tests', 'Golden Datasets'],
   },
   {
     id: 'sql',
-    num: '09',
     title: 'SQL & state persistence',
     desc: 'Postgres, Redis, checkpointing. Agent state survives a crash, a deploy and a restart.',
     stack: ['Postgres', 'Redis', 'Checkpointing'],
   },
   {
     id: 'obs',
-    num: '10',
     title: 'Observability',
     desc: 'Tracing and OpenTelemetry. Every run is inspectable from first tool call to final answer.',
     stack: ['Tracing', 'OpenTelemetry', 'Alerting'],
@@ -125,7 +109,6 @@ export const STAGES: StageSummary[] = [
 
 export const STAGE_COPY = {
   backend: {
-    lede: 'My backend is a single async service, and every stage below is a module it loads.',
     art: [
       '       [ Client Request ]',
       '               │',
@@ -154,10 +137,6 @@ export const STAGE_COPY = {
       ['I stream the answer', 'SSE keeps time-to-first-token low, so a long tool call reads as progress rather than a freeze.'],
       ['I configure once', '`pydantic-settings` loads `.env` and validates types at container start.'],
     ],
-    pitfalls: [
-      ['Sync drivers in async code', '`psycopg2` and `requests` block the whole thread; I use `asyncpg` and `httpx`.'],
-      ['Unwatched `asyncio.gather`', 'One failed task leaves the rest running as orphans, so I use `asyncio.TaskGroup`.'],
-    ],
     check: [
       'Every network client is an `httpx.AsyncClient`.',
       'Global handlers for `HTTPException` and for internal 500s.',
@@ -166,7 +145,6 @@ export const STAGE_COPY = {
   },
 
   llm: {
-    lede: 'I only accept a model response I can validate; text I cannot parse is a bug, not an answer.',
     art: [
       '+-----------------------------------------------------------------------------------+',
       '| LLM INVOCATION PIPELINE                                                           |',
@@ -196,10 +174,6 @@ export const STAGE_COPY = {
       ['I tag untrusted data', 'User input and RAG context go inside `<user_context>` and `<documents>`.'],
       ['I fail over on 5xx', 'OpenAI hands over to Claude or Gemini instead of surfacing the outage.'],
     ],
-    pitfalls: [
-      ['Trusting argument types', 'I run tool arguments through Pydantic before the call, because the model returns `"123"` where I expected `123`.'],
-      ['History that only grows', 'Untrimmed context eventually overruns the window, and the bill with it.'],
-    ],
     check: [
       'Every tool schema generated from a Pydantic model.',
       'Rate-limit handling with exponential backoff.',
@@ -208,7 +182,6 @@ export const STAGE_COPY = {
   },
 
   agents: {
-    lede: 'My agent is a state graph, not a loop that I hope terminates.',
     art: [
       '         ┌───────────────┐',
       '         │  START NODE   │',
@@ -248,10 +221,6 @@ export const STAGE_COPY = {
       ['I interrupt before I act', '`interrupt_before` on money moves and on outbound email.'],
       ['I cap the recursion', '`recursion_limit=10..20` stops a confused agent from burning the budget in a loop.'],
     ],
-    pitfalls: [
-      ['Mutating state in place', '`state[\'key\'] = val` desynchronizes checkpointing and misbehaves under async.'],
-      ['Unknown tool, no `KeyError`', 'An invalid tool routes the graph to a self-correction node instead of crashing it.'],
-    ],
     check: [
       'A max-steps fuse on every loop.',
       'Graph state persisted, e.g. with `PostgresSaver`.',
@@ -260,7 +229,6 @@ export const STAGE_COPY = {
   },
 
   api: {
-    lede: 'This is where my agent touches systems that charge money and send mail, so the rules here are defensive.',
     art: [
       '[ Agent Tool Call ]',
       '       │',
@@ -301,10 +269,6 @@ export const STAGE_COPY = {
       ['I back off with jitter', 'Randomized delays stop my retries from hitting the provider as a herd.'],
       ['I reconcile on a schedule', 'Compare what I believe with what the system of record says and repair the difference.'],
     ],
-    pitfalls: [
-      ['Retrying without a key', 'A timeout may have landed already, so a blind retry duplicates the charge.'],
-      ['Secrets in the database', 'API keys and refresh tokens are AES-256 (GCM) encrypted at the cell level.'],
-    ],
     check: [
       'An `Idempotency-Key` on every mutating call.',
       'Inbound webhooks checked against the provider signature.',
@@ -313,7 +277,6 @@ export const STAGE_COPY = {
   },
 
   rag: {
-    lede: 'Retrieval is a pipeline with permissions inside it, not a vector search with a prompt wrapped around it.',
     art: [
       '[ User Query ] ──► [ Metadata ACL Filter Injection ]',
       '                           │',
@@ -352,10 +315,6 @@ export const STAGE_COPY = {
       ['Small chunks, big context', 'I index 200-token chunks and hand the model the 1000-token parent section.'],
       ['Citations the model has to earn', 'It cites `[Doc-12]`, and a post-validator checks the document really said it.'],
     ],
-    pitfalls: [
-      ['Vectors only', 'Exact part numbers, error codes and proper nouns need lexical search, and vectors lose them.'],
-      ['Cross-tenant reads', 'Without index isolation, one user’s query returns another user’s documents.'],
-    ],
     check: [
       'An `acl` field on every vector.',
       'A cross-encoder reranking stage.',
@@ -364,7 +323,6 @@ export const STAGE_COPY = {
   },
 
   reliability: {
-    lede: 'Failures are a given; a run that dies on the first one is not.',
     art: [
       '                          [ Incoming Task ]',
       '                                  │',
@@ -412,10 +370,6 @@ export const STAGE_COPY = {
       ['I cache semantically', 'Redis for deterministic repeats, a vector cache for near-identical questions.'],
       ['Saga for multi-step', 'Every step has a compensating action in case the last one fails.'],
     ],
-    pitfalls: [
-      ['Retrying a fatal error', 'A 401 or a 400 will never succeed; retrying only burns the budget.'],
-      ['No isolation', 'One slow external API must not stall every worker I own.'],
-    ],
     check: [
       'Timeouts wrapped around every external call.',
       'A fallback provider configured.',
@@ -424,7 +378,6 @@ export const STAGE_COPY = {
   },
 
   security: {
-    lede: 'The model proposes and my code decides; nothing runs that the backend has not authorized.',
     art: [
       '[ Untrusted User Input ]',
       '       │',
@@ -461,10 +414,6 @@ export const STAGE_COPY = {
       ['I clamp the arguments', '`min(limit, 50)`, so a single call cannot dump the database.'],
       ['Two guardrail layers', 'A fast local validator screens the request and the answer before either reaches the client.'],
     ],
-    pitfalls: [
-      ['Rights in the system prompt', '"Never share another department\'s data" is not a control; the model can be talked out of it.'],
-      ['`eval()` on generated code', 'Run inside the backend process, that is full server compromise rather than a bug.'],
-    ],
     check: [
       'RBAC checked before every external tool call.',
       'User data isolated in XML tags and stripped of special characters.',
@@ -473,7 +422,6 @@ export const STAGE_COPY = {
   },
 
   eval: {
-    lede: 'Every prompt change is a measurement, and until it is one it is a guess.',
     art: [
       '                   ┌─────────────────────────────────────────┐',
       '                   │    Golden Dataset (Ground Truth Test)   │',
@@ -502,10 +450,6 @@ export const STAGE_COPY = {
       ['The judge gets rubrics', 'Binary criteria, the reasoning first and the score second.'],
       ['I classify the failures', 'Retrieval, tool choice, hallucination and format, counted separately.'],
     ],
-    pitfalls: [
-      ['Vibe checking', 'A prompt edit without a golden-dataset run breaks the edge cases, and finds out in production.'],
-      ['Similarity as truth', 'Cosine distance passes answers that are factually wrong.'],
-    ],
     check: [
       'Fifty to a hundred versioned golden cases.',
       'CI checking the tool-call trajectory.',
@@ -514,7 +458,6 @@ export const STAGE_COPY = {
   },
 
   sql: {
-    lede: 'A conversation that vanishes when a process restarts is a bug, so state lives in Postgres and only the hot path lives in Redis.',
     art: [
       '                  ┌──────────────────────────────────────────┐',
       '                  │          PostgreSQL (Relational)         │',
@@ -542,10 +485,6 @@ export const STAGE_COPY = {
       ['Proper HNSW settings', '`m=16`, `ef_construction=64`, and the right operator class for the distance.'],
       ['Partitioned history', 'Old messages archived by date keep the live conversation tables small.'],
     ],
-    pitfalls: [
-      ['Redis as the only store', 'Restart it and every long conversation is gone.'],
-      ['Lost updates', 'Two quick messages read the same state and overwrite each other’s work.'],
-    ],
     check: [
       'A checkpoint schema in PostgreSQL.',
       'HNSW indexes on the vector columns.',
@@ -554,7 +493,6 @@ export const STAGE_COPY = {
   },
 
   obs: {
-    lede: 'When a run goes wrong I need to know which request, which node and which call produced it.',
     art: [
       '[ User Request ] ── (Trace ID: a1b2c3d4) ───────────────────────────────────────────────────────┐',
       '                                                                                                │',
@@ -579,10 +517,6 @@ export const STAGE_COPY = {
       ['One OpenTelemetry collector', 'Traces go out to Langfuse, Arize Phoenix, Datadog or Jaeger.'],
       ['I log the payloads, and redact', 'A sanitizer middleware strips personal data and tokens before they are stored.'],
       ['Alerts on anomalies', 'A spike in token spend or a tool error rate over 2% reaches me immediately.'],
-    ],
-    pitfalls: [
-      ['No link back to the request', 'Without it every incident is a guess about what triggered it.'],
-      ['Logging everything', 'No rotation and no sampling fills the disk and then the invoice.'],
     ],
     check: [
       'One OTel collector across the whole stack.',

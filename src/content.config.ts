@@ -26,19 +26,28 @@ const projects = defineCollection({
   schema: z.object({
     title: z.string(),
     slug: z.string(),
+    /**
+     * The one line the listing shows under the name: what the case is, in a
+     * single clause. The cases have no page of their own any more — they are
+     * panels in the listing on /projects/, and this is what the panel says.
+     */
+    line: z.string(),
+    /**
+     * What the panel's dialog opens with: fifty to a hundred words on what
+     * the system was and what it moved.
+     */
     description: z.string().optional(),
     /**
-     * When the case was written, for the date line under its title. Optional
-     * and unset on every case at the moment: the year in the case's own
-     * legacy copyright line is the fallback. The field is declared so that a
-     * case which wants a date of its own can carry one — without it the
-     * schema strips the line and the page can never read it.
+     * The period the work ran in, as the listing's when-column writes it.
+     * The year is the one the case's own legacy copyright line carried.
      */
-    date: z.string().optional(),
-    /** Skills shown on the card and counted for the recurring-skills chips. */
+    period: z.string().optional(),
+    /** The numbers the dialog shows under the description, when it has them. */
+    metrics: z
+      .array(z.object({ value: z.string(), label: z.string() }))
+      .default([]),
+    /** Skills shown on the panel and counted for the recurring-skills chips. */
     tags: z.array(z.string()).default([]),
-    /** When the case study last changed, for the sitemap's `<lastmod>`. */
-    updated: z.string().optional(),
   }),
 });
 

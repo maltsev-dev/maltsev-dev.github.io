@@ -1,7 +1,9 @@
 ---
 import '../styles/skills.css';
 import Base from '../layouts/Base.astro';
+import CareerModal from '../components/CareerModal.astro';
 import { SKILL_TIERS } from '../data/skills';
+import { STOPS, period, duration } from '../data/stops';
 import { yearsOfExperience, spellNumber, SKILL_COUNT } from '../lib/profile';
 
 // The length of the career and the size of the toolkit, both read from the
@@ -12,147 +14,6 @@ import { yearsOfExperience, spellNumber, SKILL_COUNT } from '../lib/profile';
 const YEARS = yearsOfExperience();
 const YEARS_WORD = spellNumber(YEARS);
 const YEARS_SENTENCE = spellNumber(YEARS, true);
-
-/**
- * The career, as a log.
- *
- * A career is a history: it has commits, in an order, each one with a date
- * and a message. So the page is a log — the same shape `git log` prints, one
- * entry per stop, newest first. The hash-shaped values are decoration — they
- * identify an entry, nothing more. Replace or extend as the history changes;
- * the page reads from here.
- */
-interface Stop {
-  hash: string;
-  /** What the entry is: the ref a branch would point at. */
-  ref: string;
-  /** The date the commit carries, in the format `git log` prints it in. */
-  date: string;
-  /** The span of the engagement, for the reader rather than the machine. */
-  span: string;
-  role: string;
-  org: string;
-  href?: string;
-  /** The part of the LinkedIn title after the first separator. */
-  tagline?: string;
-  /**
-   * A sentence or two between the employer line and the bullets: what the step
-   * was, and what it handed to the next one. The bullets are what was done —
-   * this is the thread running through them, and the reason six stops read as
-   * one career instead of six vacancies. Nothing here that the points
-   * underneath do not already support.
-   */
-  body?: string;
-  points: string[];
-  skills: string[];
-  /** Count of skills the source profile collapsed; rendered as a muted chip. */
-  more?: number;
-}
-
-const STOPS: Stop[] = [
-  {
-    hash: 'f7c21a9',
-    ref: 'HEAD -> main',
-    date: 'Mon Mar  9 10:02:11 2026 +0200',
-    span: '8 mos',
-    role: 'Founder & Lead Engineer',
-    org: 'NullRun',
-    href: 'https://nullrun.io',
-    tagline: 'Runtime authorization for AI agents',
-    body: 'Cloud SaaS for AI agent security, policy enforcement and execution governance. The problem kept turning up on client work, so I built it once as a product instead of again for each engagement.',
-    points: [
-      'Founder and lead engineer behind NullRun: the architecture, the policy model and the public API.',
-      'Backend systems, SDK development and cloud infrastructure, end to end.',
-      'Developer experience and product direction.',
-    ],
-    skills: ['AI Agent Security', 'Platform Engineering'],
-    more: 2,
-  },
-  {
-    hash: '4c8be17',
-    ref: 'branch: independent',
-    date: 'Wed Dec 10 09:31:44 2025 +0200',
-    span: '11 mos',
-    role: 'Applied AI Engineer',
-    org: 'Independent',
-    tagline: 'LLM systems, RAG & agentic workflows · Automation at scale',
-    body: 'The step out of a reporting line: briefs instead of a backlog, and clients asking for agents rather than for scripts. The toolkit stopped being a list of tools and became a way of working, and the specialization above it on the pyramid started to be worth something.',
-    points: [
-      'Took SMB workflows from vague requirements to production, cutting manual work by 40–80%.',
-      'Built LLM systems on RAG pipelines and multi-agent orchestration, integrated Google APIs and OAuth, and automated document-heavy processes end to end.',
-      'Delivered production systems across backend, frontend, infrastructure and system design, from architecture through deployment.',
-    ],
-    skills: ['AI Agent Development', 'LangGraph'],
-    more: 5,
-  },
-  {
-    hash: 'a31d0be',
-    ref: 'branch: contract',
-    date: 'Mon Dec  4 11:05:02 2023 +0200',
-    span: '1 yr 8 mos',
-    role: 'Senior SDET',
-    org: 'PashaPay',
-    tagline: 'Mobile & backend test automation',
-    body: 'Senior, and no longer only writing tests. The app and the services behind it ended up under one framework, one set of standards and one owner. That is the point where a test engineer starts designing the system that does the testing, and where the framing changes from running the work to owning it.',
-    points: [
-      'Designed and built integration, e2e and load test automation frameworks from scratch, covering mobile and backend services.',
-      'Owned test architecture across the full SDLC, from technical design through deployment and release validation.',
-      'Authored engineering documentation and testing standards adopted across multiple teams, improving consistency and onboarding speed.',
-    ],
-    skills: ['Test Automation', 'Quality Assurance'],
-    more: 2,
-  },
-  {
-    hash: '5e2f904',
-    ref: 'branch: full-time',
-    date: 'Fri Dec  3 10:00:37 2021 +0300',
-    span: '1 yr 9 mos',
-    role: 'Senior SDET',
-    org: 'Alfa-Bank',
-    tagline: 'Backend test automation',
-    body: 'Automation moved inward, into the platform itself. The suites had to keep their throughput under production load, and for the first time the work sat with core engineering, security and infrastructure as colleagues rather than as the QA team taking their requirements.',
-    points: [
-      'Engineered and optimized automated test suites for backend services, improving throughput and stability under production load.',
-      'Partnered with core engineering, security and infrastructure teams to validate integration of distributed system components.',
-      'Drove test infrastructure improvements that reduced regression cycle time and increased release confidence.',
-    ],
-    skills: ['Test Automation', 'Quality Assurance'],
-    more: 2,
-  },
-  {
-    hash: '90b5e77',
-    ref: 'branch: full-time',
-    date: 'Tue Jun 16 09:20:11 2020 +0300',
-    span: '1 yr 7 mos',
-    role: 'SDET',
-    org: 'Sportmaster',
-    tagline: 'Performance & quality engineering',
-    body: 'Still writing tests, but no longer only writing them. Performance became the first thing to own outright, and peer review the first say in how the team worked. That is the difference between a tester who found defects and an engineer who removed the reason for them.',
-    points: [
-      'Identified and mitigated performance bottlenecks in service integrations, hardening systems against high-load conditions.',
-      'Built test automation and quality documentation frameworks, establishing repeatable engineering standards.',
-      'Conducted peer code reviews to enforce code quality, consistency and best practices across the team.',
-    ],
-    skills: ['Performance Testing', 'Test Automation'],
-    more: 2,
-  },
-  {
-    hash: 'c07d3aa',
-    ref: 'branch: full-time',
-    date: 'Mon May 13 12:00:00 2019 +0300',
-    span: '1 yr 2 mos',
-    role: 'QA Automation Engineer',
-    org: 'Sberbank',
-    body: 'Where it starts. Reading a banking system closely enough to find what could break in it, and writing the checks that would go on finding it. That habit is what every later step is built on, and the reason the frameworks that came after had something to generalize from.',
-    points: [
-      'Analyzed complex banking systems to surface functional risks and edge cases, translating findings into automated coverage.',
-      'Designed and implemented automated test scripts validating core product functionality, improving release reliability.',
-      'Collaborated with development teams to integrate testing earlier in the workflow, the start of a shift toward test automation engineering.',
-    ],
-    skills: ['Test Automation', 'Quality Assurance'],
-    more: 1,
-  },
-];
 
 /**
  * The whole skill set, as a tree.
@@ -214,7 +75,7 @@ const factsOf = (skill: { jobs: number; certs: number; projects: number }): stri
 
       <p class="tty-prompt" data-reveal>
         <span class="who">root</span><span class="sep">@</span><span
-          >amaltsev</span>
+          >amaltsev</span
         ><span class="sep">:</span><span class="path">~/career</span><span
           class="sep"
           >$</span
@@ -244,61 +105,68 @@ const factsOf = (skill: { jobs: number; certs: number; projects: number }): stri
         <div class="tty-body">
           <p class="tty-prompt tty-cmd-line">
             <span class="who">root</span><span class="sep">@</span><span
-              >amaltsev</span>
-            ><span class="sep">:</span><span class="path">~/career</span><span
-              class="sep"
+              >amaltsev</span
+            ><span class="sep">:</span><span class="path">~/career</span><span class="sep"
               >$</span
             >
             <span class="tty-cmd">git log</span>
           </p>
 
+          <!--
+            The log, folded. A stop is a record of six fields: when it ran, how
+            long, the role, what it was about, the company and the form of the
+            engagement. The rest of the entry — the commit header, the
+            paragraph that says what the step was, the points, the stacks —
+            opens in the panel's dialog, in full.
+          -->
           {
             STOPS.map((s, i) => (
               <article
-                class="commit"
+                class="exp-row"
+                data-exp-row
                 data-reveal
                 data-reveal-delay={Math.min(i, 5) * 50}
               >
-                <p class="commit-head">
-                  <span class="commit-word">commit</span>
-                  <span class="commit-hash">{s.hash}</span>
-                  <span class="commit-ref">({s.ref})</span>
-                </p>
-                <p class="commit-meta">
-                  <span class="commit-key">Author:</span> Anatolii Maltsev
-                  &lt;mr.a.maltsev@gmail.com&gt;
-                </p>
-                <p class="commit-meta">
-                  <span class="commit-key">Date:</span>
-                  <span class="commit-date">{s.date}</span>
-                  <span class="commit-span">{s.span}</span>
+                <p class="exp-field">
+                  <span class="exp-key">Date:</span>
+                  <span class="exp-val">{period(s)}</span>
                 </p>
 
-                <div class="commit-body">
-                  <h3 class="commit-title">
+                <p class="exp-field">
+                  <span class="exp-key">Duration:</span>
+                  <span class="exp-val">{duration(s.span)}</span>
+                </p>
+
+                <h3 class="exp-role">
+                  <span class="exp-key">Role:</span>
+                  <button
+                    type="button"
+                    class="exp-open"
+                    data-exp-open={s.hash}
+                    aria-haspopup="dialog"
+                  >
                     {s.role}
-                    <span class="commit-org">
-                      — {s.href ? <a href={s.href} rel="noopener">{s.org}</a> : s.org}
-                    </span>
-                  </h3>
+                  </button>
+                </h3>
 
-                  {s.tagline && <p class="commit-tagline">{s.tagline}</p>}
-
-                  {s.body && <p class="commit-text">{s.body}</p>}
-
-                  <ul class="commit-points">
-                    {s.points.map((point) => (
-                      <li>{point}</li>
-                    ))}
-                  </ul>
-
-                  <p class="commit-tags">
-                    {s.skills.map((skill) => (
-                      <span class="commit-tag">{skill}</span>
-                    ))}
-                    {s.more && <span class="commit-tag commit-tag--more">+{s.more} more</span>}
+                {s.tagline && (
+                  <p class="exp-field">
+                    <span class="exp-key">Responsibilities:</span>
+                    <span class="exp-val">{s.tagline}</span>
                   </p>
-                </div>
+                )}
+
+                <p class="exp-field">
+                  <span class="exp-key">Company:</span>
+                  <span class="exp-val exp-org">
+                    {s.href ? <a href={s.href} rel="noopener">{s.company}</a> : s.company}
+                  </span>
+                </p>
+
+                <p class="exp-field">
+                  <span class="exp-key">Form:</span>
+                  <span class="exp-val">{s.form}</span>
+                </p>
               </article>
             ))
           }
@@ -349,6 +217,8 @@ const factsOf = (skill: { jobs: number; certs: number; projects: number }): stri
       </div>
     </section>
   </div>
+
+  <CareerModal stops={STOPS} />
 </Base>
 
 <style>
@@ -389,25 +259,22 @@ const factsOf = (skill: { jobs: number; certs: number; projects: number }): stri
     max-width: 76ch;
   }
 
-  /* ----- One commit --------------------------------------------------------
-     The shape `git log` prints: a header of fields, then the message, with
-     the message indented under it.
+  /* ----- One stop ----------------------------------------------------------
+     A stop in the log, as a record: six fields, one per line. The rest of the
+     entry opens in the panel's dialog.
      ---------------------------------------------------------------------- */
-  .commit {
-    padding-block: 0.9rem;
+  .exp-row {
+    padding-block: 0.7rem;
     border-top: var(--filet) solid color-mix(in srgb, var(--grid) 60%, transparent);
+    cursor: pointer;
   }
 
-  .commit:first-of-type {
+  .exp-row:first-of-type {
     border-top: 0;
     padding-top: 0;
   }
 
-  .commit-head,
-  .commit-meta {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0 0.6ch;
+  .exp-field {
     margin: 0;
     font-family: var(--font-mono);
     font-size: var(--fs-small);
@@ -415,127 +282,63 @@ const factsOf = (skill: { jobs: number; certs: number; projects: number }): stri
     color: var(--fort);
   }
 
-  .commit-word {
+  .exp-key {
     color: var(--faible);
   }
 
-  .commit-hash {
+  /* The company is the one value that is a name of a place, and sometimes a
+     place a reader can go: NullRun is. */
+  .exp-org {
     color: var(--braise);
   }
 
-  .commit-ref {
-    color: var(--faible);
-  }
-
-  .commit-key {
-    color: var(--faible);
-  }
-
-  .commit-date {
-    color: var(--fort);
-  }
-
-  /* The length of the engagement, beside the date. It is the one number in
-     the header that a machine does not print. */
-  .commit-span {
-    margin-left: 0.8ch;
-    padding: 0 0.4ch;
-    border: var(--filet) solid var(--grid);
-    color: var(--faible);
-    font-size: var(--fs-label);
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-  }
-
-  /* The message, indented the way a commit message is indented. */
-  .commit-body {
-    margin: 0.5rem 0 0 2.2ch;
-    padding-left: 1.4ch;
-    border-left: var(--filet) solid var(--grid);
-  }
-
-  .commit-title {
-    margin: 0;
-    font-size: clamp(1.02rem, 2.1vw, 1.18rem);
-    line-height: 1.25;
-  }
-
-  .commit-org {
-    color: var(--braise);
-    font-weight: 400;
-  }
-
-  .commit-org a {
+  .exp-org a {
     color: inherit;
     text-decoration: none;
     border-bottom: var(--filet) solid color-mix(in srgb, var(--braise) 50%, transparent);
   }
 
-  .commit-org a:hover {
+  .exp-org a:hover {
     color: var(--creme);
     border-bottom-color: var(--creme);
   }
 
-  .commit-tagline {
-    margin: 0.25rem 0 0;
-    font-family: var(--font-mono);
-    font-size: 0.78rem;
-    letter-spacing: 0.05em;
-    color: var(--fort);
-  }
-
-  .commit-text {
-    margin: 0.55rem 0 0;
-    max-width: 100ch;
-    color: var(--fort);
-    font-size: 0.95rem;
-    line-height: 1.55;
-  }
-
-  .commit-points {
-    list-style: none;
-    margin: 0.55rem 0 0;
-    padding: 0;
-    display: grid;
-    gap: 0.35rem;
-  }
-
-  .commit-points li {
-    position: relative;
-    padding-left: 1.4ch;
-    max-width: 104ch;
-    color: var(--fort);
-    font-size: 0.92rem;
-    line-height: 1.5;
-  }
-
-  .commit-points li::before {
-    content: '-';
-    position: absolute;
-    left: 0;
-    color: var(--braise);
-    font-family: var(--font-mono);
-  }
-
-  .commit-tags {
+  /* The role is the head of the record, so it is set larger than the fields
+     around it. */
+  .exp-role {
     display: flex;
-    flex-wrap: wrap;
-    gap: 0.3rem;
-    margin: 0.7rem 0 0;
+    align-items: baseline;
+    gap: 0 0.6ch;
+    margin: 0.15rem 0 0;
+    font-size: clamp(1.02rem, 2.1vw, 1.18rem);
+    line-height: 1.25;
   }
 
-  .commit-tag {
-    padding: 0.05rem 0.4rem;
-    border: var(--filet) solid var(--grid);
-    background: var(--papier);
-    color: var(--fort);
+  .exp-role .exp-key {
     font-family: var(--font-mono);
-    font-size: 0.68rem;
-    letter-spacing: 0.05em;
+    font-size: var(--fs-small);
+    font-weight: 400;
   }
 
-  .commit-tag--more {
-    color: var(--faible);
+  /* The role is a button, because the block opens a dialog and a dialog has
+     to be reachable from the keyboard. It is drawn like the text it replaces:
+     the same ink, and the accent when the pointer is on it. */
+  .exp-open {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: none;
+    font: inherit;
+    color: inherit;
+    text-align: left;
+    cursor: pointer;
+  }
+
+  .exp-open:hover,
+  .exp-open:focus-visible {
+    color: var(--braise);
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
   }
 
   <!--

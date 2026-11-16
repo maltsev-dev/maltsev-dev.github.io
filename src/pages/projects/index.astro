@@ -1,44 +1,30 @@
 ---
+/**
+ * The catalog.
+ *
+ * A listing of what shipped. It used to be a carousel: twelve panels in a
+ * row, the wheel driving it sideways, with an index underneath to say what
+ * was off-screen. Two things were wrong with that. The row hid ten of the
+ * twelve, so the index had to exist to compensate — and the index was the
+ * only place on the page where all of them were visible at once, which made
+ * it the real catalog and the row the decoration. And a page that swallows
+ * the wheel without scrolling down reads as a broken page.
+ *
+ * A listing puts all twelve on the page, in order. Each panel carries a name
+ * and one line, and the paragraph that says what the project was opens in a
+ * dialog — a hundred words instead of a page.
+ */
 import { getCollection } from 'astro:content';
 import Base from '../../layouts/Base.astro';
-import { MILESTONES, type Milestone } from '../../data/milestones';
+import ProjectModal from '../../components/ProjectModal.astro';
+import { buildPanels } from '../../data/panels';
 
 const cases = await getCollection('projects');
-
-interface Panel extends Milestone {
-  linked: boolean;
-}
-
-/**
- * One catalog, two sources: the deep-dive cases (each with a page of its own)
- * and the milestone history.
- *
- * Calendar order, newest first. What is being built now leads — `period:
- * 'Current'` is the top of the list — and the case studies follow it, since
- * their source entries carry no dates to interleave with the history. The rest
- * is the milestone list, already newest first.
- *
- * A panel is an <a> only when it has somewhere to go. A milestone without an
- * href renders as an <article>, so the listing never shows a link that leads
- * nowhere.
- */
-const panels: Panel[] = [
-  ...MILESTONES.filter((m) => m.period === 'Current').map((m) => ({ ...m, linked: !!m.href })),
-  ...cases.map((p) => ({
-    linked: true,
-    slug: p.data.slug,
-    title: p.data.title,
-    period: 'Case study',
-    summary: p.data.description ?? '',
-    tags: p.data.tags,
-    href: `/projects/${p.data.slug}/`,
-  })),
-  ...MILESTONES.filter((m) => m.period !== 'Current').map((m) => ({ ...m, linked: !!m.href })),
-];
+const panels = buildPanels(cases);
 
 // The chips under the subtitle are the skills that recur: counted across every
 // panel, so a stack that shows up twice is a thread worth naming, while a
-// one-off detail stays on the card where it belongs. Sorted alphabetically —
+// one-off detail stays on the panel where it belongs. Sorted alphabetically —
 // the reader is scanning for a name, not learning an order.
 const counts = new Map<string, number>();
 for (const p of panels) {
@@ -48,92 +34,9 @@ const RECURRING = [...counts.entries()]
   .filter(([, n]) => n > 1)
   .map(([t]) => t)
   .sort((a, b) => a.localeCompare(b));
-
-/**
- * The mode of an entry.
- *
- * A case study has a directory of its own — a page you descend into — so it
- * is listed as a directory. A milestone is a file: shipped work, recorded,
- * with nothing behind it but a summary. The listing says which is which
- * before you read a word of it.
- */
-const mode = (p: Panel): string =>
-  p.href?.startsWith('/projects/') ? 'drwxr-xr-x' : '-rw-r--r--';
-
-/**
- * The when column.
- *
- * The source periods are written for a reader — "Jul 2025 — Nov 2025" — and
- * they are longer than a listing column can be without pushing the name out
- * of the way. In a listing a date is a date: `2025-07 → 2025-11`. The long
- * form is still in the data, and it is still what the reader gets on the
- * case page.
- */
-const MONTHS: Record<string, string> = {
-  jan: '01', feb: '02', mar: '03', apr: '04', may: '05', jun: '06',
-  jul: '07', aug: '08', sep: '09', oct: '10', nov: '11', dec: '12',
-};
-
-const when = (period: string): string => {
-  if (period === 'Current') return 'current';
-  if (period === 'Case study') return 'case';
-
-  return period
-    .split('—')
-    .map((part) => {
-      const m = /^([A-Za-z]{3})\s+(\d{4})$/.exec(part.trim());
-      const month = m ? MONTHS[m[1].toLowerCase()] : undefined;
-      return m && month ? `${m[2]}-${month}` : part.trim();
-    })
-    .join(' → ');
-};
-
-// What a panel's link is, and what it is called.
-//
-// A panel is a link that wraps the whole card, so without a name of its own
-// the link takes the card as its name: the title, the summary, the skills and
-// the arrow at the foot — forty words for a screen reader to walk past, once
-// per panel of the row. The heading stays inside the link, so the outline of
-// the page is unchanged; the name says what the link is and what it does.
-//
-// The name and the cue at the foot of the panel come from the same rule, so
-// what a reader sees and what a reader hears are the same sentence. The rule
-// follows what the link is — a post to read, a case study to view, another
-// site to open — and not one hardcoded URL: the old rule switched on the
-// string '/blog/', so two links that looked the same were labeled with two
-// different verbs.
-type LinkKind = 'post' | 'writing' | 'case' | 'external';
-
-const linkKind = (href: string): LinkKind => {
-  if (/^https?:\/\//.test(href)) return 'external';
-  if (href === '/blog/') return 'writing';
-  if (href.startsWith('/blog/')) return 'post';
-  return 'case';
-};
-
-const LINK: Record<LinkKind, { cue: string; verb: string }> = {
-  post: { cue: 'Read →', verb: 'Read the post' },
-  writing: { cue: 'Browse →', verb: 'Browse the writing' },
-  case: { cue: 'View →', verb: 'View the project' },
-  external: { cue: 'Open →', verb: 'Open the project' },
-};
 ---
 
 <Base title="Projects" description="Case studies in agentic AI and automation.">
-  <!--
-    The catalog, as a directory listing.
-
-    It used to be a carousel: twelve panels in a row, the wheel driving it
-    sideways, with an index underneath to say what was off-screen. Two things
-    were wrong with that. The row hid ten of the twelve, so the index had to
-    exist to compensate — and the index was the only place on the page where
-    all of them were visible at once, which made it the real catalog and the
-    row the decoration. And a page that swallows the wheel without scrolling
-    down reads as a broken page.
-
-    A listing puts all twelve on the page, in order, with the same
-    information each of them had. The wheel goes back to scrolling.
-  -->
   <div class="prj-page">
     <section class="hero">
       <span class="eyebrow" data-reveal><span class="pulse-dot"></span>Catalog</span>
@@ -141,7 +44,7 @@ const LINK: Record<LinkKind, { cue: string; verb: string }> = {
 
       <p class="tty-prompt" data-reveal data-reveal-delay="100">
         <span class="who">root</span><span class="sep">@</span><span
-          >amaltsev</span>
+          >amaltsev</span
         ><span class="sep">:</span><span class="path">~/projects</span><span class="sep"
           >$</span
         >
@@ -178,69 +81,68 @@ const LINK: Record<LinkKind, { cue: string; verb: string }> = {
         <div class="tty-body">
           <p class="tty-prompt tty-cmd-line">
             <span class="who">root</span><span class="sep">@</span><span
-              >amaltsev</span>
+              >amaltsev</span
             ><span class="sep">:</span><span class="path">~/projects</span><span class="sep"
               >$</span
             >
             <span class="tty-cmd">ls -la</span>
           </p>
 
+          <!--
+            The header row says what the columns are. There are two of them:
+            when the work was, and what it was called. The mode is gone — a
+            column of permissions that says the same thing on every row says
+            nothing — and so is the cue, because every panel opens the same
+            dialog now.
+          -->
           <div class="ls ls-head ls-prj">
             <div class="ls-row ls-row--cat">
-              <span class="ls-mode">mode</span>
               <span class="ls-when">when</span>
               <span class="ls-name">name</span>
-              <span class="ls-cue"></span>
             </div>
           </div>
 
           <div class="ls ls-prj">
             {
-              panels.map((m, i) => {
-                const kind = m.href ? linkKind(m.href) : null;
-                const name = (
-                  <span class="ls-row ls-row--cat">
-                    <span class="ls-mode">{mode(m)}</span>
-                    <span class="ls-when">{when(m.period)}</span>
-                    <span class="ls-name">
-                      {m.linked && m.href ? (
-                        <a
-                          href={m.href}
-                          aria-label={kind ? `${m.title} — ${LINK[kind].verb}` : undefined}
-                        >
-                          {m.title}
-                        </a>
-                      ) : (
-                        m.title
-                      )}
-                    </span>
-                    <span class="ls-cue">{kind ? LINK[kind].cue : ''}</span>
-                  </span>
-                );
+              panels.map((p, i) => (
+                <article
+                  class="ls-row ls-row--cat prj-row"
+                  data-prj-row
+                  data-reveal
+                  data-reveal-delay={Math.min(i, 5) * 40}
+                >
+                  <span class="ls-when">{p.when}</span>
 
-                return (
-                  <article class="prj-row" data-reveal data-reveal-delay={Math.min(i, 5) * 40}>
-                    <h3 class="prj-title">{name}</h3>
-                    <p class="prj-sum">{m.summary}</p>
+                  <div class="prj-main">
+                    <h3 class="prj-title">
+                      <button
+                        type="button"
+                        class="prj-open"
+                        data-prj-open={p.slug}
+                        aria-haspopup="dialog"
+                      >
+                        {p.title}
+                      </button>
+                    </h3>
+
+                    <p class="prj-sum">{p.line}</p>
+
                     <ul class="prj-tags">
-                      {m.tags.map((t) => (
+                      {p.tags.map((t) => (
                         <li>{t}</li>
                       ))}
                     </ul>
-                  </article>
-                );
-              })
+                  </div>
+                </article>
+              ))
             }
           </div>
-
-          <p class="prj-close">
-            The long form is on the pages it links to; the summary is the whole
-            of it here.
-          </p>
         </div>
       </div>
     </section>
   </div>
+
+  <ProjectModal panels={panels} />
 </Base>
 
 <style>
@@ -274,33 +176,30 @@ const LINK: Record<LinkKind, { cue: string; verb: string }> = {
     border-bottom: var(--filet) solid var(--grid);
   }
 
-  /* The columns of an entry come from the shared catalogue row in tty.css:
-     mode, when, name, cue. */
-  .ls-row--cat .ls-name {
-    font-size: 0.95rem;
-  }
-
-  .ls-row--cat .ls-name a {
-    color: var(--encre);
-    text-decoration: none;
-  }
-
-  .ls-row--cat .ls-name a:hover {
-    color: var(--braise);
-    text-decoration: underline;
-    text-underline-offset: 0.2em;
+  /* Two columns: when, and the name. The mode column is gone and so is the
+     cue — twelve panels that all open the same dialog do not need a column
+     that says so twelve times. */
+  .ls-prj .ls-row--cat {
+    grid-template-columns: 18ch minmax(0, 1fr);
   }
 
   /* One entry. The name is on the first line and the summary and the stacks
      hang under it, the way a long listing puts the description of a file
-     under its name. */
+     under its name. The whole block opens the dialog, so it says so with a
+     pointer. */
   .prj-row {
     padding-block: 0.6rem;
     border-bottom: var(--filet) solid color-mix(in srgb, var(--grid) 55%, transparent);
+    cursor: pointer;
   }
 
   .prj-row:last-of-type {
     border-bottom: 0;
+  }
+
+  /* The name column: the name, the line under it, the stacks. */
+  .prj-main {
+    min-width: 0;
   }
 
   .prj-title {
@@ -309,9 +208,32 @@ const LINK: Record<LinkKind, { cue: string; verb: string }> = {
     font-weight: inherit;
   }
 
+  /* The name is a button, because the block it opens is a dialog and a
+     dialog has to be reachable from the keyboard. It is drawn like the links
+     the listing had before it: the ink of the name, and the accent on
+     hover. */
+  .prj-open {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: none;
+    font: inherit;
+    color: var(--encre);
+    text-align: left;
+    cursor: pointer;
+  }
+
+  .prj-open:hover,
+  .prj-open:focus-visible {
+    color: var(--braise);
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+
+  /* The one line. It is a line: the column is wide enough to hold it, so it
+     is not wrapped to a measure and broken in two. */
   .prj-sum {
-    margin: 0.25rem 0 0 2ch;
-    max-width: var(--measure-prose);
+    margin: 0.25rem 0 0;
     font-family: var(--font-body);
     font-size: 0.87rem;
     line-height: 1.55;
@@ -322,7 +244,7 @@ const LINK: Record<LinkKind, { cue: string; verb: string }> = {
     display: flex;
     flex-wrap: wrap;
     gap: 0.3rem;
-    margin: 0.4rem 0 0 2ch;
+    margin: 0.4rem 0 0;
     padding: 0;
     list-style: none;
   }
@@ -335,17 +257,6 @@ const LINK: Record<LinkKind, { cue: string; verb: string }> = {
     font-family: var(--font-mono);
     font-size: 0.68rem;
     letter-spacing: 0.05em;
-  }
-
-  /* The line that closes the catalog. */
-  .prj-close {
-    margin: 1.4rem 0 0;
-    padding-top: 1rem;
-    border-top: var(--filet) solid var(--grid);
-    max-width: var(--measure-prose);
-    color: var(--fort);
-    font-family: var(--font-body);
-    font-size: 0.88rem;
   }
 
   /* ----- The stacks --------------------------------------------------------
@@ -372,13 +283,12 @@ const LINK: Record<LinkKind, { cue: string; verb: string }> = {
   }
 
   /* ----- Narrower screens --------------------------------------------------
-     Four columns do not fit on a phone. The mode is the first thing to go —
-     it is the least informative — and the rest stack: when, name, cue.
+     Two columns do not fit on a phone. The date goes above the name, the
+     way the writing listing folds its row.
      ---------------------------------------------------------------------- */
   @media (max-width: 52rem) {
-    .prj-sum,
-    .prj-tags {
-      margin-left: 0;
+    .ls-prj .ls-row--cat {
+      grid-template-columns: minmax(0, 1fr);
     }
   }
 </style>

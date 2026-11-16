@@ -246,36 +246,6 @@
   box-shadow: none;
 }
 
-/* ----- Tag / eyebrow pulse ----------------------------------------------- */
-.eyebrow {
-  position: relative;
-  overflow: hidden;
-}
-
-.eyebrow::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    100deg,
-    transparent 20%,
-    color-mix(in srgb, var(--creme) 55%, transparent) 50%,
-    transparent 80%
-  );
-  transform: translateX(-100%);
-  animation: sweep 3.6s ease-in-out infinite;
-}
-
-@keyframes sweep {
-  0%,
-  60% {
-    transform: translateX(-100%);
-  }
-  100% {
-    transform: translateX(100%);
-  }
-}
-
 /* Status dot that blinks like a live indicator. */
 .pulse-dot {
   display: inline-block;
@@ -398,7 +368,6 @@
   .boot-overlay,
   .boot-cursor,
   .boot-bar i,
-  .eyebrow::after,
   .pulse-dot,
   .crt::after {
     animation: none !important;

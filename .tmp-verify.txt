@@ -1,0 +1,75 @@
+PASS  / — one left edge (1 windows)  — lefts 48 — ~/writing@48
+PASS  / — one right edge  — rights 1392
+PASS  / — no horizontal overflow  — 0px
+PASS  / — no console errors
+PASS  /about/ — one left edge (2 windows)  — lefts 48 — ~/about/work.md@48 ~/about/now.md@48
+PASS  /about/ — one right edge  — rights 1392
+PASS  /about/ — no horizontal overflow  — 0px
+PASS  /about/ — no console errors
+PASS  /experience/ — one left edge (1 windows)  — lefts 48 — ~/career@48
+PASS  /experience/ — one right edge  — rights 1392
+PASS  /experience/ — no horizontal overflow  — 0px
+PASS  /experience/ — no console errors
+PASS  /blog/ — one left edge (1 windows)  — lefts 48 — ~/writing@48
+PASS  /blog/ — one right edge  — rights 1392
+PASS  /blog/ — no horizontal overflow  — 0px
+PASS  /blog/ — no console errors
+PASS  /projects/ — one left edge (1 windows)  — lefts 48 — ~/projects@48
+PASS  /projects/ — one right edge  — rights 1392
+PASS  /projects/ — no horizontal overflow  — 0px
+PASS  /projects/ — no console errors
+PASS  /projects/lead-qualification-agent/ — one left edge (0 windows)  — no windows
+PASS  /projects/lead-qualification-agent/ — one right edge
+PASS  /projects/lead-qualification-agent/ — no horizontal overflow  — 0px
+FAIL  /projects/lead-qualification-agent/ — no console errors  — Failed to load resource: the server responded with a status of 404 (File not found)
+PASS  /projects/email-reply-agent/ — one left edge (0 windows)  — no windows
+PASS  /projects/email-reply-agent/ — one right edge
+PASS  /projects/email-reply-agent/ — no horizontal overflow  — 0px
+FAIL  /projects/email-reply-agent/ — no console errors  — Failed to load resource: the server responded with a status of 404 (File not found)
+PASS  /projects/support-triage-agent/ — one left edge (0 windows)  — no windows
+PASS  /projects/support-triage-agent/ — one right edge
+PASS  /projects/support-triage-agent/ — no horizontal overflow  — 0px
+FAIL  /projects/support-triage-agent/ — no console errors  — Failed to load resource: the server responded with a status of 404 (File not found)
+PASS  /tags/rust/ — one left edge (1 windows)  — lefts 48 — ~/blog@48
+PASS  /tags/rust/ — one right edge  — rights 1392
+PASS  /tags/rust/ — no horizontal overflow  — 0px
+PASS  /tags/rust/ — no console errors
+PASS  /blog/2026-10-10-unknown-outcome-is-not-a-failure-state/ — one left edge (2 windows)  — lefts 272 — ~/blog/2026-10-10-unknown-outcome-is-not-a-failure-state.md@272 ~/blog@272
+PASS  /blog/2026-10-10-unknown-outcome-is-not-a-failure-state/ — one right edge  — rights 1168
+PASS  /blog/2026-10-10-unknown-outcome-is-not-a-failure-state/ — no horizontal overflow  — 0px
+PASS  /blog/2026-10-10-unknown-outcome-is-not-a-failure-state/ — no console errors
+PASS  /404.html — one left edge (1 windows)  — lefts 352 — ~@352
+PASS  /404.html — one right edge  — rights 1088
+PASS  /404.html — no horizontal overflow  — 0px
+PASS  /404.html — no console errors
+PASS  home h1 — one line  — 1 line(s), container 952px
+PASS  blog lede — one line  — 1 line(s), 888px
+PASS  blog listing — no per-post summaries  — 0
+PASS  blog listing — no per-post tag chips  — 0
+PASS  blog listing — head row uses .ls-row--post
+PASS  phosphore 1440x900 /  — overflow 0px, lefts 48, errors 0
+PASS  phosphore 1440x900 /blog/  — overflow 0px, lefts 48, errors 0
+PASS  phosphore 1440x900 /about/  — overflow 0px, lefts 48, errors 0
+PASS  phosphore 1440x900 /experience/  — overflow 0px, lefts 48, errors 0
+PASS  phosphore 390x844 /  — overflow 0px, lefts 16, errors 0
+PASS  phosphore 390x844 /blog/  — overflow 0px, lefts 16, errors 0
+PASS  phosphore 390x844 /about/  — overflow 0px, lefts 16, errors 0
+PASS  phosphore 390x844 /experience/  — overflow 0px, lefts 16, errors 0
+PASS  acidule 1440x900 /  — overflow 0px, lefts 48, errors 0
+PASS  acidule 1440x900 /blog/  — overflow 0px, lefts 48, errors 0
+PASS  acidule 1440x900 /about/  — overflow 0px, lefts 48, errors 0
+PASS  acidule 1440x900 /experience/  — overflow 0px, lefts 48, errors 0
+PASS  acidule 390x844 /  — overflow 0px, lefts 16, errors 0
+PASS  acidule 390x844 /blog/  — overflow 0px, lefts 16, errors 0
+PASS  acidule 390x844 /about/  — overflow 0px, lefts 16, errors 0
+PASS  acidule 390x844 /experience/  — overflow 0px, lefts 16, errors 0
+PASS  pierre 1440x900 /  — overflow 0px, lefts 48, errors 0
+PASS  pierre 1440x900 /blog/  — overflow 0px, lefts 48, errors 0
+PASS  pierre 1440x900 /about/  — overflow 0px, lefts 48, errors 0
+PASS  pierre 1440x900 /experience/  — overflow 0px, lefts 48, errors 0
+PASS  pierre 390x844 /  — overflow 0px, lefts 16, errors 0
+PASS  pierre 390x844 /blog/  — overflow 0px, lefts 16, errors 0
+PASS  pierre 390x844 /about/  — overflow 0px, lefts 16, errors 0
+PASS  pierre 390x844 /experience/  — overflow 0px, lefts 16, errors 0
+
+70/73 checks passed.

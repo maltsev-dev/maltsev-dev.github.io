@@ -35,11 +35,11 @@ import { STAGE_COPY, STAGES } from '../data/stages';
 
 const DRAWING_ZONES = STAGES.map((s) => ({
   ...s,
-  name: `${s.num} · ${s.title.toUpperCase()}`,
+  name: s.title.toUpperCase(),
 }));
 
-// Long-form panel copy, merged in. `desc` wins over nothing here: the readout
-// under the figure keeps the one-liner, the modal opens with the full lede.
+// Long-form panel copy, merged in. The readout under the figure keeps the
+// one-liner, and the modal opens on the stage drawn on its own.
 const ZONES = DRAWING_ZONES.map((z) => ({
   ...z,
   ...STAGE_COPY[z.id as keyof typeof STAGE_COPY],
@@ -47,41 +47,41 @@ const ZONES = DRAWING_ZONES.map((z) => ({
 
 const LINES = [
   [{ z: null, t: '                                   ' }, { z: 'backend', t: '┌───────────────────────────────────────────────┐' }],
-  [{ z: null, t: '                                   ' }, { z: 'backend', t: '│            01. Backend Foundation             │' }],
+  [{ z: null, t: '                                   ' }, { z: 'backend', t: '│              Backend Foundation               │' }],
   [{ z: null, t: '                                   ' }, { z: 'backend', t: '│     FastAPI • Pydantic • AsyncIO • Pytest     │' }],
   [{ z: null, t: '                                   ' }, { z: 'backend', t: '└───────────────────────┬───────────────────────┘' }],
   [{ z: null, t: '                                                           │                                                           ' }],
   [{ z: null, t: '                   ┌───────────────────────────────────────┴───────────────────────────────────────┐                   ' }],
   [{ z: null, t: '                   ▼                                                                               ▼                   ' }],
   [{ z: 'llm', t: '┌─────────────────────────────────────┐' }, { z: null, t: '                                         ' }, { z: 'sql', t: '┌─────────────────────────────────────┐' }],
-  [{ z: 'llm', t: '│     02. LLM API & Tool Calling      │' }, { z: null, t: '                                         ' }, { z: 'sql', t: '│     09. SQL & State Persistence     │' }],
+  [{ z: 'llm', t: '│       LLM API & Tool Calling        │' }, { z: null, t: '                                         ' }, { z: 'sql', t: '│       SQL & State Persistence       │' }],
   [{ z: 'llm', t: '│   Structured Outputs • Streaming    │' }, { z: null, t: '                                         ' }, { z: 'sql', t: '│  Postgres • Redis • Checkpointing   │' }],
   [{ z: 'llm', t: '└──────────────────┬──────────────────┘' }, { z: null, t: '                                         ' }, { z: 'sql', t: '└──────────────────┬──────────────────┘' }],
   [{ z: null, t: '                   │                                                                               │                   ' }],
   [{ z: null, t: '                   ▼                                                                               ▼                   ' }],
   [{ z: 'agents', t: '┌─────────────────────────────────────┐' }, { z: null, t: '                                         ' }, { z: 'rag', t: '┌─────────────────────────────────────┐' }],
-  [{ z: 'agents', t: '│       03. Agent Orchestration       │' }, { z: null, t: '                                         ' }, { z: 'rag', t: '│         05. RAG Engineering         │' }],
+  [{ z: 'agents', t: '│         Agent Orchestration         │' }, { z: null, t: '                                         ' }, { z: 'rag', t: '│           RAG Engineering           │' }],
   [{ z: 'agents', t: '│      LangGraph • State Machine      │' }, { z: null, t: '                                         ' }, { z: 'rag', t: '│    Hybrid Search • RRF • Rerank     │' }],
   [{ z: 'agents', t: '└──────────────────┬──────────────────┘' }, { z: null, t: '                                         ' }, { z: 'rag', t: '└──────────────────┬──────────────────┘' }],
   [{ z: null, t: '                   └───────────────────────────────────────┬───────────────────────────────────────┘                   ' }],
   [{ z: null, t: '                                                           │                                                           ' }],
   [{ z: null, t: '                                                           ▼                                                           ' }],
   [{ z: 'api', t: '┌─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┐' }],
-  [{ z: 'api', t: '│                                           04. API & Business Integrations                                           │' }],
+  [{ z: 'api', t: '│                                             API & Business Integrations                                             │' }],
   [{ z: 'api', t: '│                                    REST • Webhooks • OAuth 2.0 • Reconciliation                                     │' }],
   [{ z: 'api', t: '└──────────────────────────────────────────────────────────┬──────────────────────────────────────────────────────────┘' }],
   [{ z: null, t: '                                                           │                                                           ' }],
   [{ z: null, t: '                   ┌───────────────────────────────────────┼───────────────────────────────────────┐                   ' }],
   [{ z: null, t: '                   ▼                                       ▼                                       ▼                   ' }],
   [{ z: 'reliability', t: '┌─────────────────────────────────────┐' }, { z: null, t: ' ' }, { z: 'security', t: '┌─────────────────────────────────────┐' }, { z: null, t: ' ' }, { z: 'eval', t: '┌─────────────────────────────────────┐' }],
-  [{ z: 'reliability', t: '│    06. Reliability & Resilience     │' }, { z: null, t: ' ' }, { z: 'security', t: '│    07. Security & Authorization     │' }, { z: null, t: ' ' }, { z: 'eval', t: '│     08. Evaluation & Regression     │' }],
+  [{ z: 'reliability', t: '│      Reliability & Resilience       │' }, { z: null, t: ' ' }, { z: 'security', t: '│      Security & Authorization       │' }, { z: null, t: ' ' }, { z: 'eval', t: '│       Evaluation & Regression       │' }],
   [{ z: 'reliability', t: '│   Circuit Breakers • Idempotency    │' }, { z: null, t: ' ' }, { z: 'security', t: '│    Deterministic RBAC • Sandbox     │' }, { z: null, t: ' ' }, { z: 'eval', t: '│ Trajectory Tests • Golden Datasets  │' }],
   [{ z: 'reliability', t: '└──────────────────┬──────────────────┘' }, { z: null, t: ' ' }, { z: 'security', t: '└──────────────────┬──────────────────┘' }, { z: null, t: ' ' }, { z: 'eval', t: '└──────────────────┬──────────────────┘' }],
   [{ z: null, t: '                   └───────────────────────────────────────┼───────────────────────────────────────┘                   ' }],
   [{ z: null, t: '                                                           │                                                           ' }],
   [{ z: null, t: '                                                           ▼                                                           ' }],
   [{ z: null, t: '                      ' }, { z: 'obs', t: '┌─────────────────────────────────────────────────────────────────────────┐' }],
-  [{ z: null, t: '                      ' }, { z: 'obs', t: '│                            10. Observability                            │' }],
+  [{ z: null, t: '                      ' }, { z: 'obs', t: '│                              Observability                              │' }],
   [{ z: null, t: '                      ' }, { z: 'obs', t: '│                     Tracing • OpenTelemetry • Alert                     │' }],
   [{ z: null, t: '                      ' }, { z: 'obs', t: '└─────────────────────────────────────────────────────────────────────────┘' }],
 ];
@@ -143,7 +143,7 @@ LINES.forEach((segs, row) => {
             style={`--c0:${r.c0}; --r0:${r.r0}; --w:${r.c1 - r.c0 + 1}; --h:${r.r1 - r.r0 + 1}`}
             data-open-stage={z.id}
             data-zone={z.id}
-            aria-label={`${z.name.replace(/ · /, ' ')}. ${z.desc}`}
+            aria-label={`${z.name}. ${z.desc}`}
           />
         );
       })
@@ -209,7 +209,6 @@ LINES.forEach((segs, row) => {
             <button type="button" class="stage-modal-x" data-close-stage aria-label={`Close ${z.name}`}>✕</button>
           </div>
           <div class="stage-modal-body">
-            <p class="stage-modal-lede">{z.lede}</p>
             {/* The stage drawn on its own. It is a diagram, not decoration:
                 it is the same shape the block has inside the big figure, so a
                 reader who wants the detail still recognizes the geometry. */}
@@ -239,17 +238,6 @@ LINES.forEach((segs, row) => {
                     </li>
                   ))}
                 </ul>
-              </section>
-              <section class="stage-modal-sec">
-                <h2 class="stage-modal-h">Pitfalls</h2>
-                <ol class="stage-modal-list stage-modal-num">
-                  {z.pitfalls.map(([label, text]) => (
-                    <li>
-                      <b>{label}.</b>{' '}
-                      {text.split('`').map((part, i) => (i % 2 ? <code>{part}</code> : part))}
-                    </li>
-                  ))}
-                </ol>
               </section>
               <section class="stage-modal-sec">
                 <h2 class="stage-modal-h">Production checklist</h2>

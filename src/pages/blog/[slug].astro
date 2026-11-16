@@ -2,7 +2,7 @@
 import { getCollection, render } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 import { describe, readingTime } from '../../lib/summarize';
-import { blogPostingNode, AUTHOR, postImage, contactMailto } from '../../lib/schema';
+import { blogPostingNode, AUTHOR, postImage } from '../../lib/schema';
 import { formatDate } from '../../data/dates';
 import { tagSlug, tagLabel } from '../../lib/tags';
 import { displayTitle } from '../../lib/text';
@@ -320,56 +320,6 @@ const words = post.body.trim().split(/\s+/).filter(Boolean).length;
       </div>
     </section>
 
-    <!--
-      The close. The invitation stays; the button that repeated one the whole
-      site already carries is gone. The status bar's "available" indicator
-      opens the message form on every page, so a post that also carried a
-      "Write a message" button was the same offer twice on one screen. The
-      address in the sentence is the way to write without the script.
-
-      The button under it points at the shipped work rather than at a page
-      describing how to hire me: the reader who got this far from a search
-      engine wants to see that the claim is real.
-    -->
-    <section class="section">
-      <div class="tty tty-fit tty-contact" data-reveal>
-        <div class="tty-bar">
-          <span class="tty-leds" aria-hidden="true">
-            <i class="led led-on"></i>
-            <i class="led led-off"></i>
-            <i class="led led-off"></i>
-          </span>
-          <span class="tty-title">~/contact</span>
-        </div>
-
-        <div class="tty-body">
-          <p class="tty-prompt tty-cmd-line">
-            <span class="who">root</span><span class="sep">@</span><span
-              >amaltsev</span>
-            ><span class="sep">:</span><span class="path">~</span><span class="sep"
-              >$</span
-            >
-            <span class="tty-cmd">mail -s "About: {title}" \</span>
-          </p>
-
-          <p class="tty-prompt tty-cmd-line tty-cont-line">
-            <span class="tty-cont" aria-hidden="true">&gt;</span>
-            <a class="post-cta-mail" href={contactMailto(`About: ${title}`)}>
-              mr.a.maltsev@gmail.com
-            </a>
-          </p>
-
-          <p class="contact-note">
-            If this is close to the work you are trying to do, I am the person
-            who wrote it.
-          </p>
-
-          <p class="contact-go">
-            <a class="btn" href="/projects/">See the work</a>
-          </p>
-        </div>
-      </div>
-    </section>
   </article>
 </Base>
 
@@ -379,19 +329,30 @@ const words = post.body.trim().split(/\s+/).filter(Boolean).length;
      width: the frame is wider than the text so the text keeps its own
      measure inside it.
 
-     The column sits at the left edge of the page, like every other window
-     on the site, and it sets the width of its own windows once. A terminal
-     prints every line from column zero.
+     The column sits in the middle of the page. It used to sit at the left
+     edge, like every other window on the site, and on a wide monitor that
+     left half the screen empty while the reading was glued to the left
+     margin — the eye lands on the left of a line and has nothing to find on
+     the way back. Centring the column puts the text in the middle of the
+     screen it is being read on, and the windows inside it keep the shared
+     left edge they have always had: a terminal prints every line from
+     column zero, and that is still true inside the column.
 
-     The width is `--measure-doc`: the default width of a window that holds
-     a document. The prose inside it keeps its own measure, `--measure-prose`,
-     so the two are separate objects — the frame is the page, the measure is
-     the sentence.
+     The width is wider than `--measure-doc`, the default width of a window
+     that holds a document. A post carries tables of two and three columns
+     of sentences, and the default document width had them crushed. The
+     prose inside it keeps its own measure, `--measure-prose`, so the two
+     are separate objects — the frame is the page, the measure is the
+     sentence.
      ---------------------------------------------------------------------- */
   .post-page {
     --w: 100%;
-    margin-inline: 0;
-    max-width: var(--measure-doc);
+    margin-inline: auto;
+    max-width: 56rem;
+    /* The measure of the sentences inside the frame. A post is read in a
+       column, and the frame is wider than the column on purpose: the slack
+       on the right of the text is where the terminal's unused columns are. */
+    --measure-prose: 76ch;
   }
 
   .post-head {
@@ -431,28 +392,6 @@ const words = post.body.trim().split(/\s+/).filter(Boolean).length;
     color: var(--fort);
     font-family: var(--font-body);
     font-size: 0.9rem;
-  }
-
-  /* ----- The invitation ---------------------------------------------------- */
-  .tty-contact .tty-body {
-    padding-block: 1.9rem 1.4rem;
-  }
-
-  .tty-contact .post-cta-mail {
-    color: var(--creme);
-  }
-
-  .contact-note {
-    margin: 0.9rem 0 0;
-    max-width: var(--measure-prose);
-    color: var(--fort);
-    font-family: var(--font-body);
-    font-size: 0.95rem;
-    line-height: 1.6;
-  }
-
-  .contact-go {
-    margin: 1.1rem 0 0;
   }
 
   /* ----- The tag links in the metadata line --------------------------------

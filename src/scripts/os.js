@@ -1405,6 +1405,161 @@ import { RAMPS, THEMES, resolveRamp, themeColor } from '../data/themes';
     return open;
   })();
 
+  // ---- Panel dialogs -------------------------------------------------------
+  // A dialog that holds many panels: the markup carries every panel and the
+  // script shows the requested one. Two pages are built this way — the
+  // catalog on /projects/ and the career log on /experience/ — so the trap,
+  // the Escape, the scroll lock and the return of the focus are written once.
+  //
+  //   modal   the id of the dialog element
+  //   panel   the attribute that names a panel
+  //   open    the attribute on the button that opens a panel
+  //   close   the attribute on everything that closes the dialog
+  //   row     the attribute on the block around the button, if the whole
+  //           block opens the panel
+  //   box     the scroller inside the dialog
+  function mountPanels(cfg) {
+    var modal = document.getElementById(cfg.modal);
+    if (!modal) return null;
+
+    var panels = Array.prototype.slice.call(modal.querySelectorAll('[' + cfg.panel + ']'));
+    var closers = Array.prototype.slice.call(modal.querySelectorAll('[' + cfg.close + ']'));
+    var box = modal.querySelector(cfg.box);
+    var lastFocus = null;
+    var locked = false;
+
+    var FOCUSABLE =
+      'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
+    // Every panel lives in the DOM at once and all but one of them are
+    // hidden, so the selector alone returns the close button of every panel.
+    // Trap on those and first and last are buttons of panels that cannot be
+    // reached, which lets Tab walk straight out of an open dialog. Keep what
+    // is on screen.
+    function focusables() {
+      return Array.prototype.slice.call(modal.querySelectorAll(FOCUSABLE))
+        .filter(function (el) { return el.getClientRects().length > 0; });
+    }
+
+    function isOpen() {
+      return !modal.hidden;
+    }
+
+    function close() {
+      if (!isOpen()) return;
+      panels.forEach(function (p) { p.hidden = true; });
+      modal.hidden = true;
+      if (locked) {
+        locked = false;
+        unlockScroll();
+      }
+      if (lastFocus && lastFocus.focus) lastFocus.focus();
+    }
+
+    function open(id, opener) {
+      var panel = modal.querySelector('[' + cfg.panel + '="' + id + '"]');
+      if (!panel) return;
+
+      lastFocus = opener || document.activeElement;
+      panels.forEach(function (p) { p.hidden = p !== panel; });
+      modal.hidden = false;
+
+      // Every panel shares this dialog; only the one on screen can name it.
+      var heading = panel.querySelector('[id]');
+      if (heading) {
+        modal.setAttribute('aria-labelledby', heading.id);
+        if (box) box.setAttribute('aria-labelledby', heading.id);
+      }
+      if (!locked) {
+        locked = true;
+        lockScroll();
+      }
+      if (box) box.scrollTop = 0;
+
+      var first = panel.querySelector(FOCUSABLE);
+      if (first) first.focus();
+    }
+
+    // The name is a button, so the keyboard opens the panel. The block around
+    // it is a convenience for the mouse: a click anywhere in the block opens
+    // the panel it belongs to.
+    var openers = Array.prototype.slice.call(document.querySelectorAll('[' + cfg.open + ']'));
+    openers.forEach(function (button) {
+      var id = button.getAttribute(cfg.open);
+      var row = cfg.row ? button.closest('[' + cfg.row + ']') : null;
+
+      button.addEventListener('click', function (e) {
+        e.stopPropagation();
+        open(id, button);
+      });
+
+      if (!row) return;
+
+      row.addEventListener('click', function (e) {
+        // A click on a link is a click on the link: it goes where it says.
+        if (e.target.closest && e.target.closest('a[href]')) return;
+        // A click that selected text inside the block is a click on the text,
+        // not a request for the dialog. A selection made elsewhere on the
+        // page does not count: the reader chose a word in a paragraph and
+        // then clicked a project.
+        var sel = window.getSelection();
+        if (sel && !sel.isCollapsed && row.contains(sel.anchorNode)) return;
+        open(id, button);
+      });
+    });
+
+    closers.forEach(function (el) {
+      el.addEventListener('click', close);
+    });
+
+    document.addEventListener('keydown', function (e) {
+      if (!isOpen()) return;
+
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        close();
+        return;
+      }
+
+      if (e.key !== 'Tab') return;
+
+      var items = focusables();
+      if (!items.length) return;
+      var first = items[0];
+      var last = items[items.length - 1];
+
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    });
+
+    return { open: open, close: close };
+  }
+
+  // The catalog on /projects/: a panel per project.
+  mountPanels({
+    modal: 'prjModal',
+    panel: 'data-prj-panel',
+    open: 'data-prj-open',
+    close: 'data-close-prj',
+    row: 'data-prj-row',
+    box: '.panel-modal-box',
+  });
+
+  // The career log on /experience/: a panel per stop.
+  mountPanels({
+    modal: 'expModal',
+    panel: 'data-exp-panel',
+    open: 'data-exp-open',
+    close: 'data-close-exp',
+    row: 'data-exp-row',
+    box: '.panel-modal-box',
+  });
+
   // ---- ASCII architecture figure -----------------------------------------
   // Lines assemble on first view. The drawing itself is inert text; the real
   // controls are transparent buttons laid over each box. Hovering or focusing

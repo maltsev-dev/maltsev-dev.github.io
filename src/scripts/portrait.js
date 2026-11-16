@@ -57,6 +57,18 @@ function rgb(value) {
 }
 
 /**
+ * How much of the ground the picture shows through.
+ *
+ * The picture is a hundred and eighty-nine characters across, drawn into
+ * four hundred pixels, so a character is two pixels wide and nobody is
+ * reading any of them. What the eye gets is a fine texture, and a texture
+ * at full contrast is noise: it catches the eye off the headline and holds
+ * it there. Letting the ground through the marks takes the sharpness out
+ * of it without taking the drawing out of it.
+ */
+const SOFT = 0.68;
+
+/**
  * The colour of the picture, for the theme that is on.
  *
  * The terminal themes draw the picture in their own brightest colour, the
@@ -75,6 +87,7 @@ function colours() {
     ink: rgb(style.getPropertyValue(paper ? '--encre' : '--creme')),
     ground: rgb(style.getPropertyValue('--papier')),
     weight: 0.18,
+    soft: SOFT,
   };
 }
 
@@ -100,6 +113,7 @@ function start() {
     ground: theme.ground,
     light: theme.light,
     weight: theme.weight,
+    soft: theme.soft,
     range: [PORTRAIT_LIGHT_MIN, PORTRAIT_LIGHT_MAX],
   })
     .then((portrait) => {

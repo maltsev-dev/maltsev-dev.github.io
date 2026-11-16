@@ -1,87 +1,47 @@
 ---
-import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import { yearsOfExperience } from '../lib/profile';
-
-/**
- * How many notes there are. Counted, never typed: a number written into a
- * sentence cannot be checked by a build, and the writing index is the thing
- * this line points at.
- */
-const postCount = (await getCollection('posts')).length;
 
 /*
   The Profile page answers "who is this and what are they like to work with",
   not "what have they shipped" — the projects and the career have pages of
-  their own. So what is left below is method and what is on the desk right
-  now, kept deliberately short: the page is a portrait, not a CV.
+  their own. So what is left below is how the work runs, on what terms, and
+  what is on the desk right now, kept deliberately short: the page is a
+  portrait, not a CV.
 */
 
 /**
- * How the work actually runs.
+ * How the work actually runs, and on what terms.
  *
- * Four rules. Each one is a claim and the keywords that summarise it.
+ * Four entries, each a label and the sentence under it: how the work is
+ * done, where from, on what terms, and what else is possible.
  *
- * The rules used to carry a lead line and a paragraph under it, and the
- * focus list above them made the same four points in the same order: two
- * lists of four saying the same thing, one screen apart. The list above
- * holds the points, so here the rules are the titles and the keywords.
- *
- * They used to be four full-screen panels on a rail, each one a screen of
- * its own for a paragraph of type — a portrait of a person, not a CV, but a
- * very long one.
+ * They used to be four rules — "start with the failure", "narrow beats
+ * clever" — each with its keywords underneath, which is the method said
+ * as slogans. The section is about how the work runs and who it runs for,
+ * so it carries the terms instead.
  */
-const METHOD = [
+const WORK = [
   {
-    n: '01',
-    title: 'Start with the failure',
-    marks: ['failure', 'cause', 'scope'],
+    k: 'Work Style',
+    v: 'Async-first mindset with a focus on clear written communication and structured documentation (Notion, Jira, Slack). Experienced in Agile/Scrum workflows, taking full ownership of tasks from discovery to delivery.',
   },
   {
-    n: '02',
-    title: 'Narrow beats clever',
-    marks: ['one responsibility', 'explicit tools', 'boundaries'],
+    k: 'Location & Timezone',
+    v: 'Currently based in Tbilisi, Georgia (GMT+4). Flexible schedule allowing 4–6 hours of daily overlap with European (CET/GMT) and US East Coast (EST) teams.',
   },
   {
-    n: '03',
-    title: 'Bound everything',
-    marks: ['budgets', 'timeouts', 'approval'],
+    k: 'Contract & Setup',
+    v: 'Ready for immediate B2B engagement via an active Armenian Sole Proprietorship (IE) with smooth international invoicing (SWIFT, Wise, Payoneer, Deel).',
   },
   {
-    n: '04',
-    title: 'Measure what matters',
-    marks: ['traces', 'evals', 'regression'],
+    k: 'Relocation',
+    v: 'Open to relocation and visa sponsorship; hold a valid passport and ready for business travel or team offsites.',
   },
 ];
 
 /**
- * The four things the focus is made of.
- *
- * They are the nouns the rest of the site keeps coming back to: the career
- * is measured by them, the work is built around them, and the method below
- * is four ways of getting at them.
- */
-const FOCUS = [
-  {
-    k: 'failures',
-    v: 'whether they are detected, traced, and understood.',
-  },
-  {
-    k: 'permissions',
-    v: 'what an agent is allowed to access and execute.',
-  },
-  {
-    k: 'recovery',
-    v: 'how a system handles failure and resumes safely.',
-  },
-  {
-    k: 'boundaries',
-    v: 'what keeps autonomous execution under control.',
-  },
-];
-
-/**
- * Right now. Two questions, answered plainly.
+ * Right now. Three questions, answered plainly.
  *
  * The writing answer used to be two items — "agents" and "authorization, and
  * the systems underneath them" — which is one phrase split in half and
@@ -96,6 +56,14 @@ const NOW = [
     ],
   },
   {
+    k: 'advisory & work',
+    lines: [
+      {
+        text: 'Consulting on agentic systems, runtime security, and auth. Open to full-time roles and new opportunities.',
+      },
+    ],
+  },
+  {
     k: 'writing',
     lines: [{ text: 'Agents, authorization, and the systems underneath them' }],
   },
@@ -104,7 +72,7 @@ const NOW = [
 
 <Base
   title="Profile"
-  description="How I work, what I focus on, and what is on the desk right now."
+  description="How I work, where I am, and what is on the desk right now."
 >
   <!--
     The page is a person, read the way a machine reads one: a file of notes,
@@ -133,20 +101,6 @@ const NOW = [
           <span class="tty-cmd">cat about.md</span>
         </p>
 
-        <p class="lede" data-reveal data-reveal-delay="120">
-          My focus is what happens beyond the happy path.
-        </p>
-
-        <ul class="about-points" data-reveal data-reveal-delay="150">
-          {
-            FOCUS.map((f) => (
-              <li>
-                <span class="about-point-k">{f.k}</span>
-                <span class="about-point-v">{f.v}</span>
-              </li>
-            ))
-          }
-        </ul>
       </div>
 
       <!--
@@ -170,21 +124,6 @@ const NOW = [
         </figcaption>
       </figure>
 
-      <!--
-        The habits underneath the focus used to live here, as a band of four
-        under the picture: test-driven development, systematic over ad-hoc,
-        complexity reduction, evidence over claims. Each of them is already
-        inside one of the four rules further down the page — "evidence over
-        claims" is "measure what matters", "systematic over ad-hoc" is "start
-        with the failure" — so the band was two lists of four saying the same
-        thing twice, one screen apart. The focus list above holds the points,
-        so the rules below are the titles and their keywords.
-      -->
-
-      <p class="about-conclusion" data-reveal data-reveal-delay="180">
-        If a system can take action, its actions must be traceable, its failures
-        diagnosable, and its execution controllable.
-      </p>
     </section>
 
     <!-- ---- How the work runs ---- -->
@@ -201,7 +140,7 @@ const NOW = [
             <i class="led led-off"></i>
             <i class="led led-off"></i>
           </span>
-          <span class="tty-title">~/about/method.md</span>
+          <span class="tty-title">~/about/work.md</span>
         </div>
 
         <div class="tty-body">
@@ -211,38 +150,41 @@ const NOW = [
             ><span class="sep">:</span><span class="path">~/about</span><span class="sep"
               >$</span
             >
-            <span class="tty-cmd">cat method.md</span>
+            <span class="tty-cmd">cat work.md</span>
           </p>
 
-          {
-            METHOD.map((s, i) => (
-              <article
-                class="rule-block"
-                data-reveal
-                data-reveal-delay={Math.min(i, 3) * 60}
-              >
-                <div class="rule-head">
-                  <span class="rule-num" aria-hidden="true">
-                    {s.n}
-                  </span>
-                  <h3 class="rule-title">{s.title}</h3>
-                </div>
-
-                <p class="rule-marks">
-                  {s.marks.map((m) => (
-                    <span class="chip">[{m}]</span>
-                  ))}
-                </p>
-              </article>
-            ))
-          }
+          <!--
+            One block per term. The four entries used to be four rows of a
+            two-column table, and four rows of hairlines read as one long
+            list: the reader had to work out where one entry stopped and the
+            next began. A block says where it ends by itself.
+          -->
+          <div class="work-grid">
+            {
+              WORK.map((w, i) => (
+                <article
+                  class="work-block"
+                  data-reveal
+                  data-reveal-delay={Math.min(i, 3) * 60}
+                >
+                  <h3 class="work-k">
+                    <span class="work-k-label">{w.k}</span>
+                    <span class="work-n" aria-hidden="true">
+                      {String(i + 1).padStart(2, '0')}
+                    </span>
+                  </h3>
+                  <p class="work-v">{w.v}</p>
+                </article>
+              ))
+            }
+          </div>
         </div>
       </div>
       </div>
     </section>
 
     <!--
-      Right now. Two answers, side by side.
+      Right now. Three answers, side by side.
     -->
     <section class="section about-now">
       <div class="tty-fit">
@@ -301,14 +243,6 @@ const NOW = [
               ))
             }
           </div>
-
-          <p class="now-close">
-            The same topics, at length: {postCount} notes so far.
-            <a class="now-link" href="/blog/">
-              Start with the newest{' '}
-              <span class="now-go" aria-hidden="true">→</span>
-            </a>
-          </p>
         </div>
       </div>
       </div>
@@ -331,12 +265,11 @@ const NOW = [
     --w: 100%;
   }
 
-  /* ----- Hero: copy beside the portrait --------------------------------- */
-  /* Three rows. The headline spans the full width so it can be set as one
-     line — in a 1fr column it would wrap into a ragged stack no matter what
-     size it is given. Below the headline the bullets take a narrow column and
-     the picture takes the rest; the closing line runs across the full width
-     underneath.
+  /* ----- Hero: the picture, centred -------------------------------------- */
+  /* Three rows in one column. The headline spans the full width so it can be
+     set as one line — in a 1fr column it would wrap into a ragged stack no
+     matter what size it is given. Under it the command line, and under that
+     the picture on its own, centred and as large as the column allows.
 
      The `hero` class is also a rail panel, and the rail rule
      (`[data-rail='on'] > .hero`) turns it into a flex column. Both selectors
@@ -347,7 +280,7 @@ const NOW = [
     display: grid;
     gap: clamp(1.2rem, 3vw, 2.2rem);
     align-items: center;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1.9fr);
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .about-head {
@@ -371,58 +304,26 @@ const NOW = [
     font-size: clamp(1.5rem, 3.8cqw, 2.9rem);
   }
 
-  /* The subtitle is the accent color, so the headline reads as the headline
-     and this reads as commentary under it. */
+  /* The command line that opens the file. It sits between the headline and
+     the picture, so it reads as the line that produced what is below it. */
   .about-lead {
-    grid-column: 1;
+    grid-column: 1 / -1;
     grid-row: 2;
     min-width: 0;
   }
 
-  .about-lead .lede {
-    color: var(--encre);
-  }
-
-  /* The command line that opens the file. */
   .about-lead .tty-prompt {
     margin-block: 0 0.9rem;
   }
 
-  /* The four nouns. Each one is a keyword and the sentence it heads: the
-     keyword is the subject, the sentence is what it means here. */
-  .about-points {
-    display: grid;
-    gap: 0.45rem;
-    margin: 0.2rem 0 1rem;
-    padding: 0;
-    list-style: none;
-  }
-
-  .about-points li {
-    display: grid;
-    /* Wide enough for the longest keyword — "boundaries" — so the sentence
-       never starts on top of it. */
-    grid-template-columns: 11ch minmax(0, 1fr);
-    gap: 0 1ch;
-    align-items: baseline;
-    font-size: 0.95rem;
-    color: var(--fort);
-  }
-
-  .about-point-k {
-    color: var(--braise);
-    font-family: var(--font-mono);
-    font-size: 0.82rem;
-    letter-spacing: 0.04em;
-  }
-
-  .about-point-v {
-    font-family: var(--font-body);
-  }
-
+  /* The picture is the subject of the page, so it takes the room: it spans
+     the column and is capped a little short of it, so it sits in the middle
+     of the page rather than bleeding off both edges. */
   .portrait {
-    grid-column: 2;
-    grid-row: 2;
+    grid-column: 1 / -1;
+    grid-row: 3;
+    justify-self: center;
+    width: min(100%, 1180px);
     margin: 0;
     border: var(--trait) solid var(--braise);
     box-shadow: var(--ombre);
@@ -457,80 +358,84 @@ const NOW = [
     padding: 0.7rem 0.9rem;
     border-top: var(--filet) solid var(--braise);
     background: var(--papier);
+    text-align: center;
   }
 
-  /* ---- The closing line -------------------------------------------------- */
-  /* The sentence the page argues for, so it gets the size: it is set larger
-     than the commentary around it and given its own rule. */
-  .about-conclusion {
-    grid-column: 1 / -1;
-    grid-row: 3;
-    margin: 0;
-    max-width: 52ch;
-    padding-top: clamp(0.9rem, 2.2vw, 1.4rem);
-    border-top: var(--filet) solid var(--grid);
-    font-size: clamp(1.1rem, 2.1vw, 1.45rem);
-    line-height: 1.45;
-    color: var(--encre);
-    text-wrap: balance;
-  }
+  /* ----- How the work runs ------------------------------------------------
+     Four blocks, one for each term.
 
-  /* ----- The four rules ---------------------------------------------------
-     The claim and the keywords that summarise it. Each rule is one entry in
-     a file: the number, the title, and the marks under it. The rule used to
-     carry a lead line and a paragraph as well, which said the same four
-     points as the focus list above.
+     The section used to be a table without a table: the label in one column,
+     the sentence in the next, and a hairline between the rows. Four rows of
+     hairlines read as one long list — the reader had to work out where one
+     entry stopped and the next began. A block answers that on its own: the
+     border says "this is one thing", and the label sits on its own line above
+     the sentence, so the four terms can be taken in at a glance.
+
+     Two columns on a desktop, one on a phone. The sentences are a hundred
+     and eighty characters each, and a card narrow enough to hold four of
+     them across a monitor breaks them into six lines apiece.
      ---------------------------------------------------------------------- */
   .tty-method .tty-body {
     padding-block: 1.9rem 1.4rem;
   }
 
-  .rule-block {
-    padding-block: 0.9rem;
-    border-top: var(--filet) solid color-mix(in srgb, var(--grid) 60%, transparent);
+  .work-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--sp-4);
   }
 
-  .rule-block:first-of-type {
-    border-top: 0;
-    padding-top: 0.2rem;
+  /* The panel is one step up from the window it sits in — --rouille against
+     the --papier of the frame — so the block is a panel rather than a hole
+     cut in the paper. The rule is the window's own, in the window's own
+     colour: the block belongs to this terminal, not to another one. */
+  .work-block {
+    display: flex;
+    flex-direction: column;
+    padding: 0.85rem 1rem 1rem;
+    border: var(--filet) solid var(--grid);
+    background: var(--rouille);
   }
 
-  .rule-head {
+  /* The label is a label: the terminal's small caps, with the number of the
+     block at the far end of the row, so the four can be counted as well as
+     read. */
+  .work-k {
     display: flex;
     align-items: baseline;
-    gap: 0.8ch;
-  }
-
-  .rule-num {
-    color: var(--braise);
+    justify-content: space-between;
+    gap: var(--sp-3);
+    margin: 0 0 0.55rem;
+    padding-bottom: 0.45rem;
+    border-bottom: var(--filet) solid
+      color-mix(in srgb, var(--grid) 70%, transparent);
     font-family: var(--font-mono);
-    font-size: var(--fs-label);
+    font-size: var(--fs-micro);
+    font-weight: 500;
+    line-height: 1.45;
     letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--braise);
+    text-shadow: none;
+  }
+
+  .work-n {
+    color: var(--faible);
+    font-weight: 400;
+    letter-spacing: 0.06em;
     font-variant-numeric: tabular-nums;
-    flex-shrink: 0;
   }
 
-  .rule-title {
+  .work-v {
     margin: 0;
-    font-size: clamp(1rem, 2.1vw, 1.16rem);
-    line-height: 1.25;
-    text-wrap: balance;
-  }
-
-  .rule-marks {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.35rem;
-    margin: 0.7rem 0 0;
-  }
-
-  /* The keywords, as file extensions: `[traces] [evals] [regression]`. */
-  .rule-marks .chip {
-    background: var(--papier);
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    line-height: 1.55;
+    color: var(--fort);
   }
 
   /* ---- Right now ---------------------------------------------------------
-     Two answers side by side, each under its own rule.
+     Three answers, each under its own rule.
 
      The band used to carry the desk artwork again, faded to a third and
      pushed behind the text. The same picture twice on one page, at an opacity
@@ -542,15 +447,26 @@ const NOW = [
     padding-block: 1.9rem 1.4rem;
   }
 
-  .ls-now .ls-row {
-    grid-template-columns: 11ch minmax(0, 1fr);
-    gap: 0 1.5ch;
+  /* One grid for the three answers, so every label sits in the same column:
+     the rows are `display: contents`, which lets their two cells become
+     items of the grid above them. A grid per row would size its label
+     column to that row's own label — and "advisory & work" is wider than
+     the other two, so the answers would start at three different places. */
+  .ls-now {
+    display: grid;
+    grid-template-columns: max-content minmax(0, 1fr);
+    column-gap: 1.5ch;
     align-items: baseline;
+  }
+
+  .ls-now .ls-row {
+    display: contents;
   }
 
   .ls-now-k {
     color: var(--braise);
     letter-spacing: 0.06em;
+    white-space: nowrap;
   }
 
   .ls-now-v {
@@ -598,37 +514,28 @@ const NOW = [
     transform: translateX(3px);
   }
 
-  /* The way out of the page. It closes the band the way the closing blocks
-     on the posts and the cases close their pages. */
-  .now-close {
-    margin: 1.4rem 0 0;
-    padding-top: 1rem;
-    border-top: var(--filet) solid var(--grid);
-    max-width: var(--measure-prose);
-    color: var(--fort);
-    font-family: var(--font-body);
-    font-size: 0.9rem;
-  }
-
   /* ----- Narrower screens ------------------------------------------------ */
   @media (max-width: 56rem) {
     .hero.about-hero {
       grid-template-columns: 1fr;
     }
 
-    /* One column: the explicit rows would put the copy and the picture in
+    /* One column: the explicit rows would put the picture and the copy in
        the same row, so the placement is handed back to the flow. */
     .about-head,
     .about-lead,
-    .portrait,
-    .about-conclusion {
+    .portrait {
       grid-column: 1 / -1;
       grid-row: auto;
     }
 
-    /* Stacked, the picture leads — but the headline still has to come first,
-       so it is ordered ahead of it explicitly. */
+    /* The headline first, then the command line, then the picture — the
+       order they are in in the markup. */
     .about-head {
+      order: -3;
+    }
+
+    .about-lead {
       order: -2;
     }
 
@@ -636,15 +543,16 @@ const NOW = [
       order: -1;
     }
 
-    /* The keyword and its sentence no longer fit side by side on a phone. */
-    .about-points li {
+    /* The blocks fold to one column: the label and the sentence under it
+       are a card, and a card that is half the width of a phone holds one
+       word per line. */
+    .work-grid {
       grid-template-columns: 1fr;
-      gap: 0.05rem;
     }
 
-    .ls-now .ls-row {
+    .ls-now {
       grid-template-columns: 1fr;
-      gap: 0.1rem;
+      row-gap: 0.1rem;
     }
   }
 
