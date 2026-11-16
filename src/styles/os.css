@@ -452,108 +452,6 @@
   top: 0;
 }
 
-/* The command bar is always visible now, so the narrow-screen rules only
-   have to decide what to leave out. They live with the rules they override,
-   at the end of the header block, because a media query that comes before
-   the rule it is meant to beat loses to it on order and silently does
-   nothing. */
-
-/* ----- Timeline (Experience) ---------------------------------------------
-   A vertical rule with nodes. The rule fills as the visitor scrolls; the
-   height is written to a custom property by JS.
-   ---------------------------------------------------------------------- */
-.timeline-wrap {
-  position: relative;
-  margin-top: var(--sp-6);
-}
-
-.timeline {
-  position: relative;
-  margin: 0;
-  padding-left: 1.8rem;
-  list-style: none;
-}
-
-.timeline::before {
-  content: '';
-  position: absolute;
-  left: 0.42rem;
-  top: 0.4rem;
-  bottom: 0;
-  width: var(--filet);
-  background: var(--grid);
-}
-
-/* The filled portion, driven by --tl-progress (0..1).
-
-   The fill is scaled, not resized. A height that changes on every scroll
-   frame re-runs layout for the bar and its container on every frame; a scale
-   is a compositor-only property, so the whole bar moves on the GPU and the
-   page never lays out again. The picture is the same. */
-.timeline-fill {
-  position: absolute;
-  left: 0.42rem;
-  top: 0.4rem;
-  width: var(--trait);
-  background: var(--braise);
-  height: 100%;
-  transform: scaleY(var(--tl-progress, 0));
-  transform-origin: top;
-  transition: transform 120ms linear;
-}
-
-.tl-item {
-  position: relative;
-  padding-bottom: var(--sp-6);
-}
-
-.tl-item::before {
-  content: '';
-  position: absolute;
-  left: -1.8rem;
-  top: 0.45rem;
-  width: 0.85rem;
-  height: 0.85rem;
-  background: var(--papier);
-  border: var(--trait) solid var(--braise);
-}
-
-.tl-item.is-seen::before {
-  background: var(--braise);
-}
-
-.tl-when {
-  font-family: var(--font-mono);
-  font-size: var(--fs-label);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--braise);
-}
-
-.tl-role {
-  font-family: var(--font-display);
-  font-size: 1.25rem;
-  color: var(--fort);
-  margin: 0.15rem 0 0.1rem;
-}
-
-.tl-where {
-  font-size: var(--fs-micro);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  opacity: 0.8;
-  margin-bottom: var(--sp-2);
-}
-
-.tl-body {
-  max-width: 44rem;
-  color: var(--fort);
-}
-
-.tl-body p:last-child {
-  margin-bottom: 0;
-}
-
 /* ----- Footer ------------------------------------------------------------
    One bar, on every page.
 
@@ -611,68 +509,6 @@
   .timeline-fill {
     transition: none;
   }
-}
-
-/* Section headings pin briefly while their section scrolls past — a cheap
-   substitute for a full scroll-driven library.
-
-   The offset is the chrome stack, not a number of its own: the status bar
-   and the menu bar are about 4.8rem tall together, and the heading used to
-   stick at 4.2rem — under the menu bar, which painted over its top edge. It
-   is also the number the anchor targets clear (--chrome-h), so the two
-   cannot drift apart. The solid background and the stacking position keep
-   the chrome from ever painting over it. */
-.sticky-head {
-  position: sticky;
-  top: var(--chrome-h);
-  background: var(--papier);
-  padding-block: var(--sp-2);
-  z-index: 46;
-}
-
-/* Hairline that grows across the section as it passes through the viewport.
-   Scaled rather than resized, for the same reason as the timeline fill. */
-.rule-progress {
-  height: var(--trait);
-  background: var(--grid);
-  margin-top: 0.4rem;
-}
-
-.rule-progress i {
-  display: block;
-  height: 100%;
-  width: 100%;
-  transform: scaleX(var(--sec-progress, 0));
-  transform-origin: left;
-  background: var(--braise);
-}
-
-/* Dotted leader between a label and a value, like a table of contents. */
-.kv {
-  display: flex;
-  align-items: baseline;
-  gap: var(--sp-2);
-  font-family: var(--font-mono);
-  font-size: var(--fs-micro);
-}
-
-.kv::after {
-  content: '';
-  flex: 1;
-  border-bottom: var(--filet) dotted var(--grid);
-  order: 1;
-}
-
-.kv > * {
-  order: 2;
-}
-
-/* All header controls sit together on the left edge; the social row is the
-   only thing pushed to the far right. */
-.menu-group {
-  display: flex;
-  align-items: center;
-  gap: var(--sp-1);
 }
 
 .social {
@@ -783,8 +619,7 @@
   cursor: pointer;
   transition: color 160ms ease;
   /* 20px tall was under the WCAG 2.2 AA floor of 24px (SC 2.5.8) — and this
-     button is the primary conversion path on /freelance/, where it is the only
-     way into the contact dialog. */
+     button is the way into the contact dialog from every page. */
   min-height: 24px;
   padding-block: 0;
 }
@@ -806,73 +641,6 @@
     position: absolute;
     inset: -0.75rem -0.5rem;
   }
-}
-
-.big-blocks {
-  display: grid;
-  gap: 1px;
-  background: var(--braise);
-  border: var(--trait) solid var(--braise);
-  box-shadow: var(--ombre);
-}
-
-.big-block {
-  position: relative;
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  grid-template-areas:
-    'num title go'
-    'file desc go';
-  align-items: center;
-  column-gap: clamp(1rem, 3vw, 2.5rem);
-  padding: clamp(1.4rem, 4vw, 2.6rem) clamp(1.2rem, 3vw, 2.2rem);
-  background: var(--papier);
-  text-decoration: none;
-  overflow: hidden;
-  transition: background 200ms ease, color 200ms ease;
-}
-
-.big-num {
-  grid-area: num;
-  font-family: var(--font-mono);
-  font-size: clamp(1.6rem, 5vw, 3rem);
-  line-height: 1;
-  color: var(--braise);
-  transition: transform 240ms cubic-bezier(0.2, 0.9, 0.2, 1);
-}
-
-.big-file {
-  grid-area: file;
-  font-family: var(--font-mono);
-  font-size: var(--fs-label);
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--braise);
-  margin-bottom: 0.15rem;
-}
-
-.big-title {
-  grid-area: title;
-  margin: 0;
-  font-size: clamp(1.6rem, 5vw, 2.8rem);
-  color: var(--fort);
-}
-
-.big-desc {
-  grid-area: desc;
-  margin: 0;
-  max-width: 52ch;
-  color: var(--encre);
-  font-size: var(--fs-lead);
-}
-
-.big-go {
-  grid-area: go;
-  font-size: clamp(1.4rem, 3vw, 2rem);
-  color: var(--braise);
-  transform: translateX(-6px);
-  opacity: 0;
-  transition: transform 220ms cubic-bezier(0.2, 0.9, 0.2, 1), opacity 220ms ease;
 }
 
 @media (hover: hover) {
@@ -991,29 +759,6 @@
   padding: 1.2rem 1rem 0.4rem;
 }
 
-.letter-foot {
-  display: flex;
-  align-items: center;
-  gap: var(--sp-4);
-  flex-wrap: wrap;
-  padding: 0.8rem 1rem 1.2rem;
-  border-top: var(--filet) solid var(--grid);
-}
-
-.letter-foot .form-status {
-  margin: 0;
-  flex: 1;
-  min-width: 12rem;
-}
-
-/* The four channels. Each one is a link the size of a row: the name of the
-   channel, the handle that reaches it, and one line on what it is for. */
-.letter-note {
-  margin: 0 0 1rem;
-  color: var(--fort);
-  font-size: var(--fs-lead);
-}
-
 .letter-channels {
   list-style: none;
   margin: 0;
@@ -1065,36 +810,6 @@
   color: var(--fort);
 }
 
-.letter-hint {
-  margin: 0;
-  font-family: var(--font-mono);
-  font-size: var(--fs-label);
-  letter-spacing: 0.06em;
-  color: var(--faible);
-}
-
-/* Per-field error, injected by the submit handler in os.js. The field already
-   carries required/minlength, so the input is the thing that turns red; the
-   message underneath says why.
-
-   The color is --erreur, the token that exists for exactly this: --braise is
-   an accent, tuned to read as a border or a shadow, and on the rust fill a
-   focused field takes it measures 2.17:1. --erreur is the error color of
-   each ramp, and it clears 4.5:1 on the page in all three. */
-.field-error {
-  margin: 0.35rem 0 0;
-  font-size: var(--fs-label);
-  line-height: 1.35;
-  color: var(--erreur);
-}
-
-.letter-body .field input[aria-invalid='true'],
-.letter-body .field textarea[aria-invalid='true'],
-.letter-body .field select[aria-invalid='true'] {
-  border-color: var(--erreur);
-  outline-color: var(--erreur);
-}
-
 @media (prefers-reduced-motion: reduce) {
   .letter-backdrop,
   .letter-box,
@@ -1102,58 +817,6 @@
   .stage-modal-box {
     animation: none;
   }
-}
-
-/* ----- Resources list (Contact page) ------------------------------------- */
-.resources {
-  display: grid;
-  gap: 1px;
-  background: var(--braise);
-  border: var(--trait) solid var(--braise);
-  box-shadow: var(--ombre);
-}
-
-.resource {
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  align-items: center;
-  gap: var(--sp-4);
-  padding: 1rem 1.2rem;
-  background: var(--papier);
-  text-decoration: none;
-  transition: background 160ms ease;
-}
-
-.resource:hover {
-  background: var(--rouille);
-}
-
-.resource-ico {
-  font-family: var(--font-mono);
-  font-size: var(--fs-micro);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--braise);
-  min-width: 4.5rem;
-}
-
-.resource-body strong {
-  display: block;
-  color: var(--fort);
-  font-family: var(--font-display);
-  font-weight: 400;
-  font-size: 1.1rem;
-}
-
-.resource-body span {
-  font-family: var(--font-mono);
-  font-size: var(--fs-label);
-  color: var(--encre);
-  word-break: break-all;
-}
-
-.resource-go {
-  color: var(--braise);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1415,9 +1078,23 @@
    box-drawing glyphs dark and the block read as two nested rectangles; a low
    alpha fill over the page color keeps the frame one frame and lifts the
    label off the background. */
+/* The stage the reader has selected.
+
+   The tint is a tint, not an inversion: filling the block with solid accent
+   turned its own box-drawing glyphs dark and the block read as two nested
+   rectangles; a low alpha fill over the page color keeps the frame one frame
+   and lifts the label off the background.
+
+   The text is --creme, the brightest text the site has, and it used to be
+   --fort — a step *down* from the --encre the rest of the drawing is in, so
+   the selected stage was the dimmest thing in the figure. On the tint it was
+   also under the 4.5:1 floor: the tint is the accent at 26% over the panel,
+   and --fort on it measures 5.50:1 in phosphore, 4.43:1 in acidule and
+   3.87:1 in pierre. --creme measures 10.29:1, 10.03:1 and 10.91:1 on the
+   same three grounds. A lit panel, and the lit part of it is the stage. */
 .stack-zone.is-hot {
   background: color-mix(in srgb, var(--braise) 26%, transparent);
-  color: var(--fort);
+  color: var(--creme);
 }
 
 /* Lines arrive one at a time when the figure first scrolls into view.

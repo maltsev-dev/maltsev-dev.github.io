@@ -16,16 +16,15 @@ const { currentPath } = Astro.props;
 /**
  * The pages, in the order they are meant to be read.
  *
- * The numbers are the keyboard shortcuts: 1 to 5 jump to these pages from
+ * The numbers are the keyboard shortcuts: 1 to 4 jump to these pages from
  * anywhere on the site, which is why they are drawn next to the labels
  * rather than hidden in a dropdown.
  */
 const SOURCES = [
   { href: '/experience/', label: 'experience', key: '1', desc: 'the road so far' },
-  { href: '/freelance/', label: 'engagements', key: '2', desc: 'fixed-scope work' },
-  { href: '/projects/', label: 'projects', key: '3', desc: 'shipped systems' },
-  { href: '/about/', label: 'profile', key: '4', desc: 'who and what I do' },
-  { href: '/blog/', label: 'writing', key: '5', desc: 'notes and essays' },
+  { href: '/projects/', label: 'projects', key: '2', desc: 'shipped systems' },
+  { href: '/about/', label: 'profile', key: '3', desc: 'who and what I do' },
+  { href: '/blog/', label: 'writing', key: '4', desc: 'notes and essays' },
 ];
 
 const isActive = (href: string) => currentPath.startsWith(href);
@@ -45,7 +44,7 @@ const isActive = (href: string) => currentPath.startsWith(href);
     <span class="menu-sep" aria-hidden="true">│</span>
 
     <!--
-      The navigation is a command bar: five destinations, each with the key
+      The navigation is a command bar: four destinations, each with the key
       that opens it. It used to be four destinations behind a dropdown called
       "Sources" and a fifth one called "Writing", which meant that the whole
       site was two clicks deep and the page you were on was not marked in the

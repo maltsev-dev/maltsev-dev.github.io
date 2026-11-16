@@ -211,6 +211,18 @@
   --ui-zoom: 1;
   --wrap: 100%;
 
+  /* ----- The two measures -------------------------------------------------
+     A window is now as wide as the page column, so the prose inside one
+     needs a measure of its own — otherwise a paragraph runs the whole width
+     of a monitor and the reader loses the line on the way back.
+
+     `--measure-prose` is that measure: a paragraph of prose inside a window.
+     `--measure-doc` is the document column itself — the post body and the
+     project page, which are pages rather than windows.
+     ---------------------------------------------------------------------- */
+  --measure-prose: 68ch;
+  --measure-doc: 46rem;
+
   /* ----- The chrome stack -------------------------------------------------
      Two elements sit at the top of every page: the status bar and the menu
      bar, each with a hairline under it. Together they are the chrome stack,
@@ -428,17 +440,9 @@ h3 {
   font-size: clamp(1.35rem, 3.6vw, 2.4rem);
 }
 
-.article h1,
-.project h1 {
-  text-transform: none;
-  letter-spacing: -0.01em;
-  text-shadow: none;
-}
-
 /* A section heading is a label on a panel. It gets a block in front of it,
    the way a terminal marks a line it has just highlighted. */
-.section-head h2,
-.sticky-head h2 {
+.section-head h2 {
   display: flex;
   align-items: baseline;
   gap: 0.6ch;
@@ -447,8 +451,7 @@ h3 {
   font-size: clamp(1rem, 2.2vw, 1.25rem);
 }
 
-.section-head h2::before,
-.sticky-head h2::before {
+.section-head h2::before {
   content: '▌';
   color: var(--braise);
   font-size: 1.15em;
@@ -535,13 +538,6 @@ blockquote {
   padding-inline: clamp(1rem, 4vw, 3rem);
 }
 
-.os-panel {
-  background: var(--papier);
-  border: var(--filet) solid var(--braise);
-  box-shadow: var(--ombre);
-  padding: var(--sp-5);
-}
-
 /* ----- Header ----------------------------------------------------------- */
 .site-header {
   position: sticky;
@@ -558,62 +554,6 @@ blockquote {
   justify-content: space-between;
   padding-block: var(--sp-3);
   flex-wrap: wrap;
-}
-
-.brand {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--sp-2);
-  text-decoration: none;
-  font-family: var(--font-display);
-  font-size: 1.15rem;
-  color: var(--fort);
-}
-
-.brand-mark {
-  width: 0.9em;
-  height: 0.9em;
-  background: var(--braise);
-  box-shadow: 2px 2px 0 var(--rouille);
-}
-
-.main-nav ul {
-  display: flex;
-  gap: var(--sp-1);
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  flex-wrap: wrap;
-}
-
-.nav-link {
-  display: inline-flex;
-  align-items: center;
-  padding: 0.35rem 0.7rem;
-  border: var(--filet) solid transparent;
-  text-decoration: none;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  font-size: var(--fs-small);
-  /* These are the primary navigation on a phone, and they were 29px tall.
-     The padding stays; the floor is what makes the row tappable. */
-  min-height: 44px;
-}
-
-.nav-link:hover {
-  border-color: var(--braise);
-}
-
-.nav-link[aria-current='page'] {
-  background: var(--braise);
-  color: var(--papier);
-  border-color: var(--braise);
-}
-
-.header-tools {
-  display: flex;
-  gap: var(--sp-2);
-  align-items: center;
 }
 
 /* ----- Buttons ---------------------------------------------------------- */
@@ -703,172 +643,11 @@ blockquote {
   margin-bottom: 1.25rem;
 }
 
-.card-grid {
-  display: grid;
-  gap: var(--sp-4);
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr));
-}
-
-/* ----- Card row ---------------------------------------------------------
-   One horizontal line of cards that scrolls sideways, used by the blog index
-   where each year is a single strip rather than a grid.
-
-   The row bleeds past the text column so a card can be cut at the edge, which
-   is what tells a reader the year holds more posts than fit. The negative
-   margin and the matching padding cancel out, so the first and last card
-   still line up with the column when the strip is scrolled to either end.
-   ---------------------------------------------------------------------- */
-.card-row {
-  display: flex;
-  gap: var(--sp-4);
-  overflow-x: auto;
-  overscroll-behavior-x: contain;
-  scroll-snap-type: x proximity;
-  scroll-padding-inline: clamp(1rem, 4vw, 3rem);
-  margin-inline: calc(-1 * clamp(1rem, 4vw, 3rem));
-  padding-inline: clamp(1rem, 4vw, 3rem);
-  --edge-fade: 3.5rem;
-  /* No scrollbar: a sideways gesture is what moves this row, and a bar under
-     it would advertise a control that is not the one being used. The cue that
-     remains is the card cut off at the edge plus the fade. The row is still
-     focusable, so arrow keys scroll it for anyone who cannot use a pointer. */
-  padding-block: 0.35rem 0.4rem;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-}
-
-/* While the wheel is turning the row, snapping would tug each notch back
-   toward the nearest card and the strip would judder instead of traveling.
-   Snap applies once the reader stops. */
-.card-row.is-auto {
-  scroll-snap-type: none;
-}
-
-/* Keyboard focus has to remain findable now that the scrollbar is gone: it is
-   the only visible indication that the row can be scrolled without a pointer.
-   The global :focus-visible rule already draws the ring — --trait thick, in
-   the focus color, two pixels off the edge — so the row needs no rule of
-   its own and does not get a thinner one. */
-
-/* A fade at the end of the row that still has content behind it. Chromium
-   draws an overlay scrollbar that occupies no space and fades itself out, so
-   without this the only cue is a card cut at the viewport edge, which reads
-   as a page that ran out rather than a row with more to show. The classes are
-   set by the cardRowEdges module in os.js, which drops the fade as the row
-   reaches each end. */
-.card-row.is-scrollable {
-  -webkit-mask-image: linear-gradient(
-    to right,
-    transparent 0,
-    #000 var(--edge-fade),
-    #000 calc(100% - var(--edge-fade)),
-    transparent 100%
-  );
-  mask-image: linear-gradient(
-    to right,
-    transparent 0,
-    #000 var(--edge-fade),
-    #000 calc(100% - var(--edge-fade)),
-    transparent 100%
-  );
-}
-
-.card-row.is-scrollable.at-start {
-  -webkit-mask-image: linear-gradient(
-    to right,
-    #000 0,
-    #000 calc(100% - var(--edge-fade)),
-    transparent 100%
-  );
-  mask-image: linear-gradient(
-    to right,
-    #000 0,
-    #000 calc(100% - var(--edge-fade)),
-    transparent 100%
-  );
-}
-
-.card-row.is-scrollable.at-end {
-  -webkit-mask-image: linear-gradient(
-    to right,
-    transparent 0,
-    #000 var(--edge-fade),
-    #000 100%
-  );
-  mask-image: linear-gradient(
-    to right,
-    transparent 0,
-    #000 var(--edge-fade),
-    #000 100%
-  );
-}
-
-/* The cards keep a fixed width: the strip is a line of posts, not a grid
-   that reflows. */
-.card-row > .card {
-  flex: 0 0 18rem;
-  max-width: 82vw;
-  scroll-snap-align: start;
-}
-
-.card-row::-webkit-scrollbar {
-  display: none;
-}
-
-.card-row::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.card-row::-webkit-scrollbar-thumb {
-  background: var(--braise);
-}
-
-.card {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sp-2);
-  padding: 1.1rem;
-  border: var(--filet) solid var(--braise);
-  background: var(--papier);
-  box-shadow: var(--ombre-sm);
-  /* The whole card is the hit target when it is a link, so the default
-     underline on the heading would trace a box inside a box. */
-  text-decoration: none;
-  color: inherit;
-}
-
-.card h3 {
-  margin: 0;
-}
-
-.card p {
-  margin: 0;
-  color: var(--fort);
-  font-size: var(--fs-lead);
-}
-
 .card-meta {
   font-size: var(--fs-micro);
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--braise);
-}
-
-.tag-row {
-  display: flex;
-  gap: var(--sp-2);
-  flex-wrap: wrap;
-  margin-top: auto;
-  padding-top: var(--sp-2);
-}
-
-.tag {
-  font-size: var(--fs-label);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  border: var(--filet) solid var(--rouille);
-  padding: 0.1rem 0.45rem;
-  color: var(--fort);
 }
 
 /* ----- Tap targets on a phone ---------------------------------------------
@@ -901,9 +680,13 @@ blockquote {
   }
 }
 
-/* ----- Prose (posts + project bodies) ----------------------------------- */
+/* ----- Prose (posts + project bodies) -----------------------------------
+   The measure of a paragraph of prose inside a window. The windows are as
+   wide as the page column now, so the prose in them needs a measure of its
+   own: without one, a paragraph runs the whole width of a monitor and the
+   reader loses the line on the way back. */
 .prose {
-  max-width: 68ch;
+  max-width: var(--measure-prose);
 }
 
 /* The body of a post, read inside a terminal window.
@@ -924,7 +707,7 @@ blockquote {
   font-size: 1rem;
   line-height: 1.72;
   color: var(--fort);
-  max-width: 64ch;
+  max-width: var(--measure-prose);
 }
 
 .post-prose > :first-child {
@@ -1056,102 +839,6 @@ blockquote {
   -webkit-overflow-scrolling: touch;
 }
 
-/* The table keeps its own width inside the container. A table is never
-   narrower than the content it holds, so a wide one overflows the container
-   and scrolls there instead of widening the page — the container's overflow
-   is what stops the layout viewport from being stretched. */
-
-/* Project landing pages keep their marketing blocks. */
-.hero-lead {
-  font-size: 1.05rem;
-  color: var(--fort);
-}
-
-.metrics {
-  display: flex;
-  gap: var(--sp-5);
-  flex-wrap: wrap;
-  margin-block: var(--sp-5);
-}
-
-.metric strong {
-  display: block;
-  font-family: var(--font-display);
-  font-size: 1.8rem;
-  color: var(--braise);
-}
-
-.metric span {
-  font-size: var(--fs-label);
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-}
-
-.warning {
-  border: var(--trait) solid var(--braise);
-  background: var(--rouille);
-  padding: var(--sp-4);
-}
-
-/* ----- Forms ------------------------------------------------------------ */
-.field {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sp-1);
-  margin-bottom: 1.1rem;
-}
-
-.field label {
-  font-size: var(--fs-micro);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--braise);
-}
-
-.field input,
-.field select,
-.field textarea {
-  font: inherit;
-  padding: 0.6rem 0.7rem;
-  background: var(--papier);
-  color: var(--encre);
-  border: var(--trait) solid var(--braise);
-  border-radius: 0;
-  width: 100%;
-}
-
-/* The focused field turns rust, so the text inside it has to turn with it:
-   the page color on the panel measures 4.20:1 in phosphore and 4.14:1 in
-   acidule, under the AA floor at the moment the visitor most needs to read
-   what they typed. */
-.field input:focus,
-.field select:focus,
-.field textarea:focus {
-  background: var(--rouille);
-  color: var(--fort);
-}
-
-/* Honeypot: hidden from people, reachable by bots that fill every field. */
-.hp {
-  position: absolute;
-  left: -9999px;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-}
-
-.form-status {
-  margin-top: var(--sp-4);
-  padding: 0.8rem 1rem;
-  border: var(--trait) solid var(--braise);
-  background: var(--rouille);
-  color: var(--fort);
-}
-
-.form-status:empty {
-  display: none;
-}
-
 /* ----- Palette (command palette) ---------------------------------------- */
 .palette {
   position: fixed;
@@ -1245,12 +932,6 @@ blockquote {
   padding-block: var(--sp-5);
 }
 
-.footer-links {
-  display: flex;
-  gap: var(--sp-4);
-  flex-wrap: wrap;
-}
-
 /* ----- Reveal -----------------------------------------------------------
    Elements start hidden and are revealed by an IntersectionObserver. The
    noscript block in the layout resets them, so a visitor without JS still
@@ -1321,6 +1002,14 @@ blockquote {
    The layers are drawn on top of the content and are pointer-transparent.
    They are also faint: a real scanline pitch is invisible at arm's length,
    and the moment a reader can see the grid the text starts costing them.
+
+   The aperture grille is the one that is gone. It was a hard vertical line
+   every three CSS pixels, over the whole page, and the portrait on the home
+   page is a sheet of characters whose columns are a shade over two pixels
+   wide. Two vertical periods beat with each other, and the beat came out as
+   bands about seven pixels wide that swept across the picture as it turned.
+   The scanlines stay: their period is close to the picture's rows, so the
+   beat between them is wide and soft rather than a band.
    ---------------------------------------------------------------------- */
 .crt::after {
   content: '';
@@ -1329,12 +1018,6 @@ blockquote {
   z-index: 80;
   pointer-events: none;
   background:
-    /* The aperture grille: three vertical stripes to a pixel cell. */
-    repeating-linear-gradient(
-      to right,
-      rgba(0, 0, 0, 0.16) 0 1px,
-      transparent 1px 3px
-    ),
     /* The scanlines: a dark line every third pixel of the pitch. */
     repeating-linear-gradient(
       to bottom,
@@ -1405,34 +1088,10 @@ blockquote {
   }
 }
 
-/* ==========================================================================
-   Article internals
-   Components used by the long-form posts. Everything resolves through the
-   theme tokens, so these adapt when the reader switches theme.
-   ========================================================================== */
-
-/* Article header block. */
-.lead-label {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--sp-2);
-  font-family: var(--font-mono);
-  font-size: var(--fs-label);
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--braise);
-  margin-bottom: 0.9rem;
-}
-
-.lead-label::before {
-  content: '';
-  width: 1.4rem;
-  height: var(--trait);
-  background: var(--braise);
-}
-
+/* A lede inside a window is prose inside a window, so it takes the same
+   measure as the paragraphs around it. */
 .prose .lede {
-  max-width: 60ch;
+  max-width: var(--measure-prose);
 }
 
 .lead-meta {
@@ -1452,362 +1111,12 @@ blockquote {
   opacity: 0.5;
 }
 
-.pull {
-  margin: 1.8rem 0;
-  padding: 1rem 1.2rem;
-  border-left: var(--trait) solid var(--braise);
-  background: color-mix(in srgb, var(--rouille) 45%, var(--papier));
-  font-family: var(--font-display);
-  font-size: clamp(1.05rem, 2.4vw, 1.3rem);
-  color: var(--fort);
-}
-
-/* A labeled figure: pipeline, diagram, anything boxed with a caption. */
-.figure {
-  margin: 2rem 0;
-  border: var(--filet) solid var(--braise);
-  background: var(--papier);
-  padding: 1rem 1.1rem 1.2rem;
-}
-
-.figure-label {
-  font-family: var(--font-mono);
-  font-size: var(--fs-label);
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--braise);
-  padding-bottom: 0.6rem;
-  margin-bottom: 0.9rem;
-  border-bottom: var(--filet) solid var(--grid);
-}
-
-.figure-body {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sp-1);
-}
-
-/* Pipeline rows: a rail down the left, a stage box, a cost chip. */
-.pipe-row {
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  align-items: center;
-  gap: var(--sp-3);
-  padding: 0.35rem 0;
-}
-
-.pipe-connector {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  align-self: stretch;
-  width: 0.85rem;
-}
-
-.pipe-dot {
-  width: 0.62rem;
-  height: 0.62rem;
-  flex-shrink: 0;
-  border: var(--trait) solid var(--braise);
-  background: var(--papier);
-}
-
-.pipe-line {
-  flex: 1;
-  width: var(--trait);
-  background: var(--grid);
-  min-height: 0.8rem;
-}
-
-.pipe-row:last-child .pipe-line {
-  background: transparent;
-}
-
-.pipe-stage {
-  border: var(--filet) solid var(--grid);
-  background: color-mix(in srgb, var(--rouille) 28%, var(--papier));
-  padding: 0.5rem 0.75rem;
-  border-left-width: var(--trait);
-}
-
-.pipe-name {
-  font-family: var(--font-mono);
-  font-size: var(--fs-micro);
-  color: var(--fort);
-}
-
-.pipe-desc {
-  font-size: var(--fs-small);
-  color: var(--encre);
-}
-
-.pipe-cost {
-  font-family: var(--font-mono);
-  font-size: var(--fs-label);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  border: var(--filet) solid currentColor;
-  padding: 0.1rem 0.45rem;
-  white-space: nowrap;
-}
-
-/* Cost / tone chips, shared by the pipeline and the stage cards. */
-.c-free,
-.c-mute {
-  color: var(--encre);
-}
-
-.c-ok {
-  color: var(--ok);
-}
-
-.c-warm,
-.c-cool {
-  color: var(--encre);
-}
-
-.c-hot {
-  color: var(--braise);
-}
-
-/* Node states on the pipeline rail. */
-.s-mute {
-  border-color: var(--grid);
-}
-
-.s-ok {
-  border-color: var(--ok);
-}
-
-.s-warm,
-.s-cool {
-  border-color: var(--encre);
-}
-
-.s-hot {
-  border-color: var(--braise);
-  background: color-mix(in srgb, var(--braise) 25%, var(--papier));
-}
-
-/* Stage cards inside an article. */
-.card-title {
-  font-family: var(--font-display);
-  font-size: 1.1rem;
-  color: var(--fort);
-  margin: 0.2rem 0 0.35rem;
-}
-
-.card-body {
-  margin: 0 0 0.6rem;
-  font-size: var(--fs-small);
-  color: var(--encre);
-}
-
-/* Numbered context rules. */
-.ctx-rule {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: var(--sp-3);
-  padding: 0.6rem 0;
-  border-top: var(--filet) solid var(--grid);
-  font-size: var(--fs-lead);
-}
-
-.ctx-rule:first-of-type {
-  border-top: none;
-}
-
-.ctx-num {
-  font-family: var(--font-mono);
-  font-size: var(--fs-label);
-  color: var(--braise);
-}
-
-/* Inline code tokens, so long code blocks read in the active theme. */
-.tok {
-  color: var(--fort);
-}
-
-/* Inline code tokens. These sit on the code panel, not on the page, so the
-   accent is not available to them: it measures 2.17:1 there in phosphore.
-   Each token class has a per-ramp color that clears 4.5:1 on the panel. */
-.t-kw,
-.t-cl {
-  color: var(--code-kw);
-}
-
-.t-str {
-  color: var(--code-str);
-}
-
-.t-num {
-  color: var(--code-num);
-}
-
-.t-cm {
-  color: var(--code-cm);
-}
-
-.os-panel.cta {
-  border-width: var(--trait);
-}
-
-/* ==========================================================================
-   Read column
-
-   The page container is full-bleed, so long-form articles center themselves
-   inside it rather than stretching the measure across a wide monitor.
-   ========================================================================== */
-.article,
-.project {
-  margin-inline: auto;
-  max-width: 46rem;
-}
-
 .article-back {
   font-family: var(--font-mono);
   font-size: var(--fs-label);
   letter-spacing: 0.12em;
   text-transform: uppercase;
   margin-bottom: var(--sp-5);
-}
-
-.article hr {
-  border: none;
-  border-top: var(--filet) solid var(--grid);
-  margin: 1.8rem 0;
-}
-
-/* ----- The close of an article ------------------------------------------
-   A post used to end with its last line: no neighbor, no related post and
-   no way to ask a question about it. Three blocks close it now.
-   ---------------------------------------------------------------------- */
-.post-nav {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--sp-4);
-  margin-top: var(--sp-7);
-  padding-top: 1.2rem;
-  border-top: var(--trait) solid var(--braise);
-}
-
-.post-nav-link {
-  display: block;
-  padding: 0.8rem 0.9rem;
-  border: var(--filet) solid var(--braise);
-  background: var(--papier);
-  text-decoration: none;
-  color: inherit;
-}
-
-.post-nav-link:hover {
-  background: var(--rouille);
-}
-
-.post-nav-newer {
-  text-align: right;
-}
-
-.post-nav-empty {
-  border-color: transparent;
-  background: none;
-}
-
-.post-nav-label {
-  display: block;
-  font-family: var(--font-mono);
-  font-size: var(--fs-label);
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--braise);
-  margin-bottom: 0.3rem;
-}
-
-.post-nav-title {
-  display: block;
-  color: var(--fort);
-  line-height: 1.3;
-}
-
-.post-related {
-  margin-top: 2.4rem;
-}
-
-.post-related-head {
-  font-family: var(--font-mono);
-  font-size: var(--fs-label);
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--braise);
-  margin-bottom: 0.7rem;
-}
-
-.post-related-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  gap: var(--sp-2);
-}
-
-.post-related-list a {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  gap: var(--sp-4);
-  padding: 0.6rem 0.8rem;
-  border: var(--filet) solid var(--grid);
-  text-decoration: none;
-  color: inherit;
-}
-
-.post-related-list a:hover {
-  border-color: var(--braise);
-  background: var(--rouille);
-}
-
-.post-related-title {
-  color: var(--fort);
-  /* A related post's title is two lines at most; balanced, the second line
-     does not end up holding an acronym on its own. */
-  text-wrap: balance;
-}
-
-.post-related-date {
-  font-family: var(--font-mono);
-  font-size: var(--fs-label);
-  color: var(--encre);
-  white-space: nowrap;
-}
-
-.post-cta {
-  margin-top: 2.8rem;
-  padding: 1.6rem 1.5rem;
-  border: var(--trait) solid var(--braise);
-  background: var(--rouille);
-  /* A closing block is a sign-off, not another column of prose. Left
-     aligned it sat in the middle of an empty half-screen and read as
-     content that had run out; centred, it reads as the end of the page. */
-  text-align: center;
-}
-
-.post-cta h2 {
-  margin-top: 0;
-}
-
-/* The paragraph keeps a readable measure even though the block around it
-   is as wide as the column. It is also set in the cream rather than in the
-   body colour: on the rouge ground the body colour measures 4.2:1, and the
-   cream measures 6.8:1. */
-.post-cta p {
-  max-width: 48ch;
-  margin-inline: auto;
-  color: var(--fort);
-}
-
-.post-cta .btn-row {
-  justify-content: center;
-  margin-bottom: 0;
 }
 
 /* The address in the sentence. It is the only way to write on the page, so
@@ -1839,124 +1148,4 @@ blockquote {
   .post-nav-newer {
     text-align: left;
   }
-}
-
-.article h1 {
-  margin-bottom: 0.6rem;
-  /* A title may be wider than the column it sits in. The prose wants 46rem
-     to stay readable; a display title wants room, and "Rust Toolchain: A
-     Complete Guide to Managing and Configuring Your Rust Environment" was
-     four lines in a column that also holds 78-character paragraphs. The
-     heading breaks out of the column and centres itself on the page, so the
-     title takes two or three lines and the body stays where it was.
-
-     The offset is a margin rather than a transform on purpose: the reveal
-     animation sets `transform: none` when it ends, and a title that had
-     drifted half its width to the right would stay there. */
-  --title-w: min(56rem, calc(100vw - 2 * clamp(1rem, 4vw, 3rem)));
-  width: var(--title-w);
-  margin-left: calc(50% - var(--title-w) / 2);
-}
-
-/* ==========================================================================
-   Project pages
-
-   The legacy landing pages carried their own marketing markup — hero, metric
-   strip, two-column body. These rules re-skin it with site tokens instead of
-   the hard-coded light palette it shipped with.
-   ========================================================================== */
-.project > .hero,
-.project .hero {
-  margin-bottom: var(--sp-6);
-  padding: 0;
-}
-
-.project h1 {
-  font-size: clamp(1.9rem, 5.5vw, 3.2rem);
-  line-height: 1.1;
-}
-
-.project .hero-lead {
-  font-size: 1.05rem;
-  max-width: 56ch;
-}
-
-.project .hero-fit {
-  font-family: var(--font-mono);
-  font-size: var(--fs-label);
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--braise);
-}
-
-.project .metrics {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1px;
-  background: var(--braise);
-  border: var(--trait) solid var(--braise);
-  margin-block: 1.8rem;
-}
-
-.project .metric {
-  flex: 1 1 10rem;
-  background: var(--papier);
-  padding: 1rem 1.1rem;
-}
-
-.project .metric strong {
-  display: block;
-  font-family: var(--font-display);
-  font-size: clamp(1.5rem, 3.6vw, 2.1rem);
-  color: var(--braise);
-  line-height: 1.1;
-}
-
-.project .metric span {
-  display: block;
-  margin-top: var(--sp-1);
-  font-family: var(--font-mono);
-  font-size: var(--fs-label);
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--encre);
-}
-
-.project .section-title {
-  font-family: var(--font-display);
-  color: var(--fort);
-}
-
-/* The old pages used Bootstrap-ish button names; map them onto the site set. */
-.project .btn-group {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--sp-3);
-  margin-block: 1.6rem;
-}
-
-.project .btn-outline {
-  background: transparent;
-}
-
-.project .warning {
-  border: var(--trait) solid var(--braise);
-  background: color-mix(in srgb, var(--rouille) 50%, var(--papier));
-  padding: 1rem 1.1rem;
-  color: var(--fort);
-  font-weight: 500;
-}
-
-.project .warning h2,
-.project .warning h3 {
-  color: var(--fort);
-  border: none;
-}
-
-.project table {
-  background: var(--papier);
-}
-
-.project img {
-  max-width: 100%;
 }

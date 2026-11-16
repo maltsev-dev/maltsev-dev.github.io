@@ -12,13 +12,17 @@ const posts = (await getCollection('posts')).sort((a, b) =>
 );
 
 /**
- * The one line under a title.
+ * The opening of a post, as one line.
  *
  * A post that writes its own description gets it; the rest get the first
  * real sentences of their body, cut at a sentence or a clause so the line
- * never ends mid-thought. The short ones — the notes rather than the essays —
- * get a line either way, because a listing row with a title and nothing else
- * does not tell a reader whether the post is worth opening.
+ * never ends mid-thought.
+ *
+ * The line is not printed under the title any more. A reader scanned
+ * sixty-nine openings and then read each opening again when they opened the
+ * post. It is still computed, because it is what the search box matches
+ * against: a reader who remembers the sentence a post started with can still
+ * find it.
  */
 const summaryOf = (post: (typeof posts)[number]): string =>
   describe(post.data.title, post.body, post.data.description, MAX_DESCRIPTION);
@@ -135,16 +139,12 @@ const cards = posts.map((post) => {
     iso: post.data.date ?? '',
     minutes: readingTime(post.body),
     short: isShort(post.body),
-    summary,
     topic,
     topicId: topic?.id ?? '',
     topicShort: topic?.short ?? '',
-    tags: post.data.tags.map((t) => ({
-      slug: tagSlug(t),
-      label: tagLabel(t),
-    })),
-    // What the search box matches against: the title, the summary and the
-    // tags, in one lowercase string.
+    tags: post.data.tags.map((t) => tagSlug(t)),
+    // What the search box matches against: the title, the opening of the
+    // post and the tags, in one lowercase string.
     text: [displayTitle(post.data.title), summary, tagNames.join(' ')]
       .join(' ')
       .toLowerCase(),
@@ -162,196 +162,205 @@ const cards = posts.map((post) => {
     narrows a listing down. A grid of sixty-nine cards was the same content
     wearing a different costume; the listing is what the content actually
     looks like.
+
+    The wrapper sets the width of every window on the page once, so they all
+    start at the same x and end at the same x.
   -->
-  <section class="hero">
-    <span class="eyebrow" data-reveal><span class="pulse-dot"></span>Notes</span>
-    <h1 data-reveal data-reveal-delay="60">Writing</h1>
+  <div class="page-col">
+    <section class="hero">
+      <span class="eyebrow" data-reveal><span class="pulse-dot"></span>Notes</span>
+      <h1 data-reveal data-reveal-delay="60">Writing</h1>
 
-    <p class="tty-prompt" data-reveal data-reveal-delay="100">
-      <span class="who">root</span><span class="sep">@</span><span
-        >amaltsev</span>
-      ><span class="sep">:</span><span class="path">~/writing</span><span
-        class="sep"
-        >$</span
-      >
-      <span class="tty-cmd">ls -la</span>
-    </p>
+      <p class="tty-prompt" data-reveal data-reveal-delay="100">
+        <span class="who">root</span><span class="sep">@</span><span
+          >amaltsev</span
+        ><span class="sep">:</span><span class="path">~/writing</span><span
+          class="sep"
+          >$</span
+        >
+        <span class="tty-cmd">ls -la</span>
+      </p>
 
-    <p class="lede" data-reveal data-reveal-delay="120">
-      {posts.length} notes on agent runtime security, embedded Rust, and the
-      parts of a system that break in production.
-    </p>
-  </section>
+      <p class="lede" data-reveal data-reveal-delay="120">
+        {posts.length} notes on agent runtime security, embedded Rust, and the
+        parts of a system that break in production.
+      </p>
+    </section>
 
-  <section class="section">
-    <div class="tty tty-index" data-reveal>
-      <div class="tty-bar">
-        <span class="tty-leds" aria-hidden="true">
-          <i class="led led-on"></i>
-          <i class="led led-off"></i>
-          <i class="led led-off"></i>
-        </span>
-        <span class="tty-title">~/writing</span>
-        <span class="tty-right" aria-hidden="true">{posts.length} entries</span>
-      </div>
-
-      <div class="tty-body">
-        <!--
-          The subjects first. A reader who came for one thread — the
-          authorization argument, or the firmware series — should be able to
-          see that the thread exists without reading the listing. Each one is
-          a link into the filtered view, so the directory listing and the
-          filter are the same thing seen from two sides.
-        -->
-        <h2 class="index-h">Subjects</h2>
-
-        <div class="ls ls-topics">
-          <div class="ls-row ls-head">
-            <span class="ls-mode">mode</span>
-            <span class="ls-count">posts</span>
-            <span class="ls-name">name</span>
-            <span class="ls-desc">subject</span>
-          </div>
-          {
-            TOPICS.map((topic) => (
-              <div class="ls-row is-dir">
-                <span class="ls-mode">drwxr-xr-x</span>
-                <span class="ls-count">{topic.posts.length}</span>
-                <span class="ls-name">
-                  <a href={`/blog/?topic=${topic.id}`}>{topic.short}/</a>
-                </span>
-                <span class="ls-desc">{topic.desc}</span>
-              </div>
-            ))
-          }
+    <section class="section">
+      <div class="tty tty-fit tty-index" data-reveal>
+        <div class="tty-bar">
+          <span class="tty-leds" aria-hidden="true">
+            <i class="led led-on"></i>
+            <i class="led led-off"></i>
+            <i class="led led-off"></i>
+          </span>
+          <span class="tty-title">~/writing</span>
+          <span class="tty-right" aria-hidden="true" data-count
+            >{posts.length} posts</span
+          >
         </div>
 
-        <hr class="tty-rule" />
+        <div class="tty-body">
+          <!--
+            The subjects first. A reader who came for one thread — the
+            authorization argument, or the firmware series — should be able to
+            see that the thread exists without reading the listing. Each one is
+            a link into the filtered view, so the directory listing and the
+            filter are the same thing seen from two sides.
+          -->
+          <h2 class="index-h">Subjects</h2>
 
-        <!--
-          The filter bar is hidden until the script runs. A page without
-          JavaScript shows every post and no controls that do nothing, which is
-          better than a search box that silently never matches.
-        -->
-        <script is:inline>
-          document.documentElement.classList.add('js-filters');
-        </script>
-
-        <div class="filters" data-filters>
-          <div class="filters-search">
-            <label class="sr-only" for="blogSearch">Search the writing</label>
-            <input
-              id="blogSearch"
-              type="search"
-              placeholder="grep -i …"
-              autocomplete="off"
-              data-search
-            />
-          </div>
-
-          <div class="filters-row">
-            <span class="filters-legend" id="filterTopics">Subject</span>
-            <div class="filters-chips" role="group" aria-labelledby="filterTopics">
-              <button class="filter-chip is-on" type="button" data-topic="" aria-pressed="true">
-                All<span class="filter-chip-count">{posts.length}</span>
-              </button>
-              {
-                TOPICS.map((topic) => (
-                  <button class="filter-chip" type="button" data-topic={topic.id} aria-pressed="false">
-                    {topic.short}
-                    <span class="filter-chip-count">{topic.posts.length}</span>
-                  </button>
-                ))
-              }
+          <div class="ls ls-topics">
+            <div class="ls-row ls-head">
+              <span class="ls-mode">mode</span>
+              <span class="ls-count">posts</span>
+              <span class="ls-name">name</span>
+              <span class="ls-desc">subject</span>
             </div>
-          </div>
-
-          <div class="filters-row" data-row="tags">
-            <span class="filters-legend" id="filterTags">Tags</span>
-            <div class="filters-chips" role="group" aria-labelledby="filterTags">
-              {
-                POPULAR.map((tag) => (
-                  <button
-                    class="filter-chip filter-chip--tag"
-                    type="button"
-                    data-tag={tag}
-                    aria-pressed="false"
-                  >
-                    {TAG_NAMES[tag] ?? tagLabel(tag)}
-                    <span class="filter-chip-count">{chipCounts.get(tag)}</span>
-                  </button>
-                ))
-              }
-            </div>
-          </div>
-        </div>
-
-        <h2 class="index-h">
-          All writing
-          <span class="card-meta" data-count>{posts.length} posts</span>
-        </h2>
-
-        <div class="ls ls-posts" data-grid>
-          <div class="ls-row ls-head">
-            <span class="ls-mode">mode</span>
-            <span class="ls-date">date</span>
-            <span class="ls-size">min</span>
-            <span class="ls-topic">topic</span>
-            <span class="ls-name">name</span>
-          </div>
-          {
-            cards.map((post, i) => (
-              <article
-                class="post-row"
-                data-card
-                data-topic={post.topicId}
-                data-tags={post.tags.map((t) => t.slug).join(',')}
-                data-text={post.text}
-                data-reveal
-                data-reveal-delay={Math.min(i, 8) * 30}
-              >
-                <h3 class="post-title">
-                  <span class="ls-row ls-row--post">
-                    <span class="ls-mode">-rw-r--r--</span>
-                    <span class="ls-date">
-                      <time datetime={post.iso}>{post.date}</time>
-                    </span>
-                    <span class="ls-size">{post.minutes}m</span>
-                    <span class="ls-topic">{post.topicShort}</span>
-                    <span class="ls-name">
-                      <a href={post.href}>{post.title}</a>
-                      {post.short && <span class="card-flag">note</span>}
-                    </span>
+            {
+              TOPICS.map((topic) => (
+                <div class="ls-row is-dir">
+                  <span class="ls-mode">drwxr-xr-x</span>
+                  <span class="ls-count">{topic.posts.length}</span>
+                  <span class="ls-name">
+                    <a href={`/blog/?topic=${topic.id}`}>{topic.short}/</a>
                   </span>
-                </h3>
-
-                {post.summary && <p class="post-sum">{post.summary}</p>}
-
-                <div class="post-tags">
-                  {post.tags.map((t) => (
-                    <a class="tag" href={`/tags/${t.slug}/`}>
-                      {t.label}
-                    </a>
-                  ))}
+                  <span class="ls-desc">{topic.desc}</span>
                 </div>
-              </article>
-            ))
-          }
+              ))
+            }
+          </div>
+
+          <hr class="tty-rule" />
+
+          <!--
+            The filter bar is hidden until the script runs. A page without
+            JavaScript shows every post and no controls that do nothing, which is
+            better than a search box that silently never matches.
+          -->
+          <script is:inline>
+            document.documentElement.classList.add('js-filters');
+          </script>
+
+          <div class="filters" data-filters>
+            <div class="filters-search">
+              <label class="sr-only" for="blogSearch">Search the writing</label>
+              <input
+                id="blogSearch"
+                type="search"
+                placeholder="grep -i …"
+                autocomplete="off"
+                data-search
+              />
+            </div>
+
+            <div class="filters-row">
+              <span class="filters-legend" id="filterTopics">Subject</span>
+              <div class="filters-chips" role="group" aria-labelledby="filterTopics">
+                <button class="filter-chip is-on" type="button" data-topic="" aria-pressed="true">
+                  All<span class="filter-chip-count">{posts.length}</span>
+                </button>
+                {
+                  TOPICS.map((topic) => (
+                    <button class="filter-chip" type="button" data-topic={topic.id} aria-pressed="false">
+                      {topic.short}
+                      <span class="filter-chip-count">{topic.posts.length}</span>
+                    </button>
+                  ))
+                }
+              </div>
+            </div>
+
+            <div class="filters-row" data-row="tags">
+              <span class="filters-legend" id="filterTags">Tags</span>
+              <div class="filters-chips" role="group" aria-labelledby="filterTags">
+                {
+                  POPULAR.map((tag) => (
+                    <button
+                      class="filter-chip filter-chip--tag"
+                      type="button"
+                      data-tag={tag}
+                      aria-pressed="false"
+                    >
+                      {TAG_NAMES[tag] ?? tagLabel(tag)}
+                      <span class="filter-chip-count">{chipCounts.get(tag)}</span>
+                    </button>
+                  ))
+                }
+              </div>
+            </div>
+          </div>
+
+          <h2 class="index-h">All writing</h2>
+
+          <!--
+            The directory. A row is a file: its mode, its date, how long it
+            takes to read, the subject it belongs to and its name. The
+            opening of the post and its tags are not here — the filter row
+            above already names every tag, and the post itself opens with
+            the sentence a reader would come back for.
+          -->
+          <div class="ls ls-posts" data-grid>
+            <div class="ls-row ls-head ls-row--post">
+              <span class="ls-mode">mode</span>
+              <span class="ls-date">date</span>
+              <span class="ls-size">min</span>
+              <span class="ls-topic">topic</span>
+              <span class="ls-name">name</span>
+            </div>
+            {
+              cards.map((post, i) => (
+                <article
+                  class="post-row"
+                  data-card
+                  data-topic={post.topicId}
+                  data-tags={post.tags.join(',')}
+                  data-text={post.text}
+                  data-reveal
+                  data-reveal-delay={Math.min(i, 8) * 30}
+                >
+                  <h3 class="post-title">
+                    <span class="ls-row ls-row--post">
+                      <span class="ls-mode">-rw-r--r--</span>
+                      <span class="ls-date">
+                        <time datetime={post.iso}>{post.date}</time>
+                      </span>
+                      <span class="ls-size">{post.minutes}m</span>
+                      <span class="ls-topic">{post.topicShort}</span>
+                      <span class="ls-name">
+                        <a href={post.href}>{post.title}</a>
+                        {post.short && <span class="card-flag">note</span>}
+                      </span>
+                    </span>
+                  </h3>
+                </article>
+              ))
+            }
+          </div>
+
+          <p class="filter-empty" data-empty hidden>
+            Nothing matches that. Clear the search, or pick another subject.
+          </p>
         </div>
-
-        <p class="filter-empty" data-empty hidden>
-          Nothing matches that. Clear the search, or pick another subject.
-        </p>
       </div>
-    </div>
 
-    <script>
-      import '../../scripts/blog-filters.js';
-    </script>
-  </section>
+      <script>
+        import '../../scripts/blog-filters.js';
+      </script>
+    </section>
+  </div>
 </Base>
 
 <style>
+  /* ----- The page column ---------------------------------------------------
+     One width for the whole page. Every window takes it, so every window
+     starts at the left edge of the column and ends at the right edge of it.
+     ---------------------------------------------------------------------- */
+  .page-col {
+    --w: 100%;
+  }
+
   /* ----- The window --------------------------------------------------------
      The whole index lives inside one terminal window: the subjects are the
      directories, the posts are the files, and the filter bar is a control
@@ -359,6 +368,14 @@ const cards = posts.map((post) => {
      ---------------------------------------------------------------------- */
   .tty-index .tty-body {
     padding-block: 1.9rem 1.4rem;
+  }
+
+  /* The lede is a line of signposting, not a paragraph. The global cap of
+     sixty characters is a paragraph measure, and it split this line in two:
+     the sentence names the three subjects of the corpus in one breath, and
+     the whole point of it is that they are one corpus. */
+  .hero .lede {
+    max-width: 80ch;
   }
 
   .index-h {
@@ -373,19 +390,6 @@ const cards = posts.map((post) => {
     letter-spacing: 0.16em;
     text-transform: uppercase;
     color: var(--braise);
-  }
-
-  .index-h .card-meta {
-    letter-spacing: 0.1em;
-  }
-
-  .index-note {
-    margin: 0.6rem 0 0;
-    font-family: var(--font-body);
-    font-size: 0.84rem;
-    line-height: 1.55;
-    color: var(--fort);
-    max-width: 76ch;
   }
 
   /* The subject of a directory, in the last column: the one line that says

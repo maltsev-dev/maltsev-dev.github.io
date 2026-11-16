@@ -2,7 +2,7 @@
 import { getCollection } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 import { tagSlug, tagLabel } from '../../lib/tags';
-import { describe, isShort, readingTime, MAX_DESCRIPTION } from '../../lib/summarize';
+import { isShort, readingTime } from '../../lib/summarize';
 import { formatDateShort } from '../../data/dates';
 import { topicFor } from '../../data/topics';
 import { displayTitle } from '../../lib/text';
@@ -59,14 +59,14 @@ const description = `${posts.length} ${
 /**
  * The posts, prepared for the listing.
  *
- * The same shape as the index: a title, a line about what is in it, and the
- * tags it carries. A tag page is the index with a query on it, so the rows
- * must be the same rows — a reader who moves between the two should not have
- * to learn a second list.
+ * The same shape as the index: a title, the date it was written, how long it
+ * takes to read, the subject it belongs to and whether it is a note or an
+ * essay. A tag page is the index with a query on it, so the rows must be the
+ * same rows — a reader who moves between the two should not have to learn a
+ * second list.
  */
 const rows = posts.map((post) => {
   const topic = topicFor(post.id);
-  const summary = describe(post.data.title, post.body, post.data.description, MAX_DESCRIPTION);
 
   return {
     href: `/blog/${post.id}/`,
@@ -75,12 +75,7 @@ const rows = posts.map((post) => {
     iso: post.data.date ?? '',
     minutes: readingTime(post.body),
     short: isShort(post.body),
-    summary,
     topicShort: topic?.short ?? '',
-    tags: post.data.tags.map((t) => ({
-      slug: tagSlug(t),
-      label: tagLabel(t),
-    })),
   };
 });
 ---
@@ -94,140 +89,133 @@ const rows = posts.map((post) => {
     it: the same window, the same listing, the same rows. The reader who
     arrives here from a chip in a listing learns one shape and sees it
     again.
+
+    The wrapper sets the width of every window on the page once, so they all
+    start at the same x and end at the same x.
   -->
-  <section class="hero">
-    <span class="eyebrow" data-reveal><span class="pulse-dot"></span>Tag</span>
-    <h1 data-reveal data-reveal-delay="60">{label}</h1>
+  <div class="page-col">
+    <section class="hero">
+      <span class="eyebrow" data-reveal><span class="pulse-dot"></span>Tag</span>
+      <h1 data-reveal data-reveal-delay="60">{label}</h1>
 
-    <p class="tty-prompt" data-reveal data-reveal-delay="100">
-      <span class="who">root</span><span class="sep">@</span><span
-        >amaltsev</span>
-      ><span class="sep">:</span><span class="path">~/blog</span><span class="sep"
-        >$</span
-      >
-      <span class="tty-cmd">grep -l "{slug}" -r ~/blog</span>
-    </p>
+      <p class="tty-prompt" data-reveal data-reveal-delay="100">
+        <span class="who">root</span><span class="sep">@</span><span
+          >amaltsev</span
+        ><span class="sep">:</span><span class="path">~/blog</span><span
+          class="sep"
+          >$</span
+        >
+        <span class="tty-cmd">grep -l "{slug}" -r ~/blog</span>
+      </p>
 
-    <p class="lede" data-reveal data-reveal-delay="120">
-      {posts.length} {posts.length === 1 ? 'post' : 'posts'} on {label}.
-    </p>
-  </section>
+      <p class="lede" data-reveal data-reveal-delay="120">
+        {posts.length} {posts.length === 1 ? 'post' : 'posts'} on {label}.
+      </p>
+    </section>
 
-  <section class="section">
-    <div class="tty tty-tag" data-reveal>
-      <div class="tty-bar">
-        <span class="tty-leds" aria-hidden="true">
-          <i class="led led-on"></i>
-          <i class="led led-off"></i>
-          <i class="led led-off"></i>
-        </span>
-        <span class="tty-title">~/blog</span>
-        <span class="tty-right" aria-hidden="true">
-          {posts.length} {posts.length === 1 ? 'match' : 'matches'}
-        </span>
-      </div>
-
-      <div class="tty-body">
-        <p class="tty-prompt tty-cmd-line">
-          <span class="who">root</span><span class="sep">@</span><span
-            >amaltsev</span>
-          ><span class="sep">:</span><span class="path">~/blog</span><span class="sep"
-            >$</span
-          >
-          <span class="tty-cmd">grep -l "{slug}" -r ~/blog</span>
-        </p>
-
-        <div class="ls ls-posts">
-          <div class="ls-row ls-head">
-            <span class="ls-mode">mode</span>
-            <span class="ls-date">date</span>
-            <span class="ls-size">min</span>
-            <span class="ls-topic">topic</span>
-            <span class="ls-name">name</span>
-          </div>
-
-          {
-            rows.map((post, i) => (
-              <article
-                class="post-row"
-                data-reveal
-                data-reveal-delay={Math.min(i, 8) * 30}
-              >
-                <h3 class="post-title">
-                  <span class="ls-row ls-row--post">
-                    <span class="ls-mode">-rw-r--r--</span>
-                    <span class="ls-date">
-                      <time datetime={post.iso}>{post.date}</time>
-                    </span>
-                    <span class="ls-size">{post.minutes}m</span>
-                    <span class="ls-topic">{post.topicShort}</span>
-                    <span class="ls-name">
-                      <a href={post.href}>{post.title}</a>
-                      {post.short && <span class="card-flag">note</span>}
-                    </span>
-                  </span>
-                </h3>
-
-                {post.summary && <p class="post-sum">{post.summary}</p>}
-
-                <div class="post-tags">
-                  {post.tags.map((t) => (
-                    <a class="tag" href={`/tags/${t.slug}/`}>
-                      {t.label}
-                    </a>
-                  ))}
-                </div>
-              </article>
-            ))
-          }
+    <section class="section">
+      <div class="tty tty-fit tty-tag" data-reveal>
+        <div class="tty-bar">
+          <span class="tty-leds" aria-hidden="true">
+            <i class="led led-on"></i>
+            <i class="led led-off"></i>
+            <i class="led led-off"></i>
+          </span>
+          <span class="tty-title">~/blog</span>
         </div>
 
-        <!--
-          The count, the way grep reports it. It is the one line in the
-          window that is not a file, and it says what the listing is worth.
-        -->
-        <p class="grep-count">~/blog: {posts.length} {posts.length === 1 ? 'match' : 'matches'}</p>
+        <div class="tty-body">
+          <p class="tty-prompt tty-cmd-line">
+            <span class="who">root</span><span class="sep">@</span><span
+              >amaltsev</span
+            ><span class="sep">:</span><span class="path">~/blog</span><span
+              class="sep"
+              >$</span
+            >
+            <span class="tty-cmd">grep -l "{slug}" -r ~/blog</span>
+          </p>
 
-        <hr class="tty-rule" />
+          <div class="ls ls-posts">
+            <div class="ls-row ls-head ls-row--post">
+              <span class="ls-mode">mode</span>
+              <span class="ls-date">date</span>
+              <span class="ls-size">min</span>
+              <span class="ls-topic">topic</span>
+              <span class="ls-name">name</span>
+            </div>
 
-        <p class="tty-prompt tty-cmd-line">
-          <span class="who">root</span><span class="sep">@</span><span
-            >amaltsev</span>
-          ><span class="sep">:</span><span class="path">~/blog</span><span class="sep"
-            >$</span
-          >
-          <span class="tty-cmd">cd ~/blog &amp;&amp; ls -la</span>
-        </p>
+            {
+              rows.map((post, i) => (
+                <article
+                  class="post-row"
+                  data-reveal
+                  data-reveal-delay={Math.min(i, 8) * 30}
+                >
+                  <h3 class="post-title">
+                    <span class="ls-row ls-row--post">
+                      <span class="ls-mode">-rw-r--r--</span>
+                      <span class="ls-date">
+                        <time datetime={post.iso}>{post.date}</time>
+                      </span>
+                      <span class="ls-size">{post.minutes}m</span>
+                      <span class="ls-topic">{post.topicShort}</span>
+                      <span class="ls-name">
+                        <a href={post.href}>{post.title}</a>
+                        {post.short && <span class="card-flag">note</span>}
+                      </span>
+                    </span>
+                  </h3>
+                </article>
+              ))
+            }
+          </div>
 
-        <p class="tag-close">
-          The whole directory is one click away. Every post, filed by
-          subject.
-        </p>
+          <!--
+            The count of the matches is in the lede above. The window says
+            what grep printed, and grep printed the files.
+          -->
+          <hr class="tty-rule" />
+
+          <p class="tty-prompt tty-cmd-line">
+            <span class="who">root</span><span class="sep">@</span><span
+              >amaltsev</span
+            ><span class="sep">:</span><span class="path">~/blog</span><span
+              class="sep"
+              >$</span
+            >
+            <span class="tty-cmd">cd ~/blog &amp;&amp; ls -la</span>
+          </p>
+
+          <p class="tag-close">
+            The whole directory is one click away. Every post, filed by
+            subject.
+          </p>
+        </div>
       </div>
-    </div>
 
-    <p class="tag-back">
-      <a class="btn" href="/blog/">← All writing</a>
-    </p>
-  </section>
+      <p class="tag-back">
+        <a class="btn" href="/blog/">← All writing</a>
+      </p>
+    </section>
+  </div>
 </Base>
 
 <style>
+  /* ----- The page column ---------------------------------------------------
+     One width for the whole page. Every window takes it, so every window
+     starts at the left edge of the column and ends at the right edge of it.
+     ---------------------------------------------------------------------- */
+  .page-col {
+    --w: 100%;
+  }
+
   .tty-tag .tty-body {
     padding-block: 1.9rem 1.4rem;
   }
 
-  /* The count grep prints when it is done. */
-  .grep-count {
-    margin: 0.8rem 0 0;
-    font-family: var(--font-mono);
-    font-size: var(--fs-small);
-    color: var(--faible);
-  }
-
   .tag-close {
     margin: 0.6rem 0 0;
-    max-width: 62ch;
+    max-width: var(--measure-prose);
     font-family: var(--font-body);
     font-size: 0.9rem;
     line-height: 1.55;

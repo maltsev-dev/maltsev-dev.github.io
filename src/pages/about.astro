@@ -20,39 +20,36 @@ const postCount = (await getCollection('posts')).length;
 /**
  * How the work actually runs.
  *
- * Four rules. Each one is a claim and the argument for it: the keywords are
- * the summary of the claim, and the paragraph underneath is what they
- * summarise. They used to be four full-screen panels on a rail, each one a
- * screen of its own for a paragraph of type — a portrait of a person, not a
- * CV, but a very long one.
+ * Four rules. Each one is a claim and the keywords that summarise it.
+ *
+ * The rules used to carry a lead line and a paragraph under it, and the
+ * focus list above them made the same four points in the same order: two
+ * lists of four saying the same thing, one screen apart. The list above
+ * holds the points, so here the rules are the titles and the keywords.
+ *
+ * They used to be four full-screen panels on a rail, each one a screen of
+ * its own for a paragraph of type — a portrait of a person, not a CV, but a
+ * very long one.
  */
 const METHOD = [
   {
     n: '01',
     title: 'Start with the failure',
-    lead: 'Understand what breaks before deciding what to build.',
-    body: 'Every engagement starts with the actual problem: a failed workflow, an unreliable agent, or an automation that cannot be trusted in production. The goal is to identify the failure, understand its cause, and build the right solution. Whether AI goes into the process at all is a later question.',
     marks: ['failure', 'cause', 'scope'],
   },
   {
     n: '02',
     title: 'Narrow beats clever',
-    lead: 'One responsibility, explicit tools, and defined boundaries.',
-    body: 'An agent that does everything is difficult to reason about, test, and control. I design systems around clear responsibilities, minimal tool access, and explicit execution boundaries. When something fails, the cause has to be traceable and the fix contained, so the rest of the system keeps working.',
     marks: ['one responsibility', 'explicit tools', 'boundaries'],
   },
   {
     n: '03',
     title: 'Bound everything',
-    lead: 'Autonomy with explicit limits.',
-    body: 'Every agent operates within defined budgets, timeouts, iteration caps, and tool permissions. Sensitive actions require approval, and every execution leaves a trace. Routine work runs autonomously; consequential actions stay behind explicit control gates. Autonomy should expand only as far as the system can reliably support it.',
     marks: ['budgets', 'timeouts', 'approval'],
   },
   {
     n: '04',
     title: 'Measure what matters',
-    lead: 'If you cannot evaluate it, you cannot trust it in production.',
-    body: 'Every run should produce evidence: traces, outcomes, failures, and measurable quality signals. Evaluations become regression tests that catch degradation before deployment. Writing a report nobody reads is not the point. Looking correct is not the end of the work: the output has to be tested, its failure modes understood, and someone has to take responsibility for what ships.',
     marks: ['traces', 'evals', 'regression'],
   },
 ];
@@ -61,8 +58,8 @@ const METHOD = [
  * The four things the focus is made of.
  *
  * They are the nouns the rest of the site keeps coming back to: the career
- * is measured by them, the engagements are built around them, and the
- * method below is four ways of getting at them.
+ * is measured by them, the work is built around them, and the method below
+ * is four ways of getting at them.
  */
 const FOCUS = [
   {
@@ -84,11 +81,7 @@ const FOCUS = [
 ];
 
 /**
- * Right now. Three questions, answered plainly.
- *
- * The third answer used to be the five service names, verbatim, from the
- * engagements page. The same list twice on one site is two places to update
- * and one place to read, so this one points at the page that holds it.
+ * Right now. Two questions, answered plainly.
  *
  * The writing answer used to be two items — "agents" and "authorization, and
  * the systems underneath them" — which is one phrase split in half and
@@ -106,10 +99,6 @@ const NOW = [
     k: 'writing',
     lines: [{ text: 'Agents, authorization, and the systems underneath them' }],
   },
-  {
-    k: 'taking on',
-    lines: [{ text: 'Five fixed-scope engagements, one at a time', href: '/freelance/' }],
-  },
 ];
 ---
 
@@ -122,215 +111,225 @@ const NOW = [
     printed out. The hero is the file itself; the two windows below it are
     the other two files — how the work runs, and what is on the desk right
     now.
+
+    The width is set once, on the wrapper below, so the two windows share a
+    left edge and a right edge instead of each taking the width of what is
+    inside it.
   -->
-  <section class="hero hero-scroll about-hero">
-    <div class="about-head">
-      <span class="eyebrow" data-reveal><span class="pulse-dot"></span>Anatolii Maltsev</span>
-      <h1 data-reveal data-reveal-delay="60" data-anim="type">{yearsOfExperience()} years building systems that do real work</h1>
-    </div>
-
-    <div class="about-lead">
-      <p class="tty-prompt" data-reveal data-reveal-delay="100">
-        <span class="who">root</span><span class="sep">@</span><span
-          >amaltsev</span>
-        ><span class="sep">:</span><span class="path">~/about</span><span class="sep"
-          >$</span
-        >
-        <span class="tty-cmd">cat about.md</span>
-      </p>
-
-      <p class="lede" data-reveal data-reveal-delay="120">
-        My focus is what happens beyond the happy path.
-      </p>
-
-      <ul class="about-points" data-reveal data-reveal-delay="150">
-        {
-          FOCUS.map((f) => (
-            <li>
-              <span class="about-point-k">{f.k}</span>
-              <span class="about-point-v">{f.v}</span>
-            </li>
-          ))
-        }
-      </ul>
-    </div>
-
-    <!--
-      One image per theme, swapped in CSS rather than JS: the background-image
-      rule that matches the active theme is the only one that applies, so the
-      browser fetches exactly one file and the switcher changes the picture
-      with no reflow and no flash. role="img" with a label carries the meaning,
-      since a background image has no alt of its own.
-    -->
-    <figure class="portrait" data-reveal data-reveal-delay="140">
-      <div
-        class="portrait-art"
-        role="img"
-        aria-label="Dithered pixel portrait of me at a desk with a cat, a CRT showing the current theme's palette, and a browser window running a test matrix."
-      ></div>
-      <figcaption>
-        <span class="portrait-kicker">
-          chaotic engineer · plant lover · cat person · cyclist · photographer ·
-          political exile · solo founder
-        </span>
-      </figcaption>
-    </figure>
-
-    <!--
-      The habits underneath the focus used to live here, as a band of four
-      under the picture: test-driven development, systematic over ad-hoc,
-      complexity reduction, evidence over claims. Each of them is already
-      inside one of the four rules further down the page — "evidence over
-      claims" is "measure what matters", "systematic over ad-hoc" is "start
-      with the failure" — so the band was two lists of four saying the same
-      thing twice, one screen apart. The rules below are the longer version;
-      this page does not need the short one as well.
-    -->
-
-    <p class="about-conclusion" data-reveal data-reveal-delay="180">
-      If a system can take action, its actions must be traceable, its failures
-      diagnosable, and its execution controllable.
-    </p>
-  </section>
-
-  <!-- ---- How the work runs ---- -->
-  <section class="section">
-    <div class="tty-fit">
-      <div class="section-head">
-        <h2 data-reveal data-anim="underline">How I work</h2>
-        <span class="card-meta">{METHOD.length} rules</span>
+  <div class="about-page">
+    <section class="hero hero-scroll about-hero">
+      <div class="about-head">
+        <span class="eyebrow" data-reveal><span class="pulse-dot"></span>Anatolii Maltsev</span>
+        <h1 data-reveal data-reveal-delay="60" data-anim="type">{yearsOfExperience()} years building systems that do real work</h1>
       </div>
 
-      <div class="tty tty-method" data-reveal>
-      <div class="tty-bar">
-        <span class="tty-leds" aria-hidden="true">
-          <i class="led led-on"></i>
-          <i class="led led-off"></i>
-          <i class="led led-off"></i>
-        </span>
-        <span class="tty-title">~/about/method.md</span>
-        <span class="tty-right" aria-hidden="true">{METHOD.length} rules</span>
-      </div>
-
-      <div class="tty-body">
-        <p class="tty-prompt tty-cmd-line">
+      <div class="about-lead">
+        <p class="tty-prompt" data-reveal data-reveal-delay="100">
           <span class="who">root</span><span class="sep">@</span><span
             >amaltsev</span>
           ><span class="sep">:</span><span class="path">~/about</span><span class="sep"
             >$</span
           >
-          <span class="tty-cmd">cat method.md</span>
+          <span class="tty-cmd">cat about.md</span>
         </p>
 
-        {
-          METHOD.map((s, i) => (
-            <article
-              class="rule-block"
-              data-reveal
-              data-reveal-delay={Math.min(i, 3) * 60}
-            >
-              <div class="rule-head">
-                <span class="rule-num" aria-hidden="true">
-                  {s.n}
-                </span>
-                <h3 class="rule-title">{s.title}</h3>
-              </div>
-
-              <p class="rule-lead">{s.lead}</p>
-              <p class="rule-body">{s.body}</p>
-
-              <p class="rule-marks">
-                {s.marks.map((m) => (
-                  <span class="chip">[{m}]</span>
-                ))}
-              </p>
-            </article>
-          ))
-        }
-      </div>
-    </div>
-    </div>
-  </section>
-
-  <!--
-    Right now. Three answers, side by side.
-  -->
-  <section class="section about-now">
-    <div class="tty-fit">
-      <div class="section-head">
-        <h2 data-reveal data-anim="underline">Right now</h2>
-        <span class="card-meta">three answers</span>
-      </div>
-
-      <div class="tty tty-now" data-reveal>
-      <div class="tty-bar">
-        <span class="tty-leds" aria-hidden="true">
-          <i class="led led-on"></i>
-          <i class="led led-on"></i>
-          <i class="led led-off"></i>
-        </span>
-        <span class="tty-title">~/about/now.md</span>
-        <span class="tty-right" aria-hidden="true">updated today</span>
-      </div>
-
-      <div class="tty-body">
-        <p class="tty-prompt tty-cmd-line">
-          <span class="who">root</span><span class="sep">@</span><span
-            >amaltsev</span>
-          ><span class="sep">:</span><span class="path">~/about</span><span class="sep"
-            >$</span
-          >
-          <span class="tty-cmd">cat now.md</span>
+        <p class="lede" data-reveal data-reveal-delay="120">
+          My focus is what happens beyond the happy path.
         </p>
 
-        <div class="ls ls-now">
+        <ul class="about-points" data-reveal data-reveal-delay="150">
           {
-            NOW.map((n) => (
-              <div class="ls-row">
-                <span class="ls-now-k">{n.k}</span>
-                <span class="ls-now-v">
-                  <ul class="now-lines">
-                    {n.lines.map((l) => (
-                      <li>
-                        {l.href ? (
-                          <a class="now-link" href={l.href}>
-                            {l.text}
-                            {/* The non-breaking space below binds the arrow to
-                                the last word: on a narrow screen it used to
-                                fall onto a line of its own. */}
-                            {' '}
-                            <span class="now-go" aria-hidden="true">
-                              →
-                            </span>
-                          </a>
-                        ) : (
-                          l.text
-                        )}
-                      </li>
-                    ))}
-                  </ul>
-                </span>
-              </div>
+            FOCUS.map((f) => (
+              <li>
+                <span class="about-point-k">{f.k}</span>
+                <span class="about-point-v">{f.v}</span>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+
+      <!--
+        One image per theme, swapped in CSS rather than JS: the background-image
+        rule that matches the active theme is the only one that applies, so the
+        browser fetches exactly one file and the switcher changes the picture
+        with no reflow and no flash. role="img" with a label carries the meaning,
+        since a background image has no alt of its own.
+      -->
+      <figure class="portrait" data-reveal data-reveal-delay="140">
+        <div
+          class="portrait-art"
+          role="img"
+          aria-label="Dithered pixel portrait of me at a desk with a cat, a CRT showing the current theme's palette, and a browser window running a test matrix."
+        ></div>
+        <figcaption>
+          <span class="portrait-kicker">
+            chaotic engineer · plant lover · cat person · cyclist · photographer ·
+            political exile · solo founder
+          </span>
+        </figcaption>
+      </figure>
+
+      <!--
+        The habits underneath the focus used to live here, as a band of four
+        under the picture: test-driven development, systematic over ad-hoc,
+        complexity reduction, evidence over claims. Each of them is already
+        inside one of the four rules further down the page — "evidence over
+        claims" is "measure what matters", "systematic over ad-hoc" is "start
+        with the failure" — so the band was two lists of four saying the same
+        thing twice, one screen apart. The focus list above holds the points,
+        so the rules below are the titles and their keywords.
+      -->
+
+      <p class="about-conclusion" data-reveal data-reveal-delay="180">
+        If a system can take action, its actions must be traceable, its failures
+        diagnosable, and its execution controllable.
+      </p>
+    </section>
+
+    <!-- ---- How the work runs ---- -->
+    <section class="section">
+      <div class="tty-fit">
+        <div class="section-head">
+          <h2 data-reveal data-anim="underline">How I work</h2>
+        </div>
+
+        <div class="tty tty-method" data-reveal>
+        <div class="tty-bar">
+          <span class="tty-leds" aria-hidden="true">
+            <i class="led led-on"></i>
+            <i class="led led-off"></i>
+            <i class="led led-off"></i>
+          </span>
+          <span class="tty-title">~/about/method.md</span>
+        </div>
+
+        <div class="tty-body">
+          <p class="tty-prompt tty-cmd-line">
+            <span class="who">root</span><span class="sep">@</span><span
+              >amaltsev</span>
+            ><span class="sep">:</span><span class="path">~/about</span><span class="sep"
+              >$</span
+            >
+            <span class="tty-cmd">cat method.md</span>
+          </p>
+
+          {
+            METHOD.map((s, i) => (
+              <article
+                class="rule-block"
+                data-reveal
+                data-reveal-delay={Math.min(i, 3) * 60}
+              >
+                <div class="rule-head">
+                  <span class="rule-num" aria-hidden="true">
+                    {s.n}
+                  </span>
+                  <h3 class="rule-title">{s.title}</h3>
+                </div>
+
+                <p class="rule-marks">
+                  {s.marks.map((m) => (
+                    <span class="chip">[{m}]</span>
+                  ))}
+                </p>
+              </article>
             ))
           }
         </div>
-
-        <p class="now-close">
-          The same topics, at length: {postCount} notes so far.
-          <a class="now-link" href="/blog/">
-            Start with the newest{' '}
-            <span class="now-go" aria-hidden="true">→</span>
-          </a>
-        </p>
       </div>
-    </div>
-    </div>
-  </section>
+      </div>
+    </section>
+
+    <!--
+      Right now. Two answers, side by side.
+    -->
+    <section class="section about-now">
+      <div class="tty-fit">
+        <div class="section-head">
+          <h2 data-reveal data-anim="underline">Right now</h2>
+        </div>
+
+        <div class="tty tty-now" data-reveal>
+        <div class="tty-bar">
+          <span class="tty-leds" aria-hidden="true">
+            <i class="led led-on"></i>
+            <i class="led led-on"></i>
+            <i class="led led-off"></i>
+          </span>
+          <span class="tty-title">~/about/now.md</span>
+        </div>
+
+        <div class="tty-body">
+          <p class="tty-prompt tty-cmd-line">
+            <span class="who">root</span><span class="sep">@</span><span
+              >amaltsev</span>
+            ><span class="sep">:</span><span class="path">~/about</span><span class="sep"
+              >$</span
+            >
+            <span class="tty-cmd">cat now.md</span>
+          </p>
+
+          <div class="ls ls-now">
+            {
+              NOW.map((n) => (
+                <div class="ls-row">
+                  <span class="ls-now-k">{n.k}</span>
+                  <span class="ls-now-v">
+                    <ul class="now-lines">
+                      {n.lines.map((l) => (
+                        <li>
+                          {l.href ? (
+                            <a class="now-link" href={l.href}>
+                              {l.text}
+                              {/* The non-breaking space below binds the arrow to
+                                  the last word: on a narrow screen it used to
+                                  fall onto a line of its own. */}
+                              {' '}
+                              <span class="now-go" aria-hidden="true">
+                                →
+                              </span>
+                            </a>
+                          ) : (
+                            l.text
+                          )}
+                        </li>
+                      ))}
+                    </ul>
+                  </span>
+                </div>
+              ))
+            }
+          </div>
+
+          <p class="now-close">
+            The same topics, at length: {postCount} notes so far.
+            <a class="now-link" href="/blog/">
+              Start with the newest{' '}
+              <span class="now-go" aria-hidden="true">→</span>
+            </a>
+          </p>
+        </div>
+      </div>
+      </div>
+    </section>
+  </div>
 </Base>
 
 <style>
   /* Everything here is scoped to this page, so it lives with the page rather
      than in os.css. The tokens are the site's; only the arrangement is new. */
+
+  /* ----- One column --------------------------------------------------------
+     The width of every window on the page, set once. Without it each window
+     took the width of what was inside it, so the two windows below started
+     and ended in different places. The width is the column's: the hero above
+     is the column's width too, and a page whose windows stop in the middle
+     of it reads as two pages.
+     ---------------------------------------------------------------------- */
+  .about-page {
+    --w: 100%;
+  }
 
   /* ----- Hero: copy beside the portrait --------------------------------- */
   /* Three rows. The headline spans the full width so it can be set as one
@@ -477,9 +476,10 @@ const NOW = [
   }
 
   /* ----- The four rules ---------------------------------------------------
-     The claim, the argument, and the keywords that summarise the claim. Each
-     rule is one entry in a file: the number, the title, and then the lines
-     under it.
+     The claim and the keywords that summarise it. Each rule is one entry in
+     a file: the number, the title, and the marks under it. The rule used to
+     carry a lead line and a paragraph as well, which said the same four
+     points as the focus list above.
      ---------------------------------------------------------------------- */
   .tty-method .tty-body {
     padding-block: 1.9rem 1.4rem;
@@ -517,23 +517,6 @@ const NOW = [
     text-wrap: balance;
   }
 
-  .rule-lead {
-    margin: 0.5rem 0 0;
-    max-width: 62ch;
-    color: var(--encre);
-    font-size: 0.98rem;
-    line-height: 1.45;
-  }
-
-  .rule-body {
-    margin: 0.45rem 0 0;
-    max-width: 78ch;
-    color: var(--fort);
-    font-family: var(--font-body);
-    font-size: 0.92rem;
-    line-height: 1.6;
-  }
-
   .rule-marks {
     display: flex;
     flex-wrap: wrap;
@@ -547,9 +530,7 @@ const NOW = [
   }
 
   /* ---- Right now ---------------------------------------------------------
-     Three answers side by side, each under its own rule — the same shape as
-     the "what this is not" block on the engagements page, because it is the
-     same kind of statement.
+     Two answers side by side, each under its own rule.
 
      The band used to carry the desk artwork again, faded to a third and
      pushed behind the text. The same picture twice on one page, at an opacity
@@ -623,7 +604,7 @@ const NOW = [
     margin: 1.4rem 0 0;
     padding-top: 1rem;
     border-top: var(--filet) solid var(--grid);
-    max-width: 62ch;
+    max-width: var(--measure-prose);
     color: var(--fort);
     font-family: var(--font-body);
     font-size: 0.9rem;

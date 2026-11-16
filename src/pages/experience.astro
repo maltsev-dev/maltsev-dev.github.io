@@ -28,8 +28,6 @@ interface Stop {
   ref: string;
   /** The date the commit carries, in the format `git log` prints it in. */
   date: string;
-  /** The same date, short, for the one-line summary above the log. */
-  short: string;
   /** The span of the engagement, for the reader rather than the machine. */
   span: string;
   role: string;
@@ -56,7 +54,6 @@ const STOPS: Stop[] = [
     hash: 'f7c21a9',
     ref: 'HEAD -> main',
     date: 'Mon Mar  9 10:02:11 2026 +0200',
-    short: '2026-03-09',
     span: '8 mos',
     role: 'Founder & Lead Engineer',
     org: 'NullRun',
@@ -75,7 +72,6 @@ const STOPS: Stop[] = [
     hash: '4c8be17',
     ref: 'branch: independent',
     date: 'Wed Dec 10 09:31:44 2025 +0200',
-    short: '2025-12-10',
     span: '11 mos',
     role: 'Applied AI Engineer',
     org: 'Independent',
@@ -93,7 +89,6 @@ const STOPS: Stop[] = [
     hash: 'a31d0be',
     ref: 'branch: contract',
     date: 'Mon Dec  4 11:05:02 2023 +0200',
-    short: '2023-12-04',
     span: '1 yr 8 mos',
     role: 'Senior SDET',
     org: 'PashaPay',
@@ -111,7 +106,6 @@ const STOPS: Stop[] = [
     hash: '5e2f904',
     ref: 'branch: full-time',
     date: 'Fri Dec  3 10:00:37 2021 +0300',
-    short: '2021-12-03',
     span: '1 yr 9 mos',
     role: 'Senior SDET',
     org: 'Alfa-Bank',
@@ -129,7 +123,6 @@ const STOPS: Stop[] = [
     hash: '90b5e77',
     ref: 'branch: full-time',
     date: 'Tue Jun 16 09:20:11 2020 +0300',
-    short: '2020-06-16',
     span: '1 yr 7 mos',
     role: 'SDET',
     org: 'Sportmaster',
@@ -147,7 +140,6 @@ const STOPS: Stop[] = [
     hash: 'c07d3aa',
     ref: 'branch: full-time',
     date: 'Mon May 13 12:00:00 2019 +0300',
-    short: '2019-05-13',
     span: '1 yr 2 mos',
     role: 'QA Automation Engineer',
     org: 'Sberbank',
@@ -211,181 +203,164 @@ const factsOf = (skill: { jobs: number; certs: number; projects: number }): stri
     told about them. Underneath the log is the toolkit, drawn as a tree,
     because that is what a toolkit is: a directory of things, each one with
     what stands behind it.
+
+    The width is set once, on the wrapper below, so the log window starts
+    where the column starts and ends where the column ends.
   -->
-  <section class="hero">
-    <span class="eyebrow"><span class="pulse-dot"></span>Experience</span>
-    <h1 data-anim="type">The road so far</h1>
+  <div class="exp-page">
+    <section class="hero">
+      <span class="eyebrow"><span class="pulse-dot"></span>Experience</span>
+      <h1 data-anim="type">The road so far</h1>
 
-    <p class="tty-prompt" data-reveal>
-      <span class="who">root</span><span class="sep">@</span><span
-        >amaltsev</span>
-      ><span class="sep">:</span><span class="path">~/career</span><span
-        class="sep"
-        >$</span
-      >
-      <span class="tty-cmd">git log --author="maltsev"</span>
-    </p>
+      <p class="tty-prompt" data-reveal>
+        <span class="who">root</span><span class="sep">@</span><span
+          >amaltsev</span>
+        ><span class="sep">:</span><span class="path">~/career</span><span
+          class="sep"
+          >$</span
+        >
+        <span class="tty-cmd">git log --author="maltsev"</span>
+      </p>
 
-    <p class="lede" data-reveal data-reveal-delay="60">
-      {YEARS_SENTENCE} years, {spellNumber(STOPS.length)} stops. The thread
-      runs from QA automation on banking systems to building authorization
-      infrastructure for agents. The log reads newest first; the toolkit it
-      went into is below.
-    </p>
-  </section>
+      <p class="lede" data-reveal data-reveal-delay="60">
+        {YEARS_SENTENCE} years, {spellNumber(STOPS.length)} stops. The thread
+        runs from QA automation on banking systems to building authorization
+        infrastructure for agents. The log reads newest first; the toolkit it
+        went into is below.
+      </p>
+    </section>
 
-  <section class="section">
-    <div class="tty tty-log" data-reveal>
-      <div class="tty-bar">
-        <span class="tty-leds" aria-hidden="true">
-          <i class="led led-on"></i>
-          <i class="led led-off"></i>
-          <i class="led led-off"></i>
-        </span>
-        <span class="tty-title">~/career</span>
-        <span class="tty-right" aria-hidden="true">{STOPS.length} commits</span>
-      </div>
+    <section class="section">
+      <div class="tty tty-log" data-reveal>
+        <div class="tty-bar">
+          <span class="tty-leds" aria-hidden="true">
+            <i class="led led-on"></i>
+            <i class="led led-off"></i>
+            <i class="led led-off"></i>
+          </span>
+          <span class="tty-title">~/career</span>
+        </div>
 
-      <div class="tty-body">
-        <!--
-          The one-line view. The whole history on six lines, so a reader who
-          only wants the shape of it — how long, how many, in what order — can
-          take it in without reading a word of the entries.
-        -->
-        <p class="tty-prompt tty-cmd-line">
-          <span class="who">root</span><span class="sep">@</span><span
-            >amaltsev</span>
-          ><span class="sep">:</span><span class="path">~/career</span><span
-            class="sep"
-            >$</span
-          >
-          <span class="tty-cmd">git log --oneline</span>
-        </p>
+        <div class="tty-body">
+          <p class="tty-prompt tty-cmd-line">
+            <span class="who">root</span><span class="sep">@</span><span
+              >amaltsev</span>
+            ><span class="sep">:</span><span class="path">~/career</span><span
+              class="sep"
+              >$</span
+            >
+            <span class="tty-cmd">git log</span>
+          </p>
 
-        <div class="ls ls-oneline">
           {
-            STOPS.map((s) => (
-              <div class="ls-row">
-                <span class="ls-hash">{s.hash}</span>
-                <span class="ls-size">{s.short}</span>
-                <span class="ls-name">{s.role}</span>
-                <span class="ls-org">{s.org}</span>
-              </div>
+            STOPS.map((s, i) => (
+              <article
+                class="commit"
+                data-reveal
+                data-reveal-delay={Math.min(i, 5) * 50}
+              >
+                <p class="commit-head">
+                  <span class="commit-word">commit</span>
+                  <span class="commit-hash">{s.hash}</span>
+                  <span class="commit-ref">({s.ref})</span>
+                </p>
+                <p class="commit-meta">
+                  <span class="commit-key">Author:</span> Anatolii Maltsev
+                  &lt;mr.a.maltsev@gmail.com&gt;
+                </p>
+                <p class="commit-meta">
+                  <span class="commit-key">Date:</span>
+                  <span class="commit-date">{s.date}</span>
+                  <span class="commit-span">{s.span}</span>
+                </p>
+
+                <div class="commit-body">
+                  <h3 class="commit-title">
+                    {s.role}
+                    <span class="commit-org">
+                      — {s.href ? <a href={s.href} rel="noopener">{s.org}</a> : s.org}
+                    </span>
+                  </h3>
+
+                  {s.tagline && <p class="commit-tagline">{s.tagline}</p>}
+
+                  {s.body && <p class="commit-text">{s.body}</p>}
+
+                  <ul class="commit-points">
+                    {s.points.map((point) => (
+                      <li>{point}</li>
+                    ))}
+                  </ul>
+
+                  <p class="commit-tags">
+                    {s.skills.map((skill) => (
+                      <span class="commit-tag">{skill}</span>
+                    ))}
+                    {s.more && <span class="commit-tag commit-tag--more">+{s.more} more</span>}
+                  </p>
+                </div>
+              </article>
             ))
           }
         </div>
+      </div>
+    </section>
 
-        <hr class="tty-rule" />
-
-        <p class="tty-prompt tty-cmd-line">
-          <span class="who">root</span><span class="sep">@</span><span
-            >amaltsev</span>
-          ><span class="sep">:</span><span class="path">~/career</span><span
-            class="sep"
-            >$</span
-          >
-          <span class="tty-cmd">git log</span>
+    <!--
+      The toolkit, as a tree. A pyramid said where a skill sat; a tree says the
+      same thing and is something a reader already knows how to read. The three
+      counts beside each name used to be behind a hover card — they are printed
+      now, because a number that is only there when you point at it is a number
+      most readers never see.
+    -->
+    <section class="skills" id="skills">
+      <div class="skills-head">
+        <span class="eyebrow"><span class="pulse-dot"></span>Toolkit</span>
+        <h2>What the {YEARS_WORD} years added up to</h2>
+        <p>
+          {SKILL_COUNT} skills in {spellNumber(TIER_COUNT)} tiers, foundations
+          first. Beside each one: the jobs it was used on, what certifies it, and
+          where it shipped.
         </p>
+      </div>
 
+      <div class="skill-tree" data-reveal>
         {
-          STOPS.map((s, i) => (
-            <article
-              class="commit"
-              data-reveal
-              data-reveal-delay={Math.min(i, 5) * 50}
-            >
-              <p class="commit-head">
-                <span class="commit-word">commit</span>
-                <span class="commit-hash">{s.hash}</span>
-                <span class="commit-ref">({s.ref})</span>
-              </p>
-              <p class="commit-meta">
-                <span class="commit-key">Author:</span> Anatolii Maltsev
-                &lt;mr.a.maltsev@gmail.com&gt;
-              </p>
-              <p class="commit-meta">
-                <span class="commit-key">Date:</span>
-                <span class="commit-date">{s.date}</span>
-                <span class="commit-span">{s.span}</span>
+          TIERS.map((tier) => (
+            <div class="skill-tier">
+              <p class="skill-tier-name">
+                <span class="skill-tier-dir">{tier.label}/</span>
+                <span class="skill-tier-count">
+                  {tier.skills.length} skill{tier.skills.length === 1 ? '' : 's'}
+                </span>
               </p>
 
-              <div class="commit-body">
-                <h3 class="commit-title">
-                  {s.role}
-                  <span class="commit-org">
-                    — {s.href ? <a href={s.href} rel="noopener">{s.org}</a> : s.org}
-                  </span>
-                </h3>
-
-                {s.tagline && <p class="commit-tagline">{s.tagline}</p>}
-
-                {s.body && <p class="commit-text">{s.body}</p>}
-
-                <ul class="commit-points">
-                  {s.points.map((point) => (
-                    <li>{point}</li>
-                  ))}
-                </ul>
-
-                <p class="commit-tags">
-                  {s.skills.map((skill) => (
-                    <span class="commit-tag">{skill}</span>
-                  ))}
-                  {s.more && <span class="commit-tag commit-tag--more">+{s.more} more</span>}
-                </p>
-              </div>
-            </article>
+              <ul class="tree skill-tree-list">
+                {tier.skills.map((skill) => (
+                  <li>
+                    <span class="skill-name">{skill.name}</span>
+                    <span class="skill-facts">{factsOf(skill)}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
           ))
         }
       </div>
-    </div>
-  </section>
-
-  <!--
-    The toolkit, as a tree. A pyramid said where a skill sat; a tree says the
-    same thing and is something a reader already knows how to read. The three
-    counts beside each name used to be behind a hover card — they are printed
-    now, because a number that is only there when you point at it is a number
-    most readers never see.
-  -->
-  <section class="skills" id="skills">
-    <div class="skills-head">
-      <span class="eyebrow"><span class="pulse-dot"></span>Toolkit</span>
-      <h2>What the {YEARS_WORD} years added up to</h2>
-      <p>
-        {SKILL_COUNT} skills in {spellNumber(TIER_COUNT)} tiers, widest at the
-        base. Beside each one: the jobs it was used on, what certifies it, and
-        where it shipped.
-      </p>
-    </div>
-
-    <div class="skill-tree" data-reveal>
-      {
-        TIERS.map((tier) => (
-          <div class="skill-tier">
-            <p class="skill-tier-name">
-              <span class="skill-tier-dir">{tier.label}/</span>
-              <span class="skill-tier-count">
-                {tier.skills.length} skill{tier.skills.length === 1 ? '' : 's'}
-              </span>
-            </p>
-
-            <ul class="tree skill-tree-list">
-              {tier.skills.map((skill) => (
-                <li>
-                  <span class="skill-name">{skill.name}</span>
-                  <span class="skill-facts">{factsOf(skill)}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        ))
-      }
-    </div>
-  </section>
+    </section>
+  </div>
 </Base>
 
 <style>
+  /* ----- One column --------------------------------------------------------
+     The width of the window on the page, set once. The log used to take the
+     width of its longest line and sit in the middle of the column, which put
+     its left edge somewhere else entirely.
+     ---------------------------------------------------------------------- */
+  .exp-page {
+    --w: 100%;
+  }
+
   /* ----- The log -----------------------------------------------------------
      The window that holds the career. The frame is the same one the shell
      uses, so the two read as the same machine.
@@ -395,20 +370,15 @@ const factsOf = (skill: { jobs: number; certs: number; projects: number }): stri
   }
 
   /* The log is a window around a log, so it is the width of the log. It used
-     to run the whole width of the column — thirteen hundred pixels — while
-     every line in it stopped at six hundred and forty, so half of every
-     window was paper. The log is now the width of its longest line, and it
-     sits in the middle of the column.
-
-     The longest line is longer than it was. The commit messages are the
-     reading on this page, and sixty-eight characters of them left the window
-     at seven hundred pixels in a column thirteen hundred wide — a log about
-     a career that fit in half the screen it was printed on. The text now
-     runs to a hundred columns and the window is the width of that text. */
+     to be the width of its longest line and sit in the middle of the column,
+     which put its left edge at a different x from everything else on the
+     page. A terminal prints every line from column zero, so the window takes
+     the width of the column like every other window on the site, and the
+     commit messages keep their own measure inside it. */
   .tty-log {
-    width: fit-content;
+    width: var(--w, fit-content);
     max-width: 100%;
-    margin-inline: auto;
+    margin-inline: 0;
   }
 
   /* The lede is the page's one paragraph of prose, and it was set to the
@@ -417,29 +387,6 @@ const factsOf = (skill: { jobs: number; certs: number; projects: number }): stri
      the page holds the same ground as the log under it. */
   .hero .lede {
     max-width: 76ch;
-  }
-
-  .ls-oneline {
-    margin-bottom: 0;
-  }
-
-  /* The role column is twenty-four characters wide because the longest role
-     in the log — "Founder & Lead Engineer" — is twenty-three of them, and at
-     twenty-two it ran into the employer standing next to it. */
-  .ls-oneline .ls-row {
-    grid-template-columns: 8ch 12ch 24ch minmax(0, 1fr);
-  }
-
-  .ls-hash {
-    color: var(--braise);
-    font-variant-numeric: tabular-nums;
-  }
-
-  .ls-org {
-    color: var(--faible);
-    font-size: var(--fs-label);
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
   }
 
   /* ----- One commit --------------------------------------------------------
@@ -591,18 +538,13 @@ const factsOf = (skill: { jobs: number; certs: number; projects: number }): stri
     color: var(--faible);
   }
 
-  /* ----- The tree ----------------------------------------------------------
-     Five trays, each with a tree hanging under its label. The trays taper —
-     that is the pyramid the section is drawing, and the taper stays. The
-     trees used to be centred inside their trays, so each one started further
-     to the left than the one above it and the section read as five lists
-     that had drifted apart rather than as one tree in five tiers. Every
-     tree now hangs from the same place in its tray. */
-  .skill-tree .skill-tier {
-    align-items: flex-start;
-  }
-
-  .skill-tree .skill-tree-list {
-    margin-left: 1.6rem;
-  }
+  <!--
+    The tree itself is styled in `src/styles/skills.css`, with the rest of
+    the toolkit. It used to be styled here, in two rules that only worked
+    around the pyramid the section had been before: the trays were centred
+    and tapered, so each tree had to be pushed back to the left by hand.
+    The tree is not a pyramid — it is five labelled trays with the leaves
+    hanging under them — and its appearance belongs in one place with the
+    rest of the toolkit's, not in the page that shows it.
+  -->
 </style>

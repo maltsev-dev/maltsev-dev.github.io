@@ -15,7 +15,12 @@ interface Props {
 
 const {
   title = 'Maltsev · Agentic Engineering',
-  description = 'I build AI systems that survive production: agent runtime security, retrieval quality, and the reliability layer underneath both.',
+  // The fallback for a page that does not declare its own. Every page that
+  // ships declares one; this is here so that a new page cannot ship without
+  // one. It deliberately does not repeat the home page's headline — "I build
+  // AI systems that survive production" is the h1, and a sentence the site
+  // says once is a sentence it says once.
+  description = 'Notes, case studies and a working toolkit: agent runtime security, retrieval quality, and the reliability layer underneath both.',
   image = '/og.png',
   imageAlt = 'Anatolii Maltsev, AI systems built to survive production',
   type = 'website',

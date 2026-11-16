@@ -9,6 +9,10 @@
 # under another name, and it is the same rule as the one above.
 /.tmp-build/
 
+# The other scratch builds. `astro build --outDir .build-<name>` writes one
+# per thing being checked, and they are build outputs under a dotted name.
+/.build-*/
+
 node_modules/
 .astro/
 

@@ -40,11 +40,19 @@
    The section head and the window live inside the same wrapper, so the two
    edges of the section are the same two lines: the heading starts where the
    window starts and its note ends where the window ends.
+
+   The wrapper is left-aligned now. Centring it meant every window on a page
+   started at a different x — five on one page alone — and a terminal prints
+   every line from column zero. The page sets `--w` once, on the element that
+   wraps its sections, and every window on that page takes its width from it:
+   so the windows share a left edge and a right edge, and the page reads as
+   one column. With no `--w` set, the window is still the width of what is
+   inside it.
    ---------------------------------------------------------------------- */
 .tty-fit {
-  width: fit-content;
+  width: var(--w, fit-content);
   max-width: 100%;
-  margin-inline: auto;
+  margin-inline: 0;
 }
 
 /* The title chip. Its background is the panel colour, so the rule behind it
@@ -196,35 +204,6 @@
   align-items: center;
   background: var(--papier);
   padding: 0 0.5ch;
-}
-
-/* ----- The meter ---------------------------------------------------------
-   A bar made of blocks. `[████████░░░░]` — the same shape the ANSI
-   progress bars in a build log have used for thirty years.
-   ---------------------------------------------------------------------- */
-.meter {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-family: var(--font-mono);
-  font-size: var(--fs-label);
-  letter-spacing: 0.06em;
-  color: var(--fort);
-}
-
-.meter-track {
-  color: var(--grid);
-  letter-spacing: -0.02em;
-}
-
-.meter-fill {
-  color: var(--braise);
-  text-shadow: var(--glow);
-}
-
-.meter-value {
-  color: var(--encre);
-  font-variant-numeric: tabular-nums;
 }
 
 /* ----- The listing -------------------------------------------------------
@@ -466,43 +445,6 @@
   text-underline-offset: 0.2em;
 }
 
-/* The summary under a title. It runs the width of the listing rather than
-   stopping at seventy-two characters: a summary capped there wrapped into
-   three lines while two thirds of the window beside it was paper, and what
-   a reader reads first is the wrap. The cap is gone, so the line ends
-   where the sentence ends and only the words that do not fit break. */
-.post-sum {
-  margin: 0.2rem 0 0 2ch;
-  font-family: var(--font-body);
-  font-size: 0.86rem;
-  line-height: 1.5;
-  color: var(--fort);
-}
-
-.post-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.3rem;
-  margin: 0.35rem 0 0 2ch;
-}
-
-.post-tags .tag {
-  padding: 0.05rem 0.4rem;
-  border: var(--filet) solid var(--grid);
-  background: var(--papier);
-  color: var(--fort);
-  font-family: var(--font-mono);
-  font-size: 0.68rem;
-  letter-spacing: 0.05em;
-  text-transform: none;
-  text-decoration: none;
-}
-
-.post-tags .tag:hover {
-  border-color: var(--braise);
-  color: var(--braise);
-}
-
 /* On a phone the chips are links, and a link needs a thumb-sized target.
    The type does not change — only the padding around it. */
 @media (max-width: 40rem) {
@@ -608,16 +550,6 @@
   color: var(--braise);
 }
 
-/* ----- The hash ----------------------------------------------------------
-   A commit hash, or any other opaque identifier. It is drawn in the dim
-   colour because it is a handle on something, not the thing itself.
-   ---------------------------------------------------------------------- */
-.hash {
-  color: var(--faible);
-  font-family: var(--font-mono);
-  letter-spacing: 0.06em;
-}
-
 /* ----- The tree ----------------------------------------------------------
    A file tree: a connector on each leaf, drawn with the box-drawing
    characters themselves.
@@ -655,29 +587,6 @@
 
 .tree li:last-child::before {
   content: '└─';
-}
-
-/* ----- The framed panel --------------------------------------------------
-   A box drawn with characters rather than with borders: the panel's own
-   title is part of the drawing, so the frame follows the shape of the
-   content instead of boxing it in.
-   ---------------------------------------------------------------------- */
-.frame {
-  font-family: var(--font-art);
-  font-size: var(--fs-small);
-  line-height: 1.35;
-  color: var(--grid);
-  white-space: pre;
-  overflow-x: auto;
-  margin: 0;
-}
-
-/* The text inside a frame is set in the art face too, or the box-drawing
-   characters and the letters inside them come from two faces and the
-   columns stop lining up. */
-.frame .in {
-  color: var(--fort);
-  font-family: var(--font-art);
 }
 
 /* ----- The banner --------------------------------------------------------
@@ -720,28 +629,6 @@
 
 a.chip:hover {
   border-color: var(--braise);
-  color: var(--braise);
-}
-
-/* The section marker: a filled block in front of a label. */
-.mark {
-  color: var(--braise);
-  font-family: var(--font-mono);
-}
-
-/* The dimmed note under a section head. */
-.note {
-  font-family: var(--font-mono);
-  font-size: var(--fs-label);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--faible);
-}
-
-/* The number of a thing, set the way a count is set in a log line. */
-.count {
-  font-family: var(--font-mono);
-  font-variant-numeric: tabular-nums;
   color: var(--braise);
 }
 

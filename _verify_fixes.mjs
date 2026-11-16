@@ -383,7 +383,7 @@ async function casecss() {
 async function footer() {
   await withPage(async (page) => {
     const routes = [
-      '/', '/about/', '/experience/', '/projects/', '/blog/', '/freelance/',
+      '/', '/about/', '/experience/', '/projects/', '/blog/',
       '/blog/2026-04-07-the-ai-pipeline-is-not-optional/', '/projects/email-reply-agent/',
     ];
     for (const route of routes) {
@@ -748,7 +748,7 @@ async function contrast() {
 
     // DES-005: focused field text and placeholder, in every theme.
     for (const theme of ['phosphore', 'acidule', 'pierre']) {
-      await page.goto(BASE + '/freelance/', { waitUntil: 'networkidle' });
+      await page.goto(BASE + '/about/', { waitUntil: 'networkidle' });
       await page.evaluate((t) => {
         document.documentElement.dataset.theme = t;
       }, theme);

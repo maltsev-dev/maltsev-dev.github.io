@@ -159,7 +159,7 @@ const trust = (data.trust || '')
   {
     has(data.problem?.cards || []) && (
       <section class="section">
-        <div class="tty tty-problem" data-reveal>
+        <div class="tty tty-fit tty-problem" data-reveal>
           <div class="tty-bar">
             <span class="tty-leds" aria-hidden="true">
               <i class="led led-warn" />
@@ -167,9 +167,6 @@ const trust = (data.trust || '')
               <i class="led led-off" />
             </span>
             <span class="tty-title">~/logs/inbox.log</span>
-            <span class="tty-right" aria-hidden="true">
-              {data.problem!.cards!.length} symptoms
-            </span>
           </div>
 
           <div class="tty-body">
@@ -205,7 +202,7 @@ const trust = (data.trust || '')
   {
     has(data.solution?.cards || []) && (
       <section class="section">
-        <div class="tty tty-solution" data-reveal>
+        <div class="tty tty-fit tty-solution" data-reveal>
           <div class="tty-bar">
             <span class="tty-leds" aria-hidden="true">
               <i class="led led-on led-blink" />
@@ -213,7 +210,6 @@ const trust = (data.trust || '')
               <i class="led led-off" />
             </span>
             <span class="tty-title">~/cases/{slug}</span>
-            <span class="tty-right" aria-hidden="true">active</span>
           </div>
 
           <div class="tty-body">
@@ -272,7 +268,7 @@ const trust = (data.trust || '')
   {
     has(data.results?.cards || []) && (
       <section class="section">
-        <div class="tty tty-results" data-reveal>
+        <div class="tty tty-fit tty-results" data-reveal>
           <div class="tty-bar">
             <span class="tty-leds" aria-hidden="true">
               <i class="led led-on" />
@@ -280,7 +276,6 @@ const trust = (data.trust || '')
               <i class="led led-off" />
             </span>
             <span class="tty-title">~/cases/{slug}</span>
-            <span class="tty-right" aria-hidden="true">before / after</span>
           </div>
 
           <div class="tty-body">
@@ -321,7 +316,7 @@ const trust = (data.trust || '')
   {
     has(data.flow?.steps || []) && (
       <section class="section" id="how">
-        <div class="tty tty-flow" data-reveal>
+        <div class="tty tty-fit tty-flow" data-reveal>
           <div class="tty-bar">
             <span class="tty-leds" aria-hidden="true">
               <i class="led led-on" />
@@ -329,9 +324,6 @@ const trust = (data.trust || '')
               <i class="led led-off" />
             </span>
             <span class="tty-title">~/cases/{slug}/pipeline.sh</span>
-            <span class="tty-right" aria-hidden="true">
-              {data.flow!.steps!.length} stages
-            </span>
           </div>
 
           <div class="tty-body">
@@ -367,7 +359,7 @@ const trust = (data.trust || '')
   {
     has(data.risk?.cards || []) && (
       <section class="section">
-        <div class="tty tty-risk" data-reveal>
+        <div class="tty tty-fit tty-risk" data-reveal>
           <div class="tty-bar">
             <span class="tty-leds" aria-hidden="true">
               <i class="led led-warn led-blink" />
@@ -375,7 +367,6 @@ const trust = (data.trust || '')
               <i class="led led-off" />
             </span>
             <span class="tty-title">~/logs/risk.log</span>
-            <span class="tty-right" aria-hidden="true">still going</span>
           </div>
 
           <div class="tty-body">
@@ -411,7 +402,7 @@ const trust = (data.trust || '')
   {
     has(data.pricing?.pairs || []) && (
       <section class="section">
-        <div class="tty tty-pricing" data-reveal>
+        <div class="tty tty-fit tty-pricing" data-reveal>
           <div class="tty-bar">
             <span class="tty-leds" aria-hidden="true">
               <i class="led led-on" />
@@ -419,7 +410,6 @@ const trust = (data.trust || '')
               <i class="led led-off" />
             </span>
             <span class="tty-title">~/cases/{slug}/pricing.txt</span>
-            <span class="tty-right" aria-hidden="true">terms</span>
           </div>
 
           <div class="tty-body">
@@ -460,7 +450,7 @@ const trust = (data.trust || '')
     is the way to write without the script.
   -->
   <section class="section">
-    <div class="tty tty-contact" data-reveal>
+    <div class="tty tty-fit tty-contact" data-reveal>
       <div class="tty-bar">
         <span class="tty-leds" aria-hidden="true">
           <i class="led led-on" />
@@ -468,7 +458,6 @@ const trust = (data.trust || '')
           <i class="led led-off" />
         </span>
         <span class="tty-title">~/contact</span>
-        <span class="tty-right" aria-hidden="true">open</span>
       </div>
 
       <div class="tty-body">
@@ -489,8 +478,6 @@ const trust = (data.trust || '')
         <p class="contact-note">
           This is an account of a system that shipped. If something here is
           close to the work you are trying to do, I am the person who built it.
-          Half an hour on a call is enough for both of us to know whether it
-          is work I should be doing.
         </p>
 
         <p class="contact-go">

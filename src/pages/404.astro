@@ -14,7 +14,6 @@ const PLACES = [
   { href: '/', name: 'about', desc: 'who this is and what the work is' },
   { href: '/blog/', name: 'writing', desc: 'every post, newest first' },
   { href: '/projects/', name: 'projects', desc: 'the systems, with the numbers' },
-  { href: '/freelance/', name: 'engagements', desc: 'how the work is done' },
 ];
 ---
 
@@ -128,7 +127,7 @@ const PLACES = [
   }
 
   .tty-404 {
-    width: min(46rem, 100%);
+    width: min(var(--measure-doc), 100%);
   }
 
   .tty-404 .tty-body {
@@ -181,7 +180,7 @@ const PLACES = [
 
   .tty-note {
     margin: 1.2rem 0 0;
-    max-width: 56ch;
+    max-width: var(--measure-prose);
     font-family: var(--font-body);
     font-size: 0.9rem;
     line-height: 1.55;

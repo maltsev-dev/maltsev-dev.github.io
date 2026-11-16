@@ -30,11 +30,10 @@ type PostEntry = CollectionEntry<'posts'>;
 // day the pyramid grew.
 const PAGES = [
   { path: '/', label: 'Home', desc: 'The pitch in one screen: what the work is and where to go next.' },
-  { path: '/about/', label: 'Profile', desc: 'Method rather than CV: how engagements run, and what is on the desk right now.' },
+  { path: '/about/', label: 'Profile', desc: 'Method rather than CV: how the work is done, and what is on the desk right now.' },
   { path: '/blog/', label: 'Writing', desc: 'Every post, newest first, filed by topic.' },
   { path: '/projects/', label: 'Projects', desc: 'Case studies and shipped milestones side by side.' },
   { path: '/experience/', label: 'Experience', desc: `Six stops over ${spellNumber(yearsOfExperience())} years, then the ${SKILL_COUNT}-skill toolkit pyramid with provenance per skill.` },
-  { path: '/freelance/', label: 'Engagements', desc: 'The five shapes of work taken on, what each one delivers, and the four-step run: scope call, written proposal, build in the open, handover.' },
 ];
 
 /** The index line for one post: title, one-line description, date and tags. */

@@ -4,13 +4,10 @@ import Base from '../layouts/Base.astro';
 import AiStack from '../components/AiStack.astro';
 import Banner from '../components/Banner.astro';
 import Portrait from '../components/Portrait.astro';
-import { describe, readingTime, MAX_DESCRIPTION } from '../lib/summarize';
-import { AUTHOR } from '../lib/schema';
-import { tagSlug, tagLabel } from '../lib/tags';
+import { readingTime } from '../lib/summarize';
 import { formatDateShort } from '../data/dates';
 import { MILESTONES } from '../data/milestones';
 import { SKILL_COUNT, yearsOfExperience } from '../lib/profile';
-import { TOPICS, topicFor } from '../data/topics';
 import { displayTitle } from '../lib/text';
 
 const posts = (await getCollection('posts')).sort((a, b) =>
@@ -27,72 +24,58 @@ const cases = await getCollection('projects');
  * post lands or a skill is added — and a portfolio whose own numbers are
  * wrong is arguing against itself. These read from the same collections the
  * rest of the site reads from.
+ *
+ * Each number links to the page that holds the receipt. A count a reader
+ * cannot check is a claim; a count with a link behind it is an argument.
  */
 const STATS = [
-  { label: 'Years of practice', value: yearsOfExperience() },
-  { label: 'Skills in the toolkit', value: SKILL_COUNT },
-  { label: 'Systems shipped', value: MILESTONES.length + cases.length },
-  { label: 'Notes written', value: posts.length },
+  {
+    label: 'Years of practice',
+    value: yearsOfExperience(),
+    href: '/experience/',
+    receipt: `Years of practice: see the ${yearsOfExperience()} years`,
+  },
+  {
+    label: 'Skills in the toolkit',
+    value: SKILL_COUNT,
+    href: '/experience/#skills',
+    receipt: `Skills in the toolkit: see the ${SKILL_COUNT} skills`,
+  },
+  {
+    label: 'Systems shipped',
+    value: MILESTONES.length + cases.length,
+    href: '/projects/',
+    receipt: `Systems shipped: see the ${MILESTONES.length + cases.length} systems`,
+  },
+  {
+    label: 'Notes written',
+    value: posts.length,
+    href: '/blog/',
+    receipt: `Notes written: see the ${posts.length} notes`,
+  },
 ];
 
 /**
  * What the work is, in three parts.
  *
- * The three lines are the lede's three clauses, and each one is a door
- * rather than a promise: the number and the destination are both real, so
- * the claim can be checked by following it. The third one is the least
- * glamorous and the most load-bearing — the layer under the two above it is
- * where an agent either survives production or does not.
+ * Three names, and nothing else. The cards used to carry a line of prose
+ * under the title and a count of notes behind it, and both were saying the
+ * same thing the page already says somewhere else — the drawing below lists
+ * the stages, the pages behind the counts hold the work. What is left is
+ * the three names, which is what the reader came for.
  */
-const topicSize = (id: string): number =>
-  TOPICS.find((t) => t.id === id)?.posts.length ?? 0;
-
-const reliabilityNotes = posts.filter((post) =>
-  post.data.tags.includes('reliability')
-).length;
-
-const PILLARS = [
-  {
-    num: '01',
-    title: 'Agent runtime security',
-    body: 'Authority, not prompting. Whether an agent may call a tool or spend a budget is a runtime decision: scoped grants, enforced budgets, durable approvals, and a record of every call.',
-    href: '/blog/?topic=agent-runtime',
-    proof: `${topicSize('agent-runtime')} notes on the seam between a model and its tools`,
-  },
-  {
-    num: '02',
-    title: 'Retrieval that cites',
-    body: 'An answer that cannot name its passage is a guess with a bibliography. Grounded retrieval, permission-aware filtering, reranking, and a refusal when the evidence is not there.',
-    href: '/projects/',
-    proof: 'Case studies, including permission-aware internal search',
-  },
-  {
-    num: '03',
-    title: 'The reliability layer',
-    body: 'Traces, budgets, retries, and the failure states nobody designs on purpose: what an agent does when the run goes wrong, what it costs, and how anyone finds out.',
-    href: '/blog/?tag=reliability',
-    proof: `${reliabilityNotes} notes on what happens when the run goes wrong`,
-  },
+const AREAS = [
+  { title: 'Agentic Engineering' },
+  { title: 'AI Architecture' },
+  { title: 'Forward Deployment Engineering' },
 ];
 
-// The same line the post index uses: the post's own description when it has
-// one, the first real sentence of the body when it does not.
+// The same line the post index uses: the title, the date, the reading time.
 const recentPosts = recent.map((post) => ({
   href: `/blog/${post.id}/`,
   title: displayTitle(post.data.title),
   date: formatDateShort(post.data.date),
-  iso: post.data.date ?? '',
   minutes: readingTime(post.body),
-  summary: describe(post.data.title, post.body, post.data.description, MAX_DESCRIPTION),
-  tags: post.data.tags,
-  topic: topicFor(post.id),
-}));
-
-const work = cases.map((project) => ({
-  href: `/projects/${project.data.slug}/`,
-  title: project.data.title,
-  description: project.data.description ?? '',
-  tags: project.data.tags,
 }));
 ---
 
@@ -101,218 +84,201 @@ const work = cases.map((project) => ({
   description="I build AI systems that survive production: agent runtime security, retrieval quality, and the reliability layer underneath both."
 >
   <!--
-    The head of the page is the boot: the wordmark drawn in block characters,
-    the prompt that says who is typing and where, and the claim in plain
-    words underneath. A terminal shows the machine before it shows the work,
-    and so does this.
+    One column, one left edge.
+
+    The page sets `--w` once, here, and every window inside it takes its
+    width from that. A terminal prints every line from column zero, and the
+    windows on this page used to sit in the middle of the column instead of
+    stretching to both edges of it, so the section headings and the windows
+    under them had two different left edges to line up with.
   -->
-  <section class="hero home-hero">
-    <Banner />
+  <div class="home-page">
+    <!--
+      The head of the page is the boot: the wordmark drawn in block
+      characters, the prompt that says who is typing and where, and the claim
+      in plain words underneath. A terminal shows the machine before it shows
+      the work, and so does this.
+    -->
+    <section class="hero home-hero">
+      <div class="home-head">
+        <Banner />
 
-    <p class="tty-prompt home-prompt" data-reveal>
-      <span class="who">root</span><span class="sep">@</span><span
-        >amaltsev</span>
-      ><span class="sep">:</span><span class="path">~</span><span class="sep">$</span>
-      <span class="tty-cmd">cat about.md</span>
-    </p>
+        <p class="tty-prompt home-prompt" data-reveal>
+          <span class="who">root</span><span class="sep">@</span><span
+            >amaltsev</span
+          ><span class="sep">:</span><span class="path">~</span><span class="sep">$</span>
+          <span class="tty-cmd">cat about.md</span>
+        </p>
+      </div>
 
-    <h1 data-reveal data-reveal-delay="60">
-      I build AI systems that survive production.
-    </h1>
+      <!--
+        The claim.
 
-    <p class="lede" data-reveal data-reveal-delay="120">
-      Agent runtime security, retrieval quality, and the reliability layer
-      underneath both, for teams that need it to work.
-    </p>
+        It stands in the column beside the picture, under the name, where
+        the reader meets it before anything else. It used to sit at the
+        bottom of the hero, under the picture as well, with three hundred
+        and fifty pixels of empty paper between it and the name above it —
+        the sentence that carries the page was the one the page had the
+        most room to lose.
+      -->
+      <h1 data-reveal data-reveal-delay="60">
+        I build AI systems that survive production.
+      </h1>
 
-    <div class="btn-row home-cta" data-reveal data-reveal-delay="180">
-      <button type="button" class="btn btn-primary" data-open-letter>Work with me</button>
-      <a class="btn" href="/projects/">See what shipped</a>
-    </div>
+      <div class="btn-row home-cta" data-reveal data-reveal-delay="180">
+        <button type="button" class="btn btn-primary" data-open-letter>Work with me</button>
+        <a class="btn" href="/projects/">See what shipped</a>
+      </div>
+
+      <!--
+        The four numbers, each one a cell: the value on top, in the accent and
+        as large as the page allows, and the name of the thing underneath it.
+
+        They used to be a table of contents with a dotted leader between the
+        label and the value, which is a way of saying "there is a number over
+        there" and asking the reader to go and look. A portfolio whose numbers
+        are its argument should not have to be hunted for. Each number is a
+        link to the page that has the receipt.
+      -->
+      <dl class="home-stats" data-reveal data-reveal-delay="240">
+        {
+          STATS.map((stat) => (
+            <div class="stat">
+              <dt>{stat.label}</dt>
+              <dd class="stat-value">
+                <a href={stat.href} aria-label={stat.receipt}>{stat.value}</a>
+              </dd>
+            </div>
+          ))
+        }
+      </dl>
+
+      <!--
+        The portrait, in the corner of the machine.
+
+        It is drawn in the same block characters as the wordmark above it, on
+        the same grid, and it is a window of the same kind as every other
+        window on the site — so it reads as something the machine is doing
+        rather than as a picture that was pasted in. The photograph itself
+        never ships: it is turned into tones at build time, and the page
+        carries the tones.
+      -->
+      <Portrait />
+    </section>
 
     <!--
-      The four numbers, each one a cell: the value on top, in the accent and
-      as large as the page allows, and the name of the thing underneath it.
-
-      They used to be a table of contents with a dotted leader between the
-      label and the value, which is a way of saying "there is a number over
-      there" and asking the reader to go and look. A portfolio whose numbers
-      are its argument should not have to be hunted for.
+      What the work is, in three parts. Three names on one ground: the three
+      areas of the practice, side by side, with nothing under them. The
+      counts and the lines of prose that used to sit there said the same
+      thing twice — once in the card and once on the pages the card linked
+      to — and the drawing below already carries the detail.
     -->
-    <dl class="home-stats" data-reveal data-reveal-delay="240">
-      {
-        STATS.map((stat) => (
-          <div class="stat">
-            <dt>{stat.label}</dt>
-            <dd class="stat-value">{stat.value}</dd>
-          </div>
-        ))
-      }
-    </dl>
+    <section class="section">
+      <div class="section-head">
+        <h2 data-reveal data-anim="underline">What I do</h2>
+      </div>
+
+      <div class="pillars">
+        {
+          AREAS.map((area, i) => (
+            <article class="pillar" data-reveal data-reveal-delay={i * 70}>
+              <h3 class="pillar-title" data-text={area.title}>{area.title}</h3>
+            </article>
+          ))
+        }
+      </div>
+    </section>
 
     <!--
-      The portrait, in the corner of the machine.
+      The architecture. It used to sit in a column beside a list of links, where
+      it was shrunk to fit next to a directory that said less. It gets the whole
+      width here: ten stages, from the service skeleton to the edge runtime, and
+      a stage can be clicked for the detail behind it.
 
-      It is drawn in the same block characters as the wordmark above it, on
-      the same grid, and it is a window of the same kind as every other
-      window on the site — so it reads as something the machine is doing
-      rather than as a picture that was pasted in. The photograph itself
-      never ships: it is turned into tones at build time, and the page
-      carries the tones.
+      The drawing is the section. The claim that stood above it, and the table
+      of contents that listed the ten stages as text, said the same thing the
+      drawing already says — and the drawing says it in the one form a reader
+      can act on, by clicking a stage and reading what is behind it.
+
+      The name of it is the heading above: the areas of the practice, drawn.
     -->
-    <Portrait />
-  </section>
-
-  <!--
-    What the work is, in three parts. Each card is a door: a claim, the number
-    behind it, and a link to the writing or the work that backs it up.
-  -->
-  <section class="section">
-    <div class="section-head">
-      <h2 data-reveal data-anim="underline">What I do</h2>
-      <span class="card-meta">three things, in order of how often they come up</span>
-    </div>
-
-    <div class="pillars">
-      {
-        PILLARS.map((pillar, i) => (
-          <article class="pillar" data-reveal data-reveal-delay={i * 70}>
-            <span class="pillar-num" aria-hidden="true">
-              {pillar.num}
-            </span>
-            <h3 class="pillar-title">{pillar.title}</h3>
-            <p class="pillar-body">{pillar.body}</p>
-            <a class="pillar-link" href={pillar.href}>
-              {pillar.proof}
-              <span class="pillar-go" aria-hidden="true">→</span>
-            </a>
-          </article>
-        ))
-      }
-    </div>
-  </section>
-
-  <!-- The three deep-dive case studies, as a directory listing. -->
-  <section class="section home-listing">
-    <div class="section-head">
-      <h2 data-reveal data-anim="underline">Selected work</h2>
-      <a class="card-meta" href="/projects/">All work →</a>
-    </div>
-
-    <div class="tty tty-listing" data-reveal>
-      <div class="tty-bar">
-        <span class="tty-leds" aria-hidden="true">
-          <i class="led led-on"></i>
-          <i class="led led-off"></i>
-          <i class="led led-off"></i>
-        </span>
-        <span class="tty-title">/projects</span>
-        <span class="tty-right" aria-hidden="true">{work.length} entries</span>
+    <section class="section">
+      <div class="section-head">
+        <h2 data-reveal data-anim="underline">Area of expertise</h2>
       </div>
 
-      <div class="tty-body">
-        <div class="ls">
-          <div class="ls-row ls-head">
-            <span class="ls-mode">mode</span>
-            <span class="ls-size">size</span>
-            <span class="ls-date">kind</span>
-            <span class="ls-name">name</span>
+      <div class="home-figure" data-reveal>
+        <AiStack />
+      </div>
+    </section>
+
+    <!--
+      The newest writing, as a listing rather than as cards: a directory of
+      files, newest first. The card row it replaced was three cards of prose
+      for three notes, which is a lot of page to say "here are three things".
+    -->
+    <section class="section home-listing">
+      <div class="section-head">
+        <h2 data-reveal data-anim="underline">Latest writing</h2>
+        <a class="card-meta" href="/blog/">All writing →</a>
+      </div>
+
+      <div class="tty tty-listing tty-fit" data-reveal>
+        <div class="tty-bar">
+          <span class="tty-leds" aria-hidden="true">
+            <i class="led led-on"></i>
+            <i class="led led-off"></i>
+            <i class="led led-off"></i>
+          </span>
+          <span class="tty-title">~/writing</span>
+        </div>
+
+        <div class="tty-body">
+          <div class="ls">
+            <div class="ls-row ls-row--write ls-head">
+              <span class="ls-mode">mode</span>
+              <span class="ls-date">date</span>
+              <span class="ls-size">min</span>
+              <span class="ls-name">name</span>
+            </div>
+            {
+              recentPosts.map((p) => (
+                <div class="ls-row ls-row--write">
+                  <span class="ls-mode">-rw-r--r--</span>
+                  <span class="ls-date">{p.date}</span>
+                  <span class="ls-size">{p.minutes}</span>
+                  <span class="ls-name">
+                    <a href={p.href}>{p.title}</a>
+                  </span>
+                </div>
+              ))
+            }
           </div>
-          {
-            work.map((w) => (
-              <div class="ls-row">
-                <span class="ls-mode">drwxr-xr-x</span>
-                <span class="ls-size">{w.tags.length} tag</span>
-                <span class="ls-date">case</span>
-                <span class="ls-name">
-                  <a href={w.href}>{w.title}</a>
-                </span>
-              </div>
-            ))
-          }
         </div>
       </div>
-    </div>
-  </section>
-
-  <!--
-    The architecture. It used to sit in a column beside a list of links, where
-    it was shrunk to fit next to a directory that said less. It gets the whole
-    width here: ten stages, from the service skeleton to the edge runtime, and
-    a stage can be clicked for the detail behind it.
-
-    The drawing is the section. The claim that stood above it, and the table
-    of contents that listed the ten stages as text, said the same thing the
-    drawing already says — and the drawing says it in the one form a reader
-    can act on, by clicking a stage and reading what is behind it.
-  -->
-  <section class="section">
-    <div class="home-figure" data-reveal>
-      <AiStack />
-    </div>
-  </section>
-
-  <!--
-    The newest writing, as a listing rather than as cards: a directory of
-    files, newest first. The card row it replaced was three cards of prose
-    for three notes, which is a lot of page to say "here are three things".
-  -->
-  <section class="section home-listing">
-    <div class="section-head">
-      <h2 data-reveal data-anim="underline">Latest writing</h2>
-      <a class="card-meta" href="/blog/">All writing →</a>
-    </div>
-
-    <div class="tty tty-listing" data-reveal>
-      <div class="tty-bar">
-        <span class="tty-leds" aria-hidden="true">
-          <i class="led led-on"></i>
-          <i class="led led-off"></i>
-          <i class="led led-off"></i>
-        </span>
-        <span class="tty-title">~/writing</span>
-        <span class="tty-right" aria-hidden="true">{posts.length} notes</span>
-      </div>
-
-      <div class="tty-body">
-        <div class="ls">
-          <div class="ls-row ls-row--write ls-head">
-            <span class="ls-mode">mode</span>
-            <span class="ls-date">date</span>
-            <span class="ls-size">min</span>
-            <span class="ls-name">name</span>
-          </div>
-          {
-            recentPosts.map((p) => (
-              <div class="ls-row ls-row--write">
-                <span class="ls-mode">-rw-r--r--</span>
-                <span class="ls-date">{p.date}</span>
-                <span class="ls-size">{p.minutes}</span>
-                <span class="ls-name">
-                  <a href={p.href}>{p.title}</a>
-                </span>
-              </div>
-            ))
-          }
-        </div>
-      </div>
-    </div>
-  </section>
+    </section>
+  </div>
 </Base>
 
 <style>
+  /* ----- The column --------------------------------------------------------
+     The width of every window on this page, set once.
+
+     `--w` is what `.tty-fit` reads, so the two listing windows below take
+     their width from this one line and every window and every section head
+     on the page starts at the same x and ends at the same one.
+     ---------------------------------------------------------------------- */
+  .home-page {
+    --w: 100%;
+  }
+
   /* ----- The head of the page ---------------------------------------------
      The wordmark, the prompt, the claim, the buttons and the numbers. On a
-     wide screen the wordmark and the prompt run down the left and the claim
-     sits beside them; below the breakpoint everything stacks, because a
-     lede beside a headline only works where there is width for both.
-
-     The hero is a query container: the lede is one line, and a line that has
-     to fit has to be able to ask how wide the column it is in is.
+     wide screen the wordmark and the prompt run down the left and the
+     picture keeps the corner; below the breakpoint everything stacks.
      ---------------------------------------------------------------------- */
   .home-hero {
     padding-block: clamp(1.6rem, 6vh, 3.4rem) clamp(1.5rem, 4vh, 3rem);
-    container-type: inline-size;
   }
 
   .home-hero :global(.banner-wrap) {
@@ -328,68 +294,84 @@ const work = cases.map((project) => ({
     color: var(--encre);
   }
 
-  /*
-    The lede. One line.
-
-    It used to sit in the narrow column beside the shape and break after
-    "layer" — a sentence that argues about reliability broken in half by the
-    width of a column is a sentence that reads like a caption. It now runs the
-    width of the hero and the type scales with it, so the line stays a line
-    from a phone in landscape to a wide desktop, and wraps only where there
-    is no other way to set it.
-  */
-  .home-hero .lede {
-    max-width: none;
-    font-size: clamp(0.8rem, calc((100cqw - 2rem) / 60), 1.1rem);
-  }
-
   @media (min-width: 62rem) {
     .home-hero {
       display: grid;
-      grid-template-columns: minmax(0, 1fr) minmax(0, 27rem);
+      /*
+        Two columns and three rows of the left one.
+
+        The picture stands in the right column for the whole of the top
+        block, and the name, the claim and the buttons stack down the
+        left beside it. They used to stack underneath it instead, which
+        meant the name sat alone at the top of a page and the claim sat
+        alone at the bottom of it, with three hundred and fifty pixels of
+        empty paper between them and the picture filling the hole in the
+        right-hand column. Nothing was wrong with the picture; the hole
+        was the arrangement.
+
+        So the picture keeps its corner, and the claim comes up to stand
+        next to it. The picture is a column narrower than it was — twenty
+        rem instead of twenty-seven — because the claim now has to fit
+        beside it, and the picture gives up the width rather than the
+        claim giving up the line.
+      */
+      grid-template-columns: minmax(0, 1fr) minmax(0, 20rem);
       grid-template-areas:
-        'banner  art'
-        'prompt  art'
-        'title   art'
-        'cta     art'
-        'lede    lede'
-        'stats   stats';
+        'head   art'
+        'title  art'
+        'cta    art'
+        'stats  stats';
       column-gap: clamp(2rem, 5vw, 4.5rem);
       row-gap: clamp(0.6rem, 1.6vw, 1.2rem);
       /*
         The top of the column, not the bottom.
 
         The picture in the corner is the tallest thing in the hero, so the
-        rows it spans are taller than the text beside it. Aligned to the
-        bottom, that difference fell between the wordmark, the prompt and
-        the headline as a hundred pixels of empty paper each — the hero
-        read as three separate blocks with holes in them. Aligned to the
-        top, the wordmark starts on the same line as the window frame and
-        the slack gathers below, where the eye reads it as the picture's
-        own space.
+        rows it spans are taller than the name and the claim beside them.
+        Aligned to the bottom, that difference fell between the wordmark
+        and the prompt as a hundred pixels of empty paper — the hero read
+        as two separate blocks with a hole in them. Aligned to the top,
+        the wordmark starts on the same line as the window frame and the
+        slack gathers below, where the eye reads it as the picture's own
+        space.
       */
       align-items: start;
     }
 
-    .home-hero :global(.banner-wrap) {
-      grid-area: banner;
-      /* The rows of the grid carry the space between the blocks; a margin
-         under the wordmark as well would double it. */
-      margin-bottom: 0;
+    .home-head {
+      grid-area: head;
+      min-width: 0;
+      /*
+        The bottom of its row, so the name drops to meet the claim.
+
+        The rows the picture spans are taller than the name and the
+        prompt in them, and the slack gathers under them. Left at the top
+        of the row the name floats at the head of the page and the claim
+        stays a hundred and fifty pixels below it; sitting at the bottom,
+        the name comes down to the claim and the picture carries the space
+        above.
+      */
+      align-self: end;
     }
 
-    .home-prompt {
-      grid-area: prompt;
+    .home-head .home-prompt {
+      /* Inside the block the prompt has nothing under it to push away from;
+         the space under it belongs to the headline below the block. */
+      margin-bottom: 0;
     }
 
     .home-hero h1 {
       grid-area: title;
       margin-bottom: 0;
-    }
+      /*
+        The claim, in the column beside the picture.
 
-    .home-hero .lede {
-      grid-area: lede;
-      margin-bottom: 0;
+        It is the loudest thing on the page, so it keeps its size, and the
+        column beside the picture is the one that gives way: at thirty-six
+        and a half pixels the line is nine hundred and twenty pixels wide,
+        which is what the left column has to offer at this size.
+      */
+      font-size: clamp(1.35rem, 3.6vw, 2.3rem);
     }
 
     .home-hero .home-cta {
@@ -451,6 +433,10 @@ const work = cases.map((project) => ({
     gap: 0 1.1rem;
     padding: 0.8rem 1rem 0.9rem;
     background: var(--papier);
+    /* The cell is the hit area of the number in it, so the whole cell
+       carries the pointer and the reader does not have to find the
+       underline before they can follow the count to its receipt. */
+    position: relative;
   }
 
   /* The name of the thing, on the same line as the number and right beside
@@ -485,9 +471,34 @@ const work = cases.map((project) => ({
     text-shadow: var(--glow);
   }
 
+  /* The number is the link. It is underlined so that it reads as one, and
+     the name of the thing stays outside the link, so the cell still says
+     "69 notes written" to a screen reader. */
+  .stat-value a {
+    color: inherit;
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.16em;
+  }
+
+  .stat-value a:hover {
+    color: var(--fort);
+  }
+
+  .stat-value a::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+  }
+
   /* ----- What I do ---------------------------------------------------------
      Three panels on one ground, separated by hairlines rather than by gaps:
      they read as one set of three, not as three separate cards.
+
+     Each one holds a name and nothing else. The line of prose and the
+     count of notes that used to be under the name are gone: they said the
+     same thing twice, and the drawing further down the page says it in
+     the one form a reader can act on.
      ---------------------------------------------------------------------- */
   .pillars {
     display: grid;
@@ -507,76 +518,175 @@ const work = cases.map((project) => ({
   .pillar {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
-    padding: 1.2rem 1.25rem 1.35rem;
+    justify-content: center;
+    align-items: center;
+    padding: 1.3rem 1.25rem;
     background: var(--papier);
   }
 
-  .pillar-num {
-    font-family: var(--font-mono);
-    font-size: var(--fs-label);
-    letter-spacing: 0.12em;
-    color: var(--braise);
-  }
+  /*
+    The name, centred in its rectangle and set in capitals.
 
+    The names are labels, not sentences: the site says its labels in capitals
+    and mono, and these three are labels — the areas of the practice. The
+    letter spacing opens them up so a name like FORWARD DEPLOYMENT
+    ENGINEERING reads as one word of type rather than a wall of capitals,
+    and the longest of them breaks over two lines rather than being squeezed
+    into the width of the column it has to sit in.
+  */
   .pillar-title {
+    position: relative;
+    display: inline-block;
+    max-width: 100%;
     margin: 0;
-    font-size: clamp(1.05rem, 2.2vw, 1.25rem);
-    line-height: 1.2;
-  }
-
-  .pillar-body {
-    margin: 0;
-    color: var(--fort);
-    font-size: var(--fs-lead);
-  }
-
-  .pillar-link {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: var(--sp-3);
-    margin-top: auto;
-    padding-top: var(--sp-3);
-    border-top: var(--filet) solid var(--grid);
-    font-family: var(--font-mono);
-    font-size: var(--fs-label);
+    font-size: clamp(0.95rem, 1.9vw, 1.15rem);
+    line-height: 1.3;
     letter-spacing: 0.08em;
     text-transform: uppercase;
+    text-align: center;
+    text-wrap: balance;
+  }
+
+  /* ----- The glitch --------------------------------------------------------
+     Two copies of the name are printed on top of it and torn.
+
+     The tube that is supposed to be showing the name loses sync with itself
+     for a moment: one copy is printed in the accent and one in the text
+     colour, each cut into horizontal bands that jump a few pixels to the
+     left and to the right, and then the name is itself again. The copies
+     carry the same string as the name — `data-text` — so what tears is the
+     word, not a second set of words.
+
+     The tear is short and rare. A glitch that runs all the time is not a
+     glitch, it is a page that cannot be read: the name is the thing the
+     reader came for, and a name that is being torn apart is a name they
+     have to wait for.
+     ---------------------------------------------------------------------- */
+  .pillar-title::before,
+  .pillar-title::after {
+    content: attr(data-text);
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    /* Cut away to nothing: the bands are what show, not the whole copy. */
+    clip-path: inset(0 0 100% 0);
+  }
+
+  .pillar-title::before {
     color: var(--braise);
-    text-decoration: none;
+    animation: pillar-glitch-a 6.5s steps(1, end) infinite;
   }
 
-  .pillar-link:hover {
-    color: var(--fort);
+  .pillar-title::after {
+    color: var(--encre);
+    animation: pillar-glitch-b 6.5s steps(1, end) infinite;
   }
 
-  .pillar-go {
-    transition: transform 180ms ease;
+  /*
+    The three do not tear at the same instant. A machine that loses sync on
+    one line at a time looks like a machine with a fault in it; three lines
+    tearing together look like the page is coming apart.
+  */
+  .pillar:nth-child(2) .pillar-title::before,
+  .pillar:nth-child(2) .pillar-title::after {
+    animation-delay: 0.55s;
   }
 
-  .pillar-link:hover .pillar-go {
-    transform: translateX(3px);
+  .pillar:nth-child(3) .pillar-title::before,
+  .pillar:nth-child(3) .pillar-title::after {
+    animation-delay: 1.1s;
+  }
+
+  /*
+    The bands. Each keyframe is a horizontal slice of the name, held for a
+    moment and then jumped — `steps(1, end)` is what makes the jump a jump
+    and not a slide, which is the whole difference between a machine losing
+    sync and a machine sliding.
+  */
+  @keyframes pillar-glitch-a {
+    0%,
+    87%,
+    100% {
+      clip-path: inset(0 0 100% 0);
+      transform: translateX(0);
+    }
+    88% {
+      clip-path: inset(6% 0 68% 0);
+      transform: translateX(-4px);
+    }
+    90% {
+      clip-path: inset(30% 0 46% 0);
+      transform: translateX(3px);
+    }
+    92% {
+      clip-path: inset(54% 0 26% 0);
+      transform: translateX(-2px);
+    }
+    94% {
+      clip-path: inset(74% 0 10% 0);
+      transform: translateX(2px);
+    }
+    96% {
+      clip-path: inset(0 0 100% 0);
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes pillar-glitch-b {
+    0%,
+    87%,
+    100% {
+      clip-path: inset(0 0 100% 0);
+      transform: translateX(0);
+    }
+    88% {
+      clip-path: inset(18% 0 58% 0);
+      transform: translateX(4px);
+    }
+    90% {
+      clip-path: inset(42% 0 34% 0);
+      transform: translateX(-3px);
+    }
+    92% {
+      clip-path: inset(64% 0 16% 0);
+      transform: translateX(2px);
+    }
+    94% {
+      clip-path: inset(82% 0 4% 0);
+      transform: translateX(-2px);
+    }
+    96% {
+      clip-path: inset(0 0 100% 0);
+      transform: translateX(0);
+    }
+  }
+
+  /* The pointer brings the tear on: the name is asked for, so it answers
+     with one. */
+  @media (hover: hover) {
+    .pillar:hover .pillar-title::before,
+    .pillar:hover .pillar-title::after {
+      animation-duration: 1.6s;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .pillar-title::before,
+    .pillar-title::after {
+      animation: none;
+      clip-path: inset(0 0 100% 0);
+    }
   }
 
   /* ----- The windows ------------------------------------------------------
-     Every window on this page is eighty columns wide, and every window sits
-     in the middle of the column instead of stretching to both edges of it. A
-     terminal stretched across a wide screen is a window with a third of a
-     terminal in it and two thirds of nothing.
+     A listing window is the width of the page column, and so is the heading
+     above it, so the two edges of the section are the same two lines.
 
-     The heading above a window is the same width as the window, so the two
-     edges of the section are the same two lines.
-
-     Eighty columns of the mono face at the small size is 672 pixels, and the
-     window's frame and padding take another thirty-four: 706 pixels, or
-     forty-four and an eighth of a rem.
+     The windows used to be capped at eighty columns and centred in the
+     column, which left the titles of the writing wrapping in a fourth of
+     the space the same listing gets on /blog/. The cap is what made them
+     wrap, and it goes with it.
      ---------------------------------------------------------------------- */
-  .home-listing .section-head,
-  .home-listing .tty-listing {
-    max-width: 44.125rem;
-    margin-inline: auto;
-  }
 
   /* ----- The listings ------------------------------------------------------
      The window that holds a listing. The frame is the same one every other
@@ -604,10 +714,5 @@ const work = cases.map((project) => ({
     container-type: inline-size;
     container-name: figure;
   }
-
-  @media (prefers-reduced-motion: reduce) {
-    .pillar-go {
-      transition: none;
-    }
-  }
 </style>
+

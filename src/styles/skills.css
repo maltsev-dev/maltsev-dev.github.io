@@ -3,12 +3,17 @@
 
    The second half of /experience/. The track above it moves sideways and is
    read in a glance; this is the part that scrolls down, because it is the part
-   that wants looking at: the whole toolkit at once, as a pyramid.
+   that wants looking at: the whole toolkit at once, as a tree.
 
-   One dataset (`src/data/skills.ts`), one presentation. The chips draw the
-   shape and the hover card says what is behind each of them — how many jobs it
+   One dataset (`src/data/skills.ts`), one presentation. The tree says what is
+   in the toolkit and what stands behind each thing in it — how many jobs it
    was used on, what certifies it, where it shipped — generated from the same
    objects, so a number cannot appear in one place and not the other.
+
+   It used to be a pyramid, with the shape drawn by a taper and the counts
+   hidden behind a hover card. The shape is gone and the CSS stayed, so the
+   tree was still being drawn as a pyramid and the counts beside each name ran
+   together with it as one grey line.
    ========================================================================== */
 
 /* ----- The section ------------------------------------------------------- */
@@ -39,288 +44,87 @@
   margin: 0;
 }
 
-/* ----- The pyramid -------------------------------------------------------
-   Five trays, widest at the base, and the width of a tray is its weight: the
-   base is what everything above stands on, and each tier is narrower and more
-   specific until the apex. Ordering is the whole point — a flat list of
-   equal chips says nothing about where a skill sits.
+/* ----- The tree ----------------------------------------------------------
+   Five directories, each with its leaves hanging under it.
 
-   The taper is drawn, not implied: each tray is a slab of its own with a
-   ground under the chips, so the eye reads the silhouette before it reads a
-   single name. `column-reverse` because the data reads foundations-first, the
-   way a pyramid is described, and the apex has to end up at the top.
-   -------------------------------------------------------------------------- */
+   A tree is not a pyramid. The pyramid drew its shape with a taper — five
+   trays, each narrower than the one below — and the taper was the silhouette
+   the eye read. A tree has no silhouette: it is a set of labelled trays, and
+   what makes it readable is that each tray says what it is before it says
+   what is in it.
 
-.skill-pyramid {
-  display: flex;
-  flex-direction: column-reverse;
-  align-items: center;
-  gap: 2px;
+   So the tier is a band with a rule over it, the label is a directory name,
+   and the leaves hang from one place under it.
+   ---------------------------------------------------------------------- */
+
+.skill-tree {
+  display: grid;
+  gap: 1.5rem;
   max-width: 62rem;
-  margin: 0 auto;
-  /* The pyramid leans: the top tray sits a little further in than a straight
-     taper would put it, which is what makes a stack of boxes read as a
-     pyramid rather than as a bar chart with one bar removed. */
-  perspective: 1200px;
 }
 
 .skill-tier {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.55rem;
-  padding: 0.7rem 0.9rem 0.8rem;
-  border: var(--filet) solid var(--grid);
-  border-left: var(--trait) solid color-mix(in srgb, var(--braise) 60%, var(--grid));
-  background: color-mix(in srgb, var(--rouille) 16%, var(--papier));
-  transition: background 200ms cubic-bezier(0.3, 0, 0.2, 1),
-    border-color 200ms cubic-bezier(0.3, 0, 0.2, 1);
+  display: grid;
+  gap: 0.4rem;
+  padding-top: 0.9rem;
+  border-top: var(--filet) solid var(--grid);
 }
 
-.skill-tier:hover {
-  background: color-mix(in srgb, var(--rouille) 26%, var(--papier));
-  border-left-color: var(--braise);
+.skill-tier:first-child {
+  border-top: 0;
+  padding-top: 0;
 }
 
-/* The taper. Steeper at the top, where the tiers are few and the names short,
-   and shallower at the base, where they are many — so the base still has room
-   for its names without pushing the pyramid out of shape. */
-.skill-tier:nth-child(1) { width: 100%; }
-.skill-tier:nth-child(2) { width: 92%; }
-.skill-tier:nth-child(3) { width: 82%; }
-.skill-tier:nth-child(4) { width: 68%; }
-.skill-tier:nth-child(5) { width: 50%; }
-
+/* The label of the tray, and the count of what is in it. The count is the
+   only number on the line and it is metadata, so it is drawn a step back
+   from the name: --faible on the page ground measures 4.93:1 in phosphore,
+   5.69:1 in acidule and 5.27:1 in pierre. */
 .skill-tier-name {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
   gap: 1.5rem;
-  width: 100%;
+  margin: 0;
   font-family: var(--font-mono);
   font-size: var(--fs-label);
   font-weight: 500;
   letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: var(--encre);
-  margin: 0;
+  color: var(--braise);
 }
 
-/* The count on the right of the tier. It is the one number that makes the shape
-   quantitative: five trays holding every skill, and the reader can see
-   which end the mass is at without counting chips.
-
-   The color is --braise-txt, not --braise: the tray's own ground is a tint of
-   the accent, and on that tint --braise measures 4.48:1 (phosphore) and 4.58:1
-   (pierre) at rest — under the 4.5:1 floor for 12px text in phosphore — and
-   4.20:1 (phosphore) and 4.50:1 (pierre) on hover. The hover tint is the state
-   that actually fails: the tray darkens, and the accent loses another quarter
-   of a point of contrast. --braise-txt is the same hue pulled to the text end
-   of each ramp, so the count clears 4.5:1 on the tray in both states:
-   7.00:1 at rest and 6.57:1 on hover (phosphore), 5.86:1 and 5.76:1 (pierre). */
 .skill-tier-count {
   font-size: var(--fs-label);
   letter-spacing: 0.1em;
-  color: var(--braise-txt);
+  color: var(--faible);
   white-space: nowrap;
 }
 
-/* ----- The chips ---------------------------------------------------------
-   Same chip as a job card's skills — one vocabulary across the page — and
-   nothing else on it. The counts that used to sit inside the chip are what the
-   hover card is for: printed on the chip they made every one of them a
-   different length and buried the shape the pyramid is drawing. Buttons, so
-   they answer to a click and to the keyboard as well as to a hover.
-   -------------------------------------------------------------------------- */
+/* The leaves. The list is also a `.tree`, so the box-drawing connectors come
+   from `tty.css` — the tree's own rules only decide where it hangs from. */
+.skill-tree-list {
+  margin-left: 2ch;
+}
 
-.skill-chips {
-  list-style: none;
+/* One leaf: the name of the skill, and the three facts behind it. The facts
+   are the numbers the pyramid's hover card used to hide behind a pointer;
+   they are printed, and they are printed a step back from the name so the
+   two do not run together into one grey line. */
+.skill-tree-list li {
   display: flex;
+  align-items: baseline;
   flex-wrap: wrap;
-  justify-content: center;
-  gap: 0.4rem;
-  margin: 0;
-  padding: 0;
+  gap: 0 1.2ch;
 }
 
-.skill-chip {
-  font-family: var(--font-mono);
-  font-size: var(--fs-label);
-  font-weight: 500;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--fort);
-  background: color-mix(in srgb, var(--braise) 20%, var(--papier));
-  border: var(--filet) solid var(--braise);
-  padding: 0.22rem 0.55rem;
-  cursor: help;
-  transition: background 140ms ease, color 140ms ease;
-}
-
-.skill-chip:hover,
-.skill-chip:focus-visible,
-.skill-chip.is-open {
-  background: var(--braise);
-  color: var(--papier);
-  outline: none;
-}
-
-/* A skill with nothing behind it: no card to open, so it does not offer one.
-   Drawn a shade back so the pointer affordance is not claimed. */
-.skill-chip.is-quiet {
-  cursor: default;
+.skill-name {
   color: var(--encre);
-  border-color: var(--grid);
-  background: none;
 }
 
-/* 27px is fine for a pointer and too small for a thumb. Only the coarse-
-   pointer case grows, so the desktop pyramid keeps its proportions. */
-@media (pointer: coarse) {
-  .skill-chips button.skill-chip {
-    display: inline-flex;
-    align-items: center;
-    min-height: 2.75rem;
-    padding-inline: 0.8rem;
-  }
-}
-
-/* ----- The hover card ----------------------------------------------------
-   One card, moved to whatever chip is under the pointer. It is the name of the
-   skill and how much stands behind it — three numbers at most, and fewer than
-   three where there is nothing to count. It sits above a chip the reader is
-   already pointing at and stays a glance long, so it says the amount and stops;
-   the names behind the numbers are in the profile, and printed here five
-   certificates made a tooltip six lines tall.
-   -------------------------------------------------------------------------- */
-
-.skill-card {
-  position: absolute;
-  z-index: 40;
-  width: max-content;
-  max-width: 22rem;
-  padding: 0.6rem 0.7rem 0.65rem;
-  background: var(--creme);
-  border: var(--filet) solid var(--encre);
-  color: var(--papier);
-  box-shadow: var(--ombre-sm);
-  pointer-events: none;
-  opacity: 0;
-  transform: translateY(4px);
-  transition: opacity 140ms ease, transform 140ms ease;
-}
-
-.skill-card[data-open] {
-  opacity: 1;
-  transform: none;
-}
-
-/* Name of the skill, in the mono face — the one thing the reader has to be told,
-   because the chip may have scrolled out from under them. */
-.skill-card-name {
-  font-family: var(--font-mono);
+.skill-facts {
   font-size: var(--fs-label);
-  font-weight: 500;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  margin: 0 0 0.45rem;
-  padding-bottom: 0.4rem;
-  border-bottom: var(--filet) solid color-mix(in srgb, var(--papier) 35%, transparent);
-}
-
-.skill-card dl {
-  display: flex;
-  gap: 1rem;
-  margin: 0;
-}
-
-.skill-card dt {
-  font-family: var(--font-mono);
-  font-size: var(--fs-label);
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  /* 0.75, not 0.65: on the inverted card the label has to clear 4.5:1, and on
-     the light ramp 0.65 lands at 4.95:1 — inside the margin, but only just, and
-     0.75 holds it clear of the line in every theme. */
-  opacity: 0.75;
+  letter-spacing: 0.06em;
+  color: var(--faible);
+  font-variant-numeric: tabular-nums;
   white-space: nowrap;
-}
-
-/* The count, on the baseline of its label rather than under it: a row per fact
-   spent three lines saying two numbers, and this is a card meant to be read at
-   a glance and dropped. */
-.skill-card dd {
-  margin: 0;
-  font-family: var(--font-mono);
-  font-size: var(--fs-label);
-  font-weight: 500;
-  line-height: 1;
-  /* currentColor, not a token of its own: the card is an inverted surface and
-     each ramp inverts it with a different pair, so the number takes whatever
-     color the card was drawn with. */
-  color: currentColor;
-}
-
-.skill-card dd span em {
-  font-style: normal;
-  opacity: 0.75;
-}
-
-/* ----- The light ramp ----------------------------------------------------
-   `--rouille` is a pale cream a shade off the page here, so a tint built on it
-   does almost nothing. The accent is the only color left with any weight, so
-   on `pierre` it does the tinting — and it is dark, which means the tiers have
-   to get *lighter* as they narrow, or the apex disappears.
-   -------------------------------------------------------------------------- */
-
-:root[data-theme='pierre'] .skill-tier {
-  background: color-mix(in srgb, var(--braise) 7%, var(--papier));
-}
-
-:root[data-theme='pierre'] .skill-tier:hover {
-  background: color-mix(in srgb, var(--braise) 13%, var(--papier));
-}
-
-:root[data-theme='pierre'] .skill-chip:hover,
-:root[data-theme='pierre'] .skill-chip:focus-visible,
-:root[data-theme='pierre'] .skill-chip.is-open {
-  color: var(--creme);
-}
-
-/* The hover card is an inverted surface, and on this ramp the inverted color
-   is a near-white one step from the page — so it has to be drawn the other way
-   round or its own text vanishes into it. */
-:root[data-theme='pierre'] .skill-card {
-  background: var(--papier);
-  border-color: var(--fort);
-  color: var(--fort);
-  box-shadow: 3px 3px 0 color-mix(in srgb, var(--braise) 60%, transparent);
-}
-
-:root[data-theme='pierre'] .skill-card-name {
-  border-bottom-color: color-mix(in srgb, var(--fort) 30%, transparent);
-}
-
-/* Narrow screens: the pyramid's taper costs more than it says at this width —
-   the apex would hold two names per line — so it goes flat and the trays read
-   as five bands of the same shape instead of a pyramid too small to see. */
-@media (max-width: 44rem) {
-  .skill-pyramid {
-    gap: 3px;
-  }
-
-  .skill-tier:nth-child(1) { width: 100%; }
-  .skill-tier:nth-child(2) { width: 96%; }
-  .skill-tier:nth-child(3) { width: 90%; }
-  .skill-tier:nth-child(4) { width: 82%; }
-  .skill-tier:nth-child(5) { width: 72%; }
-
-  .skill-tier {
-    padding: 0.6rem 0.6rem 0.65rem;
-  }
-
-  .skill-card {
-    /* Anchored by script, so the width is all that is left to say here. */
-    max-width: calc(100vw - 2rem);
-  }
 }

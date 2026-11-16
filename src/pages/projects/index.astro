@@ -134,117 +134,127 @@ const LINK: Record<LinkKind, { cue: string; verb: string }> = {
     A listing puts all twelve on the page, in order, with the same
     information each of them had. The wheel goes back to scrolling.
   -->
-  <section class="hero">
-    <span class="eyebrow" data-reveal><span class="pulse-dot"></span>Catalog</span>
-    <h1 data-reveal data-reveal-delay="60" data-anim="type">Projects</h1>
+  <div class="prj-page">
+    <section class="hero">
+      <span class="eyebrow" data-reveal><span class="pulse-dot"></span>Catalog</span>
+      <h1 data-reveal data-reveal-delay="60" data-anim="type">Projects</h1>
 
-    <p class="tty-prompt" data-reveal data-reveal-delay="100">
-      <span class="who">root</span><span class="sep">@</span><span
-        >amaltsev</span>
-      ><span class="sep">:</span><span class="path">~/projects</span><span class="sep"
-        >$</span
-      >
-      <span class="tty-cmd">ls -la</span>
-    </p>
+      <p class="tty-prompt" data-reveal data-reveal-delay="100">
+        <span class="who">root</span><span class="sep">@</span><span
+          >amaltsev</span>
+        ><span class="sep">:</span><span class="path">~/projects</span><span class="sep"
+          >$</span
+        >
+        <span class="tty-cmd">ls -la</span>
+      </p>
 
-    <p class="lede" data-reveal data-reveal-delay="120">
-      Production systems, not demos. Each one shipped, measured, and left
-      running.
-    </p>
+      <p class="lede" data-reveal data-reveal-delay="120">
+        Production systems, not demos. Each one shipped, measured, and left
+        running.
+      </p>
 
-    {
-      RECURRING.length > 0 && (
-        <ul class="recurring prj-chips" data-reveal data-reveal-delay="160">
-          {RECURRING.map((t) => (
-            <li>{t}</li>
-          ))}
-        </ul>
-      )
-    }
-  </section>
+      {
+        RECURRING.length > 0 && (
+          <ul class="recurring prj-chips" data-reveal data-reveal-delay="160">
+            {RECURRING.map((t) => (
+              <li>{t}</li>
+            ))}
+          </ul>
+        )
+      }
+    </section>
 
-  <section class="section">
-    <div class="tty tty-prj" data-reveal>
-      <div class="tty-bar">
-        <span class="tty-leds" aria-hidden="true">
-          <i class="led led-on"></i>
-          <i class="led led-on"></i>
-          <i class="led led-off"></i>
-        </span>
-        <span class="tty-title">~/projects</span>
-        <span class="tty-right" aria-hidden="true">
-          {panels.length} entries
-        </span>
-      </div>
+    <section class="section">
+      <div class="tty tty-fit tty-prj" data-reveal>
+        <div class="tty-bar">
+          <span class="tty-leds" aria-hidden="true">
+            <i class="led led-on"></i>
+            <i class="led led-on"></i>
+            <i class="led led-off"></i>
+          </span>
+          <span class="tty-title">~/projects</span>
+        </div>
 
-      <div class="tty-body">
-        <p class="tty-prompt tty-cmd-line">
-          <span class="who">root</span><span class="sep">@</span><span
-            >amaltsev</span>
-          ><span class="sep">:</span><span class="path">~/projects</span><span class="sep"
-            >$</span
-          >
-          <span class="tty-cmd">ls -la</span>
-        </p>
+        <div class="tty-body">
+          <p class="tty-prompt tty-cmd-line">
+            <span class="who">root</span><span class="sep">@</span><span
+              >amaltsev</span>
+            ><span class="sep">:</span><span class="path">~/projects</span><span class="sep"
+              >$</span
+            >
+            <span class="tty-cmd">ls -la</span>
+          </p>
 
-        <div class="ls ls-head ls-prj">
-          <div class="ls-row ls-row--cat">
-            <span class="ls-mode">mode</span>
-            <span class="ls-when">when</span>
-            <span class="ls-name">name</span>
-            <span class="ls-cue"></span>
+          <div class="ls ls-head ls-prj">
+            <div class="ls-row ls-row--cat">
+              <span class="ls-mode">mode</span>
+              <span class="ls-when">when</span>
+              <span class="ls-name">name</span>
+              <span class="ls-cue"></span>
+            </div>
           </div>
-        </div>
 
-        <div class="ls ls-prj">
-          {
-            panels.map((m, i) => {
-              const kind = m.href ? linkKind(m.href) : null;
-              const name = (
-                <span class="ls-row ls-row--cat">
-                  <span class="ls-mode">{mode(m)}</span>
-                  <span class="ls-when">{when(m.period)}</span>
-                  <span class="ls-name">
-                    {m.linked && m.href ? (
-                      <a
-                        href={m.href}
-                        aria-label={kind ? `${m.title} — ${LINK[kind].verb}` : undefined}
-                      >
-                        {m.title}
-                      </a>
-                    ) : (
-                      m.title
-                    )}
+          <div class="ls ls-prj">
+            {
+              panels.map((m, i) => {
+                const kind = m.href ? linkKind(m.href) : null;
+                const name = (
+                  <span class="ls-row ls-row--cat">
+                    <span class="ls-mode">{mode(m)}</span>
+                    <span class="ls-when">{when(m.period)}</span>
+                    <span class="ls-name">
+                      {m.linked && m.href ? (
+                        <a
+                          href={m.href}
+                          aria-label={kind ? `${m.title} — ${LINK[kind].verb}` : undefined}
+                        >
+                          {m.title}
+                        </a>
+                      ) : (
+                        m.title
+                      )}
+                    </span>
+                    <span class="ls-cue">{kind ? LINK[kind].cue : ''}</span>
                   </span>
-                  <span class="ls-cue">{kind ? LINK[kind].cue : ''}</span>
-                </span>
-              );
+                );
 
-              return (
-                <article class="prj-row" data-reveal data-reveal-delay={Math.min(i, 5) * 40}>
-                  <h3 class="prj-title">{name}</h3>
-                  <p class="prj-sum">{m.summary}</p>
-                  <ul class="prj-tags">
-                    {m.tags.map((t) => (
-                      <li>{t}</li>
-                    ))}
-                  </ul>
-                </article>
-              );
-            })
-          }
+                return (
+                  <article class="prj-row" data-reveal data-reveal-delay={Math.min(i, 5) * 40}>
+                    <h3 class="prj-title">{name}</h3>
+                    <p class="prj-sum">{m.summary}</p>
+                    <ul class="prj-tags">
+                      {m.tags.map((t) => (
+                        <li>{t}</li>
+                      ))}
+                    </ul>
+                  </article>
+                );
+              })
+            }
+          </div>
+
+          <p class="prj-close">
+            The long form is on the pages it links to; the summary is the whole
+            of it here.
+          </p>
         </div>
-
-        <p class="prj-close">
-          Every entry above is shipped work. The long form is on the pages it
-          links to; the summary is the whole of it here.
-        </p>
       </div>
-    </div>
-  </section>
+    </section>
+  </div>
 </Base>
 
 <style>
+  /* ----- The column --------------------------------------------------------
+     One column for the whole page.
+
+     The page sets `--w` once, here, and every window on it takes its width
+     from that, so the head of the page and the window under it start at the
+     same x and end at the same x.
+     ---------------------------------------------------------------------- */
+  .prj-page {
+    --w: 100%;
+  }
+
   /* ----- The listing -------------------------------------------------------
      One terminal window holding the whole catalog. The header row says what
      the columns are; each entry is a block, because the summary and the
@@ -301,7 +311,7 @@ const LINK: Record<LinkKind, { cue: string; verb: string }> = {
 
   .prj-sum {
     margin: 0.25rem 0 0 2ch;
-    max-width: 78ch;
+    max-width: var(--measure-prose);
     font-family: var(--font-body);
     font-size: 0.87rem;
     line-height: 1.55;
@@ -332,7 +342,7 @@ const LINK: Record<LinkKind, { cue: string; verb: string }> = {
     margin: 1.4rem 0 0;
     padding-top: 1rem;
     border-top: var(--filet) solid var(--grid);
-    max-width: 68ch;
+    max-width: var(--measure-prose);
     color: var(--fort);
     font-family: var(--font-body);
     font-size: 0.88rem;

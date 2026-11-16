@@ -14,9 +14,16 @@
    same in all three ramps.
    ========================================================================== */
 
-.wrap-sub {
-  max-width: 56rem;
-  margin-inline: auto;
+/* ----- The column ----------------------------------------------------------
+   One column for the whole page.
+
+   The page sets `--w` once, here, and every window on it takes its width
+   from that, so the hero and the windows under it start at the same x and
+   end at the same x. The case used to sit in a centred 56rem column, which
+   put its windows at an x no other page on the site uses.
+   ---------------------------------------------------------------------- */
+.case-page {
+  --w: 100%;
 }
 
 /* ----- The head ------------------------------------------------------------
@@ -146,11 +153,14 @@
   font-family: var(--font-body);
   font-size: 0.86rem;
   line-height: 1.5;
+  /* The window is the width of the page column; the sentence inside it keeps
+     its own measure. */
+  max-width: var(--measure-prose);
 }
 
 .case-note {
   margin: 1.3rem 0 0;
-  max-width: 62ch;
+  max-width: var(--measure-prose);
   font-family: var(--font-body);
   font-size: 0.92rem;
   line-height: 1.6;
@@ -191,6 +201,7 @@
   font-family: var(--font-body);
   font-size: 0.86rem;
   line-height: 1.5;
+  max-width: var(--measure-prose);
 }
 
 .case-unit-state {
@@ -228,6 +239,10 @@
 
 .case-tree-key {
   color: var(--creme);
+  /* The key is one slug and it is never split. A hyphen is a joiner in a
+     slug, not a break point: `smart-qualification` broken across two lines
+     reads as two words rather than as one name. */
+  white-space: nowrap;
 }
 
 .case-tree-text {
@@ -235,6 +250,7 @@
   font-family: var(--font-body);
   font-size: 0.86rem;
   line-height: 1.5;
+  max-width: var(--measure-prose);
 }
 
 .case-tree-text::before {
@@ -303,9 +319,13 @@
   color: var(--faible);
 }
 
+/* The key column is as wide as the longest slug in the corpus. The longest
+   is `instant-classification`, twenty-two characters, and it is the whole
+   column plus a character of slack: a key that has to break is a key the
+   reader has to put back together. */
 .case-script-step {
   display: grid;
-  grid-template-columns: 3ch minmax(0, 17ch) minmax(0, 1fr);
+  grid-template-columns: 3ch minmax(0, 23ch) minmax(0, 1fr);
   gap: 0 1ch;
   align-items: baseline;
 }
@@ -324,6 +344,7 @@
   font-family: var(--font-body);
   font-size: 0.86rem;
   line-height: 1.5;
+  max-width: var(--measure-prose);
 }
 
 /* ----- The price ---------------------------------------------------------- */
@@ -351,15 +372,13 @@
   font-variant-numeric: tabular-nums;
 }
 
-/* ----- The invitation ----------------------------------------------------- */
-.case-contact .post-cta-mail,
 .tty-contact .post-cta-mail {
   color: var(--creme);
 }
 
 .contact-note {
   margin: 0.9rem 0 0;
-  max-width: 62ch;
+  max-width: var(--measure-prose);
   color: var(--fort);
   font-family: var(--font-body);
   font-size: 0.95rem;

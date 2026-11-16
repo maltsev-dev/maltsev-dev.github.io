@@ -191,7 +191,7 @@ const words = post.body.trim().split(/\s+/).filter(Boolean).length;
     </header>
 
     <section class="section">
-      <div class="tty tty-post" data-reveal>
+      <div class="tty tty-fit tty-post" data-reveal>
         <div class="tty-bar">
           <span class="tty-leds" aria-hidden="true">
             <i class="led led-on"></i>
@@ -232,7 +232,7 @@ const words = post.body.trim().split(/\s+/).filter(Boolean).length;
       that share its subject, and the invitation to write about it.
     -->
     <section class="section">
-      <div class="tty tty-more" data-reveal>
+      <div class="tty tty-fit tty-more" data-reveal>
         <div class="tty-bar">
           <span class="tty-leds" aria-hidden="true">
             <i class="led led-on"></i>
@@ -240,7 +240,6 @@ const words = post.body.trim().split(/\s+/).filter(Boolean).length;
             <i class="led led-off"></i>
           </span>
           <span class="tty-title">~/blog</span>
-          <span class="tty-right" aria-hidden="true">more writing</span>
         </div>
 
         <div class="tty-body">
@@ -327,9 +326,13 @@ const words = post.body.trim().split(/\s+/).filter(Boolean).length;
       opens the message form on every page, so a post that also carried a
       "Write a message" button was the same offer twice on one screen. The
       address in the sentence is the way to write without the script.
+
+      The button under it points at the shipped work rather than at a page
+      describing how to hire me: the reader who got this far from a search
+      engine wants to see that the claim is real.
     -->
     <section class="section">
-      <div class="tty tty-contact" data-reveal>
+      <div class="tty tty-fit tty-contact" data-reveal>
         <div class="tty-bar">
           <span class="tty-leds" aria-hidden="true">
             <i class="led led-on"></i>
@@ -337,7 +340,6 @@ const words = post.body.trim().split(/\s+/).filter(Boolean).length;
             <i class="led led-off"></i>
           </span>
           <span class="tty-title">~/contact</span>
-          <span class="tty-right" aria-hidden="true">open</span>
         </div>
 
         <div class="tty-body">
@@ -359,12 +361,11 @@ const words = post.body.trim().split(/\s+/).filter(Boolean).length;
 
           <p class="contact-note">
             If this is close to the work you are trying to do, I am the person
-            who wrote it. Half an hour on a call is enough for both of us to
-            know whether it is work I should be doing.
+            who wrote it.
           </p>
 
           <p class="contact-go">
-            <a class="btn" href="/freelance/">See the engagements</a>
+            <a class="btn" href="/projects/">See the work</a>
           </p>
         </div>
       </div>
@@ -377,10 +378,20 @@ const words = post.body.trim().split(/\s+/).filter(Boolean).length;
      A post is a column of reading. The window around it adds a frame, not a
      width: the frame is wider than the text so the text keeps its own
      measure inside it.
+
+     The column sits at the left edge of the page, like every other window
+     on the site, and it sets the width of its own windows once. A terminal
+     prints every line from column zero.
+
+     The width is `--measure-doc`: the default width of a window that holds
+     a document. The prose inside it keeps its own measure, `--measure-prose`,
+     so the two are separate objects — the frame is the page, the measure is
+     the sentence.
      ---------------------------------------------------------------------- */
   .post-page {
-    margin-inline: auto;
-    max-width: 52rem;
+    --w: 100%;
+    margin-inline: 0;
+    max-width: var(--measure-doc);
   }
 
   .post-head {
@@ -416,7 +427,7 @@ const words = post.body.trim().split(/\s+/).filter(Boolean).length;
 
   .more-close {
     margin: 1.2rem 0 0;
-    max-width: 62ch;
+    max-width: var(--measure-prose);
     color: var(--fort);
     font-family: var(--font-body);
     font-size: 0.9rem;
@@ -433,7 +444,7 @@ const words = post.body.trim().split(/\s+/).filter(Boolean).length;
 
   .contact-note {
     margin: 0.9rem 0 0;
-    max-width: 62ch;
+    max-width: var(--measure-prose);
     color: var(--fort);
     font-family: var(--font-body);
     font-size: 0.95rem;

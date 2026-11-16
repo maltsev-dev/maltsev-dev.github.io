@@ -21,6 +21,37 @@
 /** How much taller a cell is than it is wide. */
 const DY = 1.6;
 
+/**
+ * How much narrower the character is drawn than the cell it stands in.
+ *
+ * The sheet of glyphs is square — one character in a square cell — but the
+ * picture's cell is one and a half times taller than it is wide, so the
+ * square cell is mapped onto a sprite a cell and a half wide. A monospace
+ * character drawn at the full width of its cell therefore fills the column:
+ * its vertical strokes reach the column on either side, and the picture is a
+ * field of strokes that touch.
+ *
+ * That is what the site sees when the picture turns. A yaw foreshortens the
+ * columns — they come closer together — while the characters keep their
+ * size, and at twenty-four degrees, the widest point of the idle sway, the
+ * gap between two columns is exactly the width of the character in them.
+ *
+ * The stripes are worse than that, though, because the picture is not the
+ * only thing on the screen with a period. The tube's aperture grille is a
+ * hard vertical line every three CSS pixels, and the portrait's columns are
+ * a hard vertical period of its own — a shade over two pixels at this
+ * size. Two vertical periods beat with each other, and the beat shows as
+ * bands of about seven pixels: bright column, dark column, bright column.
+ * The picture turns, its period moves, and the bands sweep across it.
+ *
+ * So the character is drawn narrower than the cell it stands in, which
+ * leaves the columns room and takes the strength out of the vertical
+ * texture that was beating with the grille. The rows are left alone: they
+ * beat with the tube's scanlines, whose three-pixel period is close enough
+ * to the row's own that the beat is wide and soft rather than a band.
+ */
+const SQUEEZE = 0.8;
+
 /** How many characters there are, and so how many of them fit on the sheet. */
 const N = 64;
 const G = 8;
@@ -299,9 +330,20 @@ export async function createPortrait(options: PortraitOptions): Promise<Portrait
       const x = (i % G + 0.5) * S;
       const y = (Math.floor(i / G) + 0.5) * S + S * 0.04;
 
-      sctx.fillText(char, x, y);
+      /*
+        The character is drawn narrower than the cell it stands in: see
+        SQUEEZE above. The squeeze is around the character's own centre, so
+        the cell's grid is not moved — only the glyph inside it is narrower.
+      */
+      sctx.save();
+      sctx.translate(x, y);
+      sctx.scale(SQUEEZE, 1);
 
-      if (weight > 0) sctx.strokeText(char, x, y);
+      sctx.fillText(char, 0, 0);
+
+      if (weight > 0) sctx.strokeText(char, 0, 0);
+
+      sctx.restore();
     });
 
     gl.activeTexture(gl.TEXTURE0);

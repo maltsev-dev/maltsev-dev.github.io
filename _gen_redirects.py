@@ -41,7 +41,6 @@ CASE_VARIANTS = [
     "/blog/",
     "/projects/",
     "/experience/",
-    "/freelance/",
 ]
 
 # The canonical has to be absolute: a relative one reads as a canonical of the
