@@ -21,7 +21,7 @@ const base = process.argv[2] || 'http://localhost:4405';
 const wantThemes = process.argv.includes('--themes');
 const wantWidths = process.argv.includes('--widths');
 
-const THEMES = ['phosphore', 'acidule', 'pierre'];
+const THEMES = ['acidule', 'phosphore'];
 const WIDTHS = [
   { w: 1440, h: 900 },
   { w: 390, h: 844 },

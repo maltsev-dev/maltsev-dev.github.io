@@ -432,8 +432,8 @@
 /* The hover has to survive the checked state. The tint above outranks the
    plain `.dd-item:hover`, so without this the selected theme would be the
    one row in the list that does not answer the pointer. The pair is the one
-   every other row uses — the page color on the accent: 4.81:1 in phosphore,
-   8.34:1 in acidule, 4.75:1 in pierre. */
+   every other row uses — the page color on the accent: 4.81:1 in phosphore
+   and 8.34:1 in acidule. */
 .dd-item[role='radio'][aria-checked='true']:hover,
 .dd-item[role='radio'][aria-checked='true']:focus-visible {
   background: var(--braise);
@@ -461,7 +461,7 @@
    button in it repeated a call to action that was already on the page.
 
    What is left is one line: who the site belongs to. --fort is the only
-   token that clears 4.5:1 on the accent panel in all three ramps: --braise
+   token that clears 4.5:1 on the accent panel in both ramps: --braise
    is 2.2:1 on the phosphore panel and --encre 4.2:1, and the copyright is
    small text.
    ---------------------------------------------------------------------- */
@@ -1091,9 +1091,9 @@
    --fort — a step *down* from the --encre the rest of the drawing is in, so
    the selected stage was the dimmest thing in the figure. On the tint it was
    also under the 4.5:1 floor: the tint is the accent at 26% over the panel,
-   and --fort on it measures 5.50:1 in phosphore, 4.43:1 in acidule and
-   3.87:1 in pierre. --creme measures 10.29:1, 10.03:1 and 10.91:1 on the
-   same three grounds. A lit panel, and the lit part of it is the stage. */
+   and --fort on it measures 5.50:1 in phosphore and 4.43:1 in acidule.
+   --creme measures 10.29:1 and 10.03:1 on the same two grounds. A lit
+   panel, and the lit part of it is the stage. */
 .stack-zone.is-hot {
   background: color-mix(in srgb, var(--braise) 26%, transparent);
   color: var(--creme);
@@ -1692,9 +1692,8 @@
      overrides repeat the theme selectors so they outrank the ramps in
      global.css, which sit earlier in the bundle. */
   :root,
-  :root[data-theme='phosphore'],
   :root[data-theme='acidule'],
-  :root[data-theme='pierre'] {
+  :root[data-theme='phosphore'] {
     --papier: #ffffff;
     --encre: #1a1a1a;
     --fort: #1a1a1a;

@@ -43,10 +43,31 @@ const RAMP = [...' .\'`^",:;Il!i~+_-?]}1)|/tfjrxnuvczXYUJCLQ0OZmwqpdbkhao*#MW&8%
 /**
  * How far out of the page the picture stands.
  *
- * Zero. The tool's own slider goes from nothing to a fifth of the width of
- * the picture; the site leaves it at nothing, and the picture is flat.
+ * The tool's own slider goes from nothing to a fifth of the width of the
+ * picture. The site leaves it at three parts in ten, which is enough for the
+ * nose and the brow to stand out of the head: the height map carries the
+ * shape of a face, and a turn with nothing to turn has nothing to show but a
+ * squeeze. Past that the depth starts to tear the drawing — at four parts in
+ * ten the hair and the shoulder cracked along the edges.
  */
-const RELIEF = 0;
+const RELIEF = 0.3;
+
+/**
+ * How far the picture may turn.
+ *
+ * Some thirty degrees. The picture is a sheet of characters: turning it
+ * squeezes the columns together, and the characters do not squeeze with them
+ * — they keep their size and the columns crowd. At a wide angle the crowding
+ * turns the drawing into vertical streaks, and at the angle the pointer used
+ * to reach the picture was edge-on and gone.
+ *
+ * So the turn is a turn of a face, not a turn of a sheet of paper: enough to
+ * show that the head has a nose and a jaw, and no further.
+ */
+const YAW_MAX = 0.5;
+
+/** How far the picture may nod. The same crowding, across the rows. */
+const PITCH_MAX = 0.35;
 
 const VS = `
 attribute vec3 aPos;attribute vec3 aCol;attribute float aGlyph;
@@ -68,7 +89,7 @@ void main(){
 const FS = `
 precision mediump float;
 uniform sampler2D uTex;uniform float uMono;uniform vec3 uInk;uniform vec3 uGround;
-uniform float uTone;uniform vec2 uRange;uniform float uSoft;
+uniform float uSoft;
 varying vec3 vCol;varying float vGlyph;
 void main(){
   float g=floor(vGlyph+0.5);
@@ -76,14 +97,10 @@ void main(){
   float a=texture2D(uTex,(cell+gl_PointCoord)/8.0).a;
   if(a<0.04)discard;
   float l=dot(vCol,vec3(.299,.587,.114));
-  // The tone of the photograph, stretched over the picture's own range.
-  float t=clamp((l-uRange.x)/max(0.001,uRange.y-uRange.x),0.0,1.0);
-  // On a dark ground the tone rides on the colour of the ink: the dark
+  // The tone of the photograph rides on the colour of the ink: the dark
   // parts of the photograph fade into the ground behind them, and the light
-  // parts are the ones that show. On paper there is only the one colour of
-  // ink there is, so the tone rides on how close that ink is to the paper,
-  // and the dark parts of the photograph are the ones that take the ink.
-  float f=mix(1.15*l,1.0-t,uTone);
+  // parts are the ones that show.
+  float f=1.15*l;
   vec3 c=mix(vCol,mix(uGround,uInk,f),uMono);
   // The picture is drawn soft: the marks let the ground through them, so
   // the drawing is still there and still has its shape, but it is not the
@@ -105,25 +122,15 @@ export interface PortraitOptions {
   ink?: [number, number, number];
   /** Whether the picture is drawn in one colour rather than in colours. */
   mono?: boolean;
-  /**
-   * Whether the ground the picture is on is light.
-   *
-   * On a dark ground the tone of the photograph rides on the colour of the
-   * ink. On a light one — on paper — it has to ride on how close that ink
-   * is to the paper, because there is only the one colour of ink there is.
-   */
-  light?: boolean;
   /** The colour of the ground the picture is on. */
   ground?: [number, number, number];
   /**
    * How fat the stroke of the characters is.
    *
-   * Zero is the tool's own stroke. A little more makes the characters into
-   * the marks of a pen on paper, which is what the paper theme wants.
+   * Zero is the tool's own stroke. A little more makes the characters
+   * heavier than the tool draws them.
    */
   weight?: number;
-  /** The darkest cell of the picture, and the brightest. */
-  range?: [number, number];
   /**
    * How much of the ground the picture shows through.
    *
@@ -142,8 +149,6 @@ export interface Portrait {
   ground(colour: [number, number, number]): void;
   /** Whether the picture is drawn in one colour rather than in colours. */
   mono(on: boolean): void;
-  /** Whether the ground the picture is on is light. */
-  light(on: boolean): void;
   /** How fat the stroke of the characters is. */
   weight(amount: number): void;
   /** Draw the sheet of glyphs again, in another face. */
@@ -263,8 +268,6 @@ export async function createPortrait(options: PortraitOptions): Promise<Portrait
     'uMono',
     'uInk',
     'uGround',
-    'uTone',
-    'uRange',
     'uSoft',
     'uTex',
   ].forEach((name) => (U[name] = gl.getUniformLocation(program, name)));
@@ -296,8 +299,8 @@ export async function createPortrait(options: PortraitOptions): Promise<Portrait
       The weight of the stroke.
 
       A character drawn in a line of text covers about a third of its cell.
-      On a dark ground that is a glow and it is meant to be. On paper it is
-      a smudge, and a smudge is not a drawing — so there the stroke is
+      On a dark ground that is a glow and it is meant to be. A stroke that is
+      too thin is a smudge, and a smudge is not a drawing — so the stroke is
       fattened, in the sheet itself, rather than in the transparency of the
       picture. A fattened stroke keeps the same shape at every size, where a
       thickened transparency does not: the same picture that is a drawing on
@@ -376,8 +379,6 @@ export async function createPortrait(options: PortraitOptions): Promise<Portrait
   let mono = options.mono ?? false;
   let ink = options.ink ?? [0.86, 0.98, 0.82];
   let ground = options.ground ?? [0, 0, 0];
-  let light = options.light ?? false;
-  const range = options.range ?? [0, 255];
   const soft = options.soft ?? 1;
 
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -431,11 +432,11 @@ export async function createPortrait(options: PortraitOptions): Promise<Portrait
     if (!drag) return;
 
     const dt = Math.max((event.timeStamp - lt) / 1000, 0.001);
-    const dy = ((event.clientX - lx) / W) * 3;
-    const dp = ((event.clientY - ly) / H) * 2;
+    const dy = ((event.clientX - lx) / W) * 1.6;
+    const dp = ((event.clientY - ly) / H) * 1.1;
 
-    uy = clamp(uy + dy, -1.3, 1.3);
-    up = clamp(up + dp, -0.8, 0.8);
+    uy = clamp(uy + dy, -YAW_MAX, YAW_MAX);
+    up = clamp(up + dp, -PITCH_MAX, PITCH_MAX);
     vy = vy * 0.6 + 0.4 * (dy / dt);
     vp = vp * 0.6 + 0.4 * (dp / dt);
 
@@ -467,8 +468,8 @@ export async function createPortrait(options: PortraitOptions): Promise<Portrait
       const dec = Math.exp(-dt * 4);
       vy *= dec;
       vp *= dec;
-      uy = clamp(uy + vy * dt, -1.3, 1.3);
-      up = clamp(up + vp * dt, -0.8, 0.8);
+      uy = clamp(uy + vy * dt, -YAW_MAX, YAW_MAX);
+      up = clamp(up + vp * dt, -PITCH_MAX, PITCH_MAX);
       idle += dt;
       if (idle > 1.5) {
         const k = 1 - Math.exp(-dt * 0.7);
@@ -517,8 +518,6 @@ export async function createPortrait(options: PortraitOptions): Promise<Portrait
       gl.uniform1f(U.uMono, mono ? 1 : 0);
       gl.uniform3f(U.uInk, ink[0], ink[1], ink[2]);
       gl.uniform3f(U.uGround, ground[0], ground[1], ground[2]);
-      gl.uniform1f(U.uTone, light ? 1 : 0);
-      gl.uniform2f(U.uRange, range[0], range[1]);
       gl.uniform1f(U.uSoft, soft);
 
       gl.drawArrays(gl.POINTS, 0, count);
@@ -538,9 +537,6 @@ export async function createPortrait(options: PortraitOptions): Promise<Portrait
     },
     mono(on: boolean) {
       mono = on;
-    },
-    light(on: boolean) {
-      light = on;
     },
     weight(amount: number) {
       if (amount === weight) return;

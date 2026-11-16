@@ -77,8 +77,8 @@
 
 /* The label of the tray, and the count of what is in it. The count is the
    only number on the line and it is metadata, so it is drawn a step back
-   from the name: --faible on the page ground measures 4.93:1 in phosphore,
-   5.69:1 in acidule and 5.27:1 in pierre. */
+   from the name: --faible on the page ground measures 4.93:1 in phosphore
+   and 5.69:1 in acidule. */
 .skill-tier-name {
   display: flex;
   align-items: baseline;

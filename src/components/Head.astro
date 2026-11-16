@@ -1,6 +1,13 @@
 ---
 import { graph } from '../lib/schema';
-import { DEFAULT_RAMP, THEMES, resolveRamp, themeColor } from '../data/themes';
+import {
+  DEFAULT_RAMP,
+  SYSTEM_DARK,
+  SYSTEM_LIGHT,
+  THEMES,
+  resolveRamp,
+  themeColor,
+} from '../data/themes';
 
 interface Props {
   title?: string;
@@ -129,15 +136,17 @@ const jsonLd = graph(siteUrl, schema);
 
   The stored value can be `system` — the reader asked the site to follow the
   operating system. The script resolves it here, before the first paint,
-  because the page cannot render the light ramp and then jump to the dark
-  one: the flash is the whole point of the ramp being wrong for a moment.
+  because the page cannot render one ramp and then jump to the other: the
+  flash is the whole point of the ramp being wrong for a moment. The two
+  ramps it resolves to come from src/data/themes.ts, so this script cannot
+  name a ramp the stylesheet does not define.
 
   define:vars serializes the value to a string, so it has to be parsed back
   into an object before use — `hasOwnProperty` against a string is always
   false, which silently reset the stored theme on every navigation.
 -->
 <script is:inline define:vars={{ themes: JSON.stringify(THEMES), system: JSON.stringify({
-  light: 'pierre', dark: 'phosphore',
+  light: SYSTEM_LIGHT, dark: SYSTEM_DARK,
 }) }}>
   (function () {
     try {

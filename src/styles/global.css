@@ -11,27 +11,22 @@
    ---------------------------------------------------------------------- */
 
 /* ----- Terminal ramps ----------------------------------------------------
-   Three real machines, not three decorations.
-
-     phosphore  P3 amber phosphor — the DEC VT-series in its amber trim and
-                the IBM 3278 readout. A long-persistence amber tube on a
-                near-black face. This is the default: it is the oldest of the
-                three and the one the rest of the site's language comes from.
+   Two real machines, not two decorations.
 
      acidule    P1 green phosphor — the same tube in its green trim, and the
                 colour of the IBM 5151 as it shipped. The genuine article
-                from the era when a terminal was furniture.
+                from the era when a terminal was furniture. This is the
+                default: the site boots on the green tube.
 
-     pierre     P4 paper-white — the reflective LCD panels and the
-                amber-on-cream monitors of the late eighties. Light mode with
-                the same discipline, for the screens where a dark page is a
-                dark room.
+     phosphore  P3 amber phosphor — the DEC VT-series in its amber trim and
+                the IBM 3278 readout. A long-persistence amber tube on a
+                near-black face.
 
    The phosphor numbers are the real ones. P1 is green (525 nm) and P3 is
    amber (602 nm) — the numbering runs from the first phosphor anyone
    commercialised, not from the order the colours look best in. The names
-   are the old ones — phosphore, acidule, pierre — because they are stored
-   in localStorage and used to pick the portrait artwork, and because they
+   are the old ones — phosphore, acidule — because they are stored in
+   localStorage and used to pick the portrait artwork, and because they
    were good names. What changed is what they point at.
 
    Contrast was measured, not guessed. On the default ramp:
@@ -40,9 +35,8 @@
      --braise on --papier        7.6:1   (also the border colour, needs 3:1)
    ---------------------------------------------------------------------- */
 
-:root[data-theme='phosphore'],
 :root[data-theme='acidule'],
-:root[data-theme='pierre'] {
+:root[data-theme='phosphore'] {
   /* The page. Not pure black: a phosphor face is never truly black, and a
      hair of warmth keeps the amber from looking like a screensaver. */
   --papier: #0d0a05;
@@ -61,9 +55,9 @@
   --fort: #e09a20;
   /* The faint text: dates, modes, labels that are metadata rather than
      content. It used to be --grid, the rule colour — and a rule is a line,
-     not letters: at 1.5:1 the dates and the file modes were unreadable on
-     the dark themes and no better on the light one. This is the same idea
-     drawn with type: dimmer than the copy, but still over 4.5:1. */
+     not letters: at 1.5:1 the dates and the file modes were unreadable.
+     This is the same idea drawn with type: dimmer than the copy, but still
+     over 4.5:1. */
   --faible: #a8752a;
   --erreur: #ff7a5c;
   --braise-txt: #ff9a5c;
@@ -107,30 +101,6 @@
   --led-on: #35ff8a;
   --led-warn: #ffd24a;
   --led-off: #0d3b26;
-}
-
-:root[data-theme='pierre'] {
-  --papier: #f4efe6;
-  --rouille: #e9e1d0;
-  --grid: #c9bda6;
-  --braise: #a8431a;
-  --encre: #2f2618;
-  --creme: #1a1409;
-  --fort: #6b5c42;
-  --faible: #6f6147;
-  --erreur: #a32c0c;
-  --braise-txt: #9a3b1c;
-  --focus-ring: var(--braise);
-  --code-kw: #8f2f10;
-  --code-str: #1f6b2b;
-  --code-num: #3d3124;
-  --code-cm: #5b4d3d;
-  --ok: #1f6b2b;
-  --placeholder: #5b4d3d;
-  --table-rule: #8a7a63;
-  --led-on: #1f6b2b;
-  --led-warn: #a8431a;
-  --led-off: #c9bda6;
 }
 
 /* The art face, shipped rather than hoped for.
@@ -285,13 +255,6 @@
   --bp-hero: 62rem;
 
   color-scheme: dark;
-}
-
-/* The light theme is a light page: the scrollbar, the form controls and the
-   focus ring have to follow, or the browser paints dark-mode chrome on a
-   warm-paper background. */
-:root[data-theme='pierre'] {
-  color-scheme: light;
 }
 
 /* Text selection is the one color in the site that belongs to no theme
@@ -488,11 +451,10 @@ pre code {
   padding: 0;
 }
 
-/* Code blocks carry two Shiki palettes at once — the light one and the dark
-   one — and the site theme picks which one is live. The inline style on each
-   token names both; the rule below reads the one this theme wants. Without
-   this the `code { color: var(--fort) }` above wins on every token Shiki
-   left uncolored, which in the light theme is dark ink on a dark block. */
+/* Code blocks ship with the Shiki palette as CSS variables, so the rule
+   below reads the colour of each token off the variable rather than letting
+   the `code { color: var(--fort) }` above win on every token Shiki left
+   uncolored. */
 pre.astro-code {
   background-color: var(--shiki-dark-bg, var(--rouille));
   color: var(--shiki-dark, var(--fort));
@@ -501,16 +463,6 @@ pre.astro-code {
 pre.astro-code code,
 pre.astro-code span {
   color: var(--shiki-dark, var(--fort));
-}
-
-:root[data-theme='pierre'] pre.astro-code {
-  background-color: var(--shiki-light-bg, var(--rouille));
-  color: var(--shiki-light, var(--fort));
-}
-
-:root[data-theme='pierre'] pre.astro-code code,
-:root[data-theme='pierre'] pre.astro-code span {
-  color: var(--shiki-light, var(--fort));
 }
 
 blockquote {
@@ -873,8 +825,8 @@ blockquote {
 }
 
 /* The palette is a dialog, so focus lands in it the moment it opens. The ring
-   stays: the fill alone measures 2.22:1 against the page and 1.25:1 in the
-   light ramp, which is not a focus indicator. */
+   stays: the fill alone measures 2.22:1 against the page, which is not a
+   focus indicator. */
 .palette-input:focus {
   background: var(--rouille);
 }

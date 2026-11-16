@@ -49,7 +49,7 @@ import { RAMPS, THEMES, resolveRamp, themeColor } from '../data/themes';
       ['BIOS', 'MaltsevOS 4.2'],
       ['CPU', 'forward deployed engineer'],
       ['MODE', 'static / no runtime'],
-      ['PHOSPHOR', html.dataset.theme || 'phosphore'],
+      ['PHOSPHOR', html.dataset.theme || 'acidule'],
       ['TTY', 'vt220 — 80x24'],
       ['BUILD', year],
     ];
@@ -443,7 +443,7 @@ import { RAMPS, THEMES, resolveRamp, themeColor } from '../data/themes';
     // to, and the chrome color of each one — all of it comes from
     // src/data/themes.ts. The list used to be written out here as well as in
     // the picker and in the boot script in the head: three copies of the same
-    // four names, free to drift apart.
+    // names, free to drift apart.
 
     var lightQuery = window.matchMedia('(prefers-color-scheme: light)');
 
@@ -554,7 +554,7 @@ import { RAMPS, THEMES, resolveRamp, themeColor } from '../data/themes';
     /**
      * Apply a theme.
      *
-     * `id` is what the reader picked: one of the three ramps, or `system`.
+     * `id` is what the reader picked: one of the two ramps, or `system`.
      * `system` is stored as itself and resolved to a ramp for the page, so
      * the choice survives a visit to another page and still follows the OS.
      */
@@ -612,8 +612,8 @@ import { RAMPS, THEMES, resolveRamp, themeColor } from '../data/themes';
     syncRadios();
 
     // The stored choice can be `system`, which the boot script in the head
-    // cannot resolve — it only knows the three ramps — so the theme is
-    // applied here as well, and the radio state follows the stored choice.
+    // cannot resolve — it only knows the ramps — so the theme is applied
+    // here as well, and the radio state follows the stored choice.
     var stored = null;
     try {
       stored = localStorage.getItem('theme');
@@ -623,9 +623,19 @@ import { RAMPS, THEMES, resolveRamp, themeColor } from '../data/themes';
     if (stored && (RAMPS.indexOf(stored) !== -1 || stored === 'system')) {
       setTheme(stored);
     } else {
-      // Nothing stored: the page is on the ramp it booted with, and the radio
-      // group has to say which one that is. `system` is not a ramp, so if the
-      // page booted on it, it is resolved here.
+      // Nothing usable stored: the page is on the ramp it booted with, and
+      // the radio group has to say which one that is. `system` is not a
+      // ramp, so if the page booted on it, it is resolved here.
+      //
+      // A stored theme that no longer exists — the paper ramp was removed —
+      // is dropped rather than left to fail on every pageview.
+      if (stored) {
+        try {
+          localStorage.removeItem('theme');
+        } catch (e) {
+          /* storage blocked — the stale value stays, and keeps failing */
+        }
+      }
       var boot = html.dataset.theme;
       if (boot === 'system') boot = resolve('system');
       html.dataset.theme = boot;

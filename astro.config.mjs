@@ -26,12 +26,11 @@ export default defineConfig({
     '/contact': '/about',
   },
   integrations: [mdx()],
-  // Code blocks ship with both a light and a dark Shiki theme and let CSS
-  // pick one per site theme. A single baked-in `github-dark` kept a #24292e
-  // slab on the light `pierre` page and left every token without its own
-  // colour inheriting the page's ink — dark on dark, unreadable. The dark
-  // theme is `github-dark-default` rather than `github-dark` because the
-  // latter's comment grey (#6a737d on #24292e) is 3.05:1 and fails AA.
+  // Code blocks ship with the Shiki palette as CSS variables, and the
+  // stylesheet reads the colour of each token off the variable. The theme is
+  // `github-dark-default` rather than `github-dark` because the latter's
+  // comment grey (#6a737d on #24292e) is 3.05:1 and fails AA. There is one
+  // palette now: the light one existed for the paper theme, which is gone.
   markdown: {
     // Every image in a post body gets its intrinsic size, `loading="lazy"`
     // and `decoding="async"`. Without them the browser reserves no space
@@ -48,7 +47,7 @@ export default defineConfig({
       rehypeStripPictograms,
     ],
     shikiConfig: {
-      themes: { light: 'github-light', dark: 'github-dark-default' },
+      themes: { dark: 'github-dark-default' },
       defaultColor: false,
     },
   },

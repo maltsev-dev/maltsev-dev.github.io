@@ -168,7 +168,7 @@ const NOW = [
                   data-reveal-delay={Math.min(i, 3) * 60}
                 >
                   <h3 class="work-k">
-                    <span class="work-k-label">{w.k}</span>
+                    <span>{w.k}</span>
                     <span class="work-n" aria-hidden="true">
                       {String(i + 1).padStart(2, '0')}
                     </span>
@@ -350,10 +350,6 @@ const NOW = [
     background-image: url('/images/profile/desk-acidule.webp');
   }
 
-  :root[data-theme='pierre'] .portrait-art {
-    background-image: url('/images/profile/desk-pierre.webp');
-  }
-
   .portrait figcaption {
     padding: 0.7rem 0.9rem;
     border-top: var(--filet) solid var(--braise);
@@ -395,6 +391,10 @@ const NOW = [
     padding: 0.85rem 1rem 1rem;
     border: var(--filet) solid var(--grid);
     background: var(--rouille);
+    /* The bloom the window itself has, at half the strength: a lit panel
+       throws light onto the bezel around it, and the four blocks are lit
+       panels inside one. */
+    box-shadow: var(--ombre-sm);
   }
 
   /* The label is a label: the terminal's small caps, with the number of the

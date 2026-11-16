@@ -641,7 +641,7 @@ const PROBE_SRC = `function () {
 async function contrast() {
   await withPage(async (page) => {
     const url = BASE + '/blog/2026-04-07-the-ai-pipeline-is-not-optional/';
-    for (const theme of ['phosphore', 'acidule', 'pierre']) {
+    for (const theme of ['acidule', 'phosphore']) {
       await page.goto(url, { waitUntil: 'networkidle' });
       await page.evaluate((t) => {
         document.documentElement.dataset.theme = t;
@@ -747,7 +747,7 @@ async function contrast() {
     );
 
     // DES-005: focused field text and placeholder, in every theme.
-    for (const theme of ['phosphore', 'acidule', 'pierre']) {
+    for (const theme of ['acidule', 'phosphore']) {
       await page.goto(BASE + '/about/', { waitUntil: 'networkidle' });
       await page.evaluate((t) => {
         document.documentElement.dataset.theme = t;
@@ -794,7 +794,7 @@ async function contrast() {
     }
 
     // DES-006: ::selection.
-    for (const theme of ['phosphore', 'acidule', 'pierre']) {
+    for (const theme of ['acidule', 'phosphore']) {
       const sel = await page.evaluate((t) => {
         document.documentElement.dataset.theme = t;
         const probe = document.createElement('div');

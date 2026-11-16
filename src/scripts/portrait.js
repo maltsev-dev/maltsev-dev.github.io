@@ -3,22 +3,16 @@
  *
  * The picture itself is the tool's own — its shaders, its points, its loop,
  * its drag. All this file does is tell it what colour to draw in, because
- * the site has three themes and a picture drawn for one of them is wrong
- * on the other two.
+ * the site has two themes and a picture drawn for one of them is wrong on
+ * the other.
  *
  * The two terminal themes draw the picture in their own colour: an amber
  * tube has one colour and a green one has one colour, and the tool's
  * single-colour mode is exactly that — one colour, with the tone of the
- * photograph carried by how bright it is. The paper theme draws the same
- * picture in ink on paper, and there the tone of the photograph is carried
- * the other way round: by how close the ink is to the paper.
+ * photograph carried by how bright it is.
  */
 import { createPortrait } from '../lib/portrait';
 import {
-  PORTRAIT_COLS,
-  PORTRAIT_ROWS,
-  PORTRAIT_LIGHT_MIN,
-  PORTRAIT_LIGHT_MAX,
   PORTRAIT_PICTURE,
   PORTRAIT_HEIGHT,
 } from '../data/portrait';
@@ -72,19 +66,14 @@ const SOFT = 0.68;
  * The colour of the picture, for the theme that is on.
  *
  * The terminal themes draw the picture in their own brightest colour, the
- * way an amber tube draws everything in amber. The paper theme draws it in
- * ink, on paper, and there the tone of the photograph rides on how close
- * the ink is to the paper rather than on the colour of the ink itself.
+ * way an amber tube draws everything in amber.
  */
 function colours() {
-  const theme = document.documentElement.dataset.theme || 'phosphore';
   const style = getComputedStyle(document.documentElement);
-  const paper = theme === 'pierre';
 
   return {
     mono: true,
-    light: paper,
-    ink: rgb(style.getPropertyValue(paper ? '--encre' : '--creme')),
+    ink: rgb(style.getPropertyValue('--creme')),
     ground: rgb(style.getPropertyValue('--papier')),
     weight: 0.18,
     soft: SOFT,
@@ -94,11 +83,6 @@ function colours() {
 function start() {
   const canvas = document.querySelector('[data-portrait]');
   if (!canvas) return;
-
-  const status = document.querySelector('[data-portrait-status]');
-  if (status) {
-    status.textContent = `cat portrait.asc · ${PORTRAIT_COLS}×${PORTRAIT_ROWS}`;
-  }
 
   const theme = colours();
 
@@ -111,17 +95,14 @@ function start() {
     mono: theme.mono,
     ink: theme.ink,
     ground: theme.ground,
-    light: theme.light,
     weight: theme.weight,
     soft: theme.soft,
-    range: [PORTRAIT_LIGHT_MIN, PORTRAIT_LIGHT_MAX],
   })
     .then((portrait) => {
       /* The theme changes the colour the picture is drawn in. */
       new MutationObserver(() => {
         const next = colours();
         portrait.mono(next.mono);
-        portrait.light(next.light);
         portrait.ink(next.ink);
         portrait.ground(next.ground);
         portrait.weight(next.weight);
