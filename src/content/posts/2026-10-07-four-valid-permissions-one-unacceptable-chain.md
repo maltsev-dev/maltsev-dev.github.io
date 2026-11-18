@@ -216,9 +216,10 @@ say so rather than counting it as caught. The price is state to carry
 across the run, a boundary for a six-hour workflow that outlasts a
 context window, a signal that keeps firing on legitimate traffic and
 gets ignored by the third day, and a subagent whose total starts empty
-while the reads happened in the parent. The result is that every decision
-in a run is evaluated against what the earlier steps accumulated, so the
-fourth step cannot pass under the ceiling the first three set.
+because the reads happened in another aggregate. The result is that every
+decision in a run is evaluated against what the earlier steps
+accumulated, so the fourth step cannot pass under the ceiling the first
+three set.
 
 ## FAQ
 

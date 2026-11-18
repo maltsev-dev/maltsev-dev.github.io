@@ -223,11 +223,12 @@ behind it. Treat it as success and the effect never happens: the money is
 gone, the record was never written, and nothing raises an alarm; treat it
 as failure and the effect occurs a second time, the settlement charged
 twice against one authorized amount, or a second email to a customer.
-Each guess looks reasonable from the call site, which is why neither of
-them gets argued about in review. The other version is leaving the
-behavior undefined and taking the retry policy from a framework default
-that nobody in the team chose, so no one ever wrote down which of the two
-failures the system is willing to risk.
+Each guess looks reasonable from the call site, and the price of both
+shows up somewhere else: one of them is invisible, the other is loud and
+expensive. The other version is leaving the behavior undefined and
+taking the retry policy from a framework default that nobody in the team
+chose, so no one ever wrote down which of the two failures the system is
+willing to risk.
 
 ### What to do
 

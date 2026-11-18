@@ -376,9 +376,9 @@ decisions that were never made.
 
 Split the suite into the seven input classes, each with an assertion
 that fails when the property breaks: the same action decided the same
-way under two payloads, one value below and one above every threshold
-plus the eight wrong-type rows, every documented route against the
-canary tool, exactly one winner over twenty concurrent runs, and a
+way under two payloads, one value below, one at and one above every
+threshold plus the eight wrong-type rows, every documented route against
+the canary tool, exactly one winner over twenty concurrent runs, and a
 decision that injected provenance cannot move. Assert the property
 rather than the value, so a dependency outage cannot read as an allow,
 and mutate each threshold until one test goes red: `CAP` from 500 to
