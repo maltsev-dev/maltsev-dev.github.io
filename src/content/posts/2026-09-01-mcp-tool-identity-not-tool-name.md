@@ -295,20 +295,19 @@ grant twice over without noticing they have done it.
 
 Give each row of the trust list the two things a reviewer needs: where
 the tool registered, and the hash of the definition approved with it.
-Two servers offering the same name then take two rows, because the
-registration is part of the row, and a reviewer sees the difference
-without opening a schema. Hang the hash of the canonicalized definition
-off the row too, and keep the hash a person accepted next to the
-computed one, so a change shows as a difference rather than a surprise
-at the next call. A tool the list has not seen arrives as needing a
-decision, and one whose hash no longer matches stops until a person
-accepts it. The cost is a registration step and a drift check on a
-heartbeat, blunt enough that editing a tool's prose suspends it.
-Reading the list once per drift check rather than per call keeps the
-lookup off the hot path. What you get is a list whose length is its
-reach: every row names a server as well as a tool, every callable tool
-carries a definition a person agreed to, and a change shows before the
-next call.
+Because the registration is part of the row, a reviewer can see which
+server each row covers without opening a schema, and a collision stops
+being invisible where a person signs. Hang the hash computed now off
+the row next to that one, so a change shows as a difference rather
+than a surprise at the next call. A tool the list has not seen arrives
+as needing a decision, and one whose hash no longer matches stops
+until a person accepts it. The cost is a registration step and a drift
+check on a heartbeat, blunt enough that editing a tool's prose
+suspends it. Reading the list once per drift check rather than per
+call keeps the lookup off the hot path. What you get is a list whose
+length is its reach: every callable tool carries a definition someone
+agreed to, a change shows up before the next call, not after, and the
+review that signed it off looked at something checkable.
 
 ## FAQ
 

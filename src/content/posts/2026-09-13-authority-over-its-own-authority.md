@@ -174,7 +174,8 @@ credential and takes effect without review, the rules on that route are
 rules the agent writes, and the only thing between the agent and the
 boundary is a decision the agent also supplies. A route that goes
 through review is not that case, because the decision there belongs to
-a person. The tell is not a hostile action but a listing you cannot
+a person, and a person looking at a diff is a review rather than a
+boundary. The tell is not a hostile action but a listing you cannot
 produce: name every route that accepts the agent's credential, sort
 them into two classes, the routes whose changes take effect without
 review and the routes whose do not, and the second class is the
@@ -188,17 +189,17 @@ credential travels, and let the layer that reads that credential be its
 only reader. One of the four capability classes changes the boundary,
 and it leaves the exposure list in the code that builds it, with no
 control that turns it back on. Hold the tool surface to the same
-standard: a tool that writes configuration, ships code, or redefines a
-workflow is a path to the boundary, closed by requiring such a change
-to take effect no faster than review, which leaves the agent's version
-a request and never an edit. Write every change as a hashed snapshot
-with a history rather than editing it in place, and let the refusals
-teach: a refusal is the one answer the agent cannot argue with. Each
-refusal carries a decision and a code, and the trail of them shows,
-later, that a limit was relaxed and by whom. The cost is a second
-trust domain to run, and an owner for the question of what the agent's
-surface has become. The property to check: nothing the agent process
-can reach authenticates its credential for a boundary change.
+standard: a tool whose output the runtime acts on is a path to the
+boundary, closed by requiring such a change to take effect no faster
+than review, which leaves the agent's version a request and never an
+edit. Write every change as a hashed snapshot with a history rather
+than editing it in place, and let the refusals teach: a refusal is the
+one answer the agent cannot argue with. Each refusal carries a decision
+and a code, and the trail of them shows, later, that a limit was
+relaxed and by whom. The cost is a second trust domain to run, and an
+owner for the question of what the agent's surface has become. The
+property to check: nothing the agent process can reach authenticates
+its credential for a boundary change.
 
 ## FAQ
 

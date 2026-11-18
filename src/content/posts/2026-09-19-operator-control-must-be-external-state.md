@@ -286,21 +286,22 @@ interrupt.
 
 ### What to do
 
-Put the control in a store the workers share and read it where a call
-is made, with three values: normal, paused, killed. Keep the write path
-on credentials the agent process does not hold, and authorize the
-operator who holds one, so the control is set by a person and not by
-the thing it governs. Make the queue ask the store about a job before
-it hands it out; a kill the queue never hears about is one the job's
-next runner never learns. Bind the authority to one execution and let
-it lapse on its own, and give an approval its own expiry, so the
-window closes without anyone awake. The price is a dependency you do
-not own, and until the queue asks the store a kill you issued is a
-promise rather than a fact, which leaves the operator a control that
-takes hold at the next check rather than at the moment of the kill.
-Decide now what an unreachable store means, and hold: a kill switch
-that fails open is worst exactly when the system is broken. Because the
-state is shared across pods, a kill means kill on every pod at once.
+Put the control in a store the workers share, read it where a call is
+made: three values, normal, paused, killed. Keep the write path on
+credentials the agent process does not hold, and authorize the
+operator who holds one, so the control is set by a person, not by what
+it governs. Make the queue ask the store about a job before it hands
+it out, so the queue's record shows whether a killed workflow's work
+was withheld or run, and "did it stop?" is answered. Bind the authority
+to one execution and let it lapse on its own, and give an approval its
+own expiry, so the window closes without anyone awake. The price is a
+dependency you do not own: until the queue asks the store, a kill you
+issued is a promise, not a fact, and the control lands on the next
+check, not when you pressed it. Decide now what an unreachable store
+means, and refuse: a kill switch that fails open is worst exactly when
+the system is broken. Because the state is shared across pods, the
+check that lands is the same everywhere, so a kill landing on one
+lands on all.
 
 ## FAQ
 
