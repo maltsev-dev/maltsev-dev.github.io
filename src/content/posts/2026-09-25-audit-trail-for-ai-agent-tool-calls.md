@@ -182,31 +182,31 @@ without proving anything.
 
 Do not keep one mutable row per action. A table that holds a whole action
 in one place has a single writer, and that writer owns the history: the
-previous state is gone the moment the next writer lands, and there is
+state before it is gone the moment the next writer lands, and there is
 nothing left to correct afterwards. A row updated in place cannot answer
-what the gate decided at the moment of the incident, because the answer
-it gives is the answer of the last writer, not the answer of the moment.
-The loss shows up where the record matters most. The 402 refusal is the
-row an operator needs when the agent stops calling at 14:00, and a table
-of approvals alone has no row for it at all. Blocking `UPDATE` and
-`DELETE` with table grants does not close the gap either: that defense is
-one `ALTER TABLE` away from gone.
+what was allowed at the moment of the incident, because the answer it
+gives is the answer of the last writer, not the answer of the moment. The
+loss shows up where the record matters most. A 402 refusal is the entry
+you want when the agent goes quiet at 14:00, and a table of approvals
+alone has no row for it at all. Table grants that block `UPDATE` and
+`DELETE` do not close the gap either: that defense is one schema change
+away from being revoked.
 
 ### What to do
 
-Split the surface into four tables, one per kind of record, and let a
+Give each kind of record its own table, four of them, and let a
 correction be a new row rather than an edit. Tie them together with an
-execution ID the server mints and binds to the organization and the key in
-the same atomic operation as the write, then re-read that binding at
-settlement, because a binding checked only on the way in can be replayed
-on the way out. Chain every row to the hash of the row before it over a
-canonical serialization, and write the decision and the enqueue in one
-transaction so a decision cannot exist without a queued record. The price
+execution ID the server mints and binds to the organization and the key
+atomically with the write, then check that binding again when the action
+settles, because a binding checked once at entry can be replayed later,
+under a different payload. Chain each row onto the hash of its
+predecessor over a canonical serialization, and commit the decision and
+the enqueue together, so neither can exist without the other. The price
 is four tables to keep, one dispatcher to run, one transaction on the
 decision path, and a chain verifier that has to be pointed at a
-deliberately tampered copy or it proves nothing. What it buys is a trail
-that cannot be rewritten after the fact, and an edit to any historical row
-that breaks every hash after it.
+deliberately tampered copy or it proves nothing. What it buys is an audit
+trail with no path back: every change lands as a new row, and a change to
+an older row invalidates every hash that follows it.
 
 ## FAQ
 

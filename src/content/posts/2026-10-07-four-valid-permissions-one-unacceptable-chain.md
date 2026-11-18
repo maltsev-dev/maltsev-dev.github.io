@@ -189,36 +189,36 @@ way the aggregate stops protecting you.
 
 ### What not to
 
-Do not decide each action on its own and call the path allowed. Four
-permitted steps in a row, read a record, run a query, create a CSV, send
-it to an external recipient, carry no unauthorized step at all, and the
-four of them together move fourteen gigabytes of customer records out of
-the building. The per-action check is not merely too coarse here: it is
-looking at a different question. It asks whether each tool call was
-allowed, and what caused the incident was never a tool call, it was the
-order of four of them. A flag on sequence length cannot repair it either:
-a legitimate job that reads two hundred documents and sends one summary
-trips it too.
+Do not decide each action on its own and call the path allowed. Every
+step of the sequence was individually permitted and nothing forbade the
+order they ran in, and the outcome was a customer export of fourteen
+gigabytes, left where anyone could read it. Step by step, every check
+passes and the run is reported as compliant, so the outcome that was never
+planned is the only one nobody checked. The per-action check is not
+merely too coarse here: it is looking at a different question. It asks
+whether each tool call was allowed, and what caused the incident was
+never a tool call, it was the order of four of them. A flag on sequence
+length cannot repair it either: a legitimate job that pulls two hundred
+documents and sends one summary trips it too.
 
 ### What to do
 
-Keep a running aggregate per execution and read it at the decision point,
-not at the end: sensitive records read, bytes staged, bytes sent
-externally, cumulative cost. When the effect of the steps so far exceeds
-what any single step could have produced, refuse with the signals named
-and record the refusal as a decision. Use the aggregate where the effect
-is monotonic: runaway cost is the clean case, because the counter moves in
-one direction and is bounded. Privilege escalation is the case the
-aggregate cannot close, because its signal is structural rather than
-volumetric, and the per-action layer is the backstop there: the tool
-pattern and the argument rules checked against the live action, each
-refusal typed. The cost is state to carry across the run, an
-execution boundary for a six-hour workflow spanning a compaction and a
-resume, a false positive that mutes the signal by the third day, and a
-subagent whose aggregate starts empty because the composition spans two
-of them. The result is that every decision in a run is evaluated against
-what the earlier steps accumulated, so the fourth step cannot pass under
-the ceiling the first three were measured against.
+Keep a per-execution aggregate and read it where the decision is made:
+the sensitive record count, the staged bytes, the bytes sent out, and the
+cost so far. When the effect of the steps so far exceeds what one step
+could produce, refuse with the signals named and record it. Use the
+aggregate where the effect is monotonic: runaway cost is the clean case,
+the counter moving one way. Privilege escalation is the case the
+aggregate cannot close: its signal is structural rather than volumetric,
+and the gate's per-action check cannot see it either, because what is
+dangerous is the order of the steps, not one step. That one stays open:
+say so rather than counting it as caught. The price is state to carry
+across the run, a boundary for a six-hour workflow that outlasts a
+context window, a signal that keeps firing on legitimate traffic and
+gets ignored by the third day, and a subagent whose total starts empty
+while the reads happened in the parent. The result is that every decision
+in a run is evaluated against what the earlier steps accumulated, so the
+fourth step cannot pass under the ceiling the first three set.
 
 ## FAQ
 

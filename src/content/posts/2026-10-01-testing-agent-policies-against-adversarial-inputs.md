@@ -366,11 +366,11 @@ written by the author of the rule, checks the code against that rule and
 nothing beyond it, so the question nobody asks, which is whether anything
 was left out, is never asked. Seven classes of input exist that no rule
 names, and a suite built from the rules is silent on all seven. The milder
-version is an assertion that looks thorough and is not:
-`outcome in {"block", "allow"}` passes on a system that fails open, so the
-failure-injection test can be green while a dependency outage still lets
-the action through. Line coverage hides the same gap, because it measures
-the code that ran rather than the decisions that were never made.
+version is an assertion that accepts either verdict, which a system that
+fails open also satisfies, so the failure-injection test can be green
+while a dependency outage still lets the action through. Line coverage
+hides the same gap, because it measures the code that ran rather than the
+decisions that were never made.
 
 ### What to do
 
@@ -379,18 +379,18 @@ that fails when the property breaks: the same action decided the same
 way under two payloads, one value below and one above every threshold
 plus the eight wrong-type rows, every documented route against the
 canary tool, exactly one winner over twenty concurrent runs, and a
-decision identical with and without injected provenance. Assert the
-property rather than the value, so a dependency outage cannot read as
-an allow, and mutate each threshold until one test goes red: `CAP`
-from 500 to 5000 has to break the suite. The cost is a suite built
-from seven directions instead of one, twenty runs per race, and a
-deny-branch coverage number you must publish even when it sits under
-80%. The result is a suite that cannot be green for the wrong reason:
-a threshold nobody asserted on cannot be changed without the suite
-noticing, so the limit the policy enforces and the limit the suite
-tests cannot drift. It does not close the gap against an adversary who
-has read your rules, and does not need to: the property it confirms
-is one the architecture already makes true.
+decision that injected provenance cannot move. Assert the property
+rather than the value, so a dependency outage cannot read as an allow,
+and mutate each threshold until one test goes red: `CAP` from 500 to
+5000 has to break the suite. The cost is a suite built from seven
+directions instead of one, twenty runs per race, and a deny-branch
+coverage number you must publish even under 80%. The result is a suite
+that cannot be green while a rule is wrong: no threshold in the policy
+can change without turning a test red, so the limit the gate enforces
+and the limit the suite exercises cannot drift apart. It does not close
+the gap against an adversary who has read your rules, and does not need
+to: the property it confirms is one the architecture already makes
+true.
 
 ## FAQ
 

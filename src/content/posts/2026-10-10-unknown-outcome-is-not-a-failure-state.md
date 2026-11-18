@@ -219,34 +219,35 @@ avoid.
 
 Do not pick an answer for an outcome nobody observed. A retried call has
 four outcomes, and `attempted_unknown` is the one with no confirmation
-behind it. Treat it as success and the action is silently lost, with no
-refund, no record update and no alarm anywhere; treat it as failure and
-the action happens twice, the settlement charged twice against one
-authorized amount, or a second email to a customer. Each guess looks
-reasonable from the call site, which is why neither of them gets argued
-about in review. The other version is leaving the behavior undefined and
-inheriting it from whichever retry helper the framework shipped, so nobody
-ever wrote down which of the two failures the system is willing to risk.
+behind it. Treat it as success and the effect never happens: the money is
+gone, the record was never written, and nothing raises an alarm; treat it
+as failure and the effect occurs a second time, the settlement charged
+twice against one authorized amount, or a second email to a customer.
+Each guess looks reasonable from the call site, which is why neither of
+them gets argued about in review. The other version is leaving the
+behavior undefined and taking the retry policy from a framework default
+that nobody in the team chose, so no one ever wrote down which of the two
+failures the system is willing to risk.
 
 ### What to do
 
-Make the unknown representable, as a third value beside applied and not
-applied, and refuse a second attempt while a prior attempt is unresolved.
-Then remove the ambiguity at the source where the downstream allows it:
-derive the idempotency key from the action digest and the identity so it
-survives the retry, consume a grant atomically and refuse the replay,
-and settle so that a repeat charges once. Settle against the amount
-authorized with a one-cent tolerance, park the events that exhaust their
-retries in a dead-letter table that keeps them for thirty days, and
-reconcile the counter against the ledger nightly so the difference is a
-number somebody reads. Where the downstream offers no idempotency key,
-write down per operation which of duplicates or omissions you are
-choosing. The price is a state every layer above the call now carries,
-one cent of allowed drift, thirty days of retained dead letters, and an
-escalation path with a human at the end of it, because a workflow that
-cannot resolve an unknown stops. The result you can check: a second
-attempt against an unresolved prior attempt is refused rather than
-executed, and a repeated settlement charges once.
+Make the unknown representable, as a third value the enum can hold, and
+refuse a second attempt while a prior attempt is unresolved. Then remove
+the ambiguity where it starts, if the downstream allows it: derive the
+idempotency key from the action digest and the identity so it survives the
+retry, consume a grant atomically and refuse the replay, and settle so
+that a repeat charges once. Settle against the amount authorized with a
+one-cent tolerance, park the events that exhaust their retries in a
+dead-letter table that keeps them for thirty days, and reconcile the
+counter against the ledger nightly so the difference is a number somebody
+reads. Where the downstream offers no idempotency key, write down per
+operation which of duplicates or omissions you are choosing. The price is
+a state every layer above the call now carries, one cent of allowed
+drift, thirty days of retained dead letters, and an escalation path with
+a human at the end of it, because a workflow that cannot resolve an
+unknown stops. The result you can check: a second attempt against an
+unresolved prior attempt is refused rather than executed, and a repeated
+settlement charges once.
 
 ## FAQ
 
