@@ -247,35 +247,36 @@ cannot stop a vendor billing you for something you did not measure.
 ### What not to
 
 Do not check a balance and then write the spend. Reading the counter and
-incrementing it are two operations, and every caller that arrives between
-them sees a clear slot: twenty concurrent calls that each fit the cap on
-their own read all fit it together, and every one of them is individually
-correct. The agent that loses the race is the one whose work was funded
-and nobody's. The number on the dashboard stays right, because the counter
-is the counter, but the answer to whether the call may proceed is decided
-by a race, and a race has no answer that survives contact with a queue.
-The overrun turns up in an invoice rather than in a refusal, and the calls
-that looked affordable are the ones that paid for work nobody approved.
+incrementing it are two operations, and any caller that arrives between
+the two reads a number that has not moved: twenty concurrent calls that
+each fit the cap on their own read all fit it together, and every one of
+them is individually correct. The agent that loses the race is the one
+whose work was funded and nobody's. The number on the dashboard stays
+right, because the counter is the counter, but the answer to whether the
+call may proceed is decided by a race, and a race has no answer that
+survives contact with a queue. The overrun turns up in an invoice rather
+than in a refusal, and the calls that looked affordable are the ones that
+paid for work nobody approved.
 
 ### What to do
 
 Make the budget a permission. Take the cost out of the period's budget in
 the operation that compares it against the cap, and tie the hold to an
 execution identity the server mints, so twenty parallel calls cannot all
-fit the last slot and the reservation names the one that got in. Settle
-against what was authorized, absorbing estimation error inside a fixed
-number of cents, and write the excess against the execution it came from.
-That row names the call it belongs to: an address, not a figure. Let the
-server own the deciding number: a client may report what a call cost or
-estimate what it will cost, but the balance is not the client's to keep.
-Make the refusal say enough to act on: what the period would come to,
-what is still held, what this call adds.
+fit the last slot, and the reservation names the winner. Settle out of the
+hold that was already made, let a tolerance of a fixed number of cents
+absorb the difference, and write what is left over against the execution:
+an address to one call, not a figure. Keep the deciding number on the
+side that decides. What the caller sends is an answer about a call: the
+number the cap is measured against is not something a caller sends. Make
+the refusal say enough to act on: what the period would come to, what is
+still held, what this call adds.
 
 The price is one store operation on the decision path, one more piece of
 state to reconcile when a hold never settles, and a tolerance that admits
-a little overage by design. The property is checkable: the cap bounds
-spend that was authorized, not spend that has already happened, and the
-decision carries the atomicity the answer needs.
+a little overage by design. The property is checkable: the decision to
+allow or refuse is recorded, refusals included, and it carries the
+atomicity the answer needs.
 
 ## FAQ
 

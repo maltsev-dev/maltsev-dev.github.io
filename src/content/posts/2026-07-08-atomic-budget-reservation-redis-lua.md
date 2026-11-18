@@ -205,8 +205,8 @@ each saw the same 100 units of headroom all fit inside the cap. The
 reserve-then-consume pair takes the money at one end and spends it at
 another, so the two ends can disagree about whether a call was ever paid
 for. Both disappear when the whole decision runs as one script, rather than
-being held together by discipline at either end. The reserve path is
-unaffected: it still passes every test it has.
+being held together by discipline at either end. The reserve path is not
+where this fails: it still passes every test it has.
 
 ### What to do
 

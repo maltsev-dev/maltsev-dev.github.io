@@ -208,13 +208,13 @@ Do not let the period be anybody's choice but the server's, and do not
 enforce against a running total. A month boundary is the one number in
 the path a caller can move, and it moves without leaving a trace, so the
 same call booked against the roomier month is a call the cap never has to
-refuse. Resolve the period at two moments instead of one and a single
-call lands in two months, spending the headroom of both, and the counter
-the refusal rested on and the ledger that recorded the spend are then
-counting different months. Mixing up the enforced counter and the audit
-total is what produces a dashboard that keeps reading right until a call
-that was never measured against the cap goes through. Neither mistake is a
-wrong total, which is what makes them cheap to leave in.
+refuse. Resolve the period at two moments instead of one and the same
+work is booked into two months at once, so the counter the refusal rested
+on and the ledger that recorded the spend end up counting different ones.
+Mixing up the enforced counter with the audit total is what produces a
+dashboard that keeps reading right until a call that was never measured
+against the cap goes through. Neither mistake is a wrong total, which is
+what makes them cheap to leave in.
 
 ### What to do
 
@@ -225,15 +225,15 @@ the two numbers can be compared: two numbers resolved to different months
 disagree for a reason that has nothing to do with them, and that is the
 kind of disagreement that gets written off as drift.
 
-Derive the tolerance instead of picking it. One cent is a starting point,
-and the settlements that land outside it are where a wrong estimate
-becomes visible, so they are what the tolerance should come from rather
-than a number somebody chose and forgot.
+Set the tolerance as a fixed count of cents, sized from the overruns you
+have seen; a settlement that lands over what it reserved is refused, not
+covered.
 
 The price: the server owns the period, so the month a call is booked into
 is not the caller's to pick; the audit row has to carry a stamp somebody
-keeps correct; and the count of settlements outside the tolerance has to
-be kept somewhere, because a tolerance nobody measures against is a guess.
+keeps correct; and a refused settlement holds the envelope until the TTL
+fires, so headroom stays unavailable longer than a settlement that
+succeeds.
 
 The property is checkable: every call lands in exactly one period, and
 the counter and the audit row name the same one.
