@@ -203,8 +203,8 @@ open problem, and it is covered honestly in
 | Content filter | No signal. The payload is unremarkable. |
 | Sandbox | No signal. The call is inside the permitted space. |
 | IAM | No signal. The principal holds `refund_order` legitimately. |
-| Runtime authorization | Not automatic: the money-amount rule fires an approval card on the re-derived amount, and the period budget and tool-pattern rules are evaluated against live state at the moment of the call |
 | Tracing | Records all three, alerts after the fact. |
+| Runtime authorization | Not automatic: the money-amount rule fires an approval card on the re-derived amount, and the period budget and tool-pattern rules are evaluated against live state at the moment of the call |
 
 One layer caught it. The other five are looking at a different question.
 Four of them ask whether this action is the *kind* of action that is
@@ -337,8 +337,8 @@ your own traffic: a quiet result there means the layer has not fired on
 anything in it, not that it works. The checkable property: of the flagged
 customer's three refunds, exactly one layer produces a decision, recorded
 with the fields it came from. Not every deployment needs the sixth
-category: one agent and a handful of tools may be enough, until a rule has
-to look at one call.
+category, and the price above is worth paying only where one call has to
+get a different answer from the last.
 
 ## FAQ
 

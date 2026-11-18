@@ -218,26 +218,25 @@ wrong total, which is what makes them cheap to leave in.
 
 ### What to do
 
-Let the server resolve the period once and hand it to the script with the
-reserve, so a request cannot be measured against one month and paid out of
-another. Keep the enforced counter and the audit total apart, and resolve
-both to the same period before either is quoted: the period-bound counter
-is what the refusal is computed from, the Postgres total is what the
-ledger accumulates.
+Let the server resolve the period once per execution and hand it to the
+script with the reserve, so the script is handed its key instead of
+finding the month. Stamp the audit row with the period it is summing, so
+the two numbers can be compared: two numbers resolved to different months
+disagree for a reason that has nothing to do with them, and that is the
+kind of disagreement that gets written off as drift.
 
-Refuse a settlement that lands over what it reserved rather than covering
-it, and keep the tolerance an absolute number of cents: scaled up, a share
-of the reservation has no ceiling. Refusing the overrun leaves the
-operator's decision intact: the difference is never charged twice.
+Derive the tolerance instead of picking it. One cent is a starting point,
+and the settlements that land outside it are where a wrong estimate
+becomes visible, so they are what the tolerance should come from rather
+than a number somebody chose and forgot.
 
-The price: the server owns the clock, so a skewed worker cannot invent a
-second period; the period travels with the reservation, so the script is
-handed its key rather than deriving one; a refused settlement holds the
-envelope until the TTL fires, so headroom stays unavailable longer than a
-settled one.
+The price: the server owns the period, so the month a call is booked into
+is not the caller's to pick; the audit row has to carry a stamp somebody
+keeps correct; and the count of settlements outside the tolerance has to
+be kept somewhere, because a tolerance nobody measures against is a guess.
 
-The property is checkable: every call is accounted to exactly one period,
-and the counter it was checked against is the one it is charged to.
+The property is checkable: every call lands in exactly one period, and
+the counter and the audit row name the same one.
 
 ## FAQ
 

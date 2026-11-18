@@ -260,22 +260,22 @@ that looked affordable are the ones that paid for work nobody approved.
 ### What to do
 
 Make the budget a permission. Take the cost out of the period's budget in
-the same operation that compares it against the cap, and tie the hold to
-an execution identity the server mints, so two callers racing for the last
-slot cannot both fit and the reservation names its call. Settle against
-what was authorized, absorbing estimation error inside a fixed number of
-cents, and write any excess as a visible event rather than quietly taking
-it twice. Let the server own the deciding number: a client may report what
-a call cost or estimate what it will cost, but the balance the cap is
-measured against is not the client's to keep. Make the refusal say enough
-to act on: what the period would come to, what is still held, what this
-call adds.
+the operation that compares it against the cap, and tie the hold to an
+execution identity the server mints, so twenty parallel calls cannot all
+fit the last slot and the reservation names the one that got in. Settle
+against what was authorized, absorbing estimation error inside a fixed
+number of cents, and write the excess against the execution it came from.
+That row names the call it belongs to: an address, not a figure. Let the
+server own the deciding number: a client may report what a call cost or
+estimate what it will cost, but the balance is not the client's to keep.
+Make the refusal say enough to act on: what the period would come to,
+what is still held, what this call adds.
 
 The price is one store operation on the decision path, one more piece of
-state to reconcile when a hold is never settled, and a tolerance that
-admits a little overage by design. The property is checkable: the cap
-bounds spend that was authorized rather than spend that has already
-happened, and the decision carries the atomicity the answer needs.
+state to reconcile when a hold never settles, and a tolerance that admits
+a little overage by design. The property is checkable: the cap bounds
+spend that was authorized, not spend that has already happened, and the
+decision carries the atomicity the answer needs.
 
 ## FAQ
 

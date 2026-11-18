@@ -122,7 +122,7 @@ The ordering is not a style choice. A crash lands wherever the process
 dies, and each landing spot has a different amount of money stuck in it:
 
 ```
-client / agent                              Redis (primary)
+    client                                  Redis (primary)
        │                                  │
        │ reserve(ARGV[1..5]) ────────────►│
        │                                  │  GET   bp:{period}:cost_cents
