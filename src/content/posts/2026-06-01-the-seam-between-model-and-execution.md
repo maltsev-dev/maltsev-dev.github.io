@@ -47,7 +47,7 @@ what executes.
    ┌────────────────────────────────────────────────────────┐
    │  THE SEAM                                              │
    │         ┌────────────────────────────────────┐         │
-   │         │            NullRun gate            │         │
+   │         │              the gate              │         │
    │         │  allow │ require_approval │ block  │         │
    │         └────────────────────────────────────┘         │
    │  one decision, made against the action                 │
@@ -122,7 +122,7 @@ enforcement guarantee is decaying.
 
 ```python
 # ci/seam_check.py, fails the build on an ungated side effect
-GATED_MODULES = {"nullrun.gate", "nullrun.tools", "nullrun.client"}
+GATED_MODULES = {"gate.policies", "gate.tools", "gate.client"}
 SIDE_EFFECTS = {"requests.post", "requests.put", "requests.delete",
                 "httpx.post", "subprocess.run", "subprocess.Popen",
                 "os.remove", "os.rename", "shutil.rmtree"}
@@ -196,6 +196,38 @@ And a content filter has a genuine second job that is not prevention:
 surfacing suspicious activity. Those are worth having, and calling them a
 security control is how a system's actual coverage gets miscounted.
 
+## What to do, and what not to
+
+### What not to
+
+Do not let a content filter stand in for a decision at the seam. It reads
+text, and the text is not where the effect lives: the model says
+"transfer the approved amount", nothing in that string is alarming, and
+the executor receives a recipient, an amount of 50000 and a currency.
+Every material value changed and not one of them is present in the text
+a filter inspects. The same trap catches a prompt policy and a
+model-level refusal, because all three read what the model said and all
+three are blind to the argument the executor is about to act on. The
+model cannot report the gap either, since the value it never saw is the
+value that changed.
+
+### What to do
+
+Write the crossings down and put a decision at each one. The list is
+short (every tool call, every outbound network write, every file
+mutation, every subagent delegation, every approval card sent and
+received) and every new integration adds at least one, so the count is
+worth watching on its own. Put the decision where the arguments exist
+and before the effect, and hold the agent's tools behind it, so the only
+route to an external system is the route that carries a decision. The
+price is a network hop per call and the incompleteness of the static
+check: dynamic dispatch, eval, subprocess spawning and shell pipelines
+all produce side effects a source scan does not see, and with MCP the
+crossings are not knowable at build time at all. What it buys is a
+checkable property (every crossing with an external consequence has a
+decision made by something outside the agent, recorded whether the
+answer is allow or block).
+
 ## FAQ
 
 ### Are prompt-level controls then useless?
@@ -234,17 +266,3 @@ The seam exists regardless of what is above it. A hand-written HTTP call
 to a payment API is a crossing, and if the credential is in the agent's
 environment, no framework in the world will put a decision in front of
 it. That is the case the seam model is actually for.
-
-## Where this runs
-
-NullRun sits on the seam: after the model has decided and before the
-state changes. That position is the only one that catches both the
-approval mismatch and the mutated tool argument, because both are
-invisible to anything looking at the model's output and already past
-anything looking at the system's logs.
-
-Practically it means the agent's tools resolve through one place, the
-decision there is made against the action itself, and every refusal is
-written to the audit trail with the typed code that explains which check
-stopped it. The coverage of the seam becomes something you can inspect.
-The [integration docs](https://nullrun.io/docs) cover how a tool is put behind the gate.

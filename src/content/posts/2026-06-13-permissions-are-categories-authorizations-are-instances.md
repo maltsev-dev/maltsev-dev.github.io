@@ -226,6 +226,42 @@ Most importantly: this closes the gap between a category check and an
 instance check. The gap between an instance check and a composed-outcome
 check stays open, and this should not be sold as if it closes both.
 
+## What to do, and what not to
+
+### What not to
+
+Do not decide a refund with the role table. "Can this agent call this
+function, ever" is the wrong question for money, because it holds
+magnitude constant: one ceiling covers a twenty-dollar refund and a
+fifty-thousand-dollar one. It holds accumulation constant too, so
+twenty refunds of ten dollars is two hundred and unremarkable, while
+forty refunds of fifty reads as a fraud pattern that a per-call check
+cannot see at all. The role table reports clean, because nothing about
+the role changed. Everything that mattered was in the arguments.
+
+Eligibility fails the same way. An account in a dispute, or one already
+over its limit this month, is a different question from whether the role
+table allows refunds at all, and the role table cannot supply the answer
+because it never reads the account.
+
+### What to do
+
+Evaluate the invocation rather than the role, and leave the question of
+whether the refund deserves the money with the model: the amount on this
+call against a magnitude ceiling, the target account against its
+eligibility right now, and what already happened in the window against a
+repeat ceiling. The function above reads two things it did not read
+before, the account and a seven-day count, and it reads them at the
+moment the tool is about to run, so no stored verdict enters the
+decision. The price is two reads on the path between "the agent decided"
+and "the tool ran", which is invisible in an interactive workflow and a
+throughput number in a batch of forty thousand actions, plus thresholds
+that have to be chosen, reviewed and revisited and that no role table
+ever asked for. What it buys is that the same agent and the same tool
+produce different answers for a legitimate small refund and an excessive
+one, and that the card a human reads carries the payload that was
+evaluated and the threshold that fired.
+
 ## FAQ
 
 ### How is this different from RBAC?
@@ -265,30 +301,3 @@ Yes, and be explicit that the design is incomplete at this stage.
 Record which actions currently pass on a category check alone.
 That list is your actual exposure, and it is far more useful than a
 statement that the system has permissions.
-
-## Where this runs
-
-NullRun evaluates the action. The permission says where to start, and
-the decision covers this one call. A single call is constrained along
-the following lines, and all of them resolve at the moment the tool is
-about to run, against live counters. A stored verdict never enters the
-decision.
-
-| Constraint | Resolved against |
-|---|---|
-| Period budget | The counter bound to the current period |
-| Per-key rate limit | The live rate counters for that key |
-| Tool pattern | The registered tool patterns |
-| Tool identity | The tool's resolved identity |
-| Money-amount threshold | The amount on this invocation |
-| Named argument fields | The tool's own argument bag |
-
-The model keeps doing the reasoning. It still decides that a refund
-makes sense. What it does not get to decide alone is whether *this*
-amount, for *this* argument set, at *this* moment, is allowed to become a
-real side effect. When the answer is not a simple yes, the card a human
-sees carries the payload that was actually evaluated and the threshold
-that actually fired, so the reviewer is reading one decision. A category
-would give the reviewer nothing to read. The same distinction is
-written up in the
-[API reference](https://nullrun.io/docs/api).

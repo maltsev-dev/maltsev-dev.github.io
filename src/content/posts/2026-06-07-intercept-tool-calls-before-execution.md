@@ -37,7 +37,7 @@ depend on enumerating paths.
                                            │ final arguments
                                            ▼
                                ┌───────────┴─────────────┐
-                               │ NullRun gate            │
+                               │ the gate                │
                                │ allow                   │
                                │ require_approval        │
                                │ block                   │
@@ -209,6 +209,42 @@ The runtime assertion only covers tools you know about. A tool registered
 by a plugin after your scan has run is not in the registry the assertion
 consults.
 
+## What to do, and what not to
+
+### What not to
+
+Do not patch the framework's dispatch and call the coverage settled. The
+patch holds until the framework renames the method, adds a second
+dispatch route, or a retry wrapper re-enters below it, and a subagent
+path that never reaches the patched method is not a gap you will find by
+reading the patch. The coverage claim you actually need is the five
+documented invocation paths (direct call, retry, parallel branch,
+subagent, resume after compaction), and one patched dispatch method is
+not evidence that the other four were checked. The failure is invisible
+in the logs too: the call succeeds through a route nobody instrumented.
+And every patch carries a maintenance obligation with a version-bump
+trigger, which nobody owns unless somebody is named to own it.
+
+### What to do
+
+Own the path out. Keep the provider's credential out of the agent
+process, and let every effect pass through one client that asks the
+gate with the arguments already in hand and the effect not yet taken.
+Keep the check in a separate process that the agent reaches over the
+network, so the decision happens between the arguments existing and the
+effect happening, and refuse when it cannot be reached: a boundary that
+skips its check when the dependency is down is a setting, not a
+control. Let a startup probe report configuration problems without
+changing which checks run, so a misconfigured deployment fails loudly
+instead of quietly. The price is a network hop on every side effect,
+including the read-only ones you do not care about, the friction of
+adding a tool through your client instead of the framework's decorator,
+which is exactly why teams quietly route around it, and a coverage
+assertion that only knows about the tools that were registered when it
+ran. What it buys is a property you can assert: exactly one path in the
+agent process can produce an external effect, and it is the path that
+carries a decision.
+
 ## FAQ
 
 ### Do we still need middleware if we have a runtime gate?
@@ -248,22 +284,3 @@ It does, and MCP makes the seam argument stronger. A crossing is
 discovered at the moment it is used, so nothing is covered merely by
 having been imported. The requirement is the same: the MCP client holds
 the connection, the agent holds neither the connection nor a credential.
-
-## Where this runs
-
-NullRun is a separate process the agent reaches over the network, with
-the check happening between the arguments existing and the effect
-happening. The agent process holds exactly one credential, and it is
-NullRun's own. The downstream provider's key never reaches the agent.
-That is what makes exactly one path capable of producing an external
-effect, and that path is gated.
-
-When the gateway cannot be reached, the SDK's tool-policy gate refuses
-and lets the call fail. That is what keeps the architecture honest. A
-boundary has to refuse when its dependency is unavailable. A control that
-can be skipped in that situation is a setting. The startup capability
-probe is a diagnostic: it reports configuration problems without changing
-which checks run.
-
-The [API reference](https://nullrun.io/docs/api) has the wire shapes, and
-[worked examples](https://nullrun.io/docs/examples) has the call sequences.

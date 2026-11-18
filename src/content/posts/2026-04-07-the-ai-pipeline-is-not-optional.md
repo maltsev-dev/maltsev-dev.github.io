@@ -204,6 +204,16 @@ Routing saves money only when the intent classification and the complexity signa
 
 A workflow pipeline assumes a fixed enrichment order, which is what makes it predictable and testable. When the task needs dynamic orchestration, the agent flavor buys flexibility and pays for it in cost and in the difficulty of reasoning about what happened.
 
+## What to do, and what not to
+
+### What not to
+
+Do not let the prompt do the pipeline's job. The single-call shape (one system prompt, one request, one response) has no stage boundary, so validation, injection checks and output shaping all run inside the most expensive call in the chain instead of ahead of it. A request that stage 2 would reject for a null byte or a length past 2000 characters, and that stage 1 would have answered with a 429, gets paid for at model prices first and rejected second. The request still ends up blocked, but it ends up blocked by something that cannot name the reason, because no stage owns one. That is the shape that makes a bad request expensive to refuse and its refusal unexplainable afterwards.
+
+### What to do
+
+Give each stage one decision to own, and let the cheap ones answer first: a rate limit that returns 429, a validator that rejects a null byte or a length past 2000 characters, a security stage that raises the cost of an attack rather than promising to remove it. Carry their verdicts in one serializable context that only grows, so the block reason is a string you wrote rather than a boolean the model produced, and snapshot after every stage so you can see what the request looked like when it entered each one. The price is real: nine stages of code to maintain, a context that grows with every enrichment, and a snapshot written nine times per request. What it buys is the property that the request which reaches the model is one you decided to spend on, rather than one that arrived and had to be paid for in order to be judged.
+
 ## FAQ
 
 ### Is the structure worth it if the model is good?
