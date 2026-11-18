@@ -246,21 +246,22 @@ because it never reads the account.
 
 ### What to do
 
-Evaluate the invocation rather than the role, and leave the question of
-whether the refund deserves the money with the model: the amount on this
-call against a magnitude ceiling, the target account against its
-eligibility right now, and what already happened in the window against a
-repeat ceiling. The function above reads two things it did not read
-before, the account and a seven-day count, and it reads them at the
-moment the tool is about to run, so no stored verdict enters the
-decision. The price is two reads on the path between "the agent decided"
-and "the tool ran", which is invisible in an interactive workflow and a
-throughput number in a batch of forty thousand actions, plus thresholds
-that have to be chosen, reviewed and revisited and that no role table
-ever asked for. What it buys is that the same agent and the same tool
-produce different answers for a legitimate small refund and an excessive
-one, and that the card a human reads carries the payload that was
-evaluated and the threshold that fired.
+Evaluate the invocation rather than the role, and leave whether the
+refund deserves the money to the model: the amount on this call against
+a magnitude ceiling, the target account against its eligibility right
+now, and what already happened in the window against a repeat ceiling.
+The function above reads two things it did not read before, the account
+and a seven-day count, and it reads them at the moment the tool is about
+to run, so no stored verdict enters the decision. The period budget, the
+per-key rate limit, the registered tool patterns, the tool's resolved
+identity and the named argument fields resolve the same way. The price is
+two reads on the path between "the agent decided" and "the tool ran",
+which is invisible in an interactive workflow and a throughput number in
+a batch of forty thousand actions, plus thresholds that have to be
+chosen, reviewed and revisited. What it buys is that the same agent and
+the same tool produce different answers for a legitimate small refund and
+an excessive one, and the card a human reads carries the payload that
+was evaluated and the threshold that fired.
 
 ## FAQ
 

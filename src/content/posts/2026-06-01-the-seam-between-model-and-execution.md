@@ -122,7 +122,7 @@ enforcement guarantee is decaying.
 
 ```python
 # ci/seam_check.py, fails the build on an ungated side effect
-GATED_MODULES = {"gate.policies", "gate.tools", "gate.client"}
+GATED_MODULES = {"app.gate.policies", "app.gate.tools", "app.gate.client"}
 SIDE_EFFECTS = {"requests.post", "requests.put", "requests.delete",
                 "httpx.post", "subprocess.run", "subprocess.Popen",
                 "os.remove", "os.rename", "shutil.rmtree"}
@@ -219,14 +219,16 @@ mutation, every subagent delegation, every approval card sent and
 received) and every new integration adds at least one, so the count is
 worth watching on its own. Put the decision where the arguments exist
 and before the effect, and hold the agent's tools behind it, so the only
-route to an external system is the route that carries a decision. The
-price is a network hop per call and the incompleteness of the static
-check: dynamic dispatch, eval, subprocess spawning and shell pipelines
-all produce side effects a source scan does not see, and with MCP the
-crossings are not knowable at build time at all. What it buys is a
-checkable property (every crossing with an external consequence has a
-decision made by something outside the agent, recorded whether the
-answer is allow or block).
+route out of the agent is the route that carries a decision. The cost is
+that the decision lands late: the arguments do not exist until the model
+has spoken, so a refusal at the seam arrives after the model round trip
+has already been paid for. The second cost is the incompleteness of the
+static check: dynamic dispatch, eval, subprocess spawning and shell
+pipelines all produce side effects a source scan does not see, and with
+MCP the crossings are not knowable at build time at all. What it buys is
+a check you can run: no crossing reaches an external system without a
+recorded decision, made by something outside the agent, and every
+refusal carries a typed code naming the check that stopped it.
 
 ## FAQ
 
