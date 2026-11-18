@@ -170,33 +170,35 @@ around actions nobody reviewed, which is the subject of
 
 Do not treat a policy screen as a boundary. If a route that changes
 what the agent is allowed to do is reachable by the agent's own
-credential, the rules on that route are rules the agent writes, and
-the only thing between the agent and the boundary is a decision the
-agent also supplies. The tell is not a hostile action but a listing you
-cannot produce: name every route that accepts the agent's credential,
-sort them into two classes, the routes whose changes take effect
-without review and the routes whose do not, and the second class is
-the boundary. An enumeration you cannot finish is not a boundary, it
-is an assumption that nobody ever added a route.
+credential and takes effect without review, the rules on that route are
+rules the agent writes, and the only thing between the agent and the
+boundary is a decision the agent also supplies. A route that goes
+through review is not that case, because the decision there belongs to
+a person. The tell is not a hostile action but a listing you cannot
+produce: name every route that accepts the agent's credential, sort
+them into two classes, the routes whose changes take effect without
+review and the routes whose do not, and the second class is the
+boundary. An enumeration you cannot finish is not a boundary, it is an
+assumption that nobody ever added a route.
 
 ### What to do
 
-Put the write interface where the agent's credential cannot reach it.
-Keep the boundary-mutating class of tool out of the exposure list as a
-property of how the list is built rather than as a setting inside it,
-because a setting is something a later change can flip. Hold the tool
-surface to the same standard: a tool that writes configuration, ships
-code, or redefines a workflow is a path to the boundary, closed only by
-requiring that such a change take effect no faster than review, so a
-proposed workflow change is a proposal and one nobody reviews is an
-edit. Write every change as a hashed snapshot with a change history
-instead of editing it in place, and let the agent work out its own
-limits from the refusals it gets back, each a typed decision with a
-code in the audit trail. The cost is a second trust domain to run, and
-an owner for the question of what the agent's surface has become,
-asked again whenever it grows. The property to check: nothing the
-agent process can reach will authenticate its credential for a change
-to the boundary.
+Put the interface that changes the boundary off the path the agent's
+credential travels, and let the layer that reads that credential be its
+only reader. One of the four capability classes changes the boundary,
+and it leaves the exposure list in the code that builds it, with no
+control that turns it back on. Hold the tool surface to the same
+standard: a tool that writes configuration, ships code, or redefines a
+workflow is a path to the boundary, closed by requiring such a change
+to take effect no faster than review, which leaves the agent's version
+a request and never an edit. Write every change as a hashed snapshot
+with a history rather than editing it in place, and let the refusals
+teach: a refusal is the one answer the agent cannot argue with. Each
+refusal carries a decision and a code, and the trail of them shows,
+later, that a limit was relaxed and by whom. The cost is a second
+trust domain to run, and an owner for the question of what the agent's
+surface has become. The property to check: nothing the agent process
+can reach authenticates its credential for a boundary change.
 
 ## FAQ
 

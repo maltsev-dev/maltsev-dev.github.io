@@ -293,22 +293,22 @@ grant twice over without noticing they have done it.
 
 ### What to do
 
-Fix the identity at registration and make it the registered server plus
-the tool name, which turns two servers offering the same name into two
-keys rather than one ambiguous match, and a lookup that returns two
-matches refuses rather than picking one. Keep a digest of the
-canonicalized definition beside that key, and store the digest a human
-accepted next to the one computed now. A tool the trust list has not
-seen arrives as needing a decision, a drifted tool stops until someone
-accepts the new definition, and a rename misses the existing key
-altogether, so the new name arrives as a tool nobody has looked at. The
-cost is a registration step and a drift check on a heartbeat, and the
-check is blunt enough that editing a tool's prose is enough to suspend
-it. Reading the trust list once per drift check rather than once per
-call keeps the lookup off the hot path. Every callable tool then holds
-a human-accepted definition, a definition that changes stops the
-tool, and each line of the list names the server as well as the tool,
-so its length is its reach.
+Give each row of the trust list the two things a reviewer needs: where
+the tool registered, and the hash of the definition approved with it.
+Two servers offering the same name then take two rows, because the
+registration is part of the row, and a reviewer sees the difference
+without opening a schema. Hang the hash of the canonicalized definition
+off the row too, and keep the hash a person accepted next to the
+computed one, so a change shows as a difference rather than a surprise
+at the next call. A tool the list has not seen arrives as needing a
+decision, and one whose hash no longer matches stops until a person
+accepts it. The cost is a registration step and a drift check on a
+heartbeat, blunt enough that editing a tool's prose suspends it.
+Reading the list once per drift check rather than per call keeps the
+lookup off the hot path. What you get is a list whose length is its
+reach: every row names a server as well as a tool, every callable tool
+carries a definition a person agreed to, and a change shows before the
+next call.
 
 ## FAQ
 

@@ -287,20 +287,20 @@ interrupt.
 ### What to do
 
 Put the control in a store the workers share and read it where a call
-is about to be made. Three values, normal, paused and killed, each one
-overwriting the last rather than erasing it. Treat an unreadable row
-as a stop: one failure costs a restart, the other the workflow's work.
-Put the write path on credentials the agent process does not hold, and
-authorize the operator who holds one, so the agent can request the
-control but never set it. Make the queue read the state before it hands
-out the job; otherwise the kill and the delivery race, and the delivery
-wins by default. Bind the authority to one execution and let it lapse
-on its own, and give an approval its own expiry, so the window closes
-without anyone awake to close it. The price is a queue that has to take
-part, integration work in a system you may not own; until it does, a
-kill lands on the next gate decision. Because the state is shared, a
-kill means kill on every pod at once, and because it is a value rather
-than a deletion, what the workflow did stays answerable afterwards.
+is made, with three values: normal, paused, killed. Keep the write path
+on credentials the agent process does not hold, and authorize the
+operator who holds one, so the control is set by a person and not by
+the thing it governs. Make the queue ask the store about a job before
+it hands it out; a kill the queue never hears about is one the job's
+next runner never learns. Bind the authority to one execution and let
+it lapse on its own, and give an approval its own expiry, so the
+window closes without anyone awake. The price is a dependency you do
+not own, and until the queue asks the store a kill you issued is a
+promise rather than a fact, which leaves the operator a control that
+takes hold at the next check rather than at the moment of the kill.
+Decide now what an unreachable store means, and hold: a kill switch
+that fails open is worst exactly when the system is broken. Because the
+state is shared across pods, a kill means kill on every pod at once.
 
 ## FAQ
 

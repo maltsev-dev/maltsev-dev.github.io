@@ -212,19 +212,20 @@ with one of them can be mistaken for a design with both.
 ### What to do
 
 Re-derive the decision at the moment the action runs rather than at
-the moment the grant was issued, and write down which rule text
-produced the answer so a reader months later can tell a legitimate
-decision from a lucky one. Let the grant expire on its own clock as
-well: a TTL on the grant short enough for your risk tolerance, five
-minutes being a workable default, puts a five-minute ceiling on how
-long an answer derived from stale evidence can still be acted on, and a
-binding of that grant to one execution that lapses within a day means
-a stale grant goes stale on two independent grounds. The cost is live
-reads on the hot path, which means dependencies, and a store that
-cannot be reached has to fail closed or the leak arrives through the
-permissive fallback somebody will otherwise add. The answer to "may
-this call proceed" is then computed rather than inherited, and it
-carries the rule text it was computed against.
+the moment the grant was issued, and keep the rule text it came from
+attached to the answer, because the question a reviewer asks months
+later is what the policy said when the call was made, not what it
+says now. Let the grant expire on its own clock as well. A TTL on the
+grant short enough for your risk tolerance, five minutes being a
+workable default, means an answer computed from evidence that has since
+moved stops being usable once it is five minutes old. A binding of that
+grant to one execution that lapses within a day means a stale grant
+goes stale on two independent grounds. The cost is two dependencies:
+the stores the decision reads have to be up, and the rule text behind an
+answer has to be kept, because a hash that points at a rule you deleted
+answers nobody's question. The answer to "may this call proceed" is
+then computed rather than inherited, and it carries the rule text it
+was computed against.
 
 ## FAQ
 
