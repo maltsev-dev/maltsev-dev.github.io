@@ -67,6 +67,8 @@ counted them now counts five.
 - The article's own voice: direct, concrete, second person where the article
   is second person, no marketing, no "in today's fast-moving world".
 - Never more than one em dash in a paragraph.
+- Internal links to other posts keep the `/blog/{post-id}/` form, trailing slash
+  included. If you rewrite a sentence that carries a link, the link keeps that form.
 - Do not change the post's title, its date, its tags, or its file name.
 
 ## 4. Add the conclusion
@@ -110,13 +112,17 @@ The section must satisfy all six of these:
    gives the position. If a sentence could sit in either, it belongs here and
    the FAQ keeps the narrower question.
 
-Length: 110–200 words per half. Do not pad. If the article has already made
+Length: 120–200 words per half. Do not pad. If the article has already made
 the argument well, the conclusion is short and sharp, not a summary of the
-whole article.
+whole article. The floor is 120 rather than 110 because the section is read
+as a block: two halves plus the three headings have to clear 240 words
+together, and two 110-word halves do not.
 
 Do not claim more than the article claims. Read the article's own
 "Limitations worth stating" section before you write the "What to do" half:
 if the article says a limit is real, the conclusion must not wave it away.
+Three of the 24 articles have no such section — where the article states a
+limit somewhere else, the conclusion must not wave that away either.
 
 ## Worked example
 
@@ -140,19 +146,25 @@ has, and the answer is recorded as a decision, including when it is "no".
 The [API reference](https://nullrun.io/docs/api) covers the wire shapes.
 ```
 
-It now ends with this:
+It now has this section, before the FAQ:
 
 ```markdown
 ## What to do, and what not to
 
 ### What not to
 
-Do not check a balance and then write the spend. The two-step version lets
-twenty concurrent calls each see a clear slot, and the agent that loses the
-race is the one whose work was funded and nobody's. The number on the
-dashboard stays right — the counter is the counter — but the answer to "may
-this call proceed" is a race, and a race has no answer that survives contact
-with a queue.
+Do not check a balance and then write the spend. The two-step version, where
+the counter is read before it is incremented, lets twenty concurrent calls
+each see a clear slot, and the agent that loses the race is the one whose
+work was funded and nobody's. The number on the dashboard stays right,
+because the counter is the counter, but the answer to "may this call
+proceed" is a race, and a race has no answer that survives contact with a
+queue. It looks like accounting and it behaves like accounting: it tells you
+what happened and it cannot tell you what to stop. An agent working a ticket
+queue issues a thousand cheap calls in an hour, and the projection at each
+call site says there is headroom, because each call costs a fraction of what
+is left. By the time the aggregate is visible, the work the operator never
+intended to fund is done.
 
 ### What to do
 
@@ -160,11 +172,14 @@ Reserve the cost in the same atomic operation that compares it against the
 cap, bind the reservation to a server-minted execution ID, and settle against
 the *authorized* reservation with a fixed-cent tolerance. The cap then bounds
 authorized spend rather than observed spend, and the refusal message carries
-the projected total, the outstanding holds and the cost of the refused call
-— which is the difference between an operator who can tell a loop from a cap
-that is simply too low, and one who cannot. The price is one store operation
-on the decision path and one more piece of state to reconcile when a
-reservation is never settled.
+the projected total, the outstanding holds and the cost of the refused call,
+which is the difference between an operator who can tell a loop from a cap
+that is simply too low and one who cannot. The counter is the server's: the
+SDK reports usage so cost can be settled, but a caller that supplies the
+number being limited supplies its own limit, so an estimate from the agent
+leaves the budget in the agent's hands. The price is one store operation on
+the decision path, one more piece of state to reconcile when a reservation is
+never settled, and a tolerance that admits a little overage by design.
 ```
 
 Read what happened. The technical content of the deleted section did not
@@ -180,5 +195,6 @@ grep -rin "nullrun" <the file>
 ```
 
 Must print nothing. Then re-read your new section against the six rules, and
-then re-read the article's "Limitations worth stating" section and confirm
-your conclusion does not contradict it.
+then re-read the article's "Limitations worth stating" section — if it has
+one; three of the 24 do not — and confirm your conclusion does not contradict
+it.
