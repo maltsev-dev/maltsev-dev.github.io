@@ -291,10 +291,10 @@ made: three values, normal, paused, killed. Keep the write path on
 credentials the agent process does not hold, and authorize the
 operator who holds one, so the control is set by a person, not by what
 it governs. Make the queue ask the store about a job before it hands
-it out, so the queue's record shows whether a killed workflow's work
-was withheld or run, and "did it stop?" is answered. Bind the authority
-to one execution and let it lapse on its own, and give an approval its
-own expiry, so the window closes without anyone awake. The price is a
+it out, so the record shows whether the job was withheld or handed
+out — whether the effect happened is a separate question. Bind the
+authority to one execution and let it lapse on its own, and give an
+approval its own expiry, so the window closes without anyone awake. The price is a
 dependency you do not own: until the queue asks the store, a kill you
 issued is a promise, not a fact, and the control lands on the next
 check, not when you pressed it. Decide now what an unreachable store

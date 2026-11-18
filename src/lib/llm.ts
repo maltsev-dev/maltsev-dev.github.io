@@ -156,7 +156,7 @@ export async function renderLlms({ site }: APIContext, selfPath: string): Promis
     '- Every *page* URL ends in a slash; the machine-readable files listed above do not.',
     '- Posts are long-form. A single post is one page of prose with code fences; there is no pagination and no infinite scroll.',
     '- Diagrams are images under /images/. Their surrounding prose and captions carry the meaning, so a text-only read loses the drawing but not the argument.',
-    '- Navigation, the command palette (Ctrl K) and theme switching are JavaScript enhancements. The content does not depend on them.',
+    '- Navigation and theme switching are JavaScript enhancements. The content does not depend on them.',
     '- /archive/ and /page/ are stubs from a previous generator that redirect; do not index them.',
     '- /tags/<tag>/ are real pages, one per tag, and they are listed in the sitemap.',
     ''

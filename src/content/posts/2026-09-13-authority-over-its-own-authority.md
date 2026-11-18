@@ -168,34 +168,35 @@ around actions nobody reviewed, which is the subject of
 
 ### What not to
 
-Do not treat a policy screen as a boundary. If a route that changes
-what the agent is allowed to do is reachable by the agent's own
-credential and takes effect without review, the rules on that route are
-rules the agent writes, and the only thing between the agent and the
-boundary is a decision the agent also supplies. A route that goes
-through review is not that case, because the decision there belongs to
-a person, and a person looking at a diff is a review rather than a
-boundary. The tell is not a hostile action but a listing you cannot
-produce: name every route that accepts the agent's credential, sort
-them into two classes, the routes whose changes take effect without
-review and the routes whose do not, and the second class is the
-boundary. An enumeration you cannot finish is not a boundary, it is an
-assumption that nobody ever added a route.
+Do not treat a review gate as a boundary. The test is not whether a
+change goes through review but whose credential the write authenticates
+with: a route the agent's own key cannot authenticate to for a write is
+outside the boundary, and a route it can is inside, review or no review.
+A gate buys delay, not separation. The diff a human reads was written
+by the agent whose scope is in question, so the shape of that diff is
+the agent's to choose, and a threshold that moves from 500 to 5000 is a
+threshold nobody can read back out of a queue as an escalation. The
+tell is not a hostile action but a listing you cannot produce: name
+every route that changes what the agent is allowed to do, sort them by
+that credential, and the routes the agent cannot reach are the
+boundary. The routes it can are a second requirement, and review is not
+that requirement. An enumeration you cannot finish is not a boundary,
+it is an assumption that nobody ever added a route.
 
 ### What to do
 
 Put the interface that changes the boundary off the path the agent's
-credential travels, and let the layer that reads that credential be its
+credential travels, and make the layer that reads that credential its
 only reader. One of the four capability classes changes the boundary,
-and it leaves the exposure list in the code that builds it, with no
-control that turns it back on. Hold the tool surface to the same
+and it stays out of the exposure list in the code that builds it, with
+no control that turns it back on. Hold the tool surface to the same
 standard: a tool whose output changes what the runtime trusts is a path
-to the boundary, closed by requiring such a change to take effect no
-faster than review, which leaves the agent's version a request and
-never an edit. Write every change as a hashed snapshot with a history
-rather than editing it in place, and let the refusals teach: a refusal
-is the one answer the agent cannot argue with. Each refusal carries a
-decision and a code, and the trail of them shows, later, that a limit
+to the boundary, and closing it means the change reads differently from
+ordinary configuration and lands in the trail as its own kind of entry,
+so that a reviewer who was not looking for an escalation can still see
+one. Write every change as a hashed snapshot with a history rather than
+editing it in place, and let the refusals teach: a refusal is the one
+answer the agent cannot argue with. The trail of them shows later what
 was relaxed and by whom. The cost is a second trust domain to run, and
 an owner for the question of what the agent's surface has become. The
 property to check: nothing the agent process can reach authenticates

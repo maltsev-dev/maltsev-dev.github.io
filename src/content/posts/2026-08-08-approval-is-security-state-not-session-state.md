@@ -221,13 +221,17 @@ decision, and the answer they give to a question they already answered
 is a rubber stamp. The row that holds `DENIED` is exactly the row a
 pending-only surface drops, and it carries the refusal that matters:
 without it, the only way the agent can learn that a person said no is
-that nobody answered.
+that nobody answered. A status column of six names answers all of them
+in one query; a pending-only surface answers one of the six and hides
+the five that decide the outcome, which is why the recovery surface is
+where the answer gets lost rather than where it gets asked for.
 
 ### What to do
 
 Store the decision as a record, not as a fact about a running process,
-and write that record in the same transaction as the decision it
-records. One row per decision carries the approver, the expiry, the
+and write that record atomically with the decision it describes, a
+guarantee the [audit trail article](/blog/2026-09-25-audit-trail-for-ai-agent-tool-calls/)
+covers. One row per decision carries the approver, the expiry, the
 digest and the consumption state, and its six possible states
 (`PENDING`, `APPROVED`, `DENIED`, `EXPIRED`, `CONSUMED`, `REVOKED`) live
 in one column so a decision has exactly one name and only moves

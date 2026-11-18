@@ -205,7 +205,7 @@ anyway.
 ### What not to
 
 Do not let the period be anybody's choice but the server's, and do not
-enforce against a running total. A month boundary is the one number in
+enforce against a running total. A month boundary is the number in
 the path a caller can move, and it moves without leaving a trace, so the
 same call booked against the roomier month is a call the cap never has to
 refuse. Resolve the period at two moments instead of one and the same
@@ -226,8 +226,8 @@ disagree for a reason that has nothing to do with them, and that is the
 kind of disagreement that gets written off as drift.
 
 Set the tolerance as a fixed count of cents, sized from the overruns you
-have seen; a settlement that lands over what it reserved is refused, not
-covered.
+have seen; a settlement that lands over what it reserved plus the
+tolerance is refused, not covered.
 
 The price: the server owns the period, so the month a call is booked into
 is not the caller's to pick; the audit row has to carry a stamp somebody

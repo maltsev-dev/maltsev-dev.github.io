@@ -41,9 +41,9 @@ function visibleText(html) {
   s = s.replace(/<script[\s\S]*?<\/script>/gi, ' ');
   s = s.replace(/<style[\s\S]*?<\/style>/gi, ' ');
   // Only the page itself. The chrome — the menu bar, the footer, the letter
-  // dialog, the command palette — lives outside `<main>`, and its words are
-  // printed once on the site rather than once per page: they are the frame
-  // around the pages, not a sentence the site says twice.
+  // dialog — lives outside `<main>`, and its words are printed once on the
+  // site rather than once per page: they are the frame around the pages, not a
+  // sentence the site says twice.
   const main = s.match(/<main\b[\s\S]*?<\/main>/i);
   s = main ? main[0] : s;
   s = s.replace(/<[^>]+>/g, ' ');

@@ -555,8 +555,7 @@
    prompt and the system button, where it has the full width to scroll in.
 
    Then the key hint goes. The number is a shortcut, and a shortcut nobody
-   can see is a shortcut nobody uses — but the shortcut still works, and the
-   command palette carries the same destinations.
+   can see is a shortcut nobody uses — but the shortcut still works.
    ---------------------------------------------------------------------- */
 @media (max-width: 46rem) {
   .social {
@@ -802,12 +801,6 @@
   font-size: var(--fs-small);
   color: var(--encre);
   overflow-wrap: anywhere;
-}
-
-.letter-channel-desc {
-  font-size: 0.86rem;
-  line-height: 1.45;
-  color: var(--fort);
 }
 
 @media (prefers-reduced-motion: reduce) {

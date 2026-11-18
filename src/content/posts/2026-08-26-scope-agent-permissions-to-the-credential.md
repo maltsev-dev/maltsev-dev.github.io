@@ -223,7 +223,7 @@ two environments agree only while somebody keeps them in sync. The
 third arrangement, a deployment per agent, buys the separation and pays
 in N deployments, N pipelines, N environment variable sets that drift, a
 release cadence dragged down by the slowest of them, and a consolidation
-back to one runtime within two quarters.
+back to one runtime, usually within two quarters.
 
 ### What to do
 
@@ -236,14 +236,13 @@ code presenting it, and a second route to a tool is a route with a rule.
 Two properties follow. The agent has no API for changing a policy, so
 nothing it writes can widen its scope. And the answer outlives the
 code: the same build and key resolve the same policy wherever it runs.
-Then bind the decision to the execution, which carries an id the server
-mints, bound to the organization and key that authorized it, and the
-binding is checked a second time, atomically, as the execution settles,
-so a decision taken under one principal cannot be presented under
-another. The price is key distribution: a distinct minted credential per
-agent per environment, rotation as the way a scope changes, the old
-grant valid through an in-flight rotation, and a runtime that keeps
-credentials apart.
+Then bind the decision to the execution it was taken for, so a
+decision taken under one principal cannot be presented under another.
+The price is key distribution: a distinct minted credential per
+distinct scope, with agents that genuinely share a scope free to share
+a key, a separate one per environment, rotation as the way a scope
+changes, the old grant valid through an in-flight rotation, and a
+runtime that keeps credentials apart.
 
 ## FAQ
 

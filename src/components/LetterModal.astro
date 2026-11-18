@@ -13,25 +13,21 @@ const CHANNELS = [
     name: 'Telegram',
     value: '@a_maltsev_dev',
     href: 'https://t.me/a_maltsev_dev',
-    desc: 'The fastest way to reach me. A couple of lines is enough to start.',
   },
   {
     name: 'GitHub',
     value: 'github.com/maltsev-dev',
     href: 'https://github.com/maltsev-dev',
-    desc: 'The code, the notes behind it, and the issues that are still open.',
   },
   {
     name: 'LinkedIn',
     value: 'linkedin.com/in/a-maltsev',
     href: 'https://www.linkedin.com/in/a-maltsev',
-    desc: 'The work history, if you would rather read it than read the code.',
   },
   {
     name: 'Email',
     value: 'mr.a.maltsev@gmail.com',
     href: 'mailto:mr.a.maltsev@gmail.com',
-    desc: 'For a brief with detail in it: scope, timeline, what breaks today.',
   },
 ];
 ---
@@ -62,7 +58,6 @@ const CHANNELS = [
               >
                 <span class="letter-channel-name">{channel.name}</span>
                 <span class="letter-channel-value">{channel.value}</span>
-                <span class="letter-channel-desc">{channel.desc}</span>
               </a>
             </li>
           ))

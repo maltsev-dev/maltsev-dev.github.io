@@ -250,13 +250,13 @@ Do not check a balance and then write the spend. Reading the counter and
 incrementing it are two operations, and any caller that arrives between
 the two reads a number that has not moved: twenty concurrent calls that
 each fit the cap on their own read all fit it together, and every one of
-them is individually correct. The agent that loses the race is the one
-whose work was funded and nobody's. The number on the dashboard stays
-right, because the counter is the counter, but the answer to whether the
-call may proceed is decided by a race, and a race has no answer that
-survives contact with a queue. The overrun turns up in an invoice rather
-than in a refusal, and the calls that looked affordable are the ones that
-paid for work nobody approved.
+them is individually correct. The call that should have been refused is
+the one whose work was funded and nobody's. The number on the dashboard
+stays right, because the counter is the counter, but the answer to
+whether the call may proceed is decided by a race, and a race has no
+answer that survives contact with a queue. The overrun turns up in an
+invoice rather than in a refusal, and the calls that looked affordable
+are the ones that paid for work nobody approved.
 
 ### What to do
 

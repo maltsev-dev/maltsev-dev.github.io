@@ -63,9 +63,9 @@ const jsonLd = graph(siteUrl, schema);
 
   It was inline in Base.astro, which meant the error page had to load the
   whole site chrome to be a page: the stylesheet for the header, the status
-  bar and the footer, the script that drives the palette and the two
-  dialogs, and the markup of all four. The 404 is the one page a visitor
-  arrives on by accident, and it was the heaviest page on the site.
+  bar and the footer, the script that drives the dialogs, and the markup of
+  all four. The 404 is the one page a visitor arrives on by accident, and it
+  was the heaviest page on the site.
 
   Splitting the head out lets a second layout — the one the error page
   uses — carry the same metadata, the same canonical, the same social card

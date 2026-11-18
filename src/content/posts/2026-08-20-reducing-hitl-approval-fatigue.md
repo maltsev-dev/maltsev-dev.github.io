@@ -239,20 +239,20 @@ algorithm.
 
 ### What not to
 
-Do not make the control stricter and call it safer. Tightening an
-approval changes what a card says, and what a card says is not what
-makes a review a review. Volume is the variable that matters: at two
-hundred cards a day an approver is not performing two hundred reviews,
-they are clearing a queue, and the only behavior that survives two
-hundred cards is the one that takes seconds. That is why the failure
-is invisible from the inside, because each individual action still
-reads as considered and the totals still look fine, while the control
-itself has gone inert. A control that goes inert is worse than having
-no control at all, since it leaves behind records that later get cited
-as proof that somebody decided. Below roughly a hundred cards
-per reviewer per day an approval is still a review; above it, approval
-degrades to a click. And if 95% of approvals finish inside three
-seconds, nobody is reading, whatever the average says.
+Do not make the control stricter and call it safer. Tightening a
+threshold moves work into the approval band; it does not add judgment,
+and the work it moves is the work that arrives fastest, so a stricter
+band widens the gap between what the queue is for and what the queue
+is doing. Two hundred cards a day is not two hundred decisions, because
+seconds per card is the unit in which consent can be given, and at that
+rate nobody is weighing anything. The cost lands later and lands
+quietly: the approval records pile up in the exact shape of a control
+that worked, so an incident review finds a named person on the record
+for every action and nothing in the paperwork to say the person was not
+there. Nothing on a dashboard shows it either, because the queue counts
+arrivals rather than reviewers, so a hundred cards a day for one
+reviewer is crossed without a number changing anywhere, and 95% of
+approvals inside three seconds is the other end of the same silence.
 
 ### What to do
 
@@ -267,11 +267,11 @@ month's configuration, and the ladder has to descend as easily as it
 climbs. Then make the card carry the reason: the rule that fired, the
 risk level, the tool name, the action's parameters, and nothing else.
 Bind each decision to the action's digest, recomputed server-side from
-the live payload at consumption, so a changed amount is refused rather
-than executed, and let approvals expire on their own with a per-rule
-TTL in the consume predicate, so a decision nobody acted on stops being
-actionable. The price is the policy store and its version history, and
-the first configuration of the bands is a guess traffic corrects, not a
+the live payload when the decision is used, so a changed amount is
+refused rather than executed, and let a card nobody answered lapse on
+its own clock, so a decision nobody acted on stops being actionable.
+The price is the policy store and its version history, and the first
+configuration of the bands is a guess traffic corrects, not a
 principled cut.
 
 ## FAQ

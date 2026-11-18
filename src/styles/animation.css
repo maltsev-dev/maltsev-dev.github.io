@@ -298,7 +298,7 @@
 /* ----- Page transitions --------------------------------------------------
    Native cross-document view transitions: no router and no dependency, and
    they cover every navigation on the site because all of them are full page
-   loads — header links, the command palette, Back/Forward, direct URLs.
+   loads — header links, Back/Forward, direct URLs.
 
    The fixed chrome carries a name so it leaves the `root` snapshot and holds
    still while the page underneath changes. Unnamed, it would travel with the

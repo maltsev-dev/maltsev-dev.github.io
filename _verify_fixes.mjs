@@ -6,7 +6,6 @@
 //   node _verify_fixes.mjs wheel     — QA-001 (blog card row eats page scroll)
 //   node _verify_fixes.mjs casecss   — QA-018 (case pages have a layout)
 //   node _verify_fixes.mjs footer    — QA-007 (a <footer> on every page)
-//   node _verify_fixes.mjs palette   — AUD-001..004 (palette semantics)
 //   node _verify_fixes.mjs contrast  — DES-001..007 (tokens, focus, print)
 //   node _verify_fixes.mjs seo       — TECH-001/002/003, QA-009
 //   node _verify_fixes.mjs perf      — PERF-001..006
@@ -403,178 +402,6 @@ async function footer() {
   });
 }
 
-// ---------------------------------------------------------------------------
-// palette: AUD-001..004 — combobox semantics, focus trap, focus return
-// ---------------------------------------------------------------------------
-async function palette() {
-  await withPage(async (page) => {
-    await page.goto(BASE + '/', { waitUntil: 'networkidle' });
-    await page.waitForTimeout(600);
-
-    const before = await page.evaluate(() => {
-      const input = document.getElementById('paletteInput');
-      const list = document.getElementById('paletteList');
-      return {
-        expanded: input?.getAttribute('aria-expanded'),
-        controls: input?.getAttribute('aria-controls'),
-        listRole: list?.getAttribute('role'),
-        listName: list?.getAttribute('aria-label') || list?.getAttribute('aria-labelledby'),
-        optionsInHtml: document.querySelectorAll('#paletteList [role="option"]').length,
-      };
-    });
-    report(before.expanded === 'false' || before.expanded === 'true', 'AUD-001 aria-expanded present',
-      String(before.expanded));
-    report(before.listRole === 'listbox', 'AUD-001 list is a listbox', String(before.listRole));
-    report(!!before.listName, 'AUD-011 list has an accessible name', String(before.listName));
-    // PERF-005: the index of 84 posts and projects is not in the page.
-    report(before.optionsInHtml === 0, 'PERF-005 the palette index is not in the page HTML',
-      before.optionsInHtml + ' options in the markup');
-
-    // open
-    await page.evaluate(() => document.dispatchEvent(new CustomEvent('palette:open')));
-    await page.waitForTimeout(900);
-    const opened = await page.evaluate(() => {
-      const d = document.getElementById('palette');
-      return {
-        open: !d.hidden,
-        focusInside: d.contains(document.activeElement),
-        bodyLocked: getComputedStyle(document.body).overflow === 'hidden',
-        active: document.getElementById('paletteInput').getAttribute('aria-activedescendant'),
-        options: document.querySelectorAll('#paletteList [role="option"]').length,
-        optionWithLink: [...document.querySelectorAll('[role="option"]')].filter((o) =>
-          o.querySelector('a[href]')
-        ).length,
-        backgroundInert: [...document.body.children].filter(
-          (el) => el.id !== 'palette' && el.id !== 'letterModal' && el.hasAttribute('inert')
-        ).length,
-      };
-    });
-    report(opened.open, 'AUD-002 palette opens');
-    report(opened.focusInside, 'AUD-002 focus moves into the palette');
-    report(opened.bodyLocked, 'AUD-002 background scroll is locked', 'overflow=' + opened.bodyLocked);
-    report(!!opened.active, 'AUD-001 active option is announced', String(opened.active));
-    report(opened.options > 50, 'PERF-005 the index arrives on open', opened.options + ' options');
-    report(opened.optionWithLink === 0, 'AUD-004 no role=option wraps a link',
-      opened.optionWithLink + ' options wrap a link');
-    report(opened.backgroundInert > 0, 'AUD-002 the page behind is inert',
-      opened.backgroundInert + ' elements inert');
-
-    // focus trap: tab through everything and confirm focus stays inside
-    let escaped = false;
-    for (let i = 0; i < 25; i++) {
-      await page.keyboard.press('Tab');
-      const inside = await page.evaluate(() =>
-        document.getElementById('palette').contains(document.activeElement)
-      );
-      if (!inside) { escaped = true; break; }
-    }
-    report(!escaped, 'AUD-002 Tab is trapped inside the palette');
-
-    // close with Escape and check focus returns to the opener
-    // The header has no permanent palette trigger any more — the magnifier
-    // button is gone and the palette is opened from the System menu or with
-    // Ctrl+K. The opener is therefore the menu's own button.
-    const openerId = await page.evaluate(() => {
-      const o = document.querySelector('[data-open-palette]');
-      o.focus();
-      return o.getAttribute('data-open-palette') || 'palette-opener';
-    });
-    await page.keyboard.press('Escape');
-    await page.waitForTimeout(300);
-    const closed = await page.evaluate((id) => ({
-      hidden: document.getElementById('palette').hidden,
-      focusId: document.activeElement?.id,
-      openerId: id,
-    }), openerId);
-    report(closed.hidden, 'AUD-002 Escape closes the palette');
-    report(closed.focusId === closed.openerId, 'AUD-003 focus returns to the opener',
-      'focus on #' + closed.focusId + ', expected #' + closed.openerId);
-
-    // AUD-002: the scroll lock has to survive another owner releasing it.
-    // The boot overlay locks the page while it plays and releases it when it
-    // ends; opening the palette inside that window used to leave the page
-    // scrollable behind the palette, because the two wrote the same style.
-    await page.goto(BASE + '/', { waitUntil: 'domcontentloaded' });
-    await page.evaluate(() => document.dispatchEvent(new CustomEvent('palette:open')));
-    await page.waitForTimeout(2200);
-    const race = await page.evaluate(() => ({
-      locked: getComputedStyle(document.body).overflow === 'hidden',
-      open: !document.getElementById('palette').hidden,
-    }));
-    report(race.open && race.locked, 'AUD-002 the scroll lock survives the boot overlay',
-      'open=' + race.open + ' overflow=' + race.locked);
-  });
-
-  // The palette's status line has to tell the truth about three different
-  // states: the index is still loading, nothing matched the query, or the
-  // index could not be fetched at all.
-  await withPage(async (page) => {
-    await page.goto(BASE + '/', { waitUntil: 'networkidle' });
-    await page.waitForTimeout(600);
-    await page.evaluate(() => document.dispatchEvent(new CustomEvent('palette:open')));
-    await page.waitForTimeout(900);
-    await page.fill('#paletteInput', 'zzzzz');
-    await page.waitForTimeout(300);
-    const noMatch = await page.evaluate(() => ({
-      text: document.getElementById('paletteEmpty')?.textContent?.trim(),
-      hidden: document.getElementById('paletteEmpty')?.hidden,
-      visible: [...document.querySelectorAll('#paletteList .palette-item')].filter(
-        (i) => i.style.display !== 'none'
-      ).length,
-    }));
-    report(noMatch.text === 'No match.', 'PAL-001 the palette says "No match." when nothing matches',
-      JSON.stringify(noMatch));
-    report(noMatch.visible === 0, 'PAL-002 the palette shows no option when nothing matches',
-      noMatch.visible + ' visible');
-  });
-
-  // A network failure is not an empty result set, and it must not be
-  // reported as one.
-  await withPage(async (page) => {
-    await page.route('**/palette-index.json', (route) => route.abort());
-    await page.goto(BASE + '/', { waitUntil: 'networkidle' });
-    await page.waitForTimeout(600);
-    await page.evaluate(() => document.dispatchEvent(new CustomEvent('palette:open')));
-    await page.waitForTimeout(1200);
-    const failed = await page.evaluate(() => ({
-      text: document.getElementById('paletteEmpty')?.textContent?.trim(),
-      hidden: document.getElementById('paletteEmpty')?.hidden,
-    }));
-    report(failed.text === 'The index could not be loaded.',
-      'PAL-003 the palette says the index failed to load',
-      JSON.stringify(failed));
-    report(failed.hidden === false, 'PAL-004 the failure is shown, not hidden',
-      'hidden=' + failed.hidden);
-  });
-
-  // A question typed while the index is still on its way must still be the
-  // question that gets answered.
-  await withPage(async (page) => {
-    await page.route('**/palette-index.json', async (route) => {
-      await new Promise((r) => setTimeout(r, 2000));
-      await route.continue();
-    });
-    await page.goto(BASE + '/', { waitUntil: 'domcontentloaded' });
-    await page.evaluate(() => document.dispatchEvent(new CustomEvent('palette:open')));
-    await page.fill('#paletteInput', 'rust');
-    await page.waitForTimeout(3500);
-    const typed = await page.evaluate(() => {
-      const shown = [...document.querySelectorAll('#paletteList .palette-item')].filter(
-        (i) => i.style.display !== 'none'
-      );
-      return {
-        query: document.getElementById('paletteInput')?.value,
-        shown: shown.length,
-        total: document.querySelectorAll('#paletteList .palette-item').length,
-        allMatch: shown.every((i) => (i.dataset.label + ' ' + i.dataset.group).includes('rust')),
-      };
-    });
-    report(typed.allMatch && typed.shown > 0 && typed.shown < typed.total,
-      'PAL-005 a query typed while the index loads is still applied',
-      JSON.stringify(typed));
-  });
-}
-
 // The contrast probe, as source. Playwright serialises the evaluated
 // function, so the helpers have to travel as a string and be eval'd inside
 // the page. `opacity` is composited against the ground, because a text
@@ -728,22 +555,6 @@ async function contrast() {
         ' = ' +
         ringR.ratio.toFixed(2) +
         ':1'
-    );
-
-    // DES-004: the palette input keeps a visible focus indicator.
-    await page.goto(BASE + '/', { waitUntil: 'networkidle' });
-    await page.evaluate(() => document.dispatchEvent(new CustomEvent('palette:open')));
-    await page.waitForTimeout(300);
-    const inputFocus = await page.evaluate(() => {
-      const el = document.getElementById('paletteInput');
-      el.focus();
-      const cs = getComputedStyle(el);
-      return { width: cs.outlineWidth, style: cs.outlineStyle, color: cs.outlineColor };
-    });
-    report(
-      inputFocus.style !== 'none' && parseFloat(inputFocus.width) > 0,
-      'DES-004 palette input keeps an outline',
-      inputFocus.width + ' ' + inputFocus.style + ' ' + inputFocus.color
     );
 
     // DES-005: focused field text and placeholder, in every theme.
@@ -1161,30 +972,19 @@ async function perf() {
     report(missing.length === 0, 'PERF-001 every poster image exists',
       missing.length ? missing.join(', ') : posters.length + ' posters');
 
-    // PERF-005: the palette must not ship every post in the page HTML.
+    // PERF-005: the home page must not ship the whole corpus.
     await page.goto(BASE + '/', { waitUntil: 'domcontentloaded' });
     const size = await page.evaluate(() => {
       const html = document.documentElement.outerHTML;
       return {
         bytes: html.length,
-        paletteItems: document.querySelectorAll('.palette-item').length,
+        postLinks: document.querySelectorAll('a[href^="/blog/"]').length,
       };
     });
-    report(size.paletteItems === 0, 'PERF-005 the palette does not inline every post',
-      size.paletteItems + ' items in the document');
+    report(size.postLinks < 50, 'PERF-005 the home page does not inline every post',
+      size.postLinks + ' post links in the document');
     report(size.bytes < 120000, 'PERF-005 home page HTML is under 120 kB',
       Math.round(size.bytes / 1024) + ' kB');
-
-    // The palette must still work when fetched on demand.
-    await page.evaluate(() => document.dispatchEvent(new CustomEvent('palette:open')));
-    await page.waitForTimeout(900);
-    const loaded = await page.evaluate(() => ({
-      items: document.querySelectorAll('.palette-item').length,
-      open: !document.getElementById('palette').hidden,
-    }));
-    report(loaded.items > 50, 'PERF-005 palette loads its index on demand',
-      loaded.items + ' items');
-    report(loaded.open, 'PERF-005 palette still opens');
   });
 
   // PERF-004: fonts are preloaded; PERF-002/003: no duplicate font files.
@@ -1733,9 +1533,7 @@ async function medium() {
         nav: !!document.querySelector('.post-nav'),
         related: !!document.querySelector('.post-related'),
         footer: !!document.querySelector('footer'),
-        footerLast:
-          html.indexOf('<footer') > html.indexOf('id="letterModal"') &&
-          html.indexOf('<footer') > html.indexOf('id="palette"'),
+        footerLast: html.indexOf('<footer') > html.indexOf('id="letterModal"'),
       };
     });
     report(post.date, 'CONT-038 the post shows its date the way a reader says it', post.meta);
@@ -1847,7 +1645,7 @@ async function medium() {
   }, { reducedMotion: 'reduce', viewport: { width: 1440, height: 900 } });
 }
 
-const groups = { content, cases, track, wheel, casecss, footer, palette, contrast, seo, perf, posts, source, medium };
+const groups = { content, cases, track, wheel, casecss, footer, contrast, seo, perf, posts, source, medium };
 
 if (group.startsWith('seq:')) {
   const names = group.slice(4).split(',');

@@ -315,21 +315,22 @@ operator concludes that the digest is broken.
 
 Bind the whole envelope, on an envelope you control, and make the
 envelope a closed type rather than a bag. Every field is then material
-by construction, the approval's digest covers the action with no
-allowlist to keep current, and adding a field becomes a type change
-somebody compiles rather than a line in a config file. Two decisions
-make that promise real rather than nominal. Represent money as an
-integer number of minor units, under a ceiling you declare per call, so
-the value a JavaScript client cannot represent above 2^53 is refused at
-validation instead of being hashed into the wrong number. Sort object
-keys and leave arrays alone, because only the schema knows whether an
-array's order carries meaning. And domain-separate the hash,
+by construction, the digest covers the action with no allowlist to keep
+current, and adding a field becomes a type change somebody compiles
+rather than a line in a config file. Two decisions make that promise
+real rather than nominal. Represent money as an integer number of minor
+units, under a ceiling you declare per call, so the value a JavaScript
+client cannot represent above 2^53 is refused at validation instead of
+being hashed into the wrong number. And keep a list's order as it
+arrived, because a list can be order-insensitive for the check and
+order-sensitive for delivery, and only the party that ships to a person
+can tell the order mattered. Domain-separate the hash,
 `SHA-256( "approval/v1/business_impact:" || canonical_json(envelope) )`,
 so a digest computed for one action cannot be replayed into another
-namespace, and recompute it server-side from the payload that arrived,
-because a client-supplied digest is a digest the client chose. The
-price is a stricter edge contract and a type to maintain: a payload
-carrying a float is refused with a typed error rather than normalized.
+namespace, and recompute it server-side from the payload that arrived:
+a client-supplied digest is a digest the client chose. The price is a
+stricter edge contract and a type to maintain: a payload carrying a
+float is refused with a typed error rather than normalized.
 
 ## FAQ
 

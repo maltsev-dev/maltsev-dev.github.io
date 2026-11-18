@@ -307,17 +307,17 @@ takes to make that staffing real.
 
 ### What not to
 
-Do not decide on the feature grid. All six categories advertise the same
-protection, and a grid gives every one of them a column. What it cannot
-give them is a column for the question that separates them: whether the
-one call in front of the gate is allowed to happen. The rows therefore come
-out level, and the ranking the reader ends up with is one nobody derived
-from anything. Three refunds for one flagged customer are what the
-question is worth: one of the six answers it, the other five answer
-questions nobody asked about that customer, and no row in the grid records
-the difference. A grid cannot fail loudly, because nothing in it claims to
-have been run. It fails evenly, and the purchase happens without a
-decision.
+Do not decide on the feature grid. Six rows, each of them a claim the
+vendor wrote, go into one table, and a grid gives every row the same
+column, so six different scopes arrive at the same height. What it
+cannot give them is a column for the question that separates them:
+whether the one call in front of the gate is allowed to happen. The
+rows therefore come out level, and the order the reader ends up with is
+one nobody argued for. Three refunds for one flagged customer are what
+the question is worth, and the grid has no cell in which to write the
+answer, because the instance-level question is not a feature of the
+tool. A grid cannot fail loudly, because nothing in it claims to have
+been run. It fails evenly, and the purchase happens without a decision.
 
 ### What to do
 

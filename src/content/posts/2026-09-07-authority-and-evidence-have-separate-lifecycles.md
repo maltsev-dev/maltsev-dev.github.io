@@ -205,27 +205,27 @@ fifth moves only when a person edits a policy. A time-to-live has to
 be tuned to the fastest of them or to the slowest. Tuned to the
 fastest, it expires the grant so often that nobody can work under it.
 Tuned to the slowest, it leaves the other four stale for the whole of
-its life while looking, in the schema, like a control. A TTL is
-visible and a missing re-read is not, which is exactly why a design
-with one of them can be mistaken for a design with both.
+its life while looking, in the grant's own record, like a control. A
+TTL is visible and a missing re-read is not, which is exactly why a
+design with one of them can be mistaken for a design with both.
 
 ### What to do
 
 Re-derive the decision at the moment the action runs rather than at
-the moment the grant was issued, and keep the rule text it came from
-attached to the answer, because the question a reviewer asks months
-later is what the policy said when the call was made, not what it
-says now. Let the grant expire on its own clock as well. A TTL on the
-grant short enough for your risk tolerance, five minutes being a
-workable default, means an answer computed from evidence that has since
-moved stops being usable once it is five minutes old. A binding of that
-grant to one execution that lapses within a day means a stale grant
-goes stale on two independent grounds. The cost is two dependencies:
-the stores the decision reads have to be up, and the rule text behind an
-answer has to be kept, because a hash that points at a rule you deleted
-answers nobody's question. The answer to "may this call proceed" is
-then computed rather than inherited, and it carries the rule text it
-was computed against.
+the moment the grant was issued, and keep the hash of the rule text it
+came from attached to the answer, because the question a reviewer asks
+months later is what the policy said when the call was made. Let the
+grant expire on its own clock as well. A TTL on the grant short enough
+for your risk tolerance, five minutes being a workable default, means
+an answer five minutes old stops being usable. A change signal beside
+it bounds the same window from the other side, because a value derived
+from the rules moves when the policy moves, and a policy edit is
+re-derived at the next call instead of at the end of the TTL. The cost
+is two dependencies: the stores the decision reads have to be up, and
+the rule text behind an answer has to be kept, because a hash that
+points at a rule you deleted answers nobody's question. The answer to
+"may this call proceed" is then computed rather than inherited, and it
+carries the hash of the rule text it was computed against.
 
 ## FAQ
 

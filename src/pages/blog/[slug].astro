@@ -85,9 +85,9 @@ const related = others
   .slice(0, 3)
   .map((x) => x.post);
 
-// A post whose tags belong to it alone — the AI pipeline note is the only one
-// tagged `architecture` — would still be a dead end. It falls back to the
-// newest writing instead, under a heading that says what it is.
+// A post whose tags belong to it alone — nothing else on the site carries
+// `budget` and `enforcement` — would still be a dead end. It falls back to
+// the three most recent posts instead, under a heading that says what it is.
 const neighbors = related.length
   ? related
   : [...others]
@@ -278,8 +278,8 @@ const when = (iso: string | undefined): string => {
               </p>
             ) : (
               <p class="more-close">
-                Recent writing: this one shares its subject with nothing else
-                on the site, so here is the newest writing instead.
+                Recent writing: no other post carries this one's tags, so
+                here are the three most recent posts instead.
               </p>
             )
           }

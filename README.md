@@ -3,10 +3,9 @@
 Anatolii Maltsev's site: a static Astro build served from GitHub Pages.
 
 The writing is the bulk of it — sixty-nine posts — and it is meant to be read
-without JavaScript. Everything else on the site (theme switching, the command
-palette, the filters on the writing index, the sideways tracks on
-`/projects/` and `/experience/`) is an enhancement laid over content that is
-already on the page.
+without JavaScript. Everything else on the site (theme switching, the filters on
+the writing index, the sideways tracks on `/projects/` and `/experience/`) is an
+enhancement laid over content that is already on the page.
 
 ## Build
 
