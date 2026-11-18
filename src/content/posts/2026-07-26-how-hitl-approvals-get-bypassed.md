@@ -255,28 +255,29 @@ one route of the six, and code review sees only the routes that happen
 to be in the diff. A retry wrapper, a subagent, a direct call in your own
 code, a second entry point and a resumed workflow all reach the same
 tool without traversing the interrupt. In that case nothing was
-bypassed: the check was never on the path the call took.
+bypassed: the check was never on the path the call took. None of these is
+an approval-logic bug; every one of them is a coverage bug.
 
 ### What to do
 
-Put the check on the effect, and make the approval a durable record
-rather than a moment in a UI. The arguments existing and the effect
-happening are separated by state that outlives the process, so the
-decision survives a crash and a new instance can ask what was decided
-instead of inferring it from silence. The grant is consumed by a single
-conditional update, so a retry of an already-executed action fails
-deterministically rather than running again on the strength of a flag
-someone set, and a resume can tell "already consumed" from "never
-decided".
+Put the check on the effect, and make the approval a durable record, not
+a UI moment. The arguments existing and the effect happening are
+separated by state that outlives the process, so the decision survives a
+crash and a new instance can ask what was decided instead of inferring it
+from silence. The grant is consumed by a single conditional update, so a
+retry of an executed action fails deterministically rather than running
+again on a flag someone set, and a resume can tell "already consumed"
+from "never decided".
 
 The price is a hop on every gated call, a record you have to keep and
 reconcile, and a route list that is manual: the canary test closes only
 the six routes you have enumerated, and a framework that adds an
 invocation mechanism in a minor release adds one you have not heard of.
-That list needs an owner and a trigger, not a best effort. The property
-is the one worth quoting: because the check sits on the effect, it sits
-on no route in particular, and a route that did not exist when the
-design was drawn passes the check anyway.
+The list needs an owner and a trigger, not a best effort. The property,
+phrased as a check: take any route that reaches the effect, including
+one that turns up after the design was drawn, and the approval is
+consulted. You can test that on a route you invent, not only the six
+you already know.
 
 ## FAQ
 
@@ -286,8 +287,8 @@ It is enough for the path it is on, and frameworks generally make that
 path reliable. The gap is coverage: the interrupt is one position, and
 the runtime has more than one way to reach a tool. If you only ever
 invoke tools through the framework's normal tool-call path, you are
-fine. The moment you add a retry, a subagent, or a direct call in your
-own code, you have routes the interrupt does not cover.
+fine. The moment you add a route of your own, you have one the interrupt
+does not cover, and the canary over the route list is what tells you.
 
 ### Should we forbid retries on gated tools?
 

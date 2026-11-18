@@ -264,14 +264,15 @@ a third answer: refuse, and mark it for review.
 
 Do not approve an operation and execute a payload. The card shows a tool
 name, a truncated preview and a diff of the reasoning, and the executor
-receives something else. Treat the amount as a parameter of the
-operation and the operator's approval covers any magnitude that later
-arrives, which is the first of the three fields nobody diffs: a refund
-of ten approved, a refund of a thousand executed, same tool, different
-risk. A handle on the approval does not fix it either. `mint_approval`
-proves who approved, and the orchestrator that carries the handle
-forward can supply a different payload, so the trust moves to the
-component with the most code paths and the least review attention.
+can receive something else. Nothing on the default path compares the
+two. Treat the amount as a parameter of the operation and the operator's
+approval covers any magnitude that later arrives, which is the first of
+the three fields nobody diffs: a refund of ten approved, a refund of a
+thousand executed, same tool, different risk. A handle on the approval
+does not fix it either. `mint_approval` proves who approved, and the
+orchestrator that carries the handle forward can supply a different
+payload, so the trust moves to the component with the most code paths
+and the least review attention.
 
 ### What to do
 
@@ -291,7 +292,7 @@ be long enough for the operator and short enough that a stale approval
 does not authorize a fare that has moved from four hundred and eighty to
 six hundred and twelve. What you can check is narrow: the execution
 matches the approved payload, and the grant is consumed exactly once. It
-does not prove the card was an honest rendering of that payload.
+does not prove the card was an honest rendering.
 
 ## FAQ
 

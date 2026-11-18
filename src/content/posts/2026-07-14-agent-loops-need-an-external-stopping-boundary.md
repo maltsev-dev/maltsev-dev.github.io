@@ -247,32 +247,34 @@ three times is not a loop problem.
 Do not put the cap in the agent loop. `for step in range(MAX_STEPS)` with a
 limit of 25 is the fix that feels finished on the day you write it, and
 it is code, so the next refactor three files away can move it without
-anyone re-reading it. It does not compose either: twenty workers each
-capped at twenty-five steps make five hundred calls, and every single
-cap reads as generous. And because it lives inside the agent it cannot
-see a sick downstream, so twenty workers discover the same outage
-independently and concurrently, each one spending budget to find out
-what a shared breaker would have told the fleet once.
+anyone re-reading it. It does not compose either: twenty workers running
+that same twenty-five-step cap between them make five hundred calls, and
+every one of the twenty caps reads as generous on its own. The damage is
+aggregate, so no single process ever sees it coming. And because it
+lives inside the agent it cannot see a sick downstream, so twenty workers
+discover the same outage independently and concurrently, each one spending
+budget to find out what a shared breaker would have told the fleet once.
 
 ### What to do
 
-Put the bound outside the agent, in a component it cannot edit, evaluated
-before the call rather than after the failure. The rate cap is a token
-bucket in shared state that every worker reads, so a burst of twenty is
-bounded in the fleet, not in each process. The budget is reserved before
-the call, not measured after it, with the reserve and the cap comparison
-in one atomic operation on the store, so no window exists in which the
-counter is read and eleven more calls land first.
+Move the bound out of the agent process, where no refactor reaches it,
+and decide before the call, not after the failure. The rate limit
+becomes a token bucket every worker reads from one place. The budget is
+committed before the call, with the commit and the cap comparison in one
+atomic operation on the store, so no window exists in which the counter
+is read and eleven more calls land.
 
-The cost is an extra hop on every tool call and shared state: one store
-to hold the counters and the lifecycle, so a paused workflow is held
-wherever it runs. Loop detection stays in the agent's path, on the
-argument-repeat fingerprint at 5 with the call-count bar at 40, and a
-refusal carries its own code so the caller can back off on one and stop
-on another. The property bought is that a loop which gets through the
+Once the bound is external the aggregate stops being emergent: the
+fleet's rate is one shared counter, so a burst is a number you can name
+in advance instead of finding in an invoice. The cost is the extra
+hop on every tool call and shared state to operate: one store for
+counters and lifecycle. Loop detection stays in the agent's own path, on
+the argument-repeat fingerprint at 5 with the call-count bar at 40, and
+the 40 is the expensive one: false positives on everything legitimately
+repetitive. The property bought is that a loop which gets through the
 heuristic still hits a rate counter, a budget ceiling and a depth bound
-the agent did not write and cannot refactor away. It does not stop a
-single wrong call.
+it did not write and cannot refactor away. It does not stop a single
+wrong call.
 
 ## FAQ
 

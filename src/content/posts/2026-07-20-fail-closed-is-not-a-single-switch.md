@@ -276,39 +276,42 @@ reason the defaults have to be.
 
 ### What not to
 
-Do not cover all six enforcement paths with one default. A single
-`except` that returns allow is the most common shape and the least
-visible, because it flattens four paths that have to block and one path
-that is allowed to degrade: the policy store, the counter store and the
-digest source each decide whether money moves, while a telemetry write
-decides nothing about that. Inside one shared block a reader cannot tell
-which kind of path they are in, so the next dependency added inherits
-whichever default the code happens to have, and a control that was
-deliberate on the observability path becomes accidental on the
-enforcement path. That is how a rule stops being a rule without a diff
-to point at.
+Do not cover the enforcement paths with one default. A single `except`
+that returns allow is the shape you will find, and the least visible one,
+because it flattens the five paths in the dependency table into a single
+answer: four of them have to block, and on those four the policy store,
+the counter store and the digest source each decide whether money moves,
+while the fifth, a telemetry write, decides nothing about that. Inside
+one shared block a reader cannot tell which kind of path they are in, so
+the next dependency added inherits whichever default the code happens to
+have, and a control that was deliberate on the observability path becomes
+accidental on the enforcement path. That is how a rule stops being a rule
+without a diff to point at. The same shared block hides slowness too: a
+dependency that takes nine seconds to time out produces a queue rather
+than a correctness error, so a timeout becomes an implicit policy that
+nobody wrote down.
 
 ### What to do
 
-Declare the default per path and write it down where it applies. Each of
-the six paths gets a deliberate default, its own error code, a
-regression test that makes the dependency actually unavailable, and a
-written reason for the one path that is allowed to degrade.
+Declare the default per path, and put the declaration in the review queue.
+For each of the six failure classes a reviewer should see the default, its
+error code, the test that takes the dependency away, and who owns that
+test. A pull request that adds an enforcement path is not done until its
+line exists, and a refusal goes to the audit trail, because a refusal is
+evidence a control fired.
 
-The strongest form removes the class instead of documenting it. If the
-reservation and the cap comparison run inside a single script evaluated
-atomically on the data store, there is no window in which the cap is read
-and the write fails, and an unreachable counter is a typed
-`REDIS_UNAVAILABLE` rather than a zero. The cost of that is that the
-comparison moves into the store's scripting environment, exercised
-rather than imported, plus a presence bit that keeps "no policy
+The strongest form removes the class instead of documenting it. Put the
+comparison in the store's own scripting environment, so one script moves
+the counter and "may this call proceed" has one answer, not a read and a
+write that can come apart. The store does not half apply anything, so a
+crash leaves the counter where it was, and an unreachable counter answers
+`REDIS_UNAVAILABLE`, not a zero. The cost is a comparison exercised inside
+the store, not in your tests, plus a presence bit that keeps "no policy
 configured" apart from "policy unreadable" and a boot guard that refuses
-to start when an enforcement-bypass flag is set in production. The
-property is checkable: no policy, no reconstruction and no counter means
-no execution, on each of the six paths independently.
-
-Fail-closed buys a refusal, not a fast one: a dependency that takes nine
-seconds to time out produces a queue, not a correctness error.
+to start on an enforcement-bypass flag. The property is checkable: no
+policy, no
+reconstruction and no counter means no execution, on each of the six
+failure classes.
 
 ## FAQ
 
