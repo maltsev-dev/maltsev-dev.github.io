@@ -107,9 +107,6 @@ const when = (iso: string | undefined): string => {
   const match = /^(\d{4})-(\d{2})/.exec((iso ?? '').trim());
   return match ? `${match[1]}-${match[2]}` : '';
 };
-
-/** The words in the body, for the window's own corner. */
-const words = post.body.trim().split(/\s+/).filter(Boolean).length;
 ---
 
 <Base
@@ -124,11 +121,12 @@ const words = post.body.trim().split(/\s+/).filter(Boolean).length;
     The post, as a file being read.
 
     It used to be a title on a page and a column of prose under it. The
-    column is still there — the writing is the writing — but the page now
-    says what it is doing: a file in a directory, opened by a command, with
-    the command on the line above the output. Everything else on the site
-    works this way now, and a post that read differently from the page
-    before it broke the pattern the reader had just learned.
+    column is still there — the writing is the writing — and the page still
+    says what it is doing: a file in a directory, opened and read, with the
+    output in the frame. The command that opened it used to be printed on
+    the line above the output, and it was noise: it said what the reader
+    was already looking at, in a language the page is not written in. The
+    frame stays; the imitation of a shell does not.
   -->
   <article class="post-page">
     <header class="post-head">
@@ -139,15 +137,6 @@ const words = post.body.trim().split(/\s+/).filter(Boolean).length;
       <span class="eyebrow" data-reveal><span class="pulse-dot"></span>Post</span>
 
       <h1 data-reveal data-reveal-delay="60">{title}</h1>
-
-      <p class="tty-prompt" data-reveal data-reveal-delay="100">
-        <span class="who">root</span><span class="sep">@</span><span
-          >amaltsev</span>
-        ><span class="sep">:</span><span class="path">~/blog</span><span class="sep"
-          >$</span
-        >
-        <span class="tty-cmd">cat {post.id}.md</span>
-      </p>
 
       <p class="lede" data-reveal data-reveal-delay="120">{description}</p>
 
@@ -198,20 +187,9 @@ const words = post.body.trim().split(/\s+/).filter(Boolean).length;
             <i class="led led-off"></i>
             <i class="led led-off"></i>
           </span>
-          <span class="tty-title">~/blog/{post.id}.md</span>
-          <span class="tty-right" aria-hidden="true">{words} words</span>
         </div>
 
         <div class="tty-body">
-          <p class="tty-prompt tty-cmd-line">
-            <span class="who">root</span><span class="sep">@</span><span
-              >amaltsev</span>
-            ><span class="sep">:</span><span class="path">~/blog</span><span class="sep"
-              >$</span
-            >
-            <span class="tty-cmd">cat {post.id}.md</span>
-          </p>
-
           <!--
             The body. It keeps the site's prose rules — a measure of about
             seventy characters, headings on the mono face, code in the mono
@@ -239,19 +217,9 @@ const words = post.body.trim().split(/\s+/).filter(Boolean).length;
             <i class="led led-off"></i>
             <i class="led led-off"></i>
           </span>
-          <span class="tty-title">~/blog</span>
         </div>
 
         <div class="tty-body">
-          <p class="tty-prompt tty-cmd-line">
-            <span class="who">root</span><span class="sep">@</span><span
-              >amaltsev</span>
-            ><span class="sep">:</span><span class="path">~/blog</span><span class="sep"
-              >$</span
-            >
-            <span class="tty-cmd">ls -la</span>
-          </p>
-
           <div class="ls ls-head">
             <div class="ls-row ls-row--when ls-head">
               <span class="ls-when">when</span>
@@ -286,17 +254,6 @@ const words = post.body.trim().split(/\s+/).filter(Boolean).length;
           </div>
 
           <hr class="tty-rule" />
-
-          <p class="tty-prompt tty-cmd-line">
-            <span class="who">root</span><span class="sep">@</span><span
-              >amaltsev</span>
-            ><span class="sep">:</span><span class="path">~/blog</span><span class="sep"
-              >$</span
-            >
-            <span class="tty-cmd">
-              grep -l "{post.data.tags[0] ?? 'ai'}" -r ~/blog
-            </span>
-          </p>
 
           <div class="ls ls-more">
             {
