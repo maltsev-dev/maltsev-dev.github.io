@@ -236,7 +236,6 @@ const recentPosts = recent.map((post) => ({
         <div class="tty-body">
           <div class="ls">
             <div class="ls-row ls-row--write ls-head">
-              <span class="ls-mode">mode</span>
               <span class="ls-date">date</span>
               <span class="ls-size">min</span>
               <span class="ls-name">name</span>
@@ -244,7 +243,6 @@ const recentPosts = recent.map((post) => ({
             {
               recentPosts.map((p) => (
                 <div class="ls-row ls-row--write">
-                  <span class="ls-mode">-rw-r--r--</span>
                   <span class="ls-date">{p.date}</span>
                   <span class="ls-size">{p.minutes}</span>
                   <span class="ls-name">

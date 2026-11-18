@@ -207,10 +207,9 @@
 }
 
 /* ----- The listing -------------------------------------------------------
-   `ls -la` output: a directory of files, one per line, with the mode, the
-   size, the date and the name. The listing is a table, and a table of
-   monospaced text aligns on the grid without any of the CSS a table would
-   otherwise need.
+   `ls -la` output: a directory of files, one per line, with the size, the
+   date and the name. The listing is a table, and a table of monospaced text
+   aligns on the grid without any of the CSS a table would otherwise need.
    ---------------------------------------------------------------------- */
 .ls {
   font-family: var(--font-mono);
@@ -234,13 +233,7 @@
   white-space: normal;
 }
 
-/* The mode column. Directories end in a slash and are drawn in the accent;
-   ordinary files are drawn in the secondary text. */
-.ls-mode {
-  color: var(--faible);
-}
-
-.ls-row.is-dir .ls-mode,
+/* A directory is drawn in the accent, and its name ends in a slash. */
 .ls-row.is-dir .ls-name {
   color: var(--braise);
 }
@@ -288,18 +281,17 @@
   padding-bottom: 0.2rem;
 }
 
-/* The writing listing: mode, date, minutes, name. The date is the column
-   that has to be right — it is eleven characters wide ("7 Apr 2026"), and the
-   default six-column slot it used to sit in pushed the minutes into the date
-   and the two of them printed on top of each other. */
+/* The writing listing: date, minutes, name. The date is the column that has
+   to be right — it is eleven characters wide ("7 Apr 2026"), and the default
+   six-column slot it used to sit in pushed the minutes into the date and the
+   two of them printed on top of each other. */
 .ls-row--write {
-  grid-template-columns: 11ch 12ch 5ch minmax(0, 1fr);
+  grid-template-columns: 12ch 5ch minmax(0, 1fr);
 }
 
 /* The header row is a caption, not content: every label in it is drawn in
    the faint tone, whatever colour the column it names uses below. */
 .ls-head .ls-name,
-.ls-head .ls-mode,
 .ls-head .ls-date,
 .ls-head .ls-size,
 .ls-head .ls-when,
@@ -364,15 +356,10 @@
 }
 
 @media (max-width: 52rem) {
-  /* Four columns do not fit on a phone. The mode is the first thing to go —
-     it is the least informative — and the rest stack under each other. */
+  /* Four columns do not fit on a phone: the row stacks into one column. */
   .ls-row--cat,
   .ls-row--when {
     grid-template-columns: minmax(0, 1fr);
-  }
-
-  .ls-row--cat .ls-mode {
-    display: none;
   }
 
   .ls-row--cat .ls-when,
@@ -414,9 +401,9 @@
   font-weight: inherit;
 }
 
-/* The columns of a post row: mode, date, minutes, topic, name. */
+/* The columns of a post row: date, minutes, topic, name. */
 .ls-row--post {
-  grid-template-columns: 11ch 11ch 4ch 13ch minmax(0, 1fr);
+  grid-template-columns: 11ch 4ch 13ch minmax(0, 1fr);
   line-height: 1.6;
 }
 
@@ -468,8 +455,8 @@
 }
 
 /* The columns of a listing are what a terminal has and a phone does not.
-   Below the breakpoint the row folds: the mode goes away (it was always
-   decoration), and the date and the reading time sit above the title. */
+   Below the breakpoint the row folds: the date and the reading time sit
+   above the title. */
 @media (max-width: 52rem) {
   .ls-row--post {
     grid-template-columns: 11ch 4ch minmax(0, 1fr);
@@ -477,10 +464,6 @@
       'date min topic'
       'name name name';
     row-gap: 0.1rem;
-  }
-
-  .ls-row--post .ls-mode {
-    display: none;
   }
 
   .ls-row--post .ls-date {

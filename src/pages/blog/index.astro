@@ -213,7 +213,6 @@ const cards = posts.map((post) => {
 
           <div class="ls ls-topics">
             <div class="ls-row ls-head">
-              <span class="ls-mode">mode</span>
               <span class="ls-count">posts</span>
               <span class="ls-name">name</span>
               <span class="ls-desc">subject</span>
@@ -221,7 +220,6 @@ const cards = posts.map((post) => {
             {
               TOPICS.map((topic) => (
                 <div class="ls-row is-dir">
-                  <span class="ls-mode">drwxr-xr-x</span>
                   <span class="ls-count">{topic.posts.length}</span>
                   <span class="ls-name">
                     <a href={`/blog/?topic=${topic.id}`}>{topic.short}/</a>
@@ -295,15 +293,14 @@ const cards = posts.map((post) => {
           <h2 class="index-h">All writing</h2>
 
           <!--
-            The directory. A row is a file: its mode, its date, how long it
-            takes to read, the subject it belongs to and its name. The
-            opening of the post and its tags are not here — the filter row
-            above already names every tag, and the post itself opens with
-            the sentence a reader would come back for.
+            The directory. A row is a file: its date, how long it takes to
+            read, the subject it belongs to and its name. The opening of the
+            post and its tags are not here — the filter row above already
+            names every tag, and the post itself opens with the sentence a
+            reader would come back for.
           -->
           <div class="ls ls-posts" data-grid>
             <div class="ls-row ls-head ls-row--post">
-              <span class="ls-mode">mode</span>
               <span class="ls-date">date</span>
               <span class="ls-size">min</span>
               <span class="ls-topic">topic</span>
@@ -322,7 +319,6 @@ const cards = posts.map((post) => {
                 >
                   <h3 class="post-title">
                     <span class="ls-row ls-row--post">
-                      <span class="ls-mode">-rw-r--r--</span>
                       <span class="ls-date">
                         <time datetime={post.iso}>{post.date}</time>
                       </span>
@@ -395,7 +391,7 @@ const cards = posts.map((post) => {
   /* The subject of a directory, in the last column: the one line that says
      what the thread is, so the reader does not have to open it to find out. */
   .ls-topics .ls-row {
-    grid-template-columns: 9.5ch 6ch 15ch minmax(0, 1fr);
+    grid-template-columns: 6ch 15ch minmax(0, 1fr);
   }
 
   .ls-desc {
@@ -558,15 +554,11 @@ const cards = posts.map((post) => {
      ---------------------------------------------------------------------- */
   @media (max-width: 52rem) {
     .ls-topics .ls-row {
-      grid-template-columns: 9.5ch 5ch minmax(0, 1fr);
+      grid-template-columns: 5ch minmax(0, 1fr);
       grid-template-areas:
-        'mode count name'
+        'count name'
         'desc desc desc';
       row-gap: 0.15rem;
-    }
-
-    .ls-topics .ls-mode {
-      grid-area: mode;
     }
 
     .ls-topics .ls-count {

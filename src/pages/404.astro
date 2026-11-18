@@ -64,7 +64,6 @@ const PLACES = [
 
         <div class="ls ls-dirs">
           <div class="ls-row ls-head">
-            <span class="ls-mode">mode</span>
             <span class="ls-dir-name">name</span>
             <span class="ls-dir-desc">what is there</span>
           </div>
@@ -72,7 +71,6 @@ const PLACES = [
           {
             PLACES.map((place) => (
               <div class="ls-row ls-row--dir">
-                <span class="ls-mode">drwxr-xr-x</span>
                 <span class="ls-dir-name">
                   <a href={place.href}>{place.name}/</a>
                 </span>
@@ -151,7 +149,7 @@ const PLACES = [
 
   /* The listing of the site's own directories. */
   .ls-dirs .ls-row {
-    grid-template-columns: 9.5ch 16ch minmax(0, 1fr);
+    grid-template-columns: 16ch minmax(0, 1fr);
     line-height: 1.7;
   }
 
@@ -187,15 +185,11 @@ const PLACES = [
     color: var(--fort);
   }
 
-  /* Four columns do not fit on a phone: the mode goes first, and the
-     description of each place folds under its name. */
+  /* Two columns do not fit on a phone: the description of each place folds
+     under its name. */
   @media (max-width: 52rem) {
     .ls-dirs .ls-row {
       grid-template-columns: minmax(0, 1fr);
-    }
-
-    .ls-dirs .ls-mode {
-      display: none;
     }
   }
 </style>
