@@ -207,9 +207,11 @@
 }
 
 /* ----- The listing -------------------------------------------------------
-   `ls -la` output: a directory of files, one per line, with the size, the
-   date and the name. The listing is a table, and a table of monospaced text
-   aligns on the grid without any of the CSS a table would otherwise need.
+   `ls -la` output: a directory of files, one per line. The base row carries
+   three cells — the size, the date and the name — and a listing that needs
+   a different set of them has its own template. The listing is a table, and
+   a table of monospaced text aligns on the grid without any of the CSS a
+   table would otherwise need.
    ---------------------------------------------------------------------- */
 .ls {
   font-family: var(--font-mono);
@@ -221,7 +223,7 @@
 
 .ls-row {
   display: grid;
-  grid-template-columns: 11ch 6ch 12ch minmax(0, 1fr);
+  grid-template-columns: 6ch 12ch minmax(0, 1fr);
   gap: 0 1ch;
   align-items: baseline;
   white-space: nowrap;
@@ -300,20 +302,17 @@
 }
 
 /* ----- The catalogue row -------------------------------------------------
-   Two shapes of listing, both shared by the pages that need them.
+   The catalogue row and the dated row are the same three columns: when,
+   name and cue. The when says when the work was, the name is the entry and
+   the cue is what its link does. The when column is eighteen characters
+   wide — `2025-07 → 2025-11` is seventeen — so a date never pushes the name
+   out of the way.
 
-   The catalogue row has four columns: mode, when, name, cue. The mode says
-   whether the entry is a directory or a file, the when says when it was, the
-   name is the entry and the cue is what its link does. The when column is
-   eighteen characters wide — `2025-07 → 2025-11` is seventeen — so a date
-   never pushes the name out of the way.
-
-   The dated row drops the mode: it is for a listing whose entries are all
-   the same kind of thing, where a column of identical permissions would say
-   nothing on every row but one.
+   A listing with no cue of its own overrides the template and keeps the
+   two columns it needs.
    ---------------------------------------------------------------------- */
 .ls-row--cat {
-  grid-template-columns: 11ch 18ch minmax(0, 1fr) 8ch;
+  grid-template-columns: 18ch minmax(0, 1fr) 8ch;
   align-items: baseline;
   line-height: 1.6;
 }
@@ -356,7 +355,7 @@
 }
 
 @media (max-width: 52rem) {
-  /* Four columns do not fit on a phone: the row stacks into one column. */
+  /* Three columns do not fit on a phone: the row stacks into one column. */
   .ls-row--cat,
   .ls-row--when {
     grid-template-columns: minmax(0, 1fr);
