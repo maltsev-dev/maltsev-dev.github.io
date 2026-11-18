@@ -269,15 +269,14 @@ retry of an executed action fails deterministically rather than running
 again on a flag someone set, and a resume can tell "already consumed"
 from "never decided".
 
-The price is a hop on every gated call, a record you have to keep and
-reconcile, and a route list that is manual: the canary test closes only
-the six routes you have enumerated, and a framework that adds an
-invocation mechanism in a minor release adds one you have not heard of.
-The list needs an owner and a trigger, not a best effort. The property,
-phrased as a check: take any route that reaches the effect, including
-one that turns up after the design was drawn, and the approval is
-consulted. You can test that on a route you invent, not only the six
-you already know.
+The price is a hop on every gated call, a record to keep and reconcile,
+and a route list that is manual: the canary test closes only the six
+routes you have enumerated, and a framework that adds an invocation
+mechanism in a minor release adds one you have not heard of. Give that
+list a name and a trigger, or it goes stale. The property, phrased as a
+check: take any route that reaches the effect, including one that turns
+up after the design was drawn, and the approval is consulted. You can
+test that on a route you invent, not only the six you know.
 
 ## FAQ
 

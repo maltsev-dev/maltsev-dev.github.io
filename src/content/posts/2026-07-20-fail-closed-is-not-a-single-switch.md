@@ -295,9 +295,9 @@ nobody wrote down.
 
 Declare the default per path, and put the declaration in the review queue.
 For each of the six failure classes a reviewer should see the default, its
-error code, the test that takes the dependency away, and who owns that
-test. A pull request that adds an enforcement path is not done until its
-line exists, and a refusal goes to the audit trail, because a refusal is
+error code, the test that takes the dependency away, and who owns it. A
+pull request that adds an enforcement path is not done until its line
+exists, and a refusal goes to the audit trail, because a refusal is
 evidence a control fired.
 
 The strongest form removes the class instead of documenting it. Put the
@@ -306,9 +306,9 @@ the counter and "may this call proceed" has one answer, not a read and a
 write that can come apart. The store does not half apply anything, so a
 crash leaves the counter where it was, and an unreachable counter answers
 `REDIS_UNAVAILABLE`, not a zero. The cost is a comparison exercised inside
-the store, not in your tests, plus a presence bit that keeps "no policy
-configured" apart from "policy unreadable" and a boot guard that refuses
-to start on an enforcement-bypass flag. The property is checkable: no
+the store, not in your tests, plus a presence bit that separates "no policy
+configured" from "policy unreadable" and a boot guard that refuses to
+start on an enforcement-bypass flag. The property is checkable: no
 policy, no
 reconstruction and no counter means no execution, on each of the six
 failure classes.
