@@ -215,8 +215,8 @@ Do not let recovery report only the approvals still in flight. The
 mechanism is that absence then has to stand in for a decision:
 "never asked" and "asked and denied" come back the same way, so a
 restarted instance asks again, and the same person judges the same
-action twice, the second time from a guess about what they saw last
-time. Each restart puts another card in front of one human for one
+action twice, the second time working from a half-memory of the first.
+Each restart puts another card in front of one human for one
 decision, and the answer they give to a question they already answered
 is a rubber stamp. The row that holds `DENIED` is exactly the row a
 pending-only surface drops, and it carries the refusal that matters:
@@ -226,22 +226,23 @@ that nobody answered.
 ### What to do
 
 Store the decision as a record, not as a fact about a running process,
-and write that record atomically with the decision it describes. One row
-per decision carries the approver, the expiry, the digest and the
-consumption state, and its six possible states (`PENDING`, `APPROVED`,
-`DENIED`, `EXPIRED`, `CONSUMED`, `REVOKED`) live in one column so a
-decision has exactly one name and only moves forward. Every transition
-is a single conditional statement: the approve-to-consume update carries
-seven preconditions and returns a row or returns nothing, because a
-load-then-write lets two workers both see `APPROVED` and both execute.
-Recovery then hands the server the approval ids the agent holds and
-gets every status back, denied, expired and consumed included, so the
-new instance ends the run and reports the refusal instead of asking
-again. The price is a store and a partial unique index on `execution_id`
-where `status = 'PENDING'`, one open card per execution, plus a
-retention window: a resumed workflow still re-presents a byte-identical
-payload, and approvals purged after thirty days leave a long suspension
-looking like never having asked.
+and write that record in the same transaction as the decision it
+records. One row per decision carries the approver, the expiry, the
+digest and the consumption state, and its six possible states
+(`PENDING`, `APPROVED`, `DENIED`, `EXPIRED`, `CONSUMED`, `REVOKED`) live
+in one column so a decision has exactly one name and only moves
+forward. Every transition is a single conditional statement: the
+approve-to-consume update carries seven preconditions and returns a row
+or returns nothing, because reading the status before writing it lets
+two workers both find it approved and both act on it. Recovery then
+hands the server the approval ids the agent holds and gets every status
+back, denied, expired and consumed included, so the new instance ends
+the run and reports the refusal instead of asking again. The price is a
+store and a partial unique index over `execution_id` for rows still
+`PENDING`, one open card per execution, plus a retention window: a
+resumed workflow still re-presents a byte-identical payload, and
+approvals purged after thirty days leave a long suspension looking like
+never having asked.
 
 ## FAQ
 

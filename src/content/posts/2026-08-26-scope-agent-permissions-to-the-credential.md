@@ -210,39 +210,40 @@ inside a tool after it is called is not something this design sees.
 
 ### What not to
 
-Do not branch on agent identity in application code, and do not park the
-scope in an environment variable. Both put the conditions somewhere they
-are reviewed like business logic, tested like business logic, and
-deployed like business logic, and that review checks correctness, not
-completeness: the second code path was never in the branch, and the
-first agent that reaches a tool through it gets it. The environment
-variable version fails differently and just as silently, because a
-staging agent with a broader scope is a configuration mistake waiting
-for a release, and dev and prod agree only while somebody keeps them in
-sync. The separate deployment avoids the branch and pays for it
-instead: N deployments, N pipelines, N environment variable sets that
-drift, a release cadence set by the slowest one, and a consolidation
+Do not let the agent's own runtime decide what it is allowed to do. The
+two usual arrangements are a branch on the agent's name in application
+code and a scope read out of the runtime's configuration, and in both
+cases the answer to "what may this agent do" is produced by something
+the agent can rewrite. A branch is not a policy. It is a set of
+assertions about code paths, so a path nobody wrote a branch for is a
+path with no rule on it, and adding one is a change that looks like
+ordinary application work. Configuration is not safer, only slower to
+announce: a wider scope in staging is a release waiting to happen, and
+two environments agree only while somebody keeps them in sync. The
+third arrangement, a deployment per agent, buys the separation and pays
+in N deployments, N pipelines, N environment variable sets that drift, a
+release cadence dragged down by the slowest of them, and a consolidation
 back to one runtime within two quarters.
 
 ### What to do
 
 Resolve the policy against the authenticated principal, most specific
-first: the key, then the workflow if one is bound, then the
-organization, and a miss is a miss. The scope then travels with the
-credential rather than with the code path, so it does not change when
-the agent's code changes, when a second path appears, or when the agent
-runs in a different process. The property worth having is that the
-agent cannot widen its own scope by editing itself, because the lookup
-happens before the agent's decision has any input into it and the agent
-has no API for changing a policy. Re-check the binding at consumption
-rather than only at resolution: the execution is minted server-side and
-bound to the organization and key, and that binding is compared again
-atomically when the execution settles. The price is key distribution,
-which is real work: every agent in every environment needs its own
-minted credential, changing a scope means rotating keys, and a rotation
-under a running workflow needs the old grant to stay valid until it
-ends. It also assumes the runtime keeps credentials apart, true for a
-container per agent and false for one process hosting many.
+first across three levels: the key, then the workflow if one is bound,
+then the organization, where a miss is a miss rather than a default.
+The lookup reads a table the agent cannot write, so the answer to
+"what may this agent do" is a function of the credential, not of the
+code presenting it, and a second route to a tool is a route with a rule.
+Two properties follow. The agent has no API for changing a policy, so
+nothing it writes can widen its scope. And the answer outlives the
+code: the same build and key resolve the same policy wherever it runs.
+Then bind the decision to the execution, which carries an id the server
+mints, bound to the organization and key that authorized it, and the
+binding is checked a second time, atomically, as the execution settles,
+so a decision taken under one principal cannot be presented under
+another. The price is key distribution: a distinct minted credential per
+agent per environment, rotation as the way a scope changes, the old
+grant valid through an in-flight rotation, and a runtime that keeps
+credentials apart.
 
 ## FAQ
 

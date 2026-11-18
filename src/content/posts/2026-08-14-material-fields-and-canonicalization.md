@@ -298,15 +298,18 @@ the default from the start.
 ### What not to
 
 Do not build the digest's coverage on a list of fields somebody decided
-were harmless. Coverage is exactly what you enumerated, and the next
-field the tool's owner adds arrives after the list was written:
-`redirect_to`, or `amount` split into `amount_hint` and `amount_scale`
-so that each half looks informational. That field falls out of the hash
-with no signal anywhere. The approval still matches, the operator still
-sees a card, and the action that runs is not the action they judged.
-The opposite error is just as quiet: a hash that covers a field with no
-bearing on the action turns every retry carrying a fresh `trace_id` into
-a refusal, and the operator concludes that the digest is broken.
+were harmless. A tool with fifty parameters is fifty chances for that
+list to be incomplete, and whoever maintains it has to re-check every
+entry whenever the tool's semantics change, which is a cost nobody
+budgets for. The failure also has a direction: the list only breaks
+when a field turns out to matter, and the field that turns out to
+matter is the one nobody looked at. `redirect_to` is a vendor-added
+field, and on the day it arrives the list has no answer for it. The
+approval still matches, the operator still sees a card, and the action
+that runs is not the action they judged. The opposite error is just as
+quiet: a hash that covers a field with no bearing on the action turns
+every retry carrying a fresh `trace_id` into a refusal, and the
+operator concludes that the digest is broken.
 
 ### What to do
 
@@ -316,11 +319,11 @@ by construction, the approval's digest covers the action with no
 allowlist to keep current, and adding a field becomes a type change
 somebody compiles rather than a line in a config file. Two decisions
 make that promise real rather than nominal. Represent money as an
-integer in minor units with a declared per-call ceiling, so the value a
-JavaScript client cannot represent above 2^53 is refused at validation
-instead of being hashed into the wrong number. Sort object keys and
-leave arrays alone, because only the schema knows whether an array's
-order carries meaning. And domain-separate the hash,
+integer number of minor units, under a ceiling you declare per call, so
+the value a JavaScript client cannot represent above 2^53 is refused at
+validation instead of being hashed into the wrong number. Sort object
+keys and leave arrays alone, because only the schema knows whether an
+array's order carries meaning. And domain-separate the hash,
 `SHA-256( "approval/v1/business_impact:" || canonical_json(envelope) )`,
 so a digest computed for one action cannot be replayed into another
 namespace, and recompute it server-side from the payload that arrived,

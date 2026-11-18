@@ -239,39 +239,40 @@ algorithm.
 
 ### What not to
 
-Do not make the control stricter and call it safer. Card count decides
-whether the control works; ceremony around each card does not. An
-approver facing two hundred cards a day is clearing a queue, and the
-behavior under load is to read the title, look at the amount, click
-approve. Every individual action looks considered and the aggregate
-looks fine, which is exactly why the failure is invisible: the control
-is present and inert, producing audit records that will later be cited
-as evidence that a decision was made, and that is worse than no control
-at all. The tell is in the shape of the numbers, not their count. Below
-roughly a hundred cards per reviewer per day an approval is still a
-review; above it, approval degrades to a click. And if 95% of approvals
-complete in under three seconds, there is no review happening whatever
-the average says.
+Do not make the control stricter and call it safer. Tightening an
+approval changes what a card says, and what a card says is not what
+makes a review a review. Volume is the variable that matters: at two
+hundred cards a day an approver is not performing two hundred reviews,
+they are clearing a queue, and the only behavior that survives two
+hundred cards is the one that takes seconds. That is why the failure
+is invisible from the inside, because each individual action still
+reads as considered and the totals still look fine, while the control
+itself has gone inert. A control that goes inert is worse than having
+no control at all, since it leaves behind records that later get cited
+as proof that somebody decided. Below roughly a hundred cards
+per reviewer per day an approval is still a review; above it, approval
+degrades to a click. And if 95% of approvals finish inside three
+seconds, nobody is reading, whatever the average says.
 
 ### What to do
 
 Hold the three bands as policy in one place, outside the agent's code,
 so the agent cannot widen its own thresholds and a band boundary moves
-as a configuration edit rather than a branch somebody adds. Every edit
-writes a new version and a new hash, which makes a relaxation
-attributable later instead of a memory of last month's configuration,
-and the ladder has to descend as easily as it climbs. Then make the card
-carry the reason: the rule that fired, the risk level, the tool name,
-the action's parameters, and nothing else. The fields that vary are
-what an approver can act on; a card showing the model's reasoning
-instead of the decision is the card they clear. Bind each decision to
-the action's digest, recomputed server-side from the live payload at
-consumption, so a changed amount is refused rather than executed, and
-let approvals expire on their own with a per-rule TTL inside the consume
-predicate, so a decision nobody acted on stops being actionable without
-a sweeper racing it. The price is the policy store
-and its version history, and the honest first configuration of the bands
-is a guess traffic corrects, not a principled cut.
+as a configuration edit rather than a branch somebody adds. Resolve
+most specific first, per calling key, then per workflow, then org-wide,
+so scoping one team's policy does not disturb the rest of the
+organization. Every edit writes a new version and a new hash, which
+makes a relaxation attributable later rather than a memory of last
+month's configuration, and the ladder has to descend as easily as it
+climbs. Then make the card carry the reason: the rule that fired, the
+risk level, the tool name, the action's parameters, and nothing else.
+Bind each decision to the action's digest, recomputed server-side from
+the live payload at consumption, so a changed amount is refused rather
+than executed, and let approvals expire on their own with a per-rule
+TTL in the consume predicate, so a decision nobody acted on stops being
+actionable. The price is the policy store and its version history, and
+the first configuration of the bands is a guess traffic corrects, not a
+principled cut.
 
 ## FAQ
 
