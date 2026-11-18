@@ -219,6 +219,8 @@ const when = (iso: string | undefined): string => {
         </div>
 
         <div class="tty-body">
+          <h2 class="more-h">Neighbours in time</h2>
+
           <div class="ls ls-head">
             <div class="ls-row ls-row--when ls-head">
               <span class="ls-when">when</span>
@@ -251,10 +253,6 @@ const when = (iso: string | undefined): string => {
               )
             }
           </div>
-
-          <p class="more-lead">
-            Neighbours in time: the posts on either side of this one.
-          </p>
 
           <hr class="tty-rule" />
 
@@ -363,15 +361,18 @@ const when = (iso: string | undefined): string => {
     font-size: 0.9rem;
   }
 
-  /* The caption under the first listing. The second listing has its caption
-     under it, so this one needs one above it, or the first listing is an
-     unexplained block of two links. */
-  .more-lead {
-    margin: 0.7rem 0 0;
-    max-width: var(--measure-prose);
-    color: var(--fort);
-    font-family: var(--font-body);
-    font-size: 0.9rem;
+  /* The label over the neighbours listing, in the same voice as the index's
+     "Subjects" and "All writing": a small heading, no punctuation. The second
+     listing has its caption under it, so this one needs one above it, or the
+     first listing is an unexplained block of two links. */
+  .more-h {
+    margin: 0 0 0.4rem;
+    font-family: var(--font-mono);
+    font-size: var(--fs-label);
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--braise);
   }
 
   /* ----- The tag links in the metadata line --------------------------------
