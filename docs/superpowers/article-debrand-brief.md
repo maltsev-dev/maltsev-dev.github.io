@@ -89,7 +89,7 @@ fails, and the number in the article that shows it failing.>
 property it buys.>
 ```
 
-The section must satisfy all six of these:
+The section must satisfy all seven of these:
 
 1. **Specific to this article.** The anti-pattern is a real anti-pattern in
    this subject. "Do not skip validation" is not an anti-pattern, it is a
@@ -197,7 +197,7 @@ article closes on the argument and a FAQ rather than on a link.
 grep -rin "nullrun" <the file>
 ```
 
-Must print nothing. Then re-read your new section against the rules, and
-then re-read the article's "Limitations worth stating" section. Three of the
-24 articles do not have one; where the article states a limit somewhere else,
-confirm your conclusion does not contradict it.
+Must print nothing. Then re-read your new section against the seven rules,
+and then re-read the article's "Limitations worth stating" section. Three of
+the 24 articles do not have one; where the article states a limit somewhere
+else, confirm your conclusion does not contradict it.
