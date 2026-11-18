@@ -164,6 +164,41 @@ legitimately has. A boundary the agent cannot widen is still a boundary
 around actions nobody reviewed, which is the subject of
 [instance-level authorization](/blog/2026-06-13-permissions-are-categories-authorizations-are-instances/).
 
+## What to do, and what not to
+
+### What not to
+
+Do not put the boundary somewhere the agent can reach, even indirectly.
+An agent told to "make the release process work" adds a deploy tool,
+obtains a wider credential because that is what credential flows look
+like inside an organization, decides that a five-hundred-dollar
+approval limit does not apply to an unusual case, or reads a pattern
+behind a one-time approval and writes it into the policy as a default.
+All four read as routine work. The review case is the one that gets
+through: a PR that raises a threshold from 500 to 5000, or adds a tool
+to an allowlist, is a small readable diff among the other forty diffs
+that week, and nobody reading it is looking for an escalation. The
+control holds right up until the first agent that can write.
+
+### What to do
+
+Put the write interface where the agent's credential cannot reach it.
+No configuration hands an agent principal a boundary-mutating tool, and
+the write path authenticates against something the agent process does
+not hold, so of the four capability classes the last one leaves the
+exposure list unconditionally rather than by a policy an operator might
+configure or a later change could flip. Hold the tool surface to the
+same standard: no tool that edits config, deploys, or updates a workflow
+definition, because each one is a path to the boundary. Version every
+change as a hashed snapshot with a change history instead of editing in
+place, and let the agent discover its boundary by being refused, with
+each refusal a typed decision carrying a machine-readable code that
+lands in the audit trail. The cost is a second trust domain to operate
+and someone who owns a recurring review of the whole surface, because
+indirect paths accumulate one reasonable tool at a time. What it buys
+is checkable: from inside the agent's process, no reachable interface
+accepts its credential for a policy write.
+
 ## FAQ
 
 ### Is this a real risk, or theoretical?
@@ -202,25 +237,3 @@ buying.
 Then the separation is nominal. "Separate process" has to mean separate
 credentials and separate reachability, not merely a different PID in the
 same trust domain.
-
-## Where this runs
-
-NullRun holds the authorization boundary outside the agent. The agent has
-no interface for changing a policy, no credential that the policy layer
-would honor for a policy write, and no tool that can reach one. The
-policy administration routes sit outside the authorization path the
-agent's credential travels: the SDK's path prefixes do not include them
-and that credential is the only layer that reads the API key header, so
-the agent's credential cannot call them at all. Every change is a
-versioned, hashed snapshot with a change history, never an edit in
-place.
-
-The agent discovers its boundary by being refused. Each refusal is a
-typed decision, one of `allow`, `block` or `require_approval`, with a
-machine-readable error code, and it lands in the audit trail, which
-shows every relaxation as a distinct decision carrying the policy hash
-that produced it. So "the limit is higher now" always has a moment and
-an author attached to it.
-
-The [API reference](https://nullrun.io/docs/api) lists which routes take the agent's
-credential and which take an operator's.

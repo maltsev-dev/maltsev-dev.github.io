@@ -192,6 +192,37 @@ account, is still a judgment. A policy that is wrong will be wrong
 immediately and consistently after this change, which is arguably worse
 than a policy that is right and slowly goes stale.
 
+## What to do, and what not to
+
+### What not to
+
+Do not decide once, at grant time, and let the answer stand. The refund
+permission says five hundred dollars; the policy is edited down to two
+hundred; the agent is not told, because nothing told it. It issues a
+four-hundred-dollar refund, and nothing about its behavior was wrong
+against the permission set it held. The gap is not the agent's judgment
+but the age of the facts underneath the grant, and of the five things
+that move under a standing permission, four move routinely: policy
+hash, account state, exception window, budget headroom. A system that
+reads them at grant time is stale within minutes, and the audit trail
+it eventually leaves behind attests to a policy that has since moved.
+
+### What to do
+
+Evaluate the evidence when the action runs, reading it from the systems
+that currently hold truth, and record the hash of the rule text that
+produced the decision, so "which policy was in force" stays answerable
+from the audit long after the policy itself has moved. Let the grant
+expire on its own clock as well: a per-rule TTL of five minutes closes
+the window in which stale evidence can still be acted on, and an
+execution binding that expires after 24 hours means a stale grant goes
+stale on two independent grounds. The cost is live reads on the hot
+path, which means dependencies, and a store that cannot be reached has
+to fail closed or the leak arrives through the permissive fallback
+somebody will otherwise add. What it buys is that the answer to "may
+this call proceed" is computed now rather than inherited, and it names
+the rule text that produced it.
+
 ## FAQ
 
 ### What does a short TTL bound, and what does it miss?
@@ -224,22 +255,3 @@ live evidence at all, and excluding those keeps the cost down. Be careful
 with that exclusion though. "This tool is read-only" is a claim about
 the tool, and it is a claim that can change, which is the
 [schema drift problem](/blog/2026-09-01-mcp-tool-identity-not-tool-name/).
-
-## Where this runs
-
-NullRun recomputes evidence from live state on every gate decision,
-carrying no snapshot forward from when the permission was granted. A
-permission granted at nine in the morning has moved by two in the
-afternoon whenever anything underneath it has changed: the policy, the
-account state, the remaining budget.
-
-Each enforced rule carries the hash of its exact rule text, so "which
-policy was in force" is answerable from the audit long after the policy
-itself has moved. Expiry closes the other gap: an approval card holds a
-per-rule TTL, five minutes by default, so a decision nobody made promptly
-simply stops being actionable, and the execution binding itself expires
-after 24 hours. A stale grant therefore goes stale on two independent
-grounds, which is the point of having both.
-
-The [security documentation](https://nullrun.io/security) covers how the hash is computed
-and where each decision records it.

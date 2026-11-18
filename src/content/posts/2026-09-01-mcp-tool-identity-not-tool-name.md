@@ -276,6 +276,39 @@ arguments uninspected, so whether *these particular* arguments are safe
 is a separate layer, and a permission model that stops at the tool is
 leaving the expensive part open.
 
+## What to do, and what not to
+
+### What not to
+
+Do not put a tool name on a trust list and read a match as proof that the
+reviewed tool is the running tool. Names are labels: two servers in one
+agent's list both expose `delete_user`, the runtime resolves on the
+name, and the agent's transcript says it deleted a user while a derived
+analytics row disappeared instead. The same bug arrives without a
+collision. `transfer` gains an optional `destination_account` field,
+the signature still validates against its schema, the trust list still
+holds the old identity, and a rule written for a five-thousand-dollar
+transfer now covers a transfer to an account the operator never agreed
+to. Nothing errors. The review happened, and the thing that was
+approved is no longer the thing that runs.
+
+### What to do
+
+Bind the decision to an identity the server minted: the registered
+server plus the tool name, which makes two servers offering the same
+name two keys instead of one ambiguous match, and a lookup that returns
+two matches refuses rather than picking one. Keep a digest of the
+canonicalized definition beside that key, and store the digest a human
+accepted next to the one computed now. A tool the catalog has not seen
+arrives as needing a decision, a drifted tool stops until someone
+accepts the new definition, and a rename misses the existing key and so
+inherits no approval granted for a different label. The cost is a
+registration step and a sweep, and a description-only edit still stops
+a tool that did not change what it does; reading the catalog once per
+sweep rather than once per call keeps the lookup off the hot path. What
+it buys is provenance: every callable tool holds a human-accepted
+definition, and a definition that changes stops the tool.
+
 ## FAQ
 
 ### Does MCP already give us a stable identifier?
@@ -306,27 +339,3 @@ For detecting change, yes. For deciding permission, no. A digest tells
 you the tool is the same one you reviewed. It does not tell you this
 call is safe. Those are different questions, and the second one needs
 the material-field layer.
-
-## Where this runs
-
-NullRun keeps a per-organization catalog of the tools its MCP servers
-expose. An entry is keyed by the registered server plus the tool name,
-so two servers offering the same name are two entries instead of one
-ambiguous match, and it carries two hashes: the current definition and
-the one a human accepted. Server-supplied annotations are read for
-display, and the enforced half is the digest.
-
-A tool the catalog has seen but nobody has reviewed is refused as
-requiring a decision. A tool whose current hash differs from the accepted
-one is refused as drifted, and stays refused until an operator accepts the
-new definition. A rename does not match the existing key, so the tool
-arrives unreviewed, and inherits no approval that was granted for a
-different label. The catalog is loaded once per sweep instead of read
-per call, so the gate does not pay a lookup on the hot path.
-
-What that buys is a claim about provenance. Every tool the catalog holds
-carries a human-accepted definition, and a definition that changes stops
-the tool. A matched definition still goes through the same action-level
-decision as everything else. The wire shapes are in the
-[API reference](https://nullrun.io/docs/api); the catalog is one of the
-sources behind the [tool control](https://nullrun.io/security) page.

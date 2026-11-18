@@ -267,6 +267,41 @@ that can pause anyone's workflow is a control plane that can be used to
 stop someone else's incident response, which is a privilege escalation
 with a very short demo.
 
+## What to do, and what not to
+
+### What not to
+
+Do not put the interrupt somewhere a process can reach it. Framework
+cancellation reaches the coroutine on the process that received it;
+killing the container reaches one process, and the durable queue hands
+the job to somebody else; SIGTERM with a grace period lets the current
+task finish, which is the dangerous one because it looks like it
+worked; a feature flag read at startup comes back unchanged after a
+deploy or a crash. Four mechanisms, four different failures, and all of
+them scoped to a process when the thing being stopped is a workflow
+that spans many processes, survives restarts, and waits on a person in
+the middle. A ticket somebody processes next Tuesday is the same
+mistake with a slower clock.
+
+### What to do
+
+Make operator control a fact in durable state, written by a human
+through a surface that authorizes that human, and read at the gate
+decision — the one moment every correct architecture already has.
+Three states, normal, paused and killed, each a value replaced by
+another value, so a stopped workflow reads as stopped and the record of
+what it did survives the stop; a missing row resolves to the stopped
+state rather than to carry on. The agent holds no credential the store
+accepts for a write, so it can read the state and ask, and cannot widen
+its own scope. A kill has to reach the queue too: read the state before
+dequeueing, or the queue hands the killed job to the next worker. The
+cost is that the queue has to participate, which is integration work
+in a system you may not own, and until it lands "kill" means "stop at
+the next gate decision". The property you can check afterwards: a pause
+written on one pod holds a tool call issued from another, a worker
+which restarts comes back to find the workflow still paused, and the
+record of the workflow survives the stop.
+
 ## FAQ
 
 ### Does container-level isolation cover most cases?
@@ -302,22 +337,3 @@ In the enforcement layer, which already has a place in the execution
 path where a decision is made before an irreversible action. The agent
 loop, the orchestrator and the queue are each one process, and the thing
 that needs stopping is not.
-
-## Where this runs
-
-NullRun reads every workflow's state at the gate, and the state lives
-outside the workers. An operator can pause a workflow and the next tool
-call is held; kill it and in-flight work is abandoned. A stopped workflow
-reads as stopped and its record is retained, so what it was doing is
-still answerable afterwards. The state is shared across pods, so a kill
-means kill on every pod at once, with no hoping that the others notice.
-
-Authority is ephemeral by default, and expiry is specific about what it
-covers: the execution binding that ties a server-minted execution
-identity to its organization and API key is time-limited, and an
-approval envelope carries its own expiry. Neither needs anyone to act for
-the window to close. Because control is read at the gate, it composes
-with the rest of the decision and stays inside it, so a paused
-workflow resumes into a full re-evaluation and not a continuation of the
-policy it held before the pause. The wire shapes are in the
-[API reference](https://nullrun.io/docs/api).
