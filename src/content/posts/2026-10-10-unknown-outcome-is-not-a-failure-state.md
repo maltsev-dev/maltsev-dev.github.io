@@ -213,6 +213,41 @@ needs an escalation path. Without one the safe behavior becomes "the
 agent stops", and stopping is exactly what fail-closed is supposed to
 avoid.
 
+## What to do, and what not to
+
+### What not to
+
+Do not collapse the unknown into one of the confirmed answers. A retried
+call has four outcomes, and `attempted_unknown` is the one with no
+confirmation behind it. Treat it as success and the action is silently
+lost, with no refund, no record update and no alarm anywhere; treat it as
+failure and the action happens twice, which is a double charge or a second
+email to a customer. Both guesses are locally reasonable, which is
+exactly why they survive review. The other version is leaving the
+behavior undefined and inheriting it from whichever retry helper the
+framework shipped, so nobody ever wrote down which of the two failures
+the system is willing to risk.
+
+### What to do
+
+Make the unknown representable, as a third value beside applied and not
+applied, and refuse a second attempt while a prior attempt is unresolved.
+Then remove the ambiguity at the source where the downstream allows it:
+derive the idempotency key from the action digest and the identity so it
+survives the retry, consume a grant atomically and refuse the replay,
+and settle so that a repeat charges once. Settle against the amount
+authorized with a one-cent tolerance, park the events that exhaust their
+retries in a dead-letter table that keeps them for thirty days, and
+reconcile the counter against the ledger nightly so the difference is a
+number somebody reads. Where the downstream offers no idempotency key,
+write down per operation which of duplicates or omissions you are
+choosing. The price is a state every layer above the call now carries,
+one cent of allowed drift, thirty days of retained dead letters, and an
+escalation path with a human at the end of it, because a workflow that
+cannot resolve an unknown stops. What it buys is checkable: a second
+attempt against an unresolved prior attempt is refused, not executed, and
+a repeated settlement charges once.
+
 ## FAQ
 
 ### Isn't a timeout enough?
@@ -250,38 +285,3 @@ nobody works.
 Everywhere. Double-sending a message, double-creating a record,
 double-posting a comment, double-inviting someone. The severity is lower
 and the mechanism is identical.
-
-## Where this runs
-
-NullRun states both of those answers explicitly, and inherits neither. A
-missing value in the budget check is fail-closed. A stale value is
-fail-open with a time-to-live that bounds the open period. Both are
-consequences of the same rule: the system decides what an absent or
-unusable signal means, deliberately, and no default decides it for them.
-The numbers are explicit. The execution binding that ties a
-server-minted execution identity to its organization and API key is valid
-for 24 hours; a budget reservation left idle is reclaimed after 300
-seconds. Both windows are constants in the source, not tuning knobs that
-drift.
-
-The two replay behaviors above are the same rule applied to two
-resources. An approval is a grant, so re-consuming it is refused with a
-distinct replay-rejected code the agent reads as "this is a duplicate, do
-not retry". It never reads it as a failure that invites exactly that
-behavior.
-A spend settlement is idempotent, so a retry after a network timeout
-settles once and reports success. Consumption of a reservation is atomic
-with the accounting it settles. Spend, ledger row and reservation release
-move together, so a repeat cannot double-charge. The amount settled is
-checked against the amount authorized, with a one-cent fixed tolerance.
-Settle more than the envelope authorized and the request is rejected.
-No further amount is quietly reserved.
-
-An event that exhausts its retries lands in a dead-letter table with
-30-day retention, carrying the counter value at the time it was written,
-so the amount a reconciliation pass disagreed with is still readable when
-someone looks. The reconciliation loop itself compares the Redis counter
-against the Postgres ledger every interval and publishes the difference
-as a metric; the dead-letter rows are the per-event evidence behind that
-number. See the [API reference](https://nullrun.io/docs/api) for the wire shapes and
-[/pricing](https://nullrun.io/pricing) for what retention means at each tier.

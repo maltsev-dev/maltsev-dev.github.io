@@ -357,6 +357,39 @@ nothing in the build fails, because the test still passes against code
 that no longer has the behavior. Coverage of the *policy* is what needs
 measuring, and it is a different number from coverage of the code.
 
+## What to do, and what not to
+
+### What not to
+
+Do not write the suite from the policy's own words. One test per rule,
+written by the author of the rule, proves the implementation matches what
+was already written down and leaves the question nobody asked, which is
+whether anything was left out. Seven classes of input exist that no rule
+names, and a suite built from the rules is silent on all seven. The milder
+version is an assertion that looks thorough and is not:
+`outcome in {"block", "allow"}` passes on a system that fails open, so the
+failure-injection test can be green while a dependency outage still lets
+the action through. Line coverage hides the same gap: a suite that only
+exercises allow paths reports itself complete and protects nothing.
+
+### What to do
+
+Structure the suite into seven classes by what varies rather than by what
+the rules say, and give each class one assertion that fails when the
+property breaks: the same action decided the same way under two payloads,
+one value below and one above every threshold plus the eight wrong-type
+rows, every documented route against the canary tool, exactly one winner
+over twenty concurrent runs, and a decision identical with and without
+injected provenance. Assert the property rather than the value, so a
+dependency outage cannot read as an allow, and mutate each threshold until
+one test goes red: changing `CAP` from 500 to 5000 has to break the
+suite. The cost is a suite built from seven directions instead of one,
+twenty runs per race, and a deny-branch coverage number you have to
+publish even when it sits under 80%. What it buys is checkable: a mutation
+on any threshold fails the suite. It does not close the gap against an
+adversary who has read your rules, and it does not need to, because the
+property it confirms is one the architecture already makes true.
+
 ## FAQ
 
 ### Should we be fuzzing the LLM as part of this?
@@ -391,28 +424,3 @@ Keep the model's output as a *signal* and keep a deterministic decision
 path for anything that blocks. Test the signal path for stability, same
 input and same verdict. Test the decision path exhaustively, because
 that is the part that can refuse a real action.
-
-## Where this runs
-
-NullRun is a separate process, which is what makes it testable on its own.
-You can drive the decision endpoint with a synthetic payload and a
-synthetic principal and get a deterministic verdict, without a model, an
-agent loop, or a framework in the loop at all. That is the property that
-makes differential testing practical. You can generate payloads by the
-thousands and every one produces a reproducible outcome for a fixed
-payload and a fixed live state.
-
-The second property is sharper than "injection is blocked". Provenance
-gets computed from the principal, the tool identity and the material
-fields, so it never reaches the decision as an input. The material fields
-are held to the same standard: the server re-derives the action digest
-from the live payload and refuses with `APPROVAL_DIGEST_MISMATCH` when the
-re-derivation disagrees with the approved grant. The hardest test in the
-taxonomy is two assertions instead of an exhaustive search. An injected
-provenance field leaves the decision unchanged, and an injected material
-field is caught by recomputation.
-
-That distinction separates a control you test from a property you rely on.
-Write the suite anyway. The properties it verifies are ones you could have
-made true by construction. The endpoint contract is in the
-[API reference](https://nullrun.io/docs/api).

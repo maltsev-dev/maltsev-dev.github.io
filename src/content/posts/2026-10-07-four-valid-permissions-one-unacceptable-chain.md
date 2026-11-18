@@ -185,6 +185,40 @@ way the aggregate stops protecting you.
 | False positives kill these systems faster than false negatives | A signal that fires on the nightly export every night is muted by the third day, and a muted signal protects nothing while continuing to consume attention. The precision requirement is the thing that determines whether the mitigation exists in six months. |
 | Thresholds are ceilings, and attackers know it | Per-call limits and aggregate limits are both thresholds. A pattern that stays under them is indistinguishable from a slow legitimate workflow, which is the cost of getting precision right. There is no version of this that closes completely. |
 
+## What to do, and what not to
+
+### What not to
+
+Do not decide each action on its own and call the path allowed. Four
+permitted steps in a row, read a record, run a query, create a CSV, send
+it to an external recipient, carry no unauthorized step at all, and the
+four of them together move fourteen gigabytes of customer records out of
+the building. The per-action check is not merely too coarse here: it is
+looking at a different question. It asks whether each tool call was
+allowed, and what caused the incident was never a tool call, it was the
+order of four of them. A flag on sequence length cannot repair it, since
+a legitimate reporting workflow that reads two hundred documents and
+sends one summary looks identical from the inside.
+
+### What to do
+
+Keep a running aggregate per execution and read it at the decision point,
+not at the end: sensitive records read, bytes staged, bytes sent
+externally, cumulative cost. When the effect the steps so far add up to
+exceeds what any single step could have produced, refuse with the signals
+named and write the refusal down as a decision. Use the aggregate where
+the effect is monotonic: runaway cost is the clean case, because the
+counter moves in one direction and is bounded. Treat privilege escalation
+as the case you cannot close, because its signal is structural rather
+than volumetric and no counter catches it. The cost is state to carry
+across the run, an execution boundary you have to define for a six-hour
+workflow that spans a compaction and a resume, a false positive that
+mutes the signal by the third day, and a subagent that starts with an
+empty aggregate because the composition spans two of them. What it buys
+is checkable: every decision in a run is evaluated against what the
+earlier steps in that run have already accumulated, so the fourth step
+cannot pass under the ceiling the first three were measured against.
+
 ## FAQ
 
 ### Should we just forbid agents from sending email to external addresses?
@@ -227,39 +261,3 @@ The signal is structural in kind, while the other two are volumetric,
 and structural signals over sequences are where the field is genuinely
 behind. Treating all three as one problem is how a system ends up
 confident about the two it handles and vague about the one it does not.
-
-## Where this runs
-
-NullRun is a per-evaluation layer. Here is which of the three
-composition types above it answers, and why.
-
-**Runaway cost is covered by exactly the mechanism this article
-describes.** The budget counter is a running aggregate, period-bound and
-org-scoped, checked at every decision. The amount is *reserved* before
-the tool call. Measurement after the call would be too late. The reserve
-and the cap comparison happen inside a single script on the data store,
-so there is no window in which the counter is read, the agent issues
-eleven more calls, and the write lands. It is monotonic, it moves in one
-direction, and it is bounded. This is the clean instance of the pattern.
-
-**Rate is the same shape at a finer grain.** A token bucket on
-`(organization_id, api_key_id)` is an aggregate over a window, checked
-per call.
-
-**Exfiltration is a different question, and the aggregate has no answer
-for it.** Reading data is free under a budget model, and the counter does
-not move. That is why the ceiling that stops a runaway does not stop a
-fourteen-gigabyte export. The gate's answer to that case is the
-per-evaluation one: the tool pattern, the money threshold and the
-argument rules are each evaluated against the live action, and each
-refusal is a typed decision with its own code in the audit trail. That is
-the layer that holds.
-
-The honest position is the partial one, and it is a useful one to design
-around: use an aggregate where the effect is monotonic and the aggregate
-wins, and use the per-action layer as the exactness backstop everywhere
-else. The hard part of composition, catching a bad sequence without
-flagging every legitimate one, cannot be solved by a gate decision, and
-a design that implies otherwise is overselling. The
-[integration docs](https://nullrun.io/docs) cover how a tool is put behind the per-call
-decision.

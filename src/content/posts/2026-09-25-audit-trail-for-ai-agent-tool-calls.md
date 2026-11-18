@@ -18,7 +18,7 @@ requested, what was allowed, what was spent, and who approved it.
 Every writer then updates the row in place to reflect the latest state,
 and the previous state is gone.
 
-NULLRUN splits the audit surface into four tables that never overwrite
+The runtime splits the audit surface into four tables that never overwrite
 each other:
 
 | Table | Answers |
@@ -176,6 +176,36 @@ Worth testing on a schedule:
 Each check pairs a real failure against the version that would pass
 without proving anything.
 
+## What to do, and what not to
+
+### What not to
+
+Do not keep one mutable row per action. A single table that mixes what was
+requested, what was allowed, what it cost and who approved it has to be
+updated in place, and the writer of the row becomes the writer of the
+history: four kinds of record, one row, and the previous state is gone the
+moment the next writer lands. The loss shows up where the record matters
+most. A 402 refusal is the event an operator needs when the agent stops
+calling at 14:00, and a table that only holds approvals has no row for it
+at all. Blocking `UPDATE` and `DELETE` with table grants does not close
+the gap either: that defense is one `ALTER TABLE` away from gone.
+
+### What to do
+
+Split the surface into four tables, one per kind of record, and let a
+correction be a new row rather than an edit. Tie them together with an
+execution ID the server mints and binds to the organization and the key in
+the same atomic operation as the write, then re-read that binding at
+settlement, because a binding checked only on the way in can be replayed
+on the way out. Chain every row to the hash of the row before it over a
+canonical serialization, and write the decision and the enqueue in one
+transaction so a decision cannot exist without a queued record. The price
+is four stores to keep, one dispatcher to run, one transaction on the
+decision path, and a chain verifier that has to be pointed at a
+deliberately tampered copy or it proves nothing. What it buys is a trail
+that cannot be rewritten after the fact, and an edit to any historical row
+that breaks every hash after it.
+
 ## FAQ
 
 ### Do we need to log the prompts themselves?
@@ -198,23 +228,3 @@ deliberately and write it down.
 Yes, and that is a common and reasonable choice. The property to insist
 on is append-only plus tamper detection. Where the rows live matters
 much less than whether the trail can be rewritten after the fact.
-
-## Where this runs
-
-NullRun separates the four kinds of record into four tables, with no
-shared `kind` column: `audit_events`, `execution_records`,
-`cost_events` and `approvals`. The separation is what lets each of them
-carry its own retention rule, its own immutability guarantee and its own
-foreign keys without one writer's failure mode silently weakening
-another's guarantee.
-
-Refusals are recorded on the same path as lifecycle events, because a
-refusal is evidence that a control fired. An audit trail with only the
-allows in it cannot answer the question that matters after an incident,
-which is what the system stopped.
-
-The identity that ties the records together is server-minted and bound to
-the organization and the API key at the moment it is created, so a
-decision, the execution it authorized and the spend it produced are
-joinable without trusting a client-supplied identifier. The
-[integration docs](https://nullrun.io/docs) cover the write path.
