@@ -27,7 +27,7 @@
 The five failure modes this change can produce that a per-task check will not catch:
 
 1. **A leftover product name in a diagram.** The ASCII art in the articles labels a gate with the product name in a column of box-drawing characters; a text-only grep for prose misses a name that survives inside a code fence. → Task 13 greps case-insensitively across the whole file including fences, and Task 13 also greps for `nullrun.io`.
-2. **A conclusion that says nothing.** The new section can be produced with correct headings and no content, or with a paragraph that restates the article's title. → Task 13 checks that every one of the 24 files has the section, once, before `## FAQ`, and that each half is 110–200 words.
+2. **A conclusion that says nothing.** The new section can be produced with correct headings and no content, or with a paragraph that restates the article's title. → Task 13 checks that every one of the 24 files has the section, once, before `## FAQ`, and that each half is 120–200 words.
 3. **A grid that no longer lines up.** Removing a grid track in CSS without removing the matching cell in the markup (or the reverse) shifts every column and breaks the monospaced alignment the whole listing depends on. → Each Phase A task's verification step greps the rendered `dist/` HTML for the count of `<span class="ls-mode">` and checks the column count of a rendered row.
 4. **A broken internal link.** Deleting the `Where this runs` section also deletes the product links at the end of it; the remaining body links must still resolve, and the CI gate is what proves it. → Task 13 runs `_audit_links_astro.py`.
 5. **A conclusion that contradicts the article.** A new "what to do" that recommends something the article argued against. → Every Phase B task ends with a self-check step that re-reads the article's own "Limitations worth stating" section and confirms the conclusion does not claim more than the article claims.
@@ -829,7 +829,7 @@ for f in $(ls src/content/posts/2026-*.md | grep -v "2026-01-07"); do
   echo "$(basename "$f")"
 done
 ```
-Expected: between 240 and 460 words per file (two halves of 110–200 words plus the two headings).
+Expected: between 240 and 460 words per file (two halves of 120–200 words plus the three headings).
 
 - [ ] **Step 4: The site builds**
 
@@ -1011,6 +1011,9 @@ The section must satisfy all six of these:
 6. **It does not repeat the FAQ.** The FAQ answers questions; this section
    gives the position. If a sentence could sit in either, it belongs here and
    the FAQ keeps the narrower question.
+7. **It does not recite the article.** A conclusion that restates the body's
+   own sentences is a summary, not a position. Keep the numbers; write the
+   mechanism fresh; add something the body does not say.
 
 Length: 120–200 words per half. Do not pad. If the article has already made
 the argument well, the conclusion is short and sharp, not a summary of the
@@ -1053,18 +1056,17 @@ It now has this section, before the FAQ:
 
 ### What not to
 
-Do not check a balance and then write the spend. The two-step version, where
-the counter is read before it is incremented, lets twenty concurrent calls
-each see a clear slot, and the agent that loses the race is the one whose
-work was funded and nobody's. The number on the dashboard stays right,
-because the counter is the counter, but the answer to "may this call
-proceed" is a race, and a race has no answer that survives contact with a
-queue. It looks like accounting and it behaves like accounting: it tells you
-what happened and it cannot tell you what to stop. An agent working a ticket
-queue issues a thousand cheap calls in an hour, and the projection at each
-call site says there is headroom, because each call costs a fraction of what
-is left. By the time the aggregate is visible, the work the operator never
-intended to fund is done.
+Do not check a balance and then write the spend. Reading the counter and
+incrementing it are two operations, and the gap between them is where the
+money goes: twenty calls that each fit the cap on their own read will all
+fit it together, and every one of them is individually correct. The counter
+stays truthful, because it is counting what it was told to count, but the
+question it was asked cannot be answered from it, because a number that has
+already been spent is evidence about the past and not a decision about the
+next call. The failure does not announce itself as an error either. The
+dashboard is green the whole time, because an overrun is not visible until
+the invoice arrives, and by then the calls that caused it are
+indistinguishable from the calls that did not.
 
 ### What to do
 
@@ -1074,19 +1076,20 @@ the *authorized* reservation with a fixed-cent tolerance. The cap then bounds
 authorized spend rather than observed spend, and the refusal message carries
 the projected total, the outstanding holds and the cost of the refused call,
 which is the difference between an operator who can tell a loop from a cap
-that is simply too low and one who cannot. The counter is the server's: the
-SDK reports usage so cost can be settled, but a caller that supplies the
-number being limited supplies its own limit, so an estimate from the agent
-leaves the budget in the agent's hands. The price is one store operation on
-the decision path, one more piece of state to reconcile when a reservation is
-never settled, and a tolerance that admits a little overage by design.
+that is simply too low and one who cannot. The counter belongs to whoever
+makes the decision, not to whoever reports the spend: a usage report settles
+a number that was authorized, while an estimate that arrives with the
+request leaves the limit inside the agent the limit is meant to bound. The
+price is one store operation on the decision path, one more piece of state
+to reconcile when a reservation is never settled, and a tolerance that
+admits a little overage by design.
 ```
 
 Read what happened. The technical content of the deleted section did not
 vanish: the single atomic read, the server-minted execution ID, the
 re-read of ownership at settlement — all three are still there, in the
 conclusion, where they are now argued for instead of advertised. The
-article ends on the argument rather than on a link.
+article closes on the argument and a FAQ rather than on a link.
 
 ## The check you run before you report back
 
@@ -1094,8 +1097,8 @@ article ends on the argument rather than on a link.
 grep -rin "nullrun" <the file>
 ```
 
-Must print nothing. Then re-read your new section against the six rules, and
-then re-read the article's "Limitations worth stating" section — if it has
-one; three of the 24 do not — and confirm your conclusion does not contradict
-it.
+Must print nothing. Then re-read your new section against the rules, and
+then re-read the article's "Limitations worth stating" section. Three of the
+24 articles do not have one; where the article states a limit somewhere else,
+confirm your conclusion does not contradict it.
 ````

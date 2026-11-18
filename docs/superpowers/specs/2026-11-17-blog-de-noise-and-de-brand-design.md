@@ -148,8 +148,8 @@ Every one of the 24 articles gains, immediately before `## FAQ`:
 
 ### What not to
 
-<The anti-pattern, named concretely. What it is, the mechanism by which
-it fails, and the number in the article that shows it failing.>
+<The anti-pattern, named concretely. What it is, the mechanism by which it
+fails, and the number in the article that shows it failing.>
 
 ### What to do
 
@@ -174,6 +174,20 @@ Rules the section has to satisfy:
    link.
 6. **It does not repeat the FAQ.** The FAQ answers questions; this
    section gives the position.
+7. **It does not recite the article.** A conclusion that restates the
+   body's own sentences is a summary, not a position. Keep the numbers;
+   write the mechanism fresh; add something the body does not say.
+
+Two further constraints bind the section, and the brief carries both
+because the workers only read the brief:
+
+- Internal links to other posts keep the `/blog/{post-id}/` form, trailing
+  slash included. A sentence that is rewritten to drop a product link keeps
+  the shape of the links it still carries.
+- The conclusion must not wave away a limit. Read the article's own
+  "Limitations worth stating" section before writing the "what to do" half.
+  Three of the 24 articles have no such section; where the article states a
+  limit somewhere else, that limit binds the conclusion too.
 
 Length: 120–200 words per half. Tone: the article's own — direct, second
 person where the article is second person, concrete, no marketing.
@@ -205,18 +219,17 @@ New tail:
 
 ### What not to
 
-Do not check a balance and then write the spend. The two-step version, where
-the counter is read before it is incremented, lets twenty concurrent calls
-each see a clear slot, and the agent that loses the race is the one whose
-work was funded and nobody's. The number on the dashboard stays right,
-because the counter is the counter, but the answer to "may this call
-proceed" is a race, and a race has no answer that survives contact with a
-queue. It looks like accounting and it behaves like accounting: it tells you
-what happened and it cannot tell you what to stop. An agent working a ticket
-queue issues a thousand cheap calls in an hour, and the projection at each
-call site says there is headroom, because each call costs a fraction of what
-is left. By the time the aggregate is visible, the work the operator never
-intended to fund is done.
+Do not check a balance and then write the spend. Reading the counter and
+incrementing it are two operations, and the gap between them is where the
+money goes: twenty calls that each fit the cap on their own read will all
+fit it together, and every one of them is individually correct. The counter
+stays truthful, because it is counting what it was told to count, but the
+question it was asked cannot be answered from it, because a number that has
+already been spent is evidence about the past and not a decision about the
+next call. The failure does not announce itself as an error either. The
+dashboard is green the whole time, because an overrun is not visible until
+the invoice arrives, and by then the calls that caused it are
+indistinguishable from the calls that did not.
 
 ### What to do
 
@@ -226,12 +239,13 @@ the *authorized* reservation with a fixed-cent tolerance. The cap then bounds
 authorized spend rather than observed spend, and the refusal message carries
 the projected total, the outstanding holds and the cost of the refused call,
 which is the difference between an operator who can tell a loop from a cap
-that is simply too low and one who cannot. The counter is the server's: the
-SDK reports usage so cost can be settled, but a caller that supplies the
-number being limited supplies its own limit, so an estimate from the agent
-leaves the budget in the agent's hands. The price is one store operation on
-the decision path, one more piece of state to reconcile when a reservation is
-never settled, and a tolerance that admits a little overage by design.
+that is simply too low and one who cannot. The counter belongs to whoever
+makes the decision, not to whoever reports the spend: a usage report settles
+a number that was authorized, while an estimate that arrives with the
+request leaves the limit inside the agent the limit is meant to bound. The
+price is one store operation on the decision path, one more piece of state
+to reconcile when a reservation is never settled, and a tolerance that
+admits a little overage by design.
 ```
 
 Note what happened: the technical content of the deleted section
