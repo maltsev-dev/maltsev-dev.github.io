@@ -251,8 +251,8 @@ admits a little overage by design.
 Note what happened: the technical content of the deleted section
 (single atomic read, server-minted execution ID, re-read ownership at
 settlement) did not vanish — it moved into the conclusion, where it is
-now argued for rather than advertised. The article ends on the argument
-instead of on a link.
+now argued for rather than advertised. The article closes on the argument
+and a FAQ rather than on a link.
 
 ---
 

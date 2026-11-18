@@ -30,7 +30,7 @@ The five failure modes this change can produce that a per-task check will not ca
 2. **A conclusion that says nothing.** The new section can be produced with correct headings and no content, or with a paragraph that restates the article's title. → Task 13 checks that every one of the 24 files has the section, once, before `## FAQ`, and that each half is 120–200 words.
 3. **A grid that no longer lines up.** Removing a grid track in CSS without removing the matching cell in the markup (or the reverse) shifts every column and breaks the monospaced alignment the whole listing depends on. → Each Phase A task's verification step greps the rendered `dist/` HTML for the count of `<span class="ls-mode">` and checks the column count of a rendered row.
 4. **A broken internal link.** Deleting the `Where this runs` section also deletes the product links at the end of it; the remaining body links must still resolve, and the CI gate is what proves it. → Task 13 runs `_audit_links_astro.py`.
-5. **A conclusion that contradicts the article.** A new "what to do" that recommends something the article argued against. → Every Phase B task ends with a self-check step that re-reads the article's own "Limitations worth stating" section and confirms the conclusion does not claim more than the article claims.
+5. **A conclusion that contradicts the article.** A new "what to do" that recommends something the article argued against. → Every Phase B worker works from the shared brief, which carries the self-check that re-reads the article's own "Limitations worth stating" section and confirms the conclusion does not claim more than the article claims.
 
 ---
 
@@ -989,7 +989,7 @@ fails, and the number in the article that shows it failing.>
 property it buys.>
 ```
 
-The section must satisfy all six of these:
+The section must satisfy all seven of these:
 
 1. **Specific to this article.** The anti-pattern is a real anti-pattern in
    this subject. "Do not skip validation" is not an anti-pattern, it is a
@@ -1097,8 +1097,8 @@ article closes on the argument and a FAQ rather than on a link.
 grep -rin "nullrun" <the file>
 ```
 
-Must print nothing. Then re-read your new section against the rules, and
-then re-read the article's "Limitations worth stating" section. Three of the
-24 articles do not have one; where the article states a limit somewhere else,
-confirm your conclusion does not contradict it.
+Must print nothing. Then re-read your new section against the seven rules,
+and then re-read the article's "Limitations worth stating" section. Three of
+the 24 articles do not have one; where the article states a limit somewhere
+else, confirm your conclusion does not contradict it.
 ````
