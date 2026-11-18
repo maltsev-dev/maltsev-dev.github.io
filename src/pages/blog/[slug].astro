@@ -93,7 +93,6 @@ const neighbors = related.length
   : [...others]
       .sort((a, b) => (b.data.date ?? '').localeCompare(a.data.date ?? ''))
       .slice(0, 3);
-const neighborLabel = related.length ? 'Related' : 'Recent writing';
 
 /**
  * A date in the shape a listing uses.
@@ -253,6 +252,10 @@ const when = (iso: string | undefined): string => {
             }
           </div>
 
+          <p class="more-lead">
+            Neighbours in time: the posts on either side of this one.
+          </p>
+
           <hr class="tty-rule" />
 
           <div class="ls ls-more">
@@ -269,10 +272,19 @@ const when = (iso: string | undefined): string => {
             }
           </div>
 
-          <p class="more-close">
-            {neighborLabel}: the posts that share this one's subject, and
-            where the thread goes next.
-          </p>
+          {
+            related.length ? (
+              <p class="more-close">
+                Related: the posts that share this one's subject, and where
+                the thread goes next.
+              </p>
+            ) : (
+              <p class="more-close">
+                Recent writing: this one shares its subject with nothing else
+                on the site, so here is the newest writing instead.
+              </p>
+            )
+          }
         </div>
       </div>
     </section>
@@ -345,6 +357,17 @@ const when = (iso: string | undefined): string => {
 
   .more-close {
     margin: 1.2rem 0 0;
+    max-width: var(--measure-prose);
+    color: var(--fort);
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+  }
+
+  /* The caption under the first listing. The second listing has its caption
+     under it, so this one needs one above it, or the first listing is an
+     unexplained block of two links. */
+  .more-lead {
+    margin: 0.7rem 0 0;
     max-width: var(--measure-prose);
     color: var(--fort);
     font-family: var(--font-body);
