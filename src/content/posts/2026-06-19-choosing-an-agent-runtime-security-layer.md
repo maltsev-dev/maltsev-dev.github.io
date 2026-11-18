@@ -303,6 +303,42 @@ unstaffed queue is a control you do not have. The
 [ladder article](/blog/2026-08-20-reducing-hitl-approval-fatigue/) covers what it
 takes to make that staffing real.
 
+## What to do, and what not to
+
+### What not to
+
+Do not decide on the feature grid. Every category claims to stop prompt
+injection, and the claims are not interchangeable: in the worked example,
+one layer of the six caught the flagged customer's three refunds while the
+other five looked at a different question, four of them asking whether the
+action is the *kind* of action that is allowed. A grid has a column for
+every feature and none for the instance question, so the comparison comes
+out even and the purchase happens without a decision. The flagged customer
+is still there afterwards, and no row in the grid mentions them. A grid
+does not fail loudly, and evenly wrong is the kind a review does not
+catch.
+
+### What to do
+
+Buy against the criteria and evaluate each candidate on its failure mode.
+The sixth category is runtime authorization, and it is the one the other
+five cannot replace: a check in its own process between the arguments and
+the effect, so the agent cannot widen its own authority by rewriting the
+caller; approvals bound to the material fields and consumed by one
+conditional update, so an approval is spent once, not carried to another
+payload; budgets reserved against a period-bound counter, the cap
+comparison in one script on the store; fields re-derived server-side, so
+nothing the agent wrote reaches the decision unexamined; rule families, a
+money-amount threshold and a condition on a named field, alterable without
+a deploy; and a refusal recorded as a decision, so the "no" leaves a trail
+like the "yes".
+
+The price is a layer somebody has to staff, and a shadow-mode run against
+your own traffic first: a zero block rate on last week's traffic says
+nothing about the layer working. The property you can check afterwards: for
+the flagged customer's three refunds, exactly one layer produces a
+decision, recorded with the fields it was derived from.
+
 ## FAQ
 
 ### Is a runtime authorization layer overkill for a small deployment?
@@ -342,20 +378,3 @@ runtime, their schemas drift without a deploy, and names collide across
 servers, so identity has to be a composite built from more than the name
 string. That argument is developed in
 [MCP tool identity](/blog/2026-09-01-mcp-tool-identity-not-tool-name/).
-
-## Where this runs
-
-NullRun is the runtime authorization layer in that list, and the category
-label implies more than the scope below:
-
-| Mechanism | How it works |
-|---|---|
-| The check | Runs in a separate process between the arguments existing and the effect happening, reading live policy and live state instead of a tool name |
-| Approval consumption | Approvals bind to the material fields of the payload and are consumed by a single conditional UPDATE guarded by status, organization, execution id, key id and digest, which is what makes the consume atomic instead of a read followed by a write |
-| Budget reservation | Budgets are reserved against a period-bound counter before the call, and the reservation and the cap comparison happen inside one script on the store |
-| Payload derivation | Provenance is not an input to the decision; the material fields are, and they are re-derived server-side, so an injected payload field is caught by recomputation instead of being trusted |
-| Approval rule families | A money-amount threshold, and a condition on a named field inside the tool's own argument bag, both configured in the policy editor without a deploy |
-
-The protocol is documented in the [API reference](https://nullrun.io/docs/api).
-The layer is one of the six discussed above, and the other five still
-apply.

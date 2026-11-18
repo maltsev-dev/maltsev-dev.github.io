@@ -242,6 +242,36 @@ And none of this bounds cost from a downstream provider that does not
 report usage you can read. The cap authorizes your agent's spending. It
 cannot stop a vendor billing you for something you did not measure.
 
+## What to do, and what not to
+
+### What not to
+
+Do not check a balance and then write the spend. The two-step version, where
+the counter is read before it is incremented, lets twenty concurrent calls
+each see a clear slot, and the agent that loses the race is the one whose
+work was funded and nobody's. The number on the dashboard stays right,
+because the counter is the counter, but the answer to "may this call
+proceed" is a race, and a race has no answer that survives contact with a
+queue. The overrun turns up in an invoice rather than in a refusal, and the
+calls that looked affordable are the ones that funded work nobody approved.
+
+### What to do
+
+Reserve the cost inside the same operation that compares it against the
+cap, bind the reservation to a server-minted execution ID, and settle
+against the *authorized* reservation with a fixed-cent tolerance. What the
+cap then bounds is spend that was authorized, not spend that has already
+happened, and the refusal carries what an operator needs to act on: the
+projected total, the holds still outstanding, and what the call would have
+cost, which is the difference between a loop and a cap set too low. The
+counter has to be the server's, because a number the caller supplies is a
+limit the caller wrote: usage is reported so a cost can be settled
+afterwards, but the balance is never the caller's to report, and an
+estimate from the agent leaves the cap in the agent's hands. The price is
+one store operation on the decision path, one more piece of state to
+reconcile when a reservation is never settled, and a tolerance that admits
+a little overage by design.
+
 ## FAQ
 
 ### Should the cap be per agent, per key, or per organization?
@@ -272,17 +302,3 @@ Then do not build the counter to look like an enforcement counter. A
 read-only projection that misses the reservation term will look correct
 in every demo and under-enforce in production, and the first time someone
 relies on it as a cap, the gap is already load-bearing.
-
-## Where this runs
-
-NullRun keeps the enforcement counter and the audit total as two separate
-numbers. The counter is read atomically with the projection of the
-post-decision total, so two concurrent requests cannot both fit. The
-reservation is bound to a server-minted execution ID in that same
-operation, and settlement re-reads the ownership binding before it
-touches the counter.
-
-That is what makes the budget a permission. It answers "may this call
-proceed" with the same atomicity that the authorization decision itself
-has, and the answer is recorded as a decision, including when it is "no".
-The [API reference](https://nullrun.io/docs/api) covers the wire shapes.

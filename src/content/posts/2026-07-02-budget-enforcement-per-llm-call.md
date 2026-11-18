@@ -57,7 +57,7 @@ A `monthly_cost` field on a row is a running total. It can drift, and
 it has no idea which month a spend belongs to, which is what makes it
 useless as an enforcement primitive.
 
-The counter NULLRUN enforces against is keyed by period:
+The counter the gate enforces against is keyed by period:
 
 ```
 bp:{period_stamp}:cost_cents
@@ -144,7 +144,7 @@ caller as different answers.
 
 Billing precision in integer cents is a rounding bug waiting to
 happen. A model call that costs $0.0004 rounds to zero, and a thousand
-of them round to a hundred thousand. NULLRUN carries the counter in
+of them round to a hundred thousand. The gate carries the counter in
 **millicents** and treats the cent as a display unit.
 
 The budget cap is derived at millicents precision too, so the ceiling
@@ -153,24 +153,37 @@ millicents-scaled cap against a cents-scaled counter is an
 off-by-1000x in one direction or the other, depending on which side you
 got wrong.
 
-## What this looks like in an SDK
+## What this looks like on the wire
 
 The reservation is invisible to the agent. The agent calls a tool; the
 gate answers before the call happens.
 
-```python
-from nullrun import NullRun
+```http
+POST /budget/reserve HTTP/1.1
+Host: gate.internal
+Content-Type: application/json
+Authorization: Bearer $GATE_TOKEN
 
-gate = NullRun(api_key="...", workflow="support-agent")
-
-@gate.enforce
-def search_orders(query: str):
-    ...
+{
+  "workflow": "support-agent",
+  "tool": "search_orders",
+  "cost_millicents": 4200
+}
 ```
 
-The decorator is the enforcement point. An unenforced call path is the
-most common way a budget layer silently becomes advisory, so it is
-worth auditing for explicitly. See the
+```json
+{"decision": "allow", "execution_id": "9f31c0a4"}
+```
+
+Neither the period nor the execution id comes from the client: the server
+computes the period once per execution and mints the id, because a client
+that could pick its own month boundary would pick one with more room in
+it.
+
+The client wrapper that makes this request is the enforcement point, and
+the agent never sees it. An unenforced call path is the most common way a
+budget layer silently becomes advisory, so it is worth auditing for
+explicitly. See the
 [audit trail](/blog/2026-09-25-audit-trail-for-ai-agent-tool-calls/) post for how
 to prove which calls actually passed through the gate.
 
@@ -187,6 +200,42 @@ checks go first:
 If you put the budget check first, every request pays for a Redis
 round trip even the ones that were going to be blocked by policy
 anyway.
+
+## What to do, and what not to
+
+### What not to
+
+Do not let the period be anybody's choice but the server's. The month
+boundary is the one number a caller can move, and moving it leaves no
+trace: the same call, booked against the month with the most room in it,
+is a call the cap does not have to refuse. Resolve it twice, once when the
+cost is reserved and once when it is settled, and one call gets two months,
+which is how a single request spends the headroom of two budgets at once;
+the counter the refusal was based on and the ledger that recorded the
+spend are then counting different months. Neither mistake is a wrong
+total, which is what makes them cheap to leave in.
+
+### What to do
+
+Compute the period once per execution on the server and pass it into the
+script with the reserve, so one request cannot be measured against one
+month and paid out of another. Keep the enforced counter and the reported
+total apart: the period-bound counter is what a refusal is based on, the
+ledger total is what it accumulates. Settle against the
+*authorized* reservation with a fixed-cent tolerance and reject a
+settlement that overruns it, rather than quietly reserving the difference,
+which charges the cap a second time. And say what the refusal means: the
+projected total, the holds still outstanding and what the call would have
+cost, which tells an operator a loop from a cap set too low.
+
+The price: the server owns the clock, so a skewed worker clock cannot
+invent a second period; the period travels with the reservation, so the
+script is handed its key rather than deriving one; a refused settlement
+holds the envelope until the TTL releases it, withholding headroom other
+calls could use.
+
+The property is checkable: every call is accounted to exactly one period,
+and the counter it was checked against is the one it is charged to.
 
 ## FAQ
 
@@ -211,24 +260,3 @@ errors is advisory in exactly the way a dashboard is advisory. If
 availability matters more than spend certainty, that is a legitimate
 product decision, but it has to be made explicitly rather than inherited
 from an error handler.
-
-## Where this runs
-
-NullRun keeps the period counter and the audit total as separate numbers
-and enforces against the counter. The reported total is what the ledger
-accumulates. The enforced number is what the period-bound counter
-holds, and that is the one a refusal is based on. Conflating them is
-what produces a dashboard that reads comfortably right up to the moment
-the cap is breached by a call that was never measured against it.
-
-The reservation happens before the call and the settlement after it,
-and the amount settled is compared against the amount reserved with a
-one-cent fixed tolerance. That is a refusal rather than a silent second
-reserve. Infrastructure errors on that path are refusals with their own
-codes, so "we could not reach the counter" and "the counter said no"
-reach the caller as two different answers.
-
-The period comes from the server, computed once per execution and passed
-into the script alongside the reserve, so a call cannot straddle a
-boundary and be accounted to two different periods. The [integration
-docs](https://nullrun.io/docs) cover the SDK path.

@@ -187,6 +187,41 @@ it means the writer's clock is now part of the correctness argument,
 and two application instances with skewed clocks produce two different
 periods for the same key.
 
+## What to do, and what not to
+
+### What not to
+
+Do not check who owns the spend only at reservation time. The two ownership
+fields on the reservation record exist for the other end of the call: the
+settle path has to compare them, in the same script that adjusts the
+counter, before it moves a cent. Skip that comparison and the record of
+who the call belonged to is written once and never read again, so an
+approval handed to one key can be cashed against another, and the hash
+holding the answer expires on a timer and takes the answer with it. The
+reserve path is unaffected by any of this: it still passes every test it
+has.
+
+### What to do
+
+Keep the decision, the comparison and the write in one script on the
+primary: read the counter, decide, write the counter, with no interleaving
+point. Mint the execution identity server-side and pass it in, so the
+reservation records whose call it is when it is written, not when it is
+settled, and let settlement read the ownership fields back and compare
+them in the script that moves the money. The TTL and the ownership
+comparison answer different questions: the TTL catches the call that died
+holding money, the comparison catches the approval presented by somebody
+other than its owner.
+
+The price is a script on the decision path where the broken version took a
+read and a write: two keys to keep alive instead of one, an idempotency
+key on every retry, the ownership fields and a TTL to reconcile, and the
+script's own latency in the request path. The property is checkable: no
+script run interleaves between the cap comparison and the increment, so
+the twenty concurrent calls that all saw 100 units available cannot all be
+allowed, and a settlement naming a different owner is refused with the
+counter untouched.
+
 ## FAQ
 
 ### Do we even need Lua, or is a Redis lock enough?
@@ -208,24 +243,3 @@ the network.
 It is the reason the script is the unit of atomicity. A read replica
 cannot give you a consistent check-and-set, so budget operations have
 to run on the primary.
-
-## Where this runs
-
-NullRun does the reservation, the cap comparison and the ownership
-binding in one script on the primary. Read the counter, decide, write
-the counter: three operations with no interleaving point, because the
-script is where interleaving would happen. The two that most often leak
-money in a hand-rolled version are the check-then-act pair and the
-reserve-then-consume pair, and this shape removes both by construction
-instead of by discipline.
-
-The same script mints nothing. The execution identity is generated
-server-side beforehand and passed in, so the reservation records whose
-call it is at the moment it is written rather than at the moment it is
-settled. That is what lets the settle path re-check ownership atomically
-against a value that was captured under the same script run as the
-reserve.
-
-The scripts are loaded with `redis.call` semantics and no callbacks, so a
-slow invocation is bounded by the data store and nothing else. The wire
-shapes are in the [API reference](https://nullrun.io/docs/api).
