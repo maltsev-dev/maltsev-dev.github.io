@@ -271,36 +271,36 @@ with a very short demo.
 
 ### What not to
 
-Do not put the interrupt somewhere a process can reach it. Framework
-cancellation reaches the coroutine on the process that received it;
-killing the container reaches one process, and the durable queue hands
-the job to somebody else; SIGTERM with a grace period lets the current
-task finish, which is the dangerous one because it looks like it
-worked; a feature flag read at startup comes back unchanged after a
-deploy or a crash. Four mechanisms, four different failures, and all of
-them scoped to a process when the thing being stopped is a workflow
-that spans many processes, survives restarts, and waits on a person in
-the middle. A ticket somebody processes next Tuesday is the same
-mistake with a slower clock.
+None of the four ways teams usually reach in names a workflow. Cancel
+the coroutine, kill the container, send SIGTERM, read a flag at
+startup: each names a coroutine, a process, a task or a run, while the
+thing being stopped is a sequence of steps that crosses process
+boundaries and can sit on a person's approval for hours, so the control
+and the harm are aimed at different sets. The operator gets one button
+and two possible outcomes, the work stopped or the work moved, and
+nothing in the meantime says which happened: the run that stopped and
+the run that was collateral look the same from outside. A control whose
+blast radius is decided by the scheduler rather than by the operator
+cannot be aimed, and a control that cannot be aimed is not an
+interrupt.
 
 ### What to do
 
-Make operator control a fact in durable state, written by a human
-through a surface that authorizes that human, and read at the gate
-decision — the one moment every correct architecture already has.
-Three states, normal, paused and killed, each a value replaced by
-another value, so a stopped workflow reads as stopped and the record of
-what it did survives the stop; a missing row resolves to the stopped
-state rather than to carry on. The agent holds no credential the store
-accepts for a write, so it can read the state and ask, and cannot widen
-its own scope. A kill has to reach the queue too: read the state before
-dequeueing, or the queue hands the killed job to the next worker. The
-cost is that the queue has to participate, which is integration work
-in a system you may not own, and until it lands "kill" means "stop at
-the next gate decision". The property you can check afterwards: a pause
-written on one pod holds a tool call issued from another, a worker
-which restarts comes back to find the workflow still paused, and the
-record of the workflow survives the stop.
+Put the control in a store the workers share and read it where a call
+is about to be made. Three values, normal, paused and killed, each one
+overwriting the last rather than erasing it. Treat an unreadable row
+as a stop: one failure costs a restart, the other the workflow's work.
+Put the write path on credentials the agent process does not hold, and
+authorize the operator who holds one, so the agent can request the
+control but never set it. Make the queue read the state before it hands
+out the job; otherwise the kill and the delivery race, and the delivery
+wins by default. Bind the authority to one execution and let it lapse
+on its own, and give an approval its own expiry, so the window closes
+without anyone awake to close it. The price is a queue that has to take
+part, integration work in a system you may not own; until it does, a
+kill lands on the next gate decision. Because the state is shared, a
+kill means kill on every pod at once, and because it is a value rather
+than a deletion, what the workflow did stays answerable afterwards.
 
 ## FAQ
 

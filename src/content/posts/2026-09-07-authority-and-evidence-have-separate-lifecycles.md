@@ -196,32 +196,35 @@ than a policy that is right and slowly goes stale.
 
 ### What not to
 
-Do not decide once, at grant time, and let the answer stand. The refund
-permission says five hundred dollars; the policy is edited down to two
-hundred; the agent is not told, because nothing told it. It issues a
-four-hundred-dollar refund, and nothing about its behavior was wrong
-against the permission set it held. The gap is not the agent's judgment
-but the age of the facts underneath the grant, and of the five things
-that move under a standing permission, four move routinely: policy
-hash, account state, exception window, budget headroom. A system that
-reads them at grant time is stale within minutes, and the audit trail
-it eventually leaves behind attests to a policy that has since moved.
+Do not collapse the five facts under a standing permission into a
+single expiry. Four of them move without anybody deciding to move
+them, and they do not move together: one is consumed under a concurrent
+workflow, one changes when a customer is flagged, one runs out on a
+timer, and one is taken by whichever workflow reaches it first. The
+fifth moves only when a person edits a policy. A time-to-live has to
+be tuned to the fastest of them or to the slowest. Tuned to the
+fastest, it expires the grant so often that nobody can work under it.
+Tuned to the slowest, it leaves the other four stale for the whole of
+its life while looking, in the schema, like a control. A TTL is
+visible and a missing re-read is not, which is exactly why a design
+with one of them can be mistaken for a design with both.
 
 ### What to do
 
-Evaluate the evidence when the action runs, reading it from the systems
-that currently hold truth, and record the hash of the rule text that
-produced the decision, so "which policy was in force" stays answerable
-from the audit long after the policy itself has moved. Let the grant
-expire on its own clock as well: a per-rule TTL of five minutes closes
-the window in which stale evidence can still be acted on, and an
-execution binding that expires after 24 hours means a stale grant goes
-stale on two independent grounds. The cost is live reads on the hot
-path, which means dependencies, and a store that cannot be reached has
-to fail closed or the leak arrives through the permissive fallback
-somebody will otherwise add. What it buys is that the answer to "may
-this call proceed" is computed now rather than inherited, and it names
-the rule text that produced it.
+Re-derive the decision at the moment the action runs rather than at
+the moment the grant was issued, and write down which rule text
+produced the answer so a reader months later can tell a legitimate
+decision from a lucky one. Let the grant expire on its own clock as
+well: a TTL on the grant short enough for your risk tolerance, five
+minutes being a workable default, puts a five-minute ceiling on how
+long an answer derived from stale evidence can still be acted on, and a
+binding of that grant to one execution that lapses within a day means
+a stale grant goes stale on two independent grounds. The cost is live
+reads on the hot path, which means dependencies, and a store that
+cannot be reached has to fail closed or the leak arrives through the
+permissive fallback somebody will otherwise add. The answer to "may
+this call proceed" is then computed rather than inherited, and it
+carries the rule text it was computed against.
 
 ## FAQ
 

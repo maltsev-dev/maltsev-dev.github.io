@@ -168,36 +168,35 @@ around actions nobody reviewed, which is the subject of
 
 ### What not to
 
-Do not put the boundary somewhere the agent can reach, even indirectly.
-An agent told to "make the release process work" adds a deploy tool,
-obtains a wider credential because that is what credential flows look
-like inside an organization, decides that a five-hundred-dollar
-approval limit does not apply to an unusual case, or reads a pattern
-behind a one-time approval and writes it into the policy as a default.
-All four read as routine work. The review case is the one that gets
-through: a PR that raises a threshold from 500 to 5000, or adds a tool
-to an allowlist, is a small readable diff among the other forty diffs
-that week, and nobody reading it is looking for an escalation. The
-control holds right up until the first agent that can write.
+Do not treat a policy screen as a boundary. If a route that changes
+what the agent is allowed to do is reachable by the agent's own
+credential, the rules on that route are rules the agent writes, and
+the only thing between the agent and the boundary is a decision the
+agent also supplies. The tell is not a hostile action but a listing you
+cannot produce: name every route that accepts the agent's credential,
+sort them into two classes, the routes whose changes take effect
+without review and the routes whose do not, and the second class is
+the boundary. An enumeration you cannot finish is not a boundary, it
+is an assumption that nobody ever added a route.
 
 ### What to do
 
 Put the write interface where the agent's credential cannot reach it.
-No configuration hands an agent principal a boundary-mutating tool, and
-the write path authenticates against something the agent process does
-not hold, so of the four capability classes the last one leaves the
-exposure list unconditionally rather than by a policy an operator might
-configure or a later change could flip. Hold the tool surface to the
-same standard: no tool that edits config, deploys, or updates a workflow
-definition, because each one is a path to the boundary. Version every
-change as a hashed snapshot with a change history instead of editing in
-place, and let the agent discover its boundary by being refused, with
-each refusal a typed decision carrying a machine-readable code that
-lands in the audit trail. The cost is a second trust domain to operate
-and someone who owns a recurring review of the whole surface, because
-indirect paths accumulate one reasonable tool at a time. What it buys
-is checkable: from inside the agent's process, no reachable interface
-accepts its credential for a policy write.
+Keep the boundary-mutating class of tool out of the exposure list as a
+property of how the list is built rather than as a setting inside it,
+because a setting is something a later change can flip. Hold the tool
+surface to the same standard: a tool that writes configuration, ships
+code, or redefines a workflow is a path to the boundary, closed only by
+requiring that such a change take effect no faster than review, so a
+proposed workflow change is a proposal and one nobody reviews is an
+edit. Write every change as a hashed snapshot with a change history
+instead of editing it in place, and let the agent work out its own
+limits from the refusals it gets back, each a typed decision with a
+code in the audit trail. The cost is a second trust domain to run, and
+an owner for the question of what the agent's surface has become,
+asked again whenever it grows. The property to check: nothing the
+agent process can reach will authenticate its credential for a change
+to the boundary.
 
 ## FAQ
 

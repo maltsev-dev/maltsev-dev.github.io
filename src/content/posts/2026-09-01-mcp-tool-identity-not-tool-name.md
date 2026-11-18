@@ -280,34 +280,35 @@ leaving the expensive part open.
 
 ### What not to
 
-Do not put a tool name on a trust list and read a match as proof that the
-reviewed tool is the running tool. Names are labels: two servers in one
-agent's list both expose `delete_user`, the runtime resolves on the
-name, and the agent's transcript says it deleted a user while a derived
-analytics row disappeared instead. The same bug arrives without a
-collision. `transfer` gains an optional `destination_account` field,
-the signature still validates against its schema, the trust list still
-holds the old identity, and a rule written for a five-thousand-dollar
-transfer now covers a transfer to an account the operator never agreed
-to. Nothing errors. The review happened, and the thing that was
-approved is no longer the thing that runs.
+Do not key the trust list by tool name. When two servers expose the
+same name, a name-keyed list holds one line for it, and that line
+stands for whichever of the two the resolver reaches for. The length
+of the list then stops being a count of the tools it authorizes, and
+the two numbers part company the moment a second server registers:
+one line, two possible tools, and the artifact under review says
+nothing about which. A list whose length does not equal its reach
+cannot be reviewed by a person, because every line covers more ground
+than it appears to, and a reviewer who cannot see that will approve a
+grant twice over without noticing they have done it.
 
 ### What to do
 
-Bind the decision to an identity the server minted: the registered
-server plus the tool name, which makes two servers offering the same
-name two keys instead of one ambiguous match, and a lookup that returns
-two matches refuses rather than picking one. Keep a digest of the
+Fix the identity at registration and make it the registered server plus
+the tool name, which turns two servers offering the same name into two
+keys rather than one ambiguous match, and a lookup that returns two
+matches refuses rather than picking one. Keep a digest of the
 canonicalized definition beside that key, and store the digest a human
-accepted next to the one computed now. A tool the catalog has not seen
-arrives as needing a decision, a drifted tool stops until someone
-accepts the new definition, and a rename misses the existing key and so
-inherits no approval granted for a different label. The cost is a
-registration step and a sweep, and a description-only edit still stops
-a tool that did not change what it does; reading the catalog once per
-sweep rather than once per call keeps the lookup off the hot path. What
-it buys is provenance: every callable tool holds a human-accepted
-definition, and a definition that changes stops the tool.
+accepted next to the one computed now. A tool the trust list has not
+seen arrives as needing a decision, a drifted tool stops until someone
+accepts the new definition, and a rename misses the existing key
+altogether, so the new name arrives as a tool nobody has looked at. The
+cost is a registration step and a drift check on a heartbeat, and the
+check is blunt enough that editing a tool's prose is enough to suspend
+it. Reading the trust list once per drift check rather than once per
+call keeps the lookup off the hot path. Every callable tool then holds
+a human-accepted definition, a definition that changes stops the
+tool, and each line of the list names the server as well as the tool,
+so its length is its reach.
 
 ## FAQ
 
