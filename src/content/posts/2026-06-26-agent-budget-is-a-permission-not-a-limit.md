@@ -146,7 +146,7 @@ every double-counted stream chunk, every provider whose usage field moved
 between versions, and every honest mistake in an estimate. A caller that
 supplies the number being limited supplies its own limit.
 
-So the counter is derived where the decision is made. The SDK reports
+So the counter is derived where the decision is made. The client reports
 usage so cost can be *settled*; it does not report the balance. If a
 provider's streaming response puts usage only in the final chunk, the
 fix is a buffer that waits for that chunk. An estimate supplied by the
@@ -199,7 +199,7 @@ with no idea of its own error floor is not a measurement.
 
 ## One more property: who owns the clock
 
-If the period boundary is computed from a timestamp the SDK reports, then
+If the period boundary is computed from a timestamp the client reports, then
 two pods with skewed clocks invent two different periods for the same
 counter, and a user with a fast clock gets a fresh budget every hour.
 
@@ -246,31 +246,36 @@ cannot stop a vendor billing you for something you did not measure.
 
 ### What not to
 
-Do not check a balance and then write the spend. The two-step version, where
-the counter is read before it is incremented, lets twenty concurrent calls
-each see a clear slot, and the agent that loses the race is the one whose
-work was funded and nobody's. The number on the dashboard stays right,
-because the counter is the counter, but the answer to "may this call
-proceed" is a race, and a race has no answer that survives contact with a
-queue. The overrun turns up in an invoice rather than in a refusal, and the
-calls that looked affordable are the ones that funded work nobody approved.
+Do not check a balance and then write the spend. Reading the counter and
+incrementing it are two operations, and every caller that arrives between
+them sees a clear slot: twenty concurrent calls that each fit the cap on
+their own read all fit it together, and every one of them is individually
+correct. The agent that loses the race is the one whose work was funded
+and nobody's. The number on the dashboard stays right, because the counter
+is the counter, but the answer to whether the call may proceed is decided
+by a race, and a race has no answer that survives contact with a queue.
+The overrun turns up in an invoice rather than in a refusal, and the calls
+that looked affordable are the ones that paid for work nobody approved.
 
 ### What to do
 
-Reserve the cost inside the same operation that compares it against the
-cap, bind the reservation to a server-minted execution ID, and settle
-against the *authorized* reservation with a fixed-cent tolerance. What the
-cap then bounds is spend that was authorized, not spend that has already
-happened, and the refusal carries what an operator needs to act on: the
-projected total, the holds still outstanding, and what the call would have
-cost, which is the difference between a loop and a cap set too low. The
-counter has to be the server's, because a number the caller supplies is a
-limit the caller wrote: usage is reported so a cost can be settled
-afterwards, but the balance is never the caller's to report, and an
-estimate from the agent leaves the cap in the agent's hands. The price is
-one store operation on the decision path, one more piece of state to
-reconcile when a reservation is never settled, and a tolerance that admits
-a little overage by design.
+Make the budget a permission. Take the cost out of the period's budget in
+the same operation that compares it against the cap, and tie the hold to
+an execution identity the server mints, so two callers racing for the last
+slot cannot both fit and the reservation names its call. Settle against
+what was authorized, absorbing estimation error inside a fixed number of
+cents, and write any excess as a visible event rather than quietly taking
+it twice. Let the server own the deciding number: a client may report what
+a call cost or estimate what it will cost, but the balance the cap is
+measured against is not the client's to keep. Make the refusal say enough
+to act on: what the period would come to, what is still held, what this
+call adds.
+
+The price is one store operation on the decision path, one more piece of
+state to reconcile when a hold is never settled, and a tolerance that
+admits a little overage by design. The property is checkable: the cap
+bounds spend that was authorized rather than spend that has already
+happened, and the decision carries the atomicity the answer needs.
 
 ## FAQ
 

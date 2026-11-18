@@ -156,11 +156,11 @@ got wrong.
 ## What this looks like on the wire
 
 The reservation is invisible to the agent. The agent calls a tool; the
-gate answers before the call happens.
+gate answers before the call happens. What the client-side wrapper sends
+is a request in this shape:
 
 ```http
 POST /budget/reserve HTTP/1.1
-Host: gate.internal
 Content-Type: application/json
 Authorization: Bearer $GATE_TOKEN
 
@@ -175,10 +175,9 @@ Authorization: Bearer $GATE_TOKEN
 {"decision": "allow", "execution_id": "9f31c0a4"}
 ```
 
-Neither the period nor the execution id comes from the client: the server
-computes the period once per execution and mints the id, because a client
-that could pick its own month boundary would pick one with more room in
-it.
+Neither the period nor the execution id comes from the client. The server
+resolves the period and mints the id, so what the client sends is a
+description of the call and not a claim about where it will be charged.
 
 The client wrapper that makes this request is the enforcement point, and
 the agent never sees it. An unenforced call path is the most common way a
@@ -205,34 +204,37 @@ anyway.
 
 ### What not to
 
-Do not let the period be anybody's choice but the server's. The month
-boundary is the one number a caller can move, and moving it leaves no
-trace: the same call, booked against the month with the most room in it,
-is a call the cap does not have to refuse. Resolve it twice, once when the
-cost is reserved and once when it is settled, and one call gets two months,
-which is how a single request spends the headroom of two budgets at once;
-the counter the refusal was based on and the ledger that recorded the
-spend are then counting different months. Neither mistake is a wrong
-total, which is what makes them cheap to leave in.
+Do not let the period be anybody's choice but the server's, and do not
+enforce against a running total. A month boundary is the one number in
+the path a caller can move, and it moves without leaving a trace, so the
+same call booked against the roomier month is a call the cap never has to
+refuse. Resolve the period at two moments instead of one and a single
+call lands in two months, spending the headroom of both, and the counter
+the refusal rested on and the ledger that recorded the spend are then
+counting different months. Mixing up the enforced counter and the audit
+total is what produces a dashboard that keeps reading right until a call
+that was never measured against the cap goes through. Neither mistake is a
+wrong total, which is what makes them cheap to leave in.
 
 ### What to do
 
-Compute the period once per execution on the server and pass it into the
-script with the reserve, so one request cannot be measured against one
-month and paid out of another. Keep the enforced counter and the reported
-total apart: the period-bound counter is what a refusal is based on, the
-ledger total is what it accumulates. Settle against the
-*authorized* reservation with a fixed-cent tolerance and reject a
-settlement that overruns it, rather than quietly reserving the difference,
-which charges the cap a second time. And say what the refusal means: the
-projected total, the holds still outstanding and what the call would have
-cost, which tells an operator a loop from a cap set too low.
+Let the server resolve the period once and hand it to the script with the
+reserve, so a request cannot be measured against one month and paid out of
+another. Keep the enforced counter and the audit total apart, and resolve
+both to the same period before either is quoted: the period-bound counter
+is what the refusal is computed from, the Postgres total is what the
+ledger accumulates.
 
-The price: the server owns the clock, so a skewed worker clock cannot
-invent a second period; the period travels with the reservation, so the
-script is handed its key rather than deriving one; a refused settlement
-holds the envelope until the TTL releases it, withholding headroom other
-calls could use.
+Refuse a settlement that lands over what it reserved rather than covering
+it, and keep the tolerance an absolute number of cents: scaled up, a share
+of the reservation has no ceiling. Refusing the overrun leaves the
+operator's decision intact: the difference is never charged twice.
+
+The price: the server owns the clock, so a skewed worker cannot invent a
+second period; the period travels with the reservation, so the script is
+handed its key rather than deriving one; a refused settlement holds the
+envelope until the TTL fires, so headroom stays unavailable longer than a
+settled one.
 
 The property is checkable: every call is accounted to exactly one period,
 and the counter it was checked against is the one it is charged to.

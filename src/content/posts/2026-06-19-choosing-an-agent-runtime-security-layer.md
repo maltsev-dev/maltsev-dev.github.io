@@ -63,14 +63,14 @@ Every layer below is evaluated against this action itself.
    │
    ▼
 ┌──┴──────────────────────────────────────────────────────────┐
-│ 5  runtime authorization                                    │
-│ this instance, on live state                                │
+│ 5  tracing                                                  │
+│ records the call either way                                 │
 └──┬──────────────────────────────────────────────────────────┘
    │
    ▼
 ┌──┴──────────────────────────────────────────────────────────┐
-│ 6  tracing                                                  │
-│ records the call either way                                 │
+│ 6  runtime authorization                                    │
+│ this instance, on live state                                │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -307,37 +307,38 @@ takes to make that staffing real.
 
 ### What not to
 
-Do not decide on the feature grid. Every category claims to stop prompt
-injection, and the claims are not interchangeable: in the worked example,
-one layer of the six caught the flagged customer's three refunds while the
-other five looked at a different question, four of them asking whether the
-action is the *kind* of action that is allowed. A grid has a column for
-every feature and none for the instance question, so the comparison comes
-out even and the purchase happens without a decision. The flagged customer
-is still there afterwards, and no row in the grid mentions them. A grid
-does not fail loudly, and evenly wrong is the kind a review does not
-catch.
+Do not decide on the feature grid. All six categories advertise the same
+protection, and a grid gives every one of them a column. What it cannot
+give them is a column for the question that separates them: whether the
+one call in front of the gate is allowed to happen. The rows therefore come
+out level, and the ranking the reader ends up with is one nobody derived
+from anything. Three refunds for one flagged customer are what the
+question is worth: one of the six answers it, the other five answer
+questions nobody asked about that customer, and no row in the grid records
+the difference. A grid cannot fail loudly, because nothing in it claims to
+have been run. It fails evenly, and the purchase happens without a
+decision.
 
 ### What to do
 
-Buy against the criteria and evaluate each candidate on its failure mode.
-The sixth category is runtime authorization, and it is the one the other
-five cannot replace: a check in its own process between the arguments and
-the effect, so the agent cannot widen its own authority by rewriting the
-caller; approvals bound to the material fields and consumed by one
-conditional update, so an approval is spent once, not carried to another
-payload; budgets reserved against a period-bound counter, the cap
-comparison in one script on the store; fields re-derived server-side, so
-nothing the agent wrote reaches the decision unexamined; rule families, a
-money-amount threshold and a condition on a named field, alterable without
-a deploy; and a refusal recorded as a decision, so the "no" leaves a trail
+Require the instance answer, not the feature answer. The sixth category is
+runtime authorization, the one the other five cannot replace: a decision
+taken in a process the agent cannot reach, so it cannot widen its own
+authority; approvals bound to the material fields, consumed by one
+conditional update, so one is spent once; budgets reserved against a
+period-bound counter, the cap comparison in one script; fields re-derived
+server-side, so nothing the agent wrote is trusted; rule families, a
+money-amount threshold and a condition on a named field, changed without a
+deploy; and a refusal recorded as a decision, so the "no" leaves a trail
 like the "yes".
 
-The price is a layer somebody has to staff, and a shadow-mode run against
-your own traffic first: a zero block rate on last week's traffic says
-nothing about the layer working. The property you can check afterwards: for
-the flagged customer's three refunds, exactly one layer produces a
-decision, recorded with the fields it was derived from.
+The price is a layer somebody has to staff, plus a shadow-mode run against
+your own traffic: a quiet result there means the layer has not fired on
+anything in it, not that it works. The checkable property: of the flagged
+customer's three refunds, exactly one layer produces a decision, recorded
+with the fields it came from. Not every deployment needs the sixth
+category: one agent and a handful of tools may be enough, until a rule has
+to look at one call.
 
 ## FAQ
 

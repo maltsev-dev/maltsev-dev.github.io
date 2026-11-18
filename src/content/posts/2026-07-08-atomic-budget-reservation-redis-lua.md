@@ -122,7 +122,7 @@ The ordering is not a style choice. A crash lands wherever the process
 dies, and each landing spot has a different amount of money stuck in it:
 
 ```
-   SDK / agent                              Redis (primary)
+client / agent                              Redis (primary)
        │                                  │
        │ reserve(ARGV[1..5]) ────────────►│
        │                                  │  GET   bp:{period}:cost_cents
@@ -194,31 +194,38 @@ periods for the same key.
 Do not check who owns the spend only at reservation time. The two ownership
 fields on the reservation record exist for the other end of the call: the
 settle path has to compare them, in the same script that adjusts the
-counter, before it moves a cent. Skip that comparison and the record of
-who the call belonged to is written once and never read again, so an
-approval handed to one key can be cashed against another, and the hash
-holding the answer expires on a timer and takes the answer with it. The
-reserve path is unaffected by any of this: it still passes every test it
-has.
+counter, before it moves a cent. Skip it and the record of who the call
+belonged to is written once and never read again, so an approval granted
+to one key can be redeemed against another, and the hash holding the answer
+expires on a timer and takes the answer with it.
+
+A hand-rolled version leaks money in one of two pairs. The check-then-act
+pair reads the counter and acts on the value it read, so twenty calls that
+each saw the same 100 units of headroom all fit inside the cap. The
+reserve-then-consume pair takes the money at one end and spends it at
+another, so the two ends can disagree about whether a call was ever paid
+for. Both disappear when the whole decision runs as one script, rather than
+being held together by discipline at either end. The reserve path is
+unaffected: it still passes every test it has.
 
 ### What to do
 
-Keep the decision, the comparison and the write in one script on the
-primary: read the counter, decide, write the counter, with no interleaving
-point. Mint the execution identity server-side and pass it in, so the
-reservation records whose call it is when it is written, not when it is
-settled, and let settlement read the ownership fields back and compare
-them in the script that moves the money. The TTL and the ownership
-comparison answer different questions: the TTL catches the call that died
-holding money, the comparison catches the approval presented by somebody
-other than its owner.
+Keep the decision, the comparison and the write inside a single script
+against the primary, so nothing can run between the counter read and the
+increment. Mint the execution identity server-side and pass it in, so the
+reservation carries the identity of its call from the moment it is
+written, not when it is settled, and let the settle path read the ownership
+fields back inside the script that moves the money. The TTL and the
+ownership comparison answer different questions: the TTL catches the call
+that died holding money, the comparison catches the approval presented by
+somebody other than its owner.
 
-The price is a script on the decision path where the broken version took a
+The price is a script in the request path where the broken version took a
 read and a write: two keys to keep alive instead of one, an idempotency
 key on every retry, the ownership fields and a TTL to reconcile, and the
 script's own latency in the request path. The property is checkable: no
 script run interleaves between the cap comparison and the increment, so
-the twenty concurrent calls that all saw 100 units available cannot all be
+the twenty concurrent callers that each read 100 units cannot all be
 allowed, and a settlement naming a different owner is refused with the
 counter untouched.
 
