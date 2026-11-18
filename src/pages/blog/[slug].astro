@@ -118,15 +118,15 @@ const when = (iso: string | undefined): string => {
   schema={schema}
 >
   <!--
-    The post, as a file being read.
+    The post, in a frame.
 
     It used to be a title on a page and a column of prose under it. The
-    column is still there — the writing is the writing — and the page still
-    says what it is doing: a file in a directory, opened and read, with the
-    output in the frame. The command that opened it used to be printed on
-    the line above the output, and it was noise: it said what the reader
-    was already looking at, in a language the page is not written in. The
-    frame stays; the imitation of a shell does not.
+    column is still there — the writing is the writing — and the frame is
+    still around it, because the frame is the site's way of saying "this is
+    a document". The command that opened the file used to be printed on the
+    line above the output, and it was noise: it said what the reader was
+    already looking at, in a language the page is not written in. The frame
+    stays; the imitation of a shell does not.
   -->
   <article class="post-page">
     <header class="post-head">
@@ -322,7 +322,7 @@ const when = (iso: string | undefined): string => {
 
   /* ----- The close of the article -----------------------------------------
      The neighbours are a listing, so they are a listing: one window, one
-     command, one header row.
+     header row.
      ---------------------------------------------------------------------- */
   .tty-more .tty-body {
     padding-block: 1.9rem 1.4rem;

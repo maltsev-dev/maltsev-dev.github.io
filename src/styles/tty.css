@@ -506,7 +506,8 @@
 }
 
 /* The rule between two blocks of a window's output: the line a terminal
-   prints when a command is piped into another one. */
+   prints when a command is piped into another one, and the separator
+   between two listings that need no command between them. */
 .tty-rule {
   height: 0;
   margin: 1.4rem 0;
