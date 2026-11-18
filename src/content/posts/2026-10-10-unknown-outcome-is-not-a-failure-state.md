@@ -217,16 +217,16 @@ avoid.
 
 ### What not to
 
-Do not collapse the unknown into one of the confirmed answers. A retried
-call has four outcomes, and `attempted_unknown` is the one with no
-confirmation behind it. Treat it as success and the action is silently
-lost, with no refund, no record update and no alarm anywhere; treat it as
-failure and the action happens twice, which is a double charge or a second
-email to a customer. Both guesses are locally reasonable, which is
-exactly why they survive review. The other version is leaving the
-behavior undefined and inheriting it from whichever retry helper the
-framework shipped, so nobody ever wrote down which of the two failures
-the system is willing to risk.
+Do not pick an answer for an outcome nobody observed. A retried call has
+four outcomes, and `attempted_unknown` is the one with no confirmation
+behind it. Treat it as success and the action is silently lost, with no
+refund, no record update and no alarm anywhere; treat it as failure and
+the action happens twice, the settlement charged twice against one
+authorized amount, or a second email to a customer. Each guess looks
+reasonable from the call site, which is why neither of them gets argued
+about in review. The other version is leaving the behavior undefined and
+inheriting it from whichever retry helper the framework shipped, so nobody
+ever wrote down which of the two failures the system is willing to risk.
 
 ### What to do
 
@@ -244,9 +244,9 @@ write down per operation which of duplicates or omissions you are
 choosing. The price is a state every layer above the call now carries,
 one cent of allowed drift, thirty days of retained dead letters, and an
 escalation path with a human at the end of it, because a workflow that
-cannot resolve an unknown stops. What it buys is checkable: a second
-attempt against an unresolved prior attempt is refused, not executed, and
-a repeated settlement charges once.
+cannot resolve an unknown stops. The result you can check: a second
+attempt against an unresolved prior attempt is refused rather than
+executed, and a repeated settlement charges once.
 
 ## FAQ
 

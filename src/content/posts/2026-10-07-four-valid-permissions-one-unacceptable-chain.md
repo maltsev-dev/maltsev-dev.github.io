@@ -196,28 +196,29 @@ four of them together move fourteen gigabytes of customer records out of
 the building. The per-action check is not merely too coarse here: it is
 looking at a different question. It asks whether each tool call was
 allowed, and what caused the incident was never a tool call, it was the
-order of four of them. A flag on sequence length cannot repair it, since
-a legitimate reporting workflow that reads two hundred documents and
-sends one summary looks identical from the inside.
+order of four of them. A flag on sequence length cannot repair it either:
+a legitimate job that reads two hundred documents and sends one summary
+trips it too.
 
 ### What to do
 
 Keep a running aggregate per execution and read it at the decision point,
 not at the end: sensitive records read, bytes staged, bytes sent
-externally, cumulative cost. When the effect the steps so far add up to
-exceeds what any single step could have produced, refuse with the signals
-named and write the refusal down as a decision. Use the aggregate where
-the effect is monotonic: runaway cost is the clean case, because the
-counter moves in one direction and is bounded. Treat privilege escalation
-as the case you cannot close, because its signal is structural rather
-than volumetric and no counter catches it. The cost is state to carry
-across the run, an execution boundary you have to define for a six-hour
-workflow that spans a compaction and a resume, a false positive that
-mutes the signal by the third day, and a subagent that starts with an
-empty aggregate because the composition spans two of them. What it buys
-is checkable: every decision in a run is evaluated against what the
-earlier steps in that run have already accumulated, so the fourth step
-cannot pass under the ceiling the first three were measured against.
+externally, cumulative cost. When the effect of the steps so far exceeds
+what any single step could have produced, refuse with the signals named
+and record the refusal as a decision. Use the aggregate where the effect
+is monotonic: runaway cost is the clean case, because the counter moves in
+one direction and is bounded. Privilege escalation is the case the
+aggregate cannot close, because its signal is structural rather than
+volumetric, and the per-action layer is the backstop there: the tool
+pattern and the argument rules checked against the live action, each
+refusal typed. The cost is state to carry across the run, an
+execution boundary for a six-hour workflow spanning a compaction and a
+resume, a false positive that mutes the signal by the third day, and a
+subagent whose aggregate starts empty because the composition spans two
+of them. The result is that every decision in a run is evaluated against
+what the earlier steps accumulated, so the fourth step cannot pass under
+the ceiling the first three were measured against.
 
 ## FAQ
 

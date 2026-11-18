@@ -18,8 +18,8 @@ requested, what was allowed, what was spent, and who approved it.
 Every writer then updates the row in place to reflect the latest state,
 and the previous state is gone.
 
-The runtime splits the audit surface into four tables that never overwrite
-each other:
+The enforcement layer splits the audit surface into four tables that never
+overwrite each other:
 
 | Table | Answers |
 |---|---|
@@ -180,15 +180,17 @@ without proving anything.
 
 ### What not to
 
-Do not keep one mutable row per action. A single table that mixes what was
-requested, what was allowed, what it cost and who approved it has to be
-updated in place, and the writer of the row becomes the writer of the
-history: four kinds of record, one row, and the previous state is gone the
-moment the next writer lands. The loss shows up where the record matters
-most. A 402 refusal is the event an operator needs when the agent stops
-calling at 14:00, and a table that only holds approvals has no row for it
-at all. Blocking `UPDATE` and `DELETE` with table grants does not close
-the gap either: that defense is one `ALTER TABLE` away from gone.
+Do not keep one mutable row per action. A table that holds a whole action
+in one place has a single writer, and that writer owns the history: the
+previous state is gone the moment the next writer lands, and there is
+nothing left to correct afterwards. A row updated in place cannot answer
+what the gate decided at the moment of the incident, because the answer
+it gives is the answer of the last writer, not the answer of the moment.
+The loss shows up where the record matters most. The 402 refusal is the
+row an operator needs when the agent stops calling at 14:00, and a table
+of approvals alone has no row for it at all. Blocking `UPDATE` and
+`DELETE` with table grants does not close the gap either: that defense is
+one `ALTER TABLE` away from gone.
 
 ### What to do
 
@@ -200,7 +202,7 @@ settlement, because a binding checked only on the way in can be replayed
 on the way out. Chain every row to the hash of the row before it over a
 canonical serialization, and write the decision and the enqueue in one
 transaction so a decision cannot exist without a queued record. The price
-is four stores to keep, one dispatcher to run, one transaction on the
+is four tables to keep, one dispatcher to run, one transaction on the
 decision path, and a chain verifier that has to be pointed at a
 deliberately tampered copy or it proves nothing. What it buys is a trail
 that cannot be rewritten after the fact, and an edit to any historical row
