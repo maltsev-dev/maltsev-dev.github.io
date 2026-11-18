@@ -243,6 +243,41 @@ boundary is environmental, and the article on
 [intercepting tool calls](/blog/2026-06-07-intercept-tool-calls-before-execution/)
 covers where it actually lives.
 
+## What to do, and what not to
+
+### What not to
+
+Do not implement the approval as a position in the execution graph. A
+framework interrupt is reliable and it is correct, and it covers the
+paths that traverse that position and nothing else. The happy-path test
+drives the agent the way the agent is meant to be driven, so it exercises
+one route of the six, and code review sees only the routes that happen
+to be in the diff. A retry wrapper, a subagent, a direct call in your own
+code, a second entry point and a resumed workflow all reach the same
+tool without traversing the interrupt. In that case nothing was
+bypassed: the check was never on the path the call took.
+
+### What to do
+
+Put the check on the effect, and make the approval a durable record
+rather than a moment in a UI. The arguments existing and the effect
+happening are separated by state that outlives the process, so the
+decision survives a crash and a new instance can ask what was decided
+instead of inferring it from silence. The grant is consumed by a single
+conditional update, so a retry of an already-executed action fails
+deterministically rather than running again on the strength of a flag
+someone set, and a resume can tell "already consumed" from "never
+decided".
+
+The price is a hop on every gated call, a record you have to keep and
+reconcile, and a route list that is manual: the canary test closes only
+the six routes you have enumerated, and a framework that adds an
+invocation mechanism in a minor release adds one you have not heard of.
+That list needs an owner and a trigger, not a best effort. The property
+is the one worth quoting: because the check sits on the effect, it sits
+on no route in particular, and a route that did not exist when the
+design was drawn passes the check anyway.
+
 ## FAQ
 
 ### Is framework-provided HITL enough?
@@ -277,18 +312,3 @@ resume path, and some form of parallel branch, and they usually arrive
 without anyone revisiting the approval logic. The question is whether you
 would notice when they appear.
 
-## Where this runs
-
-NullRun sits at the effect. The approval is a durable record that a
-separate process consults between the arguments existing and the effect
-happening, so any route that reaches a gated effect (retry, subagent,
-direct call, resume) converges on the same check. The check sits where
-the effect is. Where the call was scheduled makes no difference to it.
-
-The approval is consumed by a single conditional update, which is what
-makes a retry of an already-executed action fail deterministically rather
-than running again on the strength of a flag someone set. And the
-recovery query returns denied and expired approvals along with pending
-ones, so a resumed workflow can tell "already consumed" apart from "never
-decided" instead of inferring it from silence. The [integration
-docs](https://nullrun.io/docs) cover wiring the gate into the tool path.

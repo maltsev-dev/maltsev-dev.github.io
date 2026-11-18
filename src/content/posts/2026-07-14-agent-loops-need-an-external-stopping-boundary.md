@@ -240,6 +240,40 @@ These controls bound runaway behavior. They do not stop a single call
 that is wrong: a loop that completes cleanly and does the wrong thing
 three times is not a loop problem.
 
+## What to do, and what not to
+
+### What not to
+
+Do not put the cap in the agent loop. `for step in range(MAX_STEPS)` with a
+limit of 25 is the fix that feels finished on the day you write it, and
+it is code, so the next refactor three files away can move it without
+anyone re-reading it. It does not compose either: twenty workers each
+capped at twenty-five steps make five hundred calls, and every single
+cap reads as generous. And because it lives inside the agent it cannot
+see a sick downstream, so twenty workers discover the same outage
+independently and concurrently, each one spending budget to find out
+what a shared breaker would have told the fleet once.
+
+### What to do
+
+Put the bound outside the agent, in a component it cannot edit, evaluated
+before the call rather than after the failure. The rate cap is a token
+bucket in shared state that every worker reads, so a burst of twenty is
+bounded in the fleet, not in each process. The budget is reserved before
+the call, not measured after it, with the reserve and the cap comparison
+in one atomic operation on the store, so no window exists in which the
+counter is read and eleven more calls land first.
+
+The cost is an extra hop on every tool call and shared state: one store
+to hold the counters and the lifecycle, so a paused workflow is held
+wherever it runs. Loop detection stays in the agent's path, on the
+argument-repeat fingerprint at 5 with the call-count bar at 40, and a
+refusal carries its own code so the caller can back off on one and stop
+on another. The property bought is that a loop which gets through the
+heuristic still hits a rate counter, a budget ceiling and a depth bound
+the agent did not write and cannot refactor away. It does not stop a
+single wrong call.
+
 ## FAQ
 
 ### Should the loop cap be on steps, calls, tokens, or cost?
@@ -269,25 +303,3 @@ leaked key, and per downstream service for protecting the dependency. The
 last one is the one teams forget, and it is the one that keeps the tool
 up during somebody else's incident.
 
-## Where this runs
-
-NullRun is the external boundary, and the code sketches above are
-something you build against it. The pieces worth naming are the ones
-that live in the data store, in shared state that no worker process can
-edit on its own.
-
-| Piece | Keyed on | What that gives you |
-|---|---|---|
-| Rate | `(organization_id, api_key_id)` token bucket | Twenty workers share one bucket, so the twenty-worker burst cannot happen. Per process and per pod buckets both fail this. |
-| Budget | Reserved before the call, not measured after it | The period counter is bound and shared, and the reserve and the cap comparison run inside a single script on the data store. There is no window in which the counter is read and the agent issues another eleven calls before the write lands. |
-| Every refusal | A distinct typed code: `RATE_LIMIT_EXCEEDED`, `BUDGET_CACHE_EXCEEDED`, `CONSUME_OVERBUDGET` | The caller can back off on one and stop on another, instead of retrying everything under pressure. That distinction is the difference between a loop that terminates and a loop that spends. |
-| Workflow lifecycle | External, authoritative state | Pausing or killing a workflow writes its lifecycle state, and the next call is held wherever it happens to be running. That is the difference between an operator stopping an autonomous system and an operator stopping their own pod. Lifecycle and breaker stay separate columns, so a paused workflow and a tripped dependency cannot overwrite one another. |
-| Chain depth | A bound you can turn on | How far one line of reasoning may go before it has to come back with a result. |
-
-Loop detection itself is a heuristic and it belongs in the agent's own
-path. The argument-repeat fingerprint above is a good default, and the
-limitations section is honest about where it trades recall for precision.
-What the boundary gives you is that a loop which does get through still
-hits a rate counter, a budget ceiling and a depth bound that it did not
-write and cannot refactor away. The [integration docs](https://nullrun.io/docs) cover
-putting the tools behind it.

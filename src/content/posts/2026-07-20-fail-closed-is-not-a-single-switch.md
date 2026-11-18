@@ -272,6 +272,44 @@ correctness error, it produces a queue, and a queue is its own kind of
 implicit policy. Timeouts have to be set deliberately for the same
 reason the defaults have to be.
 
+## What to do, and what not to
+
+### What not to
+
+Do not cover all six enforcement paths with one default. A single
+`except` that returns allow is the most common shape and the least
+visible, because it flattens four paths that have to block and one path
+that is allowed to degrade: the policy store, the counter store and the
+digest source each decide whether money moves, while a telemetry write
+decides nothing about that. Inside one shared block a reader cannot tell
+which kind of path they are in, so the next dependency added inherits
+whichever default the code happens to have, and a control that was
+deliberate on the observability path becomes accidental on the
+enforcement path. That is how a rule stops being a rule without a diff
+to point at.
+
+### What to do
+
+Declare the default per path and write it down where it applies. Each of
+the six paths gets a deliberate default, its own error code, a
+regression test that makes the dependency actually unavailable, and a
+written reason for the one path that is allowed to degrade.
+
+The strongest form removes the class instead of documenting it. If the
+reservation and the cap comparison run inside a single script evaluated
+atomically on the data store, there is no window in which the cap is read
+and the write fails, and an unreachable counter is a typed
+`REDIS_UNAVAILABLE` rather than a zero. The cost of that is that the
+comparison moves into the store's scripting environment, exercised
+rather than imported, plus a presence bit that keeps "no policy
+configured" apart from "policy unreadable" and a boot guard that refuses
+to start when an enforcement-bypass flag is set in production. The
+property is checkable: no policy, no reconstruction and no counter means
+no execution, on each of the six paths independently.
+
+Fail-closed buys a refusal, not a fast one: a dependency that takes nine
+seconds to time out produces a queue, not a correctness error.
+
 ## FAQ
 
 ### Would a single global kill switch be simpler?
@@ -305,29 +343,3 @@ worker is an outage. The refusal should be typed and named so the agent
 can distinguish "this is refused, try something else" from "the system
 is unavailable, stop and retry later".
 
-## Where this runs
-
-NullRun's enforcement path refuses when the runtime cannot reach what it
-needs, and the reservation that decides it runs as one Lua script on the
-data store, so the cap comparison and the counter write cannot come
-apart. An unreachable counter store is a `402 REDIS_UNAVAILABLE`, never
-a zero. An absent budget policy is separated from an unreadable one by a
-presence bit that fails closed, so the two can never collapse into the
-same answer.
-
-The refusal is typed: `TOOL_BLOCKED`, `RATE_LIMIT_EXCEEDED`,
-`BUDGET_CACHE_EXCEEDED`, `APPROVAL_DIGEST_RECOMPUTE_FAILED` are four
-different codes for four different reasons, and the decision is written
-to the audit trail, because a refusal is evidence that a control fired.
-The two documented enforcement-bypass environment variables are refused
-at boot when the process is running in production, so they cannot be
-switched on where it counts.
-
-The regression checks pin the exact expressions that must be present, so
-a deletion or a rewrite of `redis.call` into a client-side read fails
-the build. That is a narrower claim than a behavioral test and worth
-stating precisely: a text pin proves the code contains the shape, and no
-more. The primary guarantee is carried by the script itself.
-
-The wire contract these refusals travel over is in the
-[API reference](https://nullrun.io/docs/api).

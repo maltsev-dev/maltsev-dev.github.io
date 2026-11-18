@@ -258,6 +258,41 @@ the tool call and the settlement write, re-running risks a duplicate side
 effect and refusing produces an operator-visible failure. That case wants
 a third answer: refuse, and mark it for review.
 
+## What to do, and what not to
+
+### What not to
+
+Do not approve an operation and execute a payload. The card shows a tool
+name, a truncated preview and a diff of the reasoning, and the executor
+receives something else. Treat the amount as a parameter of the
+operation and the operator's approval covers any magnitude that later
+arrives, which is the first of the three fields nobody diffs: a refund
+of ten approved, a refund of a thousand executed, same tool, different
+risk. A handle on the approval does not fix it either. `mint_approval`
+proves who approved, and the orchestrator that carries the handle
+forward can supply a different payload, so the trust moves to the
+component with the most code paths and the least review attention.
+
+### What to do
+
+Make the approval a record with a state machine. Derive a digest over
+the material fields of a closed envelope at approval time, derive it
+again from the live request at execution time, compare the two, and
+consume the grant in a single conditional update whose four
+preconditions include the expiry. Nothing the SDK sent is trusted for
+the re-check, and a payload the server cannot reconstruct is a refusal
+with no fallback path. The approval stops being a UI moment and becomes
+a row: it survives a crash, a new instance can ask what was decided, and
+an auditor can cite what was authorized rather than what was asked for.
+
+What it costs is a digest computed twice, an envelope narrow enough that
+every field in it is decision-relevant, and a 60-second TTL that has to
+be long enough for the operator and short enough that a stale approval
+does not authorize a fare that has moved from four hundred and eighty to
+six hundred and twelve. What you can check is narrow: the execution
+matches the approved payload, and the grant is consumed exactly once. It
+does not prove the card was an honest rendering of that payload.
+
 ## FAQ
 
 ### Do we need a cryptographic hash, or would any comparison do?
@@ -292,18 +327,3 @@ survive the agent crashing and resuming on a different pod, which is
 what [durable approval state](/blog/2026-08-08-approval-is-security-state-not-session-state/)
 is for.
 
-## Where this runs
-
-NullRun treats the approval as a record with a state machine. The digest
-is derived server-side from the material fields at approval time, derived
-again from the live request at execution time, and the grant is consumed
-by a single conditional update. Nothing supplied by the SDK is trusted
-for the re-check, and a payload the server cannot reconstruct gets a
-refusal, with no fallback path.
-
-The practical consequence is that an approval stops being a UI moment and
-becomes a row. It can survive a crash. It can be recovered by a new
-instance that reconnects and asks what happened. An
-auditor can cite it later to establish what was authorized, as opposed to
-what was asked for. The [integration docs](https://nullrun.io/docs) cover wiring the gate
-into the tool path.
