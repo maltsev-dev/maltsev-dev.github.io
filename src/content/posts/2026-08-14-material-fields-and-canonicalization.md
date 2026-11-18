@@ -293,6 +293,41 @@ schema-blind tool that accepts arbitrary JSON cannot be classified at
 all, which is why "unknown fields are material until reviewed" has to be
 the default from the start.
 
+## What to do, and what not to
+
+### What not to
+
+Do not build the digest's coverage on a list of fields somebody decided
+were harmless. Coverage is exactly what you enumerated, and the next
+field the tool's owner adds arrives after the list was written:
+`redirect_to`, or `amount` split into `amount_hint` and `amount_scale`
+so that each half looks informational. That field falls out of the hash
+with no signal anywhere. The approval still matches, the operator still
+sees a card, and the action that runs is not the action they judged.
+The opposite error is just as quiet: a hash that covers a field with no
+bearing on the action turns every retry carrying a fresh `trace_id` into
+a refusal, and the operator concludes that the digest is broken.
+
+### What to do
+
+Bind the whole envelope, on an envelope you control, and make the
+envelope a closed type rather than a bag. Every field is then material
+by construction, the approval's digest covers the action with no
+allowlist to keep current, and adding a field becomes a type change
+somebody compiles rather than a line in a config file. Two decisions
+make that promise real rather than nominal. Represent money as an
+integer in minor units with a declared per-call ceiling, so the value a
+JavaScript client cannot represent above 2^53 is refused at validation
+instead of being hashed into the wrong number. Sort object keys and
+leave arrays alone, because only the schema knows whether an array's
+order carries meaning. And domain-separate the hash,
+`SHA-256( "approval/v1/business_impact:" || canonical_json(envelope) )`,
+so a digest computed for one action cannot be replayed into another
+namespace, and recompute it server-side from the payload that arrived,
+because a client-supplied digest is a digest the client chose. The
+price is a stricter edge contract and a type to maintain: a payload
+carrying a float is refused with a typed error rather than normalized.
+
 ## FAQ
 
 ### Why not hash the entire payload?
@@ -342,45 +377,3 @@ approval, which is the correct outcome. Where a classification exists,
 it is versioned with the schema: a new field is material until reviewed,
 and a field whose meaning changed is a different field as far as the
 approval is concerned.
-
-## Where this runs
-
-NullRun binds the whole envelope, and the envelope is a closed type
-rather than a bag. The wire form is an enum, `Money` or `ToolCall`, and
-every field of the selected variant is canonicalized and hashed:
-
-```
-SHA-256( "nullrun/v1/business_impact:" || canonical_json(envelope) )
-```
-
-The domain prefix is the part worth naming. It means a digest computed
-for an action can never collide with a digest computed for anything else
-in the system, so a hex string from one namespace cannot be replayed
-into another.
-
-Three properties follow from hashing the whole thing:
-
-- There is no allowlist to go stale. A field cannot be added to a
-  tool and silently fall out of the binding, because the binding is the
-  type, and adding a field is a change somebody makes to the type.
-- The value cannot be replaced. The digest is recomputed server-side
-  from the payload that arrived on `/execute`, and a stored approval is
-  refused if the recomputation disagrees, `APPROVAL_DIGEST_MISMATCH`. The
-  client does not supply the value that gets compared.
-- Ambiguity is refused. Money arrives as
-  `amount_minor`, an integer in minor units with a declared per-call
-  ceiling. A payload carrying a float or a non-finite number is rejected
-  during validation with a typed error, because a digest is only a
-  promise if it can round-trip byte-identically between the SDK and the
-  server. Rejecting the unrepresentable value is what keeps that promise
-  unconditional.
-
-Canonicalization sorts object keys recursively and leaves arrays in
-their order, because an object's key order carries no meaning and
-whether an array's order does is a question only the schema can answer.
-
-Changing an amount changes the digest and invalidates the prior
-approval, so the second call needs a new decision. That is the intended
-behavior. The operator approved a specific number, and a different number
-is a different action.
-The [API reference](https://nullrun.io/docs/api) carries the wire shapes.

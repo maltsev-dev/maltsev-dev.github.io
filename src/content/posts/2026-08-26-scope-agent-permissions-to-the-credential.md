@@ -206,6 +206,44 @@ And the guarantee covers the agent-to-tool edge only. It is a real
 guarantee, but it is narrower than "the agent is safe." What happens
 inside a tool after it is called is not something this design sees.
 
+## What to do, and what not to
+
+### What not to
+
+Do not branch on agent identity in application code, and do not park the
+scope in an environment variable. Both put the conditions somewhere they
+are reviewed like business logic, tested like business logic, and
+deployed like business logic, and that review checks correctness, not
+completeness: the second code path was never in the branch, and the
+first agent that reaches a tool through it gets it. The environment
+variable version fails differently and just as silently, because a
+staging agent with a broader scope is a configuration mistake waiting
+for a release, and dev and prod agree only while somebody keeps them in
+sync. The separate deployment avoids the branch and pays for it
+instead: N deployments, N pipelines, N environment variable sets that
+drift, a release cadence set by the slowest one, and a consolidation
+back to one runtime within two quarters.
+
+### What to do
+
+Resolve the policy against the authenticated principal, most specific
+first: the key, then the workflow if one is bound, then the
+organization, and a miss is a miss. The scope then travels with the
+credential rather than with the code path, so it does not change when
+the agent's code changes, when a second path appears, or when the agent
+runs in a different process. The property worth having is that the
+agent cannot widen its own scope by editing itself, because the lookup
+happens before the agent's decision has any input into it and the agent
+has no API for changing a policy. Re-check the binding at consumption
+rather than only at resolution: the execution is minted server-side and
+bound to the organization and key, and that binding is compared again
+atomically when the execution settles. The price is key distribution,
+which is real work: every agent in every environment needs its own
+minted credential, changing a scope means rotating keys, and a rotation
+under a running workflow needs the old grant to stay valid until it
+ends. It also assumes the runtime keeps credentials apart, true for a
+container per agent and false for one process hosting many.
+
 ## FAQ
 
 ### Should the policy be on the key or looked up per agent?
@@ -242,21 +280,3 @@ Every distinct scope needs its own key. Several agents can share a scope
 and a key if they genuinely have identical permissions, but then they
 are one principal for audit purposes. That is usually fine, and worth
 knowing before an incident review asks.
-
-## Where this runs
-
-NullRun resolves the policy against the authenticated principal. Two
-agents on the same runtime carry different keys and therefore resolve
-different policy snapshots. The resolution is one lookup, key then
-workflow then org, with no chain of conditionals in the agent's own
-code. Scoping a policy to one key does not disturb the rest of the org:
-the other keys keep resolving to the policy beneath it.
-
-Because the scope travels with the credential, the same build in local
-development, staging and production resolves against whatever scope the
-present key carries. The audit ties each action to the key that produced
-it, which is what makes the scope inspectable after the fact and not
-only at configuration time. The execution itself is server-minted and
-bound to the organization and key, and that binding is re-compared
-atomically when the execution settles. The request and response shapes
-are in the [API reference](https://nullrun.io/docs/api).

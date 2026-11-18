@@ -235,6 +235,44 @@ chart does not know what the requests were. That is a permanent weakness
 of tiered designs and it is not fixable with a better thresholding
 algorithm.
 
+## What to do, and what not to
+
+### What not to
+
+Do not make the control stricter and call it safer. Card count decides
+whether the control works; ceremony around each card does not. An
+approver facing two hundred cards a day is clearing a queue, and the
+behavior under load is to read the title, look at the amount, click
+approve. Every individual action looks considered and the aggregate
+looks fine, which is exactly why the failure is invisible: the control
+is present and inert, producing audit records that will later be cited
+as evidence that a decision was made, and that is worse than no control
+at all. The tell is in the shape of the numbers, not their count. Below
+roughly a hundred cards per reviewer per day an approval is still a
+review; above it, approval degrades to a click. And if 95% of approvals
+complete in under three seconds, there is no review happening whatever
+the average says.
+
+### What to do
+
+Hold the three bands as policy in one place, outside the agent's code,
+so the agent cannot widen its own thresholds and a band boundary moves
+as a configuration edit rather than a branch somebody adds. Every edit
+writes a new version and a new hash, which makes a relaxation
+attributable later instead of a memory of last month's configuration,
+and the ladder has to descend as easily as it climbs. Then make the card
+carry the reason: the rule that fired, the risk level, the tool name,
+the action's parameters, and nothing else. The fields that vary are
+what an approver can act on; a card showing the model's reasoning
+instead of the decision is the card they clear. Bind each decision to
+the action's digest, recomputed server-side from the live payload at
+consumption, so a changed amount is refused rather than executed, and
+let approvals expire on their own with a per-rule TTL inside the consume
+predicate, so a decision nobody acted on stops being actionable without
+a sweeper racing it. The price is the policy store
+and its version history, and the honest first configuration of the bands
+is a guess traffic corrects, not a principled cut.
+
 ## FAQ
 
 ### Should high-risk actions ever be fully automated?
@@ -275,43 +313,3 @@ Reversibility is decisive for a refund and irrelevant for a send. Any
 single score is a compression that loses exactly the distinctions the
 approver needed. Bands over per-category attributes beat one score across
 categories.
-
-## Where this runs
-
-NullRun holds the bands as policy, with no branch of the same logic in
-application code. The pieces that matter for this article are the ones
-that make a card worth reading.
-
-Rules attach to the workflow. A money-amount rule and a
-tool-parameter rule are configuration, so a boundary moves without a
-deploy and the change is a reviewable edit, with no release involved. Policy
-resolution is most-specific-first: per calling key, then per workflow,
-then org-wide. A policy can be scoped to one team without disturbing the
-rest of the organization.
-
-The card carries the reason. An approval row records the rule that
-fired, the risk level, the tool name and the action's own parameters.
-That is the difference between a card an approver can act on and a card
-they clear, and it is the single change with the largest effect on the
-latency distribution above.
-
-Every decision is bound. The approval binds to the action's digest,
-which the server recomputes from the live payload at consumption time.
-Change the amount between approval and execution and the approval is
-refused with `APPROVAL_DIGEST_MISMATCH`; consume it twice and the second
-attempt is refused with `APPROVAL_REPLAY_REJECTED`. The card is
-therefore evidence of a decision about a specific action, not a gesture
-that something happened.
-
-The approval expires on its own. A per-rule TTL, five minutes by
-default, is part of the consume predicate. No sweeper races it. A
-decision nobody acted on stops being actionable without anyone having to
-clean it up.
-
-Relaxations are attributable. Every policy edit writes a new version
-and a new hash, and refusals are recorded in the audit trail with the
-policy hash in force when they ran. That is what answers "what did this
-policy allow in March" without depending on anyone's memory of the March
-configuration.
-
-The [integration docs](https://nullrun.io/docs) cover wiring the rules to your tools.

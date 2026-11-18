@@ -207,6 +207,42 @@ guarantee: the record has to be written atomically with the decision it
 describes. [The audit trail article](/blog/2026-09-25-audit-trail-for-ai-agent-tool-calls/)
 covers that one.
 
+## What to do, and what not to
+
+### What not to
+
+Do not let recovery report only the approvals still in flight. The
+mechanism is that absence then has to stand in for a decision:
+"never asked" and "asked and denied" come back the same way, so a
+restarted instance asks again, and the same person judges the same
+action twice, the second time from a guess about what they saw last
+time. Each restart puts another card in front of one human for one
+decision, and the answer they give to a question they already answered
+is a rubber stamp. The row that holds `DENIED` is exactly the row a
+pending-only surface drops, and it carries the refusal that matters:
+without it, the only way the agent can learn that a person said no is
+that nobody answered.
+
+### What to do
+
+Store the decision as a record, not as a fact about a running process,
+and write that record atomically with the decision it describes. One row
+per decision carries the approver, the expiry, the digest and the
+consumption state, and its six possible states (`PENDING`, `APPROVED`,
+`DENIED`, `EXPIRED`, `CONSUMED`, `REVOKED`) live in one column so a
+decision has exactly one name and only moves forward. Every transition
+is a single conditional statement: the approve-to-consume update carries
+seven preconditions and returns a row or returns nothing, because a
+load-then-write lets two workers both see `APPROVED` and both execute.
+Recovery then hands the server the approval ids the agent holds and
+gets every status back, denied, expired and consumed included, so the
+new instance ends the run and reports the refusal instead of asking
+again. The price is a store and a partial unique index on `execution_id`
+where `status = 'PENDING'`, one open card per execution, plus a
+retention window: a resumed workflow still re-presents a byte-identical
+payload, and approvals purged after thirty days leave a long suspension
+looking like never having asked.
+
 ## FAQ
 
 ### Do we need this if our workflow runs in a single long-lived process?
@@ -237,20 +273,3 @@ The approval lands on a row whose execution has moved on. It is a real
 decision about a real payload and it belongs in the audit, but nothing
 executes it. The operator interface has to say so, instead of showing a
 pending card that will never resolve.
-
-## Where this runs
-
-NullRun stores approvals as durable rows with the decision, the
-approver, the expiry, the consumption state, and the digest that binds
-them to the action. Moving from approved to consumed is one conditional
-update that verifies the row is approved, unexpired, unconsumed, and
-bound to the same execution, key and payload in the same statement. A
-failed condition changes nothing, and a retry cannot race another
-execution into the same grant.
-
-Recovery asks the server, not the agent's memory. You hand it the approval
-ids you hold and it answers with the true current state of each one, every
-status included.
-
-The [API reference](https://nullrun.io/docs/api) has the recovery endpoints and the
-[security documentation](https://nullrun.io/security) the retention story.
