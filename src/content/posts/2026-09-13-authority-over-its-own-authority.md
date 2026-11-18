@@ -189,15 +189,15 @@ credential travels, and let the layer that reads that credential be its
 only reader. One of the four capability classes changes the boundary,
 and it leaves the exposure list in the code that builds it, with no
 control that turns it back on. Hold the tool surface to the same
-standard: a tool whose output the runtime acts on is a path to the
-boundary, closed by requiring such a change to take effect no faster
-than review, which leaves the agent's version a request and never an
-edit. Write every change as a hashed snapshot with a history rather
-than editing it in place, and let the refusals teach: a refusal is the
-one answer the agent cannot argue with. Each refusal carries a decision
-and a code, and the trail of them shows, later, that a limit was
-relaxed and by whom. The cost is a second trust domain to run, and an
-owner for the question of what the agent's surface has become. The
+standard: a tool whose output changes what the runtime trusts is a path
+to the boundary, closed by requiring such a change to take effect no
+faster than review, which leaves the agent's version a request and
+never an edit. Write every change as a hashed snapshot with a history
+rather than editing it in place, and let the refusals teach: a refusal
+is the one answer the agent cannot argue with. Each refusal carries a
+decision and a code, and the trail of them shows, later, that a limit
+was relaxed and by whom. The cost is a second trust domain to run, and
+an owner for the question of what the agent's surface has become. The
 property to check: nothing the agent process can reach authenticates
 its credential for a boundary change.
 
